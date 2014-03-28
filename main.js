@@ -2,9 +2,12 @@ var requestModule = require('request');
 var cheerio = require('cheerio');
 var express = require("express");
 var url = require('url');
+var crypto = require('crypto');
 var app = express();
 app.use(express.logger());
 app.use(express.bodyParser());
+
+// application key for rest api: pqec4RXPyC-BMERoXtrnY_ajRkg81lZS
 
 app.all('*', function(req, res, next) {
 	console.log("hit all rule");
@@ -38,7 +41,41 @@ app.get('/health', function(request, response) {
 });
 
 app.post('/stream', function(request, response){
-	response.send("1234");
+
+// async
+crypto.randomBytes(16, function(ex, buf) {
+	if (ex) throw ex;
+
+	console.log(buf);
+
+	var streamId = [];
+	for (var i = 0; i < buf.length; i++) {
+		var charCode = String.fromCharCode((buf[i] % 26) + 65);
+		streamId.push(charCode);
+	};
+
+	writeToken = crypto.randomBytes(256).toString('base64');
+	readToken = crypto.randomBytes(256).toString('base64');
+
+  	var stream = {
+  		streamid: streamId.join(''),
+  		writeToken: writeToken,
+  		readToken: readToken
+	};
+
+	var requestOptions = {
+		headers: {'content-type' : 'application/json'},
+		url:     'https://api.mongolab.com/api/1/databases/quantifieddev/collections/streams?apiKey=pqec4RXPyC-BMERoXtrnY_ajRkg81lZS',
+		body:    JSON.stringify(stream)
+	};
+
+	console.log(requestOptions);
+
+    requestModule.post(requestOptions, function(error, createStreamResponse, createStreamBody){
+			response.send(createStreamBody);
+	});
+});
+	
 });
 
 var port = process.env.PORT || 5000;
