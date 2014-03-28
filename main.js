@@ -125,7 +125,9 @@ var authenticateToken = function(tokenComparer, id, error, success){
 			var stream = {
 				streamid: stream[0].streamid
 			}
-			success(stream[0]);
+			console.log('Calling success');
+			console.log(stream);
+			success(stream);
 		}
 	});
 };
@@ -157,6 +159,8 @@ app.post('/stream/:id/event', function(req, res){
 			res.status(404).send("stream not found");
 		},
 		function(stream){
+			var myEvent = req.body;
+			myEvent.streamid = stream.streamid;
 			var requestOptions = {
 				headers: {
 					'content-type': 'application/json'
@@ -177,19 +181,22 @@ app.post('/stream/:id/event', function(req, res){
 
 app.get('/stream/:id/event', function(req, res){
 	var readToken = req.headers.authorization;
+	var streamid = req.params.id;
 	authenticateReadToken(
 		readToken,
-		req.params.id,
+		streamid,
 		function(){
 			res.status(404).send("stream not found");
 		},
 		function(stream){
-			var filter = "{}";
+			var filter = {
+				streamid: streamid
+			}
 			var fields = {
 				_id: 0
 			};
 
-			var url = "https://api.mongolab.com/api/1/databases/quantifieddev/collections/event?apiKey=" + mongoAppKey + '&q=' + filter + '&f=' + JSON.stringify(fields);
+			var url = "https://api.mongolab.com/api/1/databases/quantifieddev/collections/event?apiKey=" + mongoAppKey + '&q=' + JSON.stringify(filter) + '&f=' + JSON.stringify(fields);
 			console.log(url);
 			var requestOptions = {
 				headers: {
