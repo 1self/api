@@ -107,7 +107,7 @@ app.get('/stream/:id', function(req, res){
 	});
 });
 
-var authenticateWriteToken = function(token, id, error, success){
+var authenticateToken = function(tokenComparer, id, error, success){
 	var mongoQuery = {
 				"streamid":id
 			};
@@ -118,17 +118,34 @@ var authenticateWriteToken = function(token, id, error, success){
 		var stream = JSON.parse(streamBody);
 		console.log(stream);
 		console.log(stream.readToken);
-		console.log(token);
-		if(stream[0].writeToken != token){
+		if(tokenComparer(stream)){
 			error();
 		}
 		else{
 			var stream = {
 				streamid: stream[0].streamid
 			}
-			success(stream);
+			success(stream[0]);
 		}
 	});
+};
+
+var authenticateReadToken = function(token, id, error, success){
+	authenticateToken(function(stream){
+		stream.readToken != token;
+	},
+	id,
+	error,
+	success);
+};
+
+var authenticateWriteToken = function(token, id, error, success){
+	authenticateToken(function(stream){
+		stream.writeToken != token;
+	},
+	id,
+	error,
+	success);
 };
 
 app.post('/stream/:id/event', function(req, res){
@@ -153,6 +170,40 @@ app.post('/stream/:id/event', function(req, res){
 				console.log(error)
 				console.log(eventCreateRes);
 				res.send();	
+			});
+		}
+	);
+});
+
+app.get('/stream/:id/event', function(req, res){
+	var readToken = req.headers.authorization;
+	authenticateReadToken(
+		readToken,
+		req.params.id,
+		function(){
+			res.status(404).send("stream not found");
+		},
+		function(stream){
+			var filter = "{}";
+			var fields = {
+				_id: 0
+			};
+
+			var url = "https://api.mongolab.com/api/1/databases/quantifieddev/collections/event?apiKey=" + mongoAppKey + '&q=' + filter + '&f=' + JSON.stringify(fields);
+			console.log(url);
+			var requestOptions = {
+				headers: {
+					'content-type': 'application/json'
+				},
+				url: url, 
+				body: JSON.stringify(req.body)
+			};
+
+			console.log(requestOptions);
+			requestModule(requestOptions, function(error, dbReq, dbRes){
+				console.log(error)
+				console.log(dbRes);
+				res.send(dbRes);	
 			});
 		}
 	);
