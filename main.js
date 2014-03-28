@@ -7,7 +7,8 @@ var app = express();
 app.use(express.logger());
 app.use(express.bodyParser());
 
-// application key for rest api: pqec4RXPyC-BMERoXtrnY_ajRkg81lZS
+var mongoAppKey = 'pqec4RXPyC-BMERoXtrnY_ajRkg81lZS';
+
 
 app.all('*', function(req, res, next) {
 	console.log("hit all rule");
@@ -42,40 +43,119 @@ app.get('/health', function(request, response) {
 
 app.post('/stream', function(request, response){
 
-// async
-crypto.randomBytes(16, function(ex, buf) {
-	if (ex) throw ex;
+	// async
+	crypto.randomBytes(16, function(ex, buf) {
+		if (ex) throw ex;
 
-	console.log(buf);
+		console.log(buf);
 
-	var streamId = [];
-	for (var i = 0; i < buf.length; i++) {
-		var charCode = String.fromCharCode((buf[i] % 26) + 65);
-		streamId.push(charCode);
-	};
+		var streamId = [];
+		for (var i = 0; i < buf.length; i++) {
+			var charCode = String.fromCharCode((buf[i] % 26) + 65);
+			streamId.push(charCode);
+		};
 
-	writeToken = crypto.randomBytes(256).toString('base64');
-	readToken = crypto.randomBytes(256).toString('base64');
+		writeToken = crypto.randomBytes(256).toString('base64');
+		readToken = crypto.randomBytes(256).toString('base64');
 
-  	var stream = {
-  		streamid: streamId.join(''),
-  		writeToken: writeToken,
-  		readToken: readToken
-	};
+	  	var stream = {
+	  		streamid: streamId.join(''),
+	  		writeToken: writeToken,
+	  		readToken: readToken
+		};
 
-	var requestOptions = {
-		headers: {'content-type' : 'application/json'},
-		url:     'https://api.mongolab.com/api/1/databases/quantifieddev/collections/streams?apiKey=pqec4RXPyC-BMERoXtrnY_ajRkg81lZS',
-		body:    JSON.stringify(stream)
-	};
+		var requestOptions = {
+			headers: {'content-type' : 'application/json'},
+			url:     'https://api.mongolab.com/api/1/databases/quantifieddev/collections/stream?apiKey=' + mongoAppKey,
+			body:    JSON.stringify(stream)
+		};
 
-	console.log(requestOptions);
+		console.log(requestOptions);
 
-    requestModule.post(requestOptions, function(error, createStreamResponse, createStreamBody){
-			response.send(createStreamBody);
+	    requestModule.post(requestOptions, function(error, createStreamResponse, createStreamBody){
+				response.send(createStreamBody);
+		});
+	});
+	
+});
+
+app.get('/stream/:id', function(req, res){
+	var readToken = req.headers.authorization;
+	var mongoQuery = {
+				"streamid":req.params.id
+			};
+	var streamReqUri = 'https://api.mongolab.com/api/1/databases/quantifieddev/collections/stream?apiKey=' + mongoAppKey + '&q=' + JSON.stringify(mongoQuery);
+	console.log(streamReqUri);
+	requestModule(streamReqUri, function(error, streamRes, streamBody){
+		console.log(error);
+		var stream = JSON.parse(streamBody);
+		console.log(stream);
+		console.log(stream.readToken);
+		console.log(readToken);
+		if(stream[0].readToken != readToken){
+			res.status(404).send("stream not found");
+		}
+		else{
+			console.log("Got the stream from repo");
+			console.log(streamBody)
+			var response = {
+				streamid: stream[0].streamid
+			}
+			console.log(response);
+			res.send(JSON.stringify(response));
+		}
 	});
 });
-	
+
+var authenticateWriteToken = function(token, id, error, success){
+	var mongoQuery = {
+				"streamid":id
+			};
+	var streamReqUri = 'https://api.mongolab.com/api/1/databases/quantifieddev/collections/stream?apiKey=' + mongoAppKey + '&q=' + JSON.stringify(mongoQuery);
+	console.log(streamReqUri);
+	requestModule(streamReqUri, function(dbSaveError, streamRes, streamBody){
+		console.log(error);
+		var stream = JSON.parse(streamBody);
+		console.log(stream);
+		console.log(stream.readToken);
+		console.log(token);
+		if(stream[0].writeToken != token){
+			error();
+		}
+		else{
+			var stream = {
+				streamid: stream[0].streamid
+			}
+			success(stream);
+		}
+	});
+};
+
+app.post('/stream/:id/event', function(req, res){
+	var writeToken = req.headers.authorization;
+	authenticateWriteToken(
+		writeToken,
+		req.params.id,
+		function(){
+			res.status(404).send("stream not found");
+		},
+		function(stream){
+			var requestOptions = {
+				headers: {
+					'content-type': 'application/json'
+				},
+				url: "https://api.mongolab.com/api/1/databases/quantifieddev/collections/event?apiKey=" + mongoAppKey,
+				body: JSON.stringify(req.body)
+			};
+
+			console.log(requestOptions);
+			requestModule.post(requestOptions, function(error, eventCreateReq, eventCreateRes){
+				console.log(error)
+				console.log(eventCreateRes);
+				res.send();	
+			});
+		}
+	);
 });
 
 var port = process.env.PORT || 5000;
