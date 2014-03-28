@@ -161,6 +161,7 @@ app.post('/stream/:id/event', function(req, res){
 		function(stream){
 			var myEvent = req.body;
 			myEvent.streamid = stream.streamid;
+			myEvent.serverDateTime = new Date();
 			var requestOptions = {
 				headers: {
 					'content-type': 'application/json'
@@ -215,6 +216,35 @@ app.get('/stream/:id/event', function(req, res){
 		}
 	);
 });
+
+app.get('/live/devbuild', function(req, res){
+	var filter = {
+		//"$gte": 
+	}
+	var fields = {
+		_id: 0,
+		streamid: 0
+	};
+
+	var url = "https://api.mongolab.com/api/1/databases/quantifieddev/collections/event?apiKey=" + mongoAppKey + '&q=' + JSON.stringify(filter) + '&f=' + JSON.stringify(fields);
+	console.log(url);
+	var requestOptions = {
+		headers: {
+			'content-type': 'application/json'
+		},
+		url: url, 
+		body: JSON.stringify(req.body)
+	};
+
+	console.log(requestOptions);
+	requestModule(requestOptions, function(error, dbReq, dbRes){
+		console.log(error)
+		console.log(dbRes);
+		res.send(dbRes);	
+	});
+});
+
+
 
 var port = process.env.PORT || 5000;
 console.log(port);
