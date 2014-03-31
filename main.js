@@ -160,6 +160,8 @@ app.post('/stream/:id/event', function(req, res){
 		},
 		function(stream){
 			var myEvent = req.body;
+			console.log("My Event: ");
+			console.log(myEvent);
 			myEvent.streamid = stream.streamid;
 			myEvent.serverDateTime = new Date();
 			var requestOptions = {
