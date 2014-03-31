@@ -172,6 +172,7 @@ app.post('/stream/:id/event', function(req, res){
 				body: JSON.stringify(req.body)
 			};
 
+			console.log("Request options");
 			console.log(requestOptions);
 			requestModule.post(requestOptions, function(error, eventCreateReq, eventCreateRes){
 				console.log(error)
