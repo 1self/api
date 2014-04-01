@@ -227,7 +227,7 @@ app.get('/live/devbuild', function(req, res){
 	};
 
 	var dateNow = new Date();
-	var cutoff = new Date(dateNow - (30 * 1000 * 60));
+	var cutoff = new Date(dateNow - (2 * 1000 * 60));
     var filter = {
     	serverDateTime: {"$gte": cutoff}
     };
