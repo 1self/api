@@ -221,14 +221,17 @@ app.get('/stream/:id/event', function(req, res){
 });
 
 app.get('/live/devbuild', function(req, res){
-	var filter = {
-		//"$gte": 
-	}
 	var fields = {
 		_id: 0,
-		streamid: 0
+		streamid: 0,
 	};
 
+	var dateNow = new Date();
+	var cutoff = new Date(dateNow - (30 * 1000 * 60));
+    var filter = {
+    	serverDateTime: {"$gte": cutoff}
+    };
+    
 	var url = "https://api.mongolab.com/api/1/databases/quantifieddev/collections/event?apiKey=" + mongoAppKey + '&q=' + JSON.stringify(filter) + '&f=' + JSON.stringify(fields);
 	console.log(url);
 	var requestOptions = {
@@ -246,8 +249,6 @@ app.get('/live/devbuild', function(req, res){
 		res.send(dbRes);	
 	});
 });
-
-
 
 var port = process.env.PORT || 5000;
 console.log(port);
