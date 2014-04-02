@@ -220,14 +220,16 @@ app.get('/stream/:id/event', function(req, res){
 	);
 });
 
-app.get('/live/devbuild', function(req, res){
+app.get('/live/devbuild/:durationMins', function(req, res){
 	var fields = {
 		_id: 0,
 		streamid: 0,
 	};
 
+	var durationMins = req.params.durationMins || 1;
+
 	var dateNow = new Date();
-	var cutoff = new Date(dateNow - (2 * 1000 * 60));
+	var cutoff = new Date(dateNow - (durationMins * 1000 * 60));
     var filter = {
     	serverDateTime: {"$gte": cutoff}
     };
