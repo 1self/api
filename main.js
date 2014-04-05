@@ -4,6 +4,7 @@ var express = require("express");
 var url = require('url');
 var crypto = require('crypto');
 var app = express();
+var q = require('q');
 app.use(express.logger());
 app.use(express.bodyParser());
 
@@ -292,13 +293,14 @@ app.post('/test/datagenerator/event/:day/:count', function(req, res) {
         newEvent.dateTime = eachDate;
         req.body = newEvent;
 
-        var collectRes = {
+        var aggregatedResponses = {
             count: 0,
             send: function(data) {
+                var curren
                 console.log("sending partial response back:" + i);
                 console.info(data);
                 responses.push(data);
-                if (i == 0) {
+                if (responses.length == gen.dates.length) {
                     console.log("All data created");
                     console.log(responses);
                     res.send(responses);
@@ -306,17 +308,8 @@ app.post('/test/datagenerator/event/:day/:count', function(req, res) {
             }
         };
 
-
-        var rm = {
-            post: function(options, cb) {
-                console.log("Saving to db");
-                console.info(options);
-                cb(null, req, collectRes);
-            }
-        }
-
         console.log("saving event");
-        saveEvent(newEvent, stream, newEvent.dateTime, collectRes, rm);
+        saveEvent(newEvent, stream, newEvent.dateTime, aggregatedResponses, requestModule);
     }
 
 
@@ -350,6 +343,235 @@ app.post('/test/datagenerator/event/:day/:count', function(req, res) {
     // 		// });
     // 	}
     // );
+});
+
+var authenticateReadToken_p = function(streamDetails) {
+    console.log("Authing");
+    var deferred = q.defer();
+
+    var mongoQuery = {
+        "streamid": streamDetails.streamid
+    };
+    var streamReqUri = 'https://api.mongolab.com/api/1/databases/quantifieddev/collections/stream?apiKey=' + mongoAppKey + '&q=' + JSON.stringify(mongoQuery);
+    console.log(streamReqUri);
+    requestModule(streamReqUri, function(dbSaveError, streamRes, streamBody) {
+        var stream = JSON.parse(streamBody);
+        stream = stream[0];
+        console.log("This is the streambody:");
+        console.log(stream);
+        console.log("Trying to match");
+        console.log(stream.readToken);
+        console.log("against:");
+        console.log(streamDetails);
+        if (stream.readToken != streamDetails.readToken) {
+            console.log("Auth failed!");
+            deferred.reject(new Error("Stream auth failed."));
+        } else {
+            console.log("Deferring auth read token:");
+            console.log(streamDetails);
+            deferred.resolve(streamDetails);
+        }
+    });
+
+    return deferred.promise;
+};
+
+var calculateQuantifiedDev = function(stream) {
+    var deferred = q.defer();
+
+    var filter = {
+        streamid: stream.streamid
+    }
+    var fields = {
+        _id: 0
+    };
+
+    var url = "https://api.mongolab.com/api/1/databases/quantifieddev/collections/event?apiKey=" + mongoAppKey + '&q=' + JSON.stringify(filter) + '&f=' + JSON.stringify(fields);
+    console.log(url);
+    var requestOptions = {
+        headers: {
+            'content-type': 'application/json'
+        },
+        url: url,
+        body: JSON.stringify(req.body)
+    };
+
+    console.log(requestOptions);
+    requestModule(requestOptions, function(error, dbReq, dbRes) {
+        if (error) {
+            deferred.reject(error);
+        } else {
+            var response = {
+                content: dbRes,
+                clientResponse: stream.clientResponse
+            }
+            deferred.resolve(dbRes);
+        }
+    });
+
+    return deferred.promise;
+}
+
+var calculateQuantifiedDev_d = function(stream) {
+    console.log("prepping data");
+
+    var data = [{
+        date: "3/4/2014",
+        failed: "15",
+        passed: "58"
+    }, {
+        date: "3/5/2014",
+        failed: "10",
+        passed: "44"
+    }, {
+        date: "3/6/2014",
+        failed: "9",
+        passed: "50"
+    }, {
+        date: "3/7/2014",
+        failed: "20",
+        passed: "49"
+    }, {
+        date: "3/8/2014",
+        failed: "0",
+        passed: "0"
+    }, {
+        date: "3/9/2014",
+        failed: "0",
+        passed: "0"
+    }, {
+        date: "3/10/2014",
+        failed: "23",
+        passed: "45"
+    }, {
+        date: "3/11/2014",
+        failed: "13",
+        passed: "53"
+    }, {
+        date: "3/12/2014",
+        failed: "18",
+        passed: "60"
+    }, {
+        date: "3/13/2014",
+        failed: "32",
+        passed: "59"
+    }, {
+        date: "3/14/2014",
+        failed: "8",
+        passed: "47"
+    }, {
+        date: "3/15/2014",
+        failed: "0",
+        passed: "0"
+    }, {
+        date: "3/16/2014",
+        failed: "0",
+        passed: "0"
+    }, {
+        date: "3/17/2014",
+        failed: "21",
+        passed: "40"
+    }, {
+        date: "3/18/2014",
+        failed: "26",
+        passed: "5"
+    }, {
+        date: "3/19/2014",
+        failed: "0",
+        passed: "0"
+    }, {
+        date: "3/20/2014",
+        failed: "0",
+        passed: "0"
+    }, {
+        date: "3/21/2014",
+        failed: "13",
+        passed: "10"
+    }, {
+        date: "3/22/2014",
+        failed: "0",
+        passed: "0"
+    }, {
+        date: "3/23/2014",
+        failed: "0",
+        passed: "0"
+    }, {
+        date: "3/24/2014",
+        failed: "7",
+        passed: "49"
+    }, {
+        date: "3/25/2014",
+        failed: "8",
+        passed: "50"
+    }, {
+        date: "3/26/2014",
+        failed: "5",
+        passed: "56"
+    }, {
+        date: "3/27/2014",
+        failed: "11",
+        passed: "59"
+    }, {
+        date: "3/28/2014",
+        failed: "6",
+        passed: "50"
+    }, {
+        date: "3/29/2014",
+        failed: "0",
+        passed: "0"
+    }, {
+        date: "3/30/2014",
+        failed: "0",
+        passed: "0"
+    }, {
+        date: "4/1/2014",
+        failed: "11",
+        passed: "55"
+    }, {
+        date: "4/2/2014",
+        failed: "3",
+        passed: "36"
+    }, {
+        date: "4/3/2014",
+        failed: "21",
+        passed: "48"
+    }, {
+        date: "4/4/2014",
+        failed: "18",
+        passed: "33"
+    }, ]
+
+    return q.fcall(function() {
+        console.log("Returning data");
+        return {
+            content: data
+        };
+    })
+};
+
+app.get('/quantifieddev/mydev/:streamid', function(req, res) {
+    var readToken = req.headers.authorization;
+    var streamid = req.params.streamid;
+
+    var stream = {
+        readToken: readToken,
+        streamid: streamid
+    }
+    authenticateReadToken_p(stream)
+        .then(calculateQuantifiedDev_d)
+        .then(function(response) {
+            console.log("Trying to send back to the client");
+            console.log("Res is:")
+            console.log(response);
+            res.send(response.content)
+            // Do something with value4
+        })
+        .
+    catch (function(error) {
+        // Handle any error from all above steps
+        res.status(404).send("stream not found");
+    })
+
 });
 
 var port = process.env.PORT || 5000;
