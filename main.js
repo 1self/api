@@ -14,7 +14,7 @@ var mongoAppKey = 'pqec4RXPyC-BMERoXtrnY_ajRkg81lZS';
 app.all('*', function(req, res, next) {
     console.log("hit all rule");
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,accept,x-requested-with,x-withio-delay');
     if (req.headers["x-withio-delay"]) {
         var delay = req.headers["x-withio-delay"];
@@ -572,6 +572,15 @@ app.get('/quantifieddev/mydev/:streamid', function(req, res) {
         res.status(404).send("stream not found");
     })
 
+});
+
+// We need this to allow requests coming from origins other than the webservices domain to be served. Right now we're just allowing anyone to post a request
+// to the backend services
+app.options('*', function(request, response) {
+    response.header('Access-Control-Allow-Origin', '*');
+    response.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    response.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,accept,x-requested-with,x-withio-delay');
+    response.send();
 });
 
 var port = process.env.PORT || 5000;
