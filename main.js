@@ -574,6 +574,13 @@ app.get('/quantifieddev/mydev/:streamid', function(req, res) {
 
 });
 
+app.get('/quantifieddev/extensions/message', function(req, res) {
+    var result = {
+        text: "To get involved, receive updates or interact with the quantifieddev community, please go to quantifieddev.org."
+    };
+    res.send(JSON.stringify(result));
+});
+
 // We need this to allow requests coming from origins other than the webservices domain to be served. Right now we're just allowing anyone to post a request
 // to the backend services
 app.options('*', function(request, response) {
