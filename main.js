@@ -8,7 +8,7 @@ var q = require('q');
 app.use(express.logger());
 app.use(express.bodyParser());
 
-var mongoAppKey = 'pqec4RXPyC-BMERoXtrnY_ajRkg81lZS';
+var mongoAppKey = 'GWVHvDw7ZnIR-vSy8kQ_JuIr1JNgV0Xd';
 
 
 app.all('*', function(req, res, next) {
@@ -355,6 +355,7 @@ var authenticateReadToken_p = function(streamDetails) {
     var streamReqUri = 'https://api.mongolab.com/api/1/databases/quantifieddev/collections/stream?apiKey=' + mongoAppKey + '&q=' + JSON.stringify(mongoQuery);
     console.log(streamReqUri);
     requestModule(streamReqUri, function(dbSaveError, streamRes, streamBody) {
+        console.log(streamBody);
         var stream = JSON.parse(streamBody);
         stream = stream[0];
         console.log("This is the streambody:");
@@ -362,7 +363,7 @@ var authenticateReadToken_p = function(streamDetails) {
         console.log("Trying to match");
         console.log(stream.readToken);
         console.log("against:");
-        console.log(streamDetails);
+        console.log(streamDetails.readToken);
         if (stream.readToken != streamDetails.readToken) {
             console.log("Auth failed!");
             deferred.reject(new Error("Stream auth failed."));
@@ -392,20 +393,54 @@ var calculateQuantifiedDev = function(stream) {
         headers: {
             'content-type': 'application/json'
         },
-        url: url,
-        body: JSON.stringify(req.body)
+        url: url
     };
 
     console.log(requestOptions);
+    var aDay = 24 * 60 * 60 * 1000;
     requestModule(requestOptions, function(error, dbReq, dbRes) {
         if (error) {
             deferred.reject(error);
         } else {
-            var response = {
-                content: dbRes,
-                clientResponse: stream.clientResponse
+            var data = {};
+            dbRes = JSON.parse(dbRes);
+            var currentDate = new Date();
+            dbRes.forEach(function(d) {
+                var options = {}
+                var sdt = new Date(d.serverDateTime);
+                var diff = (currentDate.getTime() - sdt.getTime()) / aDay;
+                if (diff > 30) {
+                    return;
+                }
+
+                var dateKey = (sdt.getMonth() + 1) + '/' + sdt.getDate() + '/' + sdt.getFullYear();
+                var buildsOnDay = data[dateKey];
+                if (!buildsOnDay) {
+                    buildsOnDay = {
+                        date: dateKey,
+                        failed: 0,
+                        passed: 0
+                    }
+                }
+
+                if (d.actionTags.indexOf("Build") >= 0 && d.actionTags.indexOf("Finish") >= 0) {
+                    console.log("found build finished")
+                    if (d.properties.Result == "Success") {
+                        buildsOnDay.passed += 1;
+                    } else if (d.properties.Result == "Failure") {
+                        buildsOnDay.failed += 1;
+                    }
+                }
+
+                data[dateKey] = buildsOnDay;
+            })
+
+            var dataArray = [];
+            for (var d in data) {
+                dataArray.push(data[d]);
             }
-            deferred.resolve(dbRes);
+
+            deferred.resolve(dataArray);
         }
     });
 
@@ -558,17 +593,18 @@ app.get('/quantifieddev/mydev/:streamid', function(req, res) {
         streamid: streamid
     }
     authenticateReadToken_p(stream)
-        .then(calculateQuantifiedDev_d)
+        .then(calculateQuantifiedDev)
         .then(function(response) {
             console.log("Trying to send back to the client");
             console.log("Res is:")
             console.log(response);
-            res.send(response.content)
+            res.send(response)
             // Do something with value4
         })
         .
     catch (function(error) {
         // Handle any error from all above steps
+        console.log(error);
         res.status(404).send("stream not found");
     })
 
