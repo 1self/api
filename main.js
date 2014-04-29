@@ -404,9 +404,10 @@ var calculateQuantifiedDev = function(stream) {
         } else {
             var data = {};
             dbRes = JSON.parse(dbRes);
-            console.log(dbRes);
+
             var currentDate = new Date();
             dbRes.forEach(function(d) {
+                console.log(d);
                 var options = {}
                 var sdt = new Date(d.serverDateTime);
                 var diff = (currentDate.getTime() - sdt.getTime()) / aDay;
