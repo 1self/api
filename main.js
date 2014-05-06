@@ -405,25 +405,34 @@ var calculateQuantifiedDev = function(stream) {
             var data = {};
             dbRes = JSON.parse(dbRes);
 
+            console.log("Generating dates");
             var currentDate = new Date();
+            for (var i = 0; i < 30; i++) {
+                var eachDay = currentDate - i * aDay;
+                eachDay = new Date(eachDay);
+                console.log(eachDay);
+                var dateKey = (eachDay.getMonth() + 1) + '/' + eachDay.getDate() + '/' + eachDay.getFullYear();
+                console.log(dateKey);
+                data[dateKey] = {
+                    date: dateKey,
+                    failed: 0,
+                    passed: 0
+                };
+            };
+
             dbRes.forEach(function(d) {
                 console.log(d);
                 var options = {}
                 var sdt = new Date(d.serverDateTime);
                 var diff = (currentDate.getTime() - sdt.getTime()) / aDay;
+                console.log("Diff is");
+                console.log(diff);
                 if (diff > 30) {
                     return;
                 }
 
                 var dateKey = (sdt.getMonth() + 1) + '/' + sdt.getDate() + '/' + sdt.getFullYear();
                 var buildsOnDay = data[dateKey];
-                if (!buildsOnDay) {
-                    buildsOnDay = {
-                        date: dateKey,
-                        failed: 0,
-                        passed: 0
-                    }
-                }
 
                 if (d.actionTags.indexOf("Build") >= 0 && d.actionTags.indexOf("Finish") >= 0) {
                     console.log("found build finished")
@@ -449,143 +458,6 @@ var calculateQuantifiedDev = function(stream) {
     return deferred.promise;
 }
 
-var calculateQuantifiedDev_d = function(stream) {
-    console.log("prepping data");
-
-    var data = [{
-        date: "3/4/2014",
-        failed: "15",
-        passed: "58"
-    }, {
-        date: "3/5/2014",
-        failed: "10",
-        passed: "44"
-    }, {
-        date: "3/6/2014",
-        failed: "9",
-        passed: "50"
-    }, {
-        date: "3/7/2014",
-        failed: "20",
-        passed: "49"
-    }, {
-        date: "3/8/2014",
-        failed: "0",
-        passed: "0"
-    }, {
-        date: "3/9/2014",
-        failed: "0",
-        passed: "0"
-    }, {
-        date: "3/10/2014",
-        failed: "23",
-        passed: "45"
-    }, {
-        date: "3/11/2014",
-        failed: "13",
-        passed: "53"
-    }, {
-        date: "3/12/2014",
-        failed: "18",
-        passed: "60"
-    }, {
-        date: "3/13/2014",
-        failed: "32",
-        passed: "59"
-    }, {
-        date: "3/14/2014",
-        failed: "8",
-        passed: "47"
-    }, {
-        date: "3/15/2014",
-        failed: "0",
-        passed: "0"
-    }, {
-        date: "3/16/2014",
-        failed: "0",
-        passed: "0"
-    }, {
-        date: "3/17/2014",
-        failed: "21",
-        passed: "40"
-    }, {
-        date: "3/18/2014",
-        failed: "26",
-        passed: "5"
-    }, {
-        date: "3/19/2014",
-        failed: "0",
-        passed: "0"
-    }, {
-        date: "3/20/2014",
-        failed: "0",
-        passed: "0"
-    }, {
-        date: "3/21/2014",
-        failed: "13",
-        passed: "10"
-    }, {
-        date: "3/22/2014",
-        failed: "0",
-        passed: "0"
-    }, {
-        date: "3/23/2014",
-        failed: "0",
-        passed: "0"
-    }, {
-        date: "3/24/2014",
-        failed: "7",
-        passed: "49"
-    }, {
-        date: "3/25/2014",
-        failed: "8",
-        passed: "50"
-    }, {
-        date: "3/26/2014",
-        failed: "5",
-        passed: "56"
-    }, {
-        date: "3/27/2014",
-        failed: "11",
-        passed: "59"
-    }, {
-        date: "3/28/2014",
-        failed: "6",
-        passed: "50"
-    }, {
-        date: "3/29/2014",
-        failed: "0",
-        passed: "0"
-    }, {
-        date: "3/30/2014",
-        failed: "0",
-        passed: "0"
-    }, {
-        date: "4/1/2014",
-        failed: "11",
-        passed: "55"
-    }, {
-        date: "4/2/2014",
-        failed: "3",
-        passed: "36"
-    }, {
-        date: "4/3/2014",
-        failed: "21",
-        passed: "48"
-    }, {
-        date: "4/4/2014",
-        failed: "18",
-        passed: "33"
-    }, ]
-
-    return q.fcall(function() {
-        console.log("Returning data");
-        return {
-            content: data
-        };
-    })
-};
-
 app.get('/quantifieddev/mydev/:streamid', function(req, res) {
     var readToken = req.headers.authorization;
     var streamid = req.params.streamid;
@@ -594,6 +466,7 @@ app.get('/quantifieddev/mydev/:streamid', function(req, res) {
         readToken: readToken,
         streamid: streamid
     }
+
     authenticateReadToken_p(stream)
         .then(calculateQuantifiedDev)
         .then(function(response) {
