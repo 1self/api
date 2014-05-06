@@ -8,7 +8,7 @@ var q = require('q');
 app.use(express.logger());
 app.use(express.bodyParser());
 
-var mongoAppKey = 'GWVHvDw7ZnIR-vSy8kQ_JuIr1JNgV0Xd';
+var mongoAppKey = process.env.DBKEY;
 
 
 app.all('*', function(req, res, next) {
