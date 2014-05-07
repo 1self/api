@@ -189,7 +189,7 @@ var saveEvent_driver = function(myEvent, stream, serverDateTime, res, rm) {
     console.log(myEvent);
     myEvent.streamid = stream.streamid;
     myEvent.serverDateTime = serverDateTime;
-    qdDb.collection('stream').insert(myEvent, function(err, doc) {
+    qdDb.collection('event').insert(myEvent, function(err, doc) {
         if (err) {
             res.status(500).send("Database error");
         } else {
