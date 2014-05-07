@@ -430,6 +430,10 @@ var calculateQuantifiedDev = function(stream) {
             };
 
             dbRes.forEach(function(d) {
+                if (!d) {
+                    console.log("Data corruption detected:");
+                    cnosole.log(dbRes);
+                }
                 console.log(d);
                 var options = {}
                 var sdt = new Date(d.serverDateTime);
