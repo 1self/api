@@ -220,9 +220,10 @@ app.post('/upgrade/event', function(req, res) {
 
 
         function(err, events) {
+            var arrayOfEvents = events.toArray();
             console.log(err);
             console.log(events);
-            res.send(events);
+            res.send(arrayOfEvents);
         });
 });
 
