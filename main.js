@@ -235,6 +235,8 @@ app.get('/stream/:id/event', function(req, res) {
 });
 
 app.get('/live/devbuild/:durationMins', function(req, res) {
+    res.send();
+
     var fields = {
         _id: 0,
         streamid: 0,
