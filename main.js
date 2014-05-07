@@ -5,11 +5,20 @@ var url = require('url');
 var crypto = require('crypto');
 var app = express();
 var q = require('q');
+var mongoClient = require('mongodb').MongoClient;
 app.use(express.logger());
 app.use(express.bodyParser());
 
 var mongoAppKey = process.env.DBKEY;
+var mongoUri = process.env.DBURI;
 
+// mongoClient.connect(mongoUri, function(err, db) {
+//     if (err) {
+//         console.log(err);
+//     } else {
+//         console.log('database connected');
+//     }
+// });
 
 app.all('*', function(req, res, next) {
     console.log("hit all rule");
