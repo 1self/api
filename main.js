@@ -12,13 +12,16 @@ app.use(express.bodyParser());
 var mongoAppKey = process.env.DBKEY;
 var mongoUri = process.env.DBURI;
 
-// mongoClient.connect(mongoUri, function(err, db) {
-//     if (err) {
-//         console.log(err);
-//     } else {
-//         console.log('database connected');
-//     }
-// });
+console.log("Connecting to: " + mongoUri);
+var qdDb;
+mongoClient.connect(mongoUri, function(err, db) {
+    if (err) {
+        console.log(err);
+    } else {
+        console.log('database connected');
+        qdDb = db;
+    }
+});
 
 app.all('*', function(req, res, next) {
     console.log("hit all rule");
@@ -181,6 +184,20 @@ var saveEvent = function(myEvent, stream, serverDateTime, res, rm) {
     });
 }
 
+var saveEvent_driver = function(myEvent, stream, serverDateTime, res, rm) {
+    console.log("My Event: ");
+    console.log(myEvent);
+    myEvent.streamid = stream.streamid;
+    myEvent.serverDateTime = serverDateTime;
+    qdDb.collection('stream').insert(myEvent, function(err, doc) {
+        if (err) {
+            res.status(500).send("Database error");
+        } else {
+            res.send(doc);
+        }
+    });
+}
+
 var postEvent = function(req, res) {
     var writeToken = req.headers.authorization;
     authenticateWriteToken(
@@ -190,7 +207,7 @@ var postEvent = function(req, res) {
             res.status(404).send("stream not found");
         },
         function(stream) {
-            saveEvent(req.body, stream, new Date(), res, requestModule);
+            saveEvent_driver(req.body, stream, new Date(), res, requestModule);
         }
     );
 };
