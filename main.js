@@ -221,7 +221,7 @@ app.post('/upgrade/event', function(req, res) {
             var arrayOfEvents = events.toArray(function(err, docs) {
                 console.log("error:\n" + err);
                 console.log("docs:\n" + docs);
-                res.send(arrayOfEvents);
+                res.send(docs);
             });
         }
         )
