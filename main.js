@@ -212,6 +212,18 @@ var postEvent = function(req, res) {
     );
 };
 
+app.post('/upgrade/event', function(req, res) {
+    qdDb.collection('event').find({
+            "serverDateTime": /2014/
+        },
+
+
+        function(err, events) {
+            console.log(err)
+            res.send(events);
+        });
+});
+
 app.post('/stream/:id/event', postEvent);
 
 app.get('/stream/:id/event', function(req, res) {
