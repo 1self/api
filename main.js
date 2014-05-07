@@ -218,7 +218,7 @@ var postEvent = function(req, res) {
 app.post('/upgrade/event', function(req, res) {
 
     var start = new Date() - 32 * aDay;
-    var end = newDate();
+    var end = new Date();
     qdDb.collection('event').find({
             serverDateTime: {
                 $gte: start,
