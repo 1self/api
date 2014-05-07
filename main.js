@@ -217,14 +217,15 @@ app.post('/upgrade/event', function(req, res) {
     qdDb.collection('event').find({
             serverDateTime: /2014/
         },
-
-
         function(err, events) {
-            var arrayOfEvents = events.toArray();
-            console.log(err);
-            console.log(events);
-            res.send(arrayOfEvents);
-        });
+            console
+            var arrayOfEvents = events.toArray(function(err, docs) {
+                console.log(err);
+                console.log(docs);
+                res.send(arrayOfEvents);
+            });
+        }
+    )
 });
 
 app.post('/stream/:id/event', postEvent);
