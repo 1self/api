@@ -219,7 +219,7 @@ app.post('/upgrade/event', function(req, res) {
     qdDb.collection('event').find({
             serverDateTime: {
                 $gte: start,
-                $lte end
+                $lte: end
             }
         },
         function(err, events) {
