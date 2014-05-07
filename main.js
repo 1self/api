@@ -418,7 +418,7 @@ var calculateQuantifiedDev = function(stream) {
 
             console.log("Generating dates");
             var currentDate = new Date();
-            for (var i = 0; i < 30; i++) {
+            for (var i = 0; i < 31; i++) {
                 var eachDay = currentDate - i * aDay;
                 eachDay = new Date(eachDay);
                 console.log(eachDay);
@@ -448,6 +448,10 @@ var calculateQuantifiedDev = function(stream) {
 
                 var dateKey = (sdt.getMonth() + 1) + '/' + sdt.getDate() + '/' + sdt.getFullYear();
                 var buildsOnDay = data[dateKey];
+                console.log("dateKey:");
+                console.log(dateKey);
+                console.log("buildsOnDay")
+                console.log(buildsOnDay);
 
                 if (d.actionTags.indexOf("Build") >= 0 && d.actionTags.indexOf("Finish") >= 0) {
                     console.log("found build finished")
