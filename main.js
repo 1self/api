@@ -9,6 +9,9 @@ var mongoClient = require('mongodb').MongoClient;
 app.use(express.logger());
 app.use(express.bodyParser());
 
+// Constants
+var aDay = 24 * 60 * 60 * 1000;
+
 var mongoAppKey = process.env.DBKEY;
 var mongoUri = process.env.DBURI;
 
@@ -364,33 +367,33 @@ app.post('/test/datagenerator/event/:day/:count', function(req, res) {
 
 
     // authenticateWriteToken(
-    // 	writeToken,
-    // 	req.params.id,
-    // 	function(){
-    // 		res.status(404).send("stream not found");
-    // 	},
-    // 	function(stream){
-    // 		var myEvent = req.body;
-    // 		console.log("My Event: ");
-    // 		console.log(myEvent);
-    // 		myEvent.streamid = stream.streamid;
-    // 		myEvent.serverDateTime = new Date();
-    // 		var requestOptions = {
-    // 			headers: {
-    // 				'content-type': 'application/json'
-    // 			},
-    // 			url: "https://api.mongolab.com/api/1/databases/quantifieddev/collections/event?apiKey=" + mongoAppKey,
-    // 			body: JSON.stringify(req.body)
-    // 		};
+    //  writeToken,
+    //  req.params.id,
+    //  function(){
+    //      res.status(404).send("stream not found");
+    //  },
+    //  function(stream){
+    //      var myEvent = req.body;
+    //      console.log("My Event: ");
+    //      console.log(myEvent);
+    //      myEvent.streamid = stream.streamid;
+    //      myEvent.serverDateTime = new Date();
+    //      var requestOptions = {
+    //          headers: {
+    //              'content-type': 'application/json'
+    //          },
+    //          url: "https://api.mongolab.com/api/1/databases/quantifieddev/collections/event?apiKey=" + mongoAppKey,
+    //          body: JSON.stringify(req.body)
+    //      };
 
-    // 		console.log("Request options");
-    // 		console.log(requestOptions);
-    // 		// requestModule.post(requestOptions, function(error, eventCreateReq, eventCreateRes){
-    // 		// 	console.log(error)
-    // 		// 	console.log(eventCreateRes);
-    // 		// 	res.send();	
-    // 		// });
-    // 	}
+    //      console.log("Request options");
+    //      console.log(requestOptions);
+    //      // requestModule.post(requestOptions, function(error, eventCreateReq, eventCreateRes){
+    //      //  console.log(error)
+    //      //  console.log(eventCreateRes);
+    //      //  res.send(); 
+    //      // });
+    //  }
     // );
 });
 
@@ -446,7 +449,6 @@ var calculateQuantifiedDev = function(stream) {
     };
 
     console.log(requestOptions);
-    var aDay = 24 * 60 * 60 * 1000;
     requestModule(requestOptions, function(error, dbReq, dbRes) {
         if (error) {
             deferred.reject(error);
