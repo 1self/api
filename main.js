@@ -219,7 +219,8 @@ app.post('/upgrade/event', function(req, res) {
 
 
         function(err, events) {
-            console.log(err)
+            console.log(err);
+            console.log(events);
             res.send(events);
         });
 });
