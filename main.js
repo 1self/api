@@ -368,38 +368,6 @@ app.post('/test/datagenerator/event/:day/:count', function(req, res) {
         console.log("saving event");
         saveEvent(newEvent, stream, newEvent.dateTime, aggregatedResponses, requestModule);
     }
-
-
-
-    // authenticateWriteToken(
-    //  writeToken,
-    //  req.params.id,
-    //  function(){
-    //      res.status(404).send("stream not found");
-    //  },
-    //  function(stream){
-    //      var myEvent = req.body;
-    //      console.log("My Event: ");
-    //      console.log(myEvent);
-    //      myEvent.streamid = stream.streamid;
-    //      myEvent.serverDateTime = new Date();
-    //      var requestOptions = {
-    //          headers: {
-    //              'content-type': 'application/json'
-    //          },
-    //          url: "https://api.mongolab.com/api/1/databases/quantifieddev/collections/event?apiKey=" + mongoAppKey,
-    //          body: JSON.stringify(req.body)
-    //      };
-
-    //      console.log("Request options");
-    //      console.log(requestOptions);
-    //      // requestModule.post(requestOptions, function(error, eventCreateReq, eventCreateRes){
-    //      //  console.log(error)
-    //      //  console.log(eventCreateRes);
-    //      //  res.send(); 
-    //      // });
-    //  }
-    // );
 });
 
 var authenticateReadToken_p = function(streamDetails) {
@@ -522,6 +490,104 @@ var calculateQuantifiedDev = function(stream) {
     return deferred.promise;
 }
 
+var generateDates = function() {
+    var result = {};
+
+    console.log("Generating dates");
+    var currentDate = new Date();
+    for (var i = 0; i < 31; i++) {
+        var eachDay = currentDate - i * aDay;
+        eachDay = new Date(eachDay);
+        console.log(eachDay);
+        var dateKey = (eachDay.getMonth() + 1) + '/' + eachDay.getDate() + '/' + eachDay.getFullYear();
+        console.log(dateKey);
+        result[dateKey] = {
+            date: dateKey,
+            failed: 0,
+            passed: 0
+        };
+    };
+
+    return result;
+}
+
+var rollupByDay = function(build, dates) {
+    if (!build) {
+        console.log("Data corruption detected:");
+        cnosole.log(dbRes);
+    }
+    console.log(build);
+    var options = {}
+    var sdt = new Date(build.serverDateTime);
+    var dateKey = (sdt.getMonth() + 1) + '/' + sdt.getDate() + '/' + sdt.getFullYear();
+    var buildsOnDay = dates[dateKey];
+    console.log("dateKey:");
+    console.log(dateKey);
+    console.log("buildsOnDay")
+    console.log(buildsOnDay);
+
+    if (build.actionTags.indexOf("Build") >= 0 && build.actionTags.indexOf("Finish") >= 0) {
+        console.log("found build finished")
+        if (d.properties.Result == "Success") {
+            buildsOnDay.passed += 1;
+        } else if (d.properties.Result == "Failure") {
+            buildsOnDay.failed += 1;
+        }
+    }
+
+    dates[dateKey] = buildsOnDay;
+};
+
+var filterToLastMonth = function(streamId) {
+    var start = new Date(new Date() - 32 * aDay);
+    var end = new Date();
+    return {
+        streamid: streamId,
+        serverDateTime: {
+            $gte: start,
+            $lte: end
+        }
+    };
+}
+
+var rollupToArray = function(rollup) {
+    var result = [];
+    for (var r in rollup) {
+        result.push(rollup[r]);
+    }
+    console.log("rollupToArray:");
+    console.log(result);
+    return result;
+}
+
+var calculateQuantifiedDev_driver = function(stream) {
+    var deferred = q.defer();
+    var noId = {
+        _id: 0
+    };
+
+    console.log(stream);
+    var lastMonth = filterToLastMonth(stream.streamid);
+    console.log(lastMonth);
+    qdDb.collection('event').find(
+        lastMonth,
+        noId,
+        function(err, events) {
+            events.toArray(function(err, rawEvents) {
+                if (err) {
+                    deferred.reject(error);
+                } else {
+                    var buildsByDay = generateDates();
+                    rawEvents.forEach(rollupByDay, buildsByDay);
+                    deferred.resolve(rollupToArray(buildsByDay));
+                }
+            });
+
+        }
+    );
+    return deferred.promise;
+}
+
 app.get('/quantifieddev/mydev/:streamid', function(req, res) {
     var readToken = req.headers.authorization;
     var streamid = req.params.streamid;
@@ -532,7 +598,7 @@ app.get('/quantifieddev/mydev/:streamid', function(req, res) {
     }
 
     authenticateReadToken_p(stream)
-        .then(calculateQuantifiedDev)
+        .then(calculateQuantifiedDev_driver)
         .then(function(response) {
             console.log("Trying to send back to the client");
             console.log("Res is:")
