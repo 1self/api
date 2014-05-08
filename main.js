@@ -56,7 +56,7 @@ app.get('/health', function(request, response) {
     response.send("I'm alive");
 });
 
-app.post('/stream', function(request, response) {
+app.post('/stream', function(req, res) {
 
     // async
     crypto.randomBytes(16, function(ex, buf) {
@@ -79,71 +79,66 @@ app.post('/stream', function(request, response) {
             readToken: readToken
         };
 
-        var requestOptions = {
-            headers: {
-                'content-type': 'application/json'
-            },
-            url: 'https://api.mongolab.com/api/1/databases/quantifieddev/collections/stream?apiKey=' + mongoAppKey,
-            body: JSON.stringify(stream)
-        };
-
-        console.log(requestOptions);
-
-        requestModule.post(requestOptions, function(error, createStreamResponse, createStreamBody) {
-            response.send(createStreamBody);
+        console.log("stream:");
+        console.log(stream);
+        qdDb.collection('stream').insert(stream, function(err, doc) {
+            if (err) {
+                res.status(500).send("Database error");
+            } else {
+                res.send(doc);
+            }
         });
+
     });
+
 
 });
 
 app.get('/stream/:id', function(req, res) {
     var readToken = req.headers.authorization;
-    var mongoQuery = {
-        "streamid": req.params.id
+
+    console.log(req.params.id);
+    var spec = {
+        streamid: req.params.id
     };
-    var streamReqUri = 'https://api.mongolab.com/api/1/databases/quantifieddev/collections/stream?apiKey=' + mongoAppKey + '&q=' + JSON.stringify(mongoQuery);
-    console.log(streamReqUri);
-    requestModule(streamReqUri, function(error, streamRes, streamBody) {
-        console.log(error);
-        var stream = JSON.parse(streamBody);
-        console.log(stream);
-        console.log(stream.readToken);
-        console.log(readToken);
-        if (stream[0].readToken != readToken) {
-            res.status(404).send("stream not found");
-        } else {
-            console.log("Got the stream from repo");
-            console.log(streamBody)
-            var response = {
-                streamid: stream[0].streamid
+
+    console.log(spec);
+    qdDb.collection('stream').find(spec, function(err, docs) {
+        docs.toArray(function(err, streamArray) {
+            var stream = streamArray[0] || {};
+            if (stream.readToken != readToken) {
+                res.status(404).send("stream not found");
+            } else {
+                var response = {
+                    streamid: stream.streamid
+                }
+                console.log(response);
+                res.send(JSON.stringify(response));
             }
-            console.log(response);
-            res.send(JSON.stringify(response));
-        }
+        })
     });
 });
 
 var authenticateToken = function(tokenComparer, id, error, success) {
-    var mongoQuery = {
-        "streamid": id
-    };
-    var streamReqUri = 'https://api.mongolab.com/api/1/databases/quantifieddev/collections/stream?apiKey=' + mongoAppKey + '&q=' + JSON.stringify(mongoQuery);
-    console.log(streamReqUri);
-    requestModule(streamReqUri, function(dbSaveError, streamRes, streamBody) {
-        console.log(error);
-        var stream = JSON.parse(streamBody);
-        console.log(stream);
-        console.log(stream.readToken);
-        if (tokenComparer(stream)) {
-            error();
-        } else {
-            var stream = {
-                streamid: stream[0].streamid
-            }
-            console.log('Calling success');
+    console.log('streamid:' + id);
+    qdDb.collection('stream').find({
+        streamid: id
+    }, function(err, docs) {
+        docs.toArray(function(err, docsArray) {
+            var stream = docsArray[0] || {};
+            console.log("streamVV: ");
             console.log(stream);
-            success(stream);
-        }
+            if (tokenComparer(stream)) {
+                error();
+            } else {
+                var stream = {
+                    streamid: stream.streamid
+                }
+                console.log('Calling success');
+                console.log(stream);
+                success(stream);
+            }
+        })
     });
 };
 
@@ -164,28 +159,6 @@ var authenticateWriteToken = function(token, id, error, success) {
         error,
         success);
 };
-
-var saveEvent = function(myEvent, stream, serverDateTime, res, rm) {
-    console.log("My Event: ");
-    console.log(myEvent);
-    myEvent.streamid = stream.streamid;
-    myEvent.serverDateTime = serverDateTime;
-    var requestOptions = {
-        headers: {
-            'content-type': 'application/json'
-        },
-        url: "https://api.mongolab.com/api/1/databases/quantifieddev/collections/event?apiKey=" + mongoAppKey,
-        body: JSON.stringify(myEvent)
-    };
-
-    console.log("Request options");
-    console.log(requestOptions);
-    rm.post(requestOptions, function(error, eventCreateReq, eventCreateRes) {
-        console.log(error)
-        console.log(eventCreateRes);
-        res.send(eventCreateReq.body);
-    });
-}
 
 var saveEvent_driver = function(myEvent, stream, serverDateTime, res, rm) {
     console.log("My Event: ");
@@ -260,21 +233,15 @@ app.get('/stream/:id/event', function(req, res) {
                 _id: 0
             };
 
-            var url = "https://api.mongolab.com/api/1/databases/quantifieddev/collections/event?apiKey=" + mongoAppKey + '&q=' + JSON.stringify(filter) + '&f=' + JSON.stringify(fields);
-            console.log(url);
-            var requestOptions = {
-                headers: {
-                    'content-type': 'application/json'
-                },
-                url: url,
-                body: JSON.stringify(req.body)
-            };
+            console.log('looking for events');
+            console.log(filter);
+            console.log(fields);
 
-            console.log(requestOptions);
-            requestModule(requestOptions, function(error, dbReq, dbRes) {
-                console.log(error)
-                console.log(dbRes);
-                res.send(dbRes);
+            qdDb.collection('event').find(filter, fields, function(err, docs) {
+                docs.toArray(function(err, docsArray) {
+                    console.log(docsArray);
+                    res.send(docsArray);
+                })
             });
         }
     );
@@ -377,126 +344,48 @@ var authenticateReadToken_p = function(streamDetails) {
     var mongoQuery = {
         "streamid": streamDetails.streamid
     };
-    var streamReqUri = 'https://api.mongolab.com/api/1/databases/quantifieddev/collections/stream?apiKey=' + mongoAppKey + '&q=' + JSON.stringify(mongoQuery);
-    console.log(streamReqUri);
-    requestModule(streamReqUri, function(dbSaveError, streamRes, streamBody) {
-        console.log(streamBody);
-        var stream = JSON.parse(streamBody);
-        stream = stream[0];
-        console.log("This is the streambody:");
-        console.log(stream);
-        console.log("Trying to match");
-        console.log(stream.readToken);
-        console.log("against:");
-        console.log(streamDetails.readToken);
-        if (stream.readToken != streamDetails.readToken) {
-            console.log("Auth failed!");
-            deferred.reject(new Error("Stream auth failed."));
-        } else {
-            console.log("Deferring auth read token:");
-            console.log(streamDetails);
-            deferred.resolve(streamDetails);
-        }
+
+    console.log(streamDetails);
+    var spec = {
+        streamid: 'MIJKCWBKCDYIGGXO'
+    }
+
+
+    console.log(spec);
+    qdDb.collection('stream').find(spec, function(err, docs) {
+        docs.toArray(function(err, docsArray) {
+            if (err) {
+                deferred.reject(new Error("Database error"));
+            } else {
+                var stream = docsArray[0] || {};
+                console.log(stream.readToken);
+                if (stream.readToken != streamDetails.readToken) {
+                    console.log("Auth failed!");
+                    deferred.reject(new Error("Stream auth failed."));
+                } else {
+                    console.log("Deferring auth read token:");
+                    console.log(streamDetails);
+                    deferred.resolve(streamDetails);
+                }
+            }
+        })
     });
 
     return deferred.promise;
 };
-
-var calculateQuantifiedDev = function(stream) {
-    var deferred = q.defer();
-
-    var filter = {
-        streamid: stream.streamid
-    }
-    var fields = {
-        _id: 0
-    };
-
-    var url = "https://api.mongolab.com/api/1/databases/quantifieddev/collections/event?apiKey=" + mongoAppKey + '&q=' + JSON.stringify(filter) + '&f=' + JSON.stringify(fields);
-    console.log(url);
-    var requestOptions = {
-        headers: {
-            'content-type': 'application/json'
-        },
-        url: url
-    };
-
-    console.log(requestOptions);
-    requestModule(requestOptions, function(error, dbReq, dbRes) {
-        if (error) {
-            deferred.reject(error);
-        } else {
-            var data = {};
-            dbRes = JSON.parse(dbRes);
-
-            console.log("Generating dates");
-            var currentDate = new Date();
-            for (var i = 0; i < 31; i++) {
-                var eachDay = currentDate - i * aDay;
-                eachDay = new Date(eachDay);
-                console.log(eachDay);
-                var dateKey = (eachDay.getMonth() + 1) + '/' + eachDay.getDate() + '/' + eachDay.getFullYear();
-                console.log(dateKey);
-                data[dateKey] = {
-                    date: dateKey,
-                    failed: 0,
-                    passed: 0
-                };
-            };
-
-            dbRes.forEach(function(d) {
-                if (!d) {
-                    console.log("Data corruption detected:");
-                    cnosole.log(dbRes);
-                }
-                console.log(d);
-                var options = {}
-                var sdt = new Date(d.serverDateTime);
-                var diff = (currentDate.getTime() - sdt.getTime()) / aDay;
-                console.log("Diff is");
-                console.log(diff);
-                if (diff > 30) {
-                    return;
-                }
-
-                var dateKey = (sdt.getMonth() + 1) + '/' + sdt.getDate() + '/' + sdt.getFullYear();
-                var buildsOnDay = data[dateKey];
-                console.log("dateKey:");
-                console.log(dateKey);
-                console.log("buildsOnDay")
-                console.log(buildsOnDay);
-
-                if (d.actionTags.indexOf("Build") >= 0 && d.actionTags.indexOf("Finish") >= 0) {
-                    console.log("found build finished")
-                    if (d.properties.Result == "Success") {
-                        buildsOnDay.passed += 1;
-                    } else if (d.properties.Result == "Failure") {
-                        buildsOnDay.failed += 1;
-                    }
-                }
-
-                data[dateKey] = buildsOnDay;
-            })
-
-            var dataArray = [];
-            for (var d in data) {
-                dataArray.push(data[d]);
-            }
-
-            deferred.resolve(dataArray);
-        }
-    });
-
-    return deferred.promise;
-}
 
 var generateDates = function() {
     var result = {};
 
     console.log("Generating dates");
     var currentDate = new Date();
+    var startDate = new Date(currentDate - (30 * aDay));
     for (var i = 0; i < 31; i++) {
-        var eachDay = currentDate - i * aDay;
+        console.log(i);
+        console.log('startdate: ' + startDate);
+        console.log(i * aDay);
+        var eachDay = startDate - 0 + (i * aDay);
+        console.log("ed: " + eachDay)
         eachDay = new Date(eachDay);
         console.log(eachDay);
         var dateKey = (eachDay.getMonth() + 1) + '/' + eachDay.getDate() + '/' + eachDay.getFullYear();
@@ -508,6 +397,8 @@ var generateDates = function() {
         };
     };
 
+    console.log('generate dates done:');
+    console.log(result);
     return result;
 }
 
@@ -525,12 +416,13 @@ var rollupByDay = function(build, dates) {
     console.log(dateKey);
     console.log("buildsOnDay")
     console.log(buildsOnDay);
+    console.log(dates);
 
     if (build.actionTags.indexOf("Build") >= 0 && build.actionTags.indexOf("Finish") >= 0) {
         console.log("found build finished")
-        if (d.properties.Result == "Success") {
+        if (build.properties.Result == "Success") {
             buildsOnDay.passed += 1;
-        } else if (d.properties.Result == "Failure") {
+        } else if (build.properties.Result == "Failure") {
             buildsOnDay.failed += 1;
         }
     }
@@ -578,7 +470,11 @@ var calculateQuantifiedDev_driver = function(stream) {
                     deferred.reject(error);
                 } else {
                     var buildsByDay = generateDates();
-                    rawEvents.forEach(rollupByDay, buildsByDay);
+                    console.log("raw events: ");
+                    console.log(rawEvents);
+                    rawEvents.forEach(function(build) {
+                        rollupByDay(build, buildsByDay)
+                    });
                     deferred.resolve(rollupToArray(buildsByDay));
                 }
             });
