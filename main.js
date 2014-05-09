@@ -345,9 +345,9 @@ var authenticateReadToken_p = function(streamDetails) {
         "streamid": streamDetails.streamid
     };
 
-    console.log(streamDetails);
+    console.log("streamdetails: " + streamDetails);
     var spec = {
-        streamid: 'MIJKCWBKCDYIGGXO'
+        streamid: streamDetails.streamid
     }
 
 
