@@ -56,6 +56,10 @@ app.get('/health', function(request, response) {
     response.send("I'm alive");
 });
 
+app.get('/demo', function(request, response) {
+    response.send("This is a demo");
+});
+
 app.post('/stream', function(req, res) {
 
     // async
@@ -283,59 +287,134 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
     });
 });
 
+
+/* Pass this into data genreator api
+{
+  "stream": {"streamid": "YUWBBEPCPGWIDRBK"},
+  "template": {
+    "dateTime": "2014-04-28T15:28:36.1788806Z",
+    "location": {
+      "lat": 52,
+      "long": 0
+    },
+    "actionTags": [
+      "Build",
+      "Finish"
+    ],
+    "objectTags": [
+      "Computer",
+      "Software"
+    ],
+    "properties": {
+      "Language": "IronPython",
+      "Environment": "VisualStudio2012",
+      "Result": "Failure"
+    },
+    "streamid": "YUWBBEPCPGWIDRBK"
+  }
+}
+*/
+
+
 app.post('/test/datagenerator/event/:day/:count', function(req, res) {
     var writeToken = req.headers.authorization;
     var stream = req.body.stream;
     var template = req.body.template;
 
     var gen = {
-        day: req.params.day,
-        count: req.params.count,
+        day: parseInt(req.params.day),
+        count: parseInt(req.params.count),
         dates: []
     };
 
     console.log(gen);
 
-    for (var i = gen.count - 1; i >= 0; i--) {
-        var randomTimeInDay = new Date(Date.parse(gen.day));
-        var randomHour = 8 + (Math.random() * 13); // simulate coding between 8 and 9
-        var randomMinute = Math.random() * 59;
-        randomTimeInDay.setHours(randomHour);
-        randomTimeInDay.setMinutes(randomMinute);
+    var generateEventsOnDay = function(day, count) {
+        var result = [];
+        for (var i = count - 1; i >= 0; i--) {
+            var randomTimeInDay = new Date(Date.parse(day));
+            var randomHour = 8 + (Math.random() * 9); // simulate coding between 8 and 13
+            var randomMinute = Math.random() * 59;
+            randomTimeInDay.setHours(randomHour);
+            randomTimeInDay.setMinutes(randomMinute);
 
-        console.log(JSON.stringify(randomTimeInDay));
-        gen.dates.push(randomTimeInDay);
-    };
-
-    console.log(gen);
-
-    var responses = [];
-    for (var i = gen.dates.length - 1; i >= 0; i--) {
-        var eachDate = gen.dates[i];
-        var newEvent = JSON.parse(JSON.stringify(template));
-        newEvent.serverDateTime = eachDate;
-        newEvent.dateTime = eachDate;
-        req.body = newEvent;
-
-        var aggregatedResponses = {
-            count: 0,
-            send: function(data) {
-                var curren
-                console.log("sending partial response back:" + i);
-                console.info(data);
-                responses.push(data);
-                if (responses.length == gen.dates.length) {
-                    console.log("All data created");
-                    console.log(responses);
-                    res.send(responses);
-                }
-            }
+            console.log(JSON.stringify(randomTimeInDay));
+            result.push(randomTimeInDay);
         };
 
-        console.log("saving event");
-        saveEvent(newEvent, stream, newEvent.dateTime, aggregatedResponses, requestModule);
+        return result;
     }
+
+    var responses = [];
+    var startDate = new Date(new Date() - (gen.day * aDay));
+    currentDate = startDate;
+    console.log("startDate: " + startDate);
+    console.log("currentDate: " + currentDate);
+
+    var eventsToAdd = [];
+    for (var i = 0; i < gen.day; i++) {
+        times = generateEventsOnDay(currentDate, Math.random() * gen.count);
+        for (j = 0; j < times.length; j++) {
+            var newEvent = JSON.parse(JSON.stringify(template));
+            newEvent.serverDateTime = times[j];
+            newEvent.dateTime = times[j];
+            eventsToAdd.push(newEvent);
+        }
+        currentDate = new Date(currentDate - 0 + aDay);
+        console.log("CurrentDate: " + currentDate);
+    }
+
+    console.log(eventsToAdd);
+
+    var responses
+    var aggregatedResponses = {
+        count: 0,
+        send: function(data) {
+            responses.push(data);
+            console.log(responses.length);
+            console.log(eventsToAdd.length);
+            if (responses.length == eventsToAdd.length) {
+                console.log("All data created");
+                console.log(responses);
+                res.send(responses);
+            }
+        }
+    };
+
+    eventsToAdd.forEach(function(d, i) {
+        console.log(d);
+        saveEvent_driver(d, stream, d.dateTime, aggregatedResponses, requestModule);
+    });
 });
+
+
+
+// var responses = [];
+// for (var i = gen.dates.length - 1; i >= 0; i--) {
+//     var eachDate = gen.dates[i];
+//     var newEvent = JSON.parse(JSON.stringify(template));
+//     newEvent.serverDateTime = eachDate;
+//     newEvent.dateTime = eachDate;
+//     req.body = newEvent;
+
+//     var aggregatedResponses = {
+//         count: 0,
+//         send: function(data) {
+//             var curren
+//             console.log("sending partial response back:" + i);
+//             console.info(data);
+//             responses.push(data);
+//             if (responses.length == gen.dates.length) {
+//                 console.log("All data created");
+//                 console.log(responses);
+//                 res.send(responses);
+//             }
+//         }
+//     };
+
+//     console.log("saving event");
+//     saveEvent(newEvent, stream, newEvent.dateTime, aggregatedResponses, requestModule);
+// }
 
 var authenticateReadToken_p = function(streamDetails) {
     console.log("Authing");
