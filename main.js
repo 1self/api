@@ -352,7 +352,7 @@ app.post('/test/datagenerator/event/:day/:count', function(req, res) {
     console.log("currentDate: " + currentDate);
 
     var eventsToAdd = [];
-    for (var i = 0; i < gen.day; i++) {
+    for (var i = 0; i <= gen.day; i++) {
         times = generateEventsOnDay(currentDate, Math.random() * gen.count);
         for (j = 0; j < times.length; j++) {
             var newEvent = JSON.parse(JSON.stringify(template));
