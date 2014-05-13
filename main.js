@@ -254,6 +254,7 @@ app.get('/stream/:id/event', function(req, res) {
 });
 
 app.get('/live/devbuild/:durationMins', function(req, res) {
+    console.log("live dev build called");
     var fields = {
         _id: 0,
         streamid: 0,
@@ -268,6 +269,8 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
             "$gte": cutoff
         }
     };
+
+    console.log("talking to database");
 
     var url = "https://api.mongolab.com/api/1/databases/quantifieddev/collections/event?apiKey=" + mongoAppKey + '&q=' + JSON.stringify(filter) + '&f=' + JSON.stringify(fields);
     console.log(url);
