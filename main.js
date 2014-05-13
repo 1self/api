@@ -518,10 +518,12 @@ var rollupByDay = function(build, dates) {
 var filterToLastMonth = function(streamId) {
     var start = new Date(new Date() - numberOfDaysToReportBuildsOn * aDay);
     var end = new Date();
+    console.log("filter start: " + start);
+    console.log("filter end: " + end);
     return {
         streamid: streamId,
         serverDateTime: {
-            $gte: start,
+            $gt: start,
             $lte: end
         }
     };
