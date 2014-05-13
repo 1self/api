@@ -60,6 +60,7 @@ app.get('/demo', function(request, response) {
     response.send("This is a demo");
 });
 
+//create stream
 app.post('/stream', function(req, res) {
 
     // async
