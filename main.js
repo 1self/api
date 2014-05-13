@@ -457,7 +457,7 @@ var authenticateReadToken_p = function(streamDetails) {
     return deferred.promise;
 };
 
-var numberOfDaysToReportBuildsOn = 31;
+var numberOfDaysToReportBuildsOn = 30;
 
 var generateDates = function() {
     var result = {};
@@ -465,7 +465,7 @@ var generateDates = function() {
     console.log("Generating dates");
     var currentDate = new Date();
     var startDate = new Date(currentDate - (30 * aDay));
-    for (var i = 0; i < numberOfDaysToReportBuildsOn; i++) {
+    for (var i = 0; i <= numberOfDaysToReportBuildsOn; i++) {
         console.log(i);
         console.log('startdate: ' + startDate);
         console.log(i * aDay);
