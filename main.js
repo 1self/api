@@ -457,13 +457,15 @@ var authenticateReadToken_p = function(streamDetails) {
     return deferred.promise;
 };
 
+var numberOfDaysToReportBuildsOn = 31;
+
 var generateDates = function() {
     var result = {};
 
     console.log("Generating dates");
     var currentDate = new Date();
     var startDate = new Date(currentDate - (30 * aDay));
-    for (var i = 0; i < 31; i++) {
+    for (var i = 0; i < numberOfDaysToReportBuildsOn; i++) {
         console.log(i);
         console.log('startdate: ' + startDate);
         console.log(i * aDay);
@@ -514,7 +516,7 @@ var rollupByDay = function(build, dates) {
 };
 
 var filterToLastMonth = function(streamId) {
-    var start = new Date(new Date() - 32 * aDay);
+    var start = new Date(new Date() - numberOfDaysToReportBuildsOn * aDay);
     var end = new Date();
     return {
         streamid: streamId,
