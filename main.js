@@ -85,11 +85,12 @@ app.post('/stream', function(req, res) {
 
         console.log("stream:");
         console.log(stream);
-        qdDb.collection('stream').insert(stream, function(err, doc) {
+        qdDb.collection('stream').insert(stream, function(err, insertedRecords) {
             if (err) {
                 res.status(500).send("Database error");
             } else {
-                res.send(doc);
+                console.log("Inserted stream is : " + JSON.stringify(insertedRecords));
+                res.send(insertedRecords[0]);
             }
         });
 
