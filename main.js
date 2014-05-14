@@ -254,7 +254,7 @@ app.get('/stream/:id/event', function(req, res) {
 });
 
 app.get('/live/devbuild/:durationMins', function(req, res) {
-    console.log("live dev build called");
+    console.log("finding live builds");
     var fields = {
         _id: 0,
         streamid: 0,
@@ -270,24 +270,13 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
         }
     };
 
-    console.log("talking to database");
+    console.log("filter query : " + JSON.stringify(filter));
 
-    var url = "https://api.mongolab.com/api/1/databases/quantifieddev/collections/event?apiKey=" + mongoAppKey + '&q=' + JSON.stringify(filter) + '&f=' + JSON.stringify(fields);
-    console.log(url);
-    var requestOptions = {
-        headers: {
-            'content-type': 'application/json'
-        },
-        url: url,
-        body: JSON.stringify(req.body)
-    };
-
-    console.log(requestOptions);
-    requestModule(requestOptions, function(error, dbReq, dbRes) {
-        console.log("Sending response");
-        console.log(error)
-        console.log(dbRes);
-        res.send(dbRes);
+    qdDb.collection('event').find(filter, fields, function(err, docs) {
+        docs.toArray(function(err, docsArray) {
+            console.log(docsArray);
+            res.send(docsArray);
+        })
     });
 });
 
@@ -590,7 +579,7 @@ app.get('/quantifieddev/mydev/:streamid', function(req, res) {
             // Do something with value4
         })
         .
-    catch (function(error) {
+    catch(function(error) {
         // Handle any error from all above steps
         console.log(error);
         res.status(404).send("stream not found");
