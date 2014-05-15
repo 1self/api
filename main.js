@@ -290,8 +290,9 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
     console.log("filter query : " + JSON.stringify(filter));
 
     qdDb.collection('event').find(filter, fields, function(err, docs) {
-        console.log("error during live/durationMins : " + err);
+        console.log("error : " + err + " docs : " + docs);
         docs.toArray(function(err, docsArray) {
+            console.log("error : " + err + " docsArray : " + docsArray);
             console.log("live devbuild received: " + JSON.stringify(docsArray));
             res.send(docsArray);
         })
