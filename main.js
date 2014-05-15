@@ -265,7 +265,7 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
     var dateNow = new Date();
     var cutoff = new Date(dateNow - (durationMins * 1000 * 60));
 
-    console.log("req.get('host') : " + req.get('host'));
+    /*console.log("req.get('host') : " + req.get('host'));
     var isLocalhost = function(){
         return req.get('host') === "localhost:5000"
     }
@@ -284,9 +284,15 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
             }
         };
     }
+*/
 
+    var filter = {
+        "serverDateTime": {
+            "$gte": cutoff
+        }
+    };
     console.log("cutoff : " + cutoff);
-    
+
     console.log("filter query : " + JSON.stringify(filter));
 
     qdDb.collection('event').find(filter, fields, function(err, docs) {
