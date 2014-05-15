@@ -21,8 +21,8 @@ mongoClient.connect(mongoUri, function(err, db) {
     if (err) {
         console.log(err);
     } else {
-        console.log('database connected');
         qdDb = db;
+        console.log('database connected : ' + qdDb);
     }
 });
 
@@ -284,10 +284,13 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
             }
         };
     }
+
+    console.log("cutoff : " + cutoff);
     
     console.log("filter query : " + JSON.stringify(filter));
 
     qdDb.collection('event').find(filter, fields, function(err, docs) {
+        console.log("error during live/durationMins : " + err);
         docs.toArray(function(err, docsArray) {
             console.log("live devbuild received: " + JSON.stringify(docsArray));
             res.send(docsArray);
