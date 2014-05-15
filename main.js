@@ -271,13 +271,13 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
     }
     if (isLocalhost()) { // mongolabs requires different query format for querying date fields.  
         var filter = {
-            serverDateTime: {
+            "serverDateTime": {
                 "$gte": cutoff
             }
         };
     } else {
         var filter = {
-            serverDateTime: {
+            "serverDateTime": {
                 "$gte": {
                     "$date": cutoff
                 }
