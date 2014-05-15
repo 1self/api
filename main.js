@@ -264,17 +264,32 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
 
     var dateNow = new Date();
     var cutoff = new Date(dateNow - (durationMins * 1000 * 60));
-    var filter = {
-        serverDateTime: {
-            "$gte": cutoff
-        }
-    };
 
+    console.log("req.get('host') : " + req.get('host'));
+    var isLocalhost = function(){
+        return req.get('host') === "localhost:5000"
+    }
+    if (isLocalhost()) { // mongolabs requires different query format for querying date fields.  
+        var filter = {
+            serverDateTime: {
+                "$gte": cutoff
+            }
+        };
+    } else {
+        var filter = {
+            serverDateTime: {
+                "$gte": {
+                    "$date": cutoff
+                }
+            }
+        };
+    }
+    
     console.log("filter query : " + JSON.stringify(filter));
 
     qdDb.collection('event').find(filter, fields, function(err, docs) {
         docs.toArray(function(err, docsArray) {
-            console.log(docsArray);
+            console.log("live devbuild received: " + JSON.stringify(docsArray));
             res.send(docsArray);
         })
     });
@@ -579,7 +594,7 @@ app.get('/quantifieddev/mydev/:streamid', function(req, res) {
             // Do something with value4
         })
         .
-    catch(function(error) {
+    catch (function(error) {
         // Handle any error from all above steps
         console.log(error);
         res.status(404).send("stream not found");
