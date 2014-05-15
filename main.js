@@ -261,44 +261,18 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
     };
 
     var durationMins = req.params.durationMins || 1;
-
     var dateNow = new Date();
     var cutoff = new Date(dateNow - (durationMins * 1000 * 60));
-
-    /*console.log("req.get('host') : " + req.get('host'));
-    var isLocalhost = function(){
-        return req.get('host') === "localhost:5000"
-    }
-    if (isLocalhost()) { // mongolabs requires different query format for querying date fields.  
-        var filter = {
-            "serverDateTime": {
-                "$gte": cutoff
-            }
-        };
-    } else {
-        var filter = {
-            "serverDateTime": {
-                "$gte": {
-                    "$date": cutoff
-                }
-            }
-        };
-    }
-*/
 
     var filter = {
         "serverDateTime": {
             "$gte": cutoff
         }
     };
-    console.log("cutoff : " + cutoff);
-
     console.log("filter query : " + JSON.stringify(filter));
 
     qdDb.collection('event').find(filter, fields, function(err, docs) {
-        console.log("error : " + err + " docs : " + docs);
         docs.toArray(function(err, docsArray) {
-            console.log("error : " + err + " docsArray : " + docsArray);
             console.log("live devbuild received: " + JSON.stringify(docsArray));
             res.send(docsArray);
         })
