@@ -286,35 +286,6 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
     });
 });
 
-
-/* Pass this into data genreator api
-{
-  "stream": {"streamid": "YUWBBEPCPGWIDRBK"},
-  "template": {
-    "dateTime": "2014-04-28T15:28:36.1788806Z",
-    "location": {
-      "lat": 52,
-      "long": 0
-    },
-    "actionTags": [
-      "Build",
-      "Finish"
-    ],
-    "objectTags": [
-      "Computer",
-      "Software"
-    ],
-    "properties": {
-      "Language": "IronPython",
-      "Environment": "VisualStudio2012",
-      "Result": "Failure"
-    },
-    "streamid": "YUWBBEPCPGWIDRBK"
-  }
-}
-*/
-
-
 app.post('/test/datagenerator/event/:day/:count', function(req, res) {
     var writeToken = req.headers.authorization;
     var stream = req.body.stream;
@@ -385,35 +356,6 @@ app.post('/test/datagenerator/event/:day/:count', function(req, res) {
         saveEvent_driver(d, stream, d.dateTime, aggregatedResponses, requestModule);
     });
 });
-
-
-
-// var responses = [];
-// for (var i = gen.dates.length - 1; i >= 0; i--) {
-//     var eachDate = gen.dates[i];
-//     var newEvent = JSON.parse(JSON.stringify(template));
-//     newEvent.serverDateTime = eachDate;
-//     newEvent.dateTime = eachDate;
-//     req.body = newEvent;
-
-//     var aggregatedResponses = {
-//         count: 0,
-//         send: function(data) {
-//             var curren
-//             console.log("sending partial response back:" + i);
-//             console.info(data);
-//             responses.push(data);
-//             if (responses.length == gen.dates.length) {
-//                 console.log("All data created");
-//                 console.log(responses);
-//                 res.send(responses);
-//             }
-//         }
-//     };
-
-//     console.log("saving event");
-//     saveEvent(newEvent, stream, newEvent.dateTime, aggregatedResponses, requestModule);
-// }
 
 var authenticateReadToken_p = function(streamDetails) {
     console.log("Authing");
