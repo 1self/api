@@ -14,6 +14,7 @@ var aDay = 24 * 60 * 60 * 1000;
 
 var mongoAppKey = process.env.DBKEY;
 var mongoUri = process.env.DBURI;
+var platformUri = process.env.PLATFORM_BASE_URI;
 
 console.log("Connecting to: " + mongoUri);
 var qdDb;
@@ -122,12 +123,13 @@ app.get('/stream/:id', function(req, res) {
                 res.send(JSON.stringify(response));
             }
         })
-    }); 
+    });
 });
+
 app.get('/:ip', function(req, res) {
-    requestModule('http://freegeoip.net/json/' + req.params.ip , function(error, response, body) {
+    requestModule('http://freegeoip.net/json/' + req.params.ip, function(error, response, body) {
         if (!error && response.statusCode == 200) {
-             res.send(body)
+            res.send(body)
         }
     })
 });
@@ -178,13 +180,18 @@ var saveEvent_driver = function(myEvent, stream, serverDateTime, res, rm) {
     console.log(myEvent);
     myEvent.streamid = stream.streamid;
     myEvent.serverDateTime = serverDateTime;
-    qdDb.collection('event').insert(myEvent, function(err, doc) {
-        if (err) {
-            res.status(500).send("Database error");
-        } else {
-            res.send(doc);
-        }
-    });
+    requestModule.post(platformUri + '/rest/events/', {
+            json: {
+                'payload': myEvent
+            }
+        },
+        function(error, response, body) {
+            if (!error && response.statusCode == 200) {
+                res.send(body)
+            } else {
+                res.status(500).send("Database error");
+            }
+        })
 }
 
 var postEvent = function(req, res) {
@@ -200,7 +207,7 @@ var postEvent = function(req, res) {
         }
     );
 };
-
+// No usages in client
 app.post('/upgrade/event', function(req, res) {
 
     var start = new Date(new Date() - 32 * aDay);
@@ -225,9 +232,9 @@ app.post('/upgrade/event', function(req, res) {
         }
     )
 });
-
+// Migrate
 app.post('/stream/:id/event', postEvent);
-
+//Migrate
 app.get('/stream/:id/event', function(req, res) {
     var readToken = req.headers.authorization;
     var streamid = req.params.id;
@@ -259,7 +266,7 @@ app.get('/stream/:id/event', function(req, res) {
         }
     );
 });
-
+//Migrate
 app.get('/live/devbuild/:durationMins', function(req, res) {
     console.log("finding live builds");
     var fields = {
@@ -477,37 +484,37 @@ var rollupToArray = function(rollup) {
 }
 
 var calculateQuantifiedDev_driver = function(stream) {
-    var deferred = q.defer();
-    var noId = {
-        _id: 0
-    };
+        var deferred = q.defer();
+        var noId = {
+            _id: 0
+        };
 
-    console.log(stream);
-    var lastMonth = filterToLastMonth(stream.streamid);
-    console.log(lastMonth);
-    qdDb.collection('event').find(
-        lastMonth,
-        noId,
-        function(err, events) {
-            events.toArray(function(err, rawEvents) {
-                if (err) {
-                    deferred.reject(error);
-                } else {
-                    var buildsByDay = generateDates();
-                    console.log("raw events: ");
-                    console.log(rawEvents);
-                    rawEvents.forEach(function(build) {
-                        rollupByDay(build, buildsByDay)
-                    });
-                    deferred.resolve(rollupToArray(buildsByDay));
-                }
-            });
+        console.log(stream);
+        var lastMonth = filterToLastMonth(stream.streamid);
+        console.log(lastMonth);
+        qdDb.collection('event').find(
+            lastMonth,
+            noId,
+            function(err, events) {
+                events.toArray(function(err, rawEvents) {
+                    if (err) {
+                        deferred.reject(error);
+                    } else {
+                        var buildsByDay = generateDates();
+                        console.log("raw events: ");
+                        console.log(rawEvents);
+                        rawEvents.forEach(function(build) {
+                            rollupByDay(build, buildsByDay)
+                        });
+                        deferred.resolve(rollupToArray(buildsByDay));
+                    }
+                });
 
-        }
-    );
-    return deferred.promise;
-}
-
+            }
+        );
+        return deferred.promise;
+    }
+    //Migrate 
 app.get('/quantifieddev/mydev/:streamid', function(req, res) {
     var readToken = req.headers.authorization;
     var streamid = req.params.streamid;
