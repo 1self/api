@@ -122,7 +122,14 @@ app.get('/stream/:id', function(req, res) {
                 res.send(JSON.stringify(response));
             }
         })
-    });
+    }); 
+});
+app.get('/:ip', function(req, res) {
+    requestModule('http://freegeoip.net/json/' + req.params.ip , function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+             res.send(body)
+        }
+    })
 });
 
 var authenticateToken = function(tokenComparer, id, error, success) {
@@ -578,7 +585,7 @@ app.get('/quantifieddev/mydev/:streamid', function(req, res) {
             // Do something with value4
         })
         .
-    catch (function(error) {
+    catch(function(error) {
         // Handle any error from all above steps
         console.log(error);
         res.status(404).send("stream not found");
