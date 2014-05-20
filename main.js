@@ -245,24 +245,35 @@ app.get('/stream/:id/event', function(req, res) {
             res.status(404).send("stream not found");
         },
         function(stream) {
-            var filter = {
-                streamid: streamid
-            };
 
             var fields = {
                 _id: 0
             };
+          
+            var filterSpec = {
+                'payload.streamid': streamid
+            }
+            var options = {
+                url: platformUri + '/rest/events/filter',
+                qs: {
+                    'filterSpec': JSON.stringify(filterSpec)
+                },
+                method: 'GET'
+            };
 
-            console.log('looking for events');
-            console.log(filter);
-            console.log(fields);
+            function callback(error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    var info = JSON.parse(body);
+                    console.log("Yayyyyyyy! Success");
+                    res.send(info)
+                } else {
+                    console.log("Aww Failure")
+                    res.status(500).send("Something went wrong!");
+                }
+            }
+            console.log("options are :: ", options);
+            requestModule(options, callback);
 
-            qdDb.collection('event').find(filter, fields, function(err, docs) {
-                docs.toArray(function(err, docsArray) {
-                    console.log(docsArray);
-                    res.send(docsArray);
-                })
-            });
         }
     );
 });
@@ -278,19 +289,33 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
     var dateNow = new Date();
     var cutoff = new Date(dateNow - (durationMins * 1000 * 60));
 
-    var filter = {
-        "serverDateTime": {
+    var filterSpec = {
+        "payload.serverDateTime": {
             "$gte": cutoff
         }
     };
-    console.log("filter query : " + JSON.stringify(filter));
+    
+    var options = {
+        url: platformUri + '/rest/events/filter',
+        qs: {
+            'filterSpec': JSON.stringify(filterSpec)
+        },
+        method: 'GET'
+    };
 
-    qdDb.collection('event').find(filter, fields, function(err, docs) {
-        docs.toArray(function(err, docsArray) {
-            console.log("live devbuild received: " + JSON.stringify(docsArray));
-            res.send(docsArray);
-        })
-    });
+    function callback(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var info = JSON.parse(body);
+            console.log("Yayyyyyyy! Success");
+            res.send(info)
+        } else {
+            console.log("Aww Failure")
+            res.status(500).send("Something went wrong!");
+        }
+    }
+    console.log("options are :: ", options);
+    requestModule(options, callback);
+
 });
 
 app.post('/test/datagenerator/event/:day/:count', function(req, res) {
@@ -406,19 +431,12 @@ var numberOfDaysToReportBuildsOn = 30;
 var generateDates = function() {
     var result = {};
 
-    console.log("Generating dates");
     var currentDate = new Date();
     var startDate = new Date(currentDate - (30 * aDay));
     for (var i = 0; i <= numberOfDaysToReportBuildsOn; i++) {
-        console.log(i);
-        console.log('startdate: ' + startDate);
-        console.log(i * aDay);
         var eachDay = startDate - 0 + (i * aDay);
-        console.log("ed: " + eachDay)
         eachDay = new Date(eachDay);
-        console.log(eachDay);
         var dateKey = (eachDay.getMonth() + 1) + '/' + eachDay.getDate() + '/' + eachDay.getFullYear();
-        console.log(dateKey);
         result[dateKey] = {
             date: dateKey,
             failed: 0,
@@ -426,32 +444,25 @@ var generateDates = function() {
         };
     };
 
-    console.log('generate dates done:');
-    console.log(result);
     return result;
 }
 
 var rollupByDay = function(build, dates) {
     if (!build) {
-        console.log("Data corruption detected:");
         cnosole.log(dbRes);
     }
-    console.log(build);
     var options = {}
-    var sdt = new Date(build.serverDateTime);
+    var sdt = new Date(build.payload.serverDateTime);
     var dateKey = (sdt.getMonth() + 1) + '/' + sdt.getDate() + '/' + sdt.getFullYear();
     var buildsOnDay = dates[dateKey];
-    console.log("dateKey:");
-    console.log(dateKey);
-    console.log("buildsOnDay")
-    console.log(buildsOnDay);
-    console.log(dates);
 
-    if (build.actionTags.indexOf("Build") >= 0 && build.actionTags.indexOf("Finish") >= 0) {
-        console.log("found build finished")
-        if (build.properties.Result == "Success") {
+    if (build.payload.actionTags.indexOf("Build") >= 0 && build.payload.actionTags.indexOf("Finish") >= 0) {
+
+        if (build.payload.properties.Result == "Success") {
+            console.log("found succes build event")
             buildsOnDay.passed += 1;
-        } else if (build.properties.Result == "Failure") {
+        } else if (build.payload.properties.Result == "Failure") {
+            console.log("did not find succes build event")
             buildsOnDay.failed += 1;
         }
     }
@@ -465,10 +476,10 @@ var filterToLastMonth = function(streamId) {
     console.log("filter start: " + start);
     console.log("filter end: " + end);
     return {
-        streamid: streamId,
-        serverDateTime: {
-            $gt: start,
-            $lte: end
+        'payload.streamid': streamId,
+        'payload.serverDateTime': {
+            '$gt': start,
+            '$lte': end
         }
     };
 }
@@ -491,27 +502,35 @@ var calculateQuantifiedDev_driver = function(stream) {
 
         console.log(stream);
         var lastMonth = filterToLastMonth(stream.streamid);
-        console.log(lastMonth);
-        qdDb.collection('event').find(
-            lastMonth,
-            noId,
-            function(err, events) {
-                events.toArray(function(err, rawEvents) {
-                    if (err) {
-                        deferred.reject(error);
-                    } else {
-                        var buildsByDay = generateDates();
-                        console.log("raw events: ");
-                        console.log(rawEvents);
-                        rawEvents.forEach(function(build) {
-                            rollupByDay(build, buildsByDay)
-                        });
-                        deferred.resolve(rollupToArray(buildsByDay));
-                    }
-                });
+        var filterSpec = lastMonth;
+    
+        var options = {
+            url: platformUri + '/rest/events/filter',
+            qs: {
+                'filterSpec': JSON.stringify(filterSpec)
+            },
+            method: 'GET'
+        };
 
+        function callback(error, response, body) {
+            if (!error && response.statusCode == 200) {
+                var rawEvents = JSON.parse(body);
+                console.log("Raw events :: ", rawEvents);
+                console.log("Yayyyyyyy! Success");
+                var buildsByDay = generateDates();
+                rawEvents.forEach(function(build) {
+                    rollupByDay(build, buildsByDay)
+                });
+             
+                deferred.resolve(rollupToArray(buildsByDay))
+            } else {
+                console.log("Aww Failure")
+                res.status(500).send("Something went wrong!");
             }
-        );
+        }
+        console.log("options are :: ", options);
+        requestModule(options, callback);
+
         return deferred.promise;
     }
     //Migrate 
