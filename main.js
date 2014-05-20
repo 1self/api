@@ -1,6 +1,7 @@
 var requestModule = require('request');
 var cheerio = require('cheerio');
 var express = require("express");
+var moment = require("moment")
 var url = require('url');
 var crypto = require('crypto');
 var app = express();
@@ -179,7 +180,7 @@ var saveEvent_driver = function(myEvent, stream, serverDateTime, res, rm) {
     console.log("My Event: ");
     console.log(myEvent);
     myEvent.streamid = stream.streamid;
-    myEvent.serverDateTime = serverDateTime;
+    myEvent.serverDateTime = {"$date" : serverDateTime}
     requestModule.post(platformUri + '/rest/events/', {
             json: {
                 'payload': myEvent
@@ -203,7 +204,7 @@ var postEvent = function(req, res) {
             res.status(404).send("stream not found");
         },
         function(stream) {
-            saveEvent_driver(req.body, stream, new Date(), res, requestModule);
+            saveEvent_driver(req.body, stream, moment(new Date()).format(), res, requestModule);
         }
     );
 };
