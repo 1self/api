@@ -28,6 +28,8 @@ mongoClient.connect(mongoUri, function(err, db) {
     }
 });
 
+console.log('Connecting to PLATFORM_BASE_URI : ' + platformUri);
+
 app.all('*', function(req, res, next) {
     console.log("hit all rule");
     res.header('Access-Control-Allow-Origin', '*');
@@ -250,7 +252,7 @@ app.get('/stream/:id/event', function(req, res) {
             var fields = {
                 _id: 0
             };
-          
+
             var filterSpec = {
                 'payload.streamid': streamid
             }
@@ -286,7 +288,8 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
         streamid: 0,
     };
 
-    var durationMins = req.params.durationMins || 1;
+    var durationMins = req.params.durationMins;
+    var selectedLanguage = req.query.lang;
     var dateNow = new Date();
     var cutoff = new Date(dateNow - (durationMins * 1000 * 60));
 
@@ -295,7 +298,11 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
             "$gte": cutoff
         }
     };
-    
+
+    if (selectedLanguage) {
+        filterSpec["payload.properties.Language"] = selectedLanguage;
+    }
+
     var options = {
         url: platformUri + '/rest/events/filter',
         qs: {
@@ -504,7 +511,7 @@ var calculateQuantifiedDev_driver = function(stream) {
         console.log(stream);
         var lastMonth = filterToLastMonth(stream.streamid);
         var filterSpec = lastMonth;
-    
+
         var options = {
             url: platformUri + '/rest/events/filter',
             qs: {
@@ -522,7 +529,7 @@ var calculateQuantifiedDev_driver = function(stream) {
                 rawEvents.forEach(function(build) {
                     rollupByDay(build, buildsByDay)
                 });
-             
+
                 deferred.resolve(rollupToArray(buildsByDay))
             } else {
                 console.log("Aww Failure")
