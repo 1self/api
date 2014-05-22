@@ -182,7 +182,9 @@ var saveEvent_driver = function(myEvent, stream, serverDateTime, res, rm) {
     console.log("My Event: ");
     console.log(myEvent);
     myEvent.streamid = stream.streamid;
-    myEvent.serverDateTime = {"$date" : serverDateTime}
+    myEvent.serverDateTime = {
+        "$date": serverDateTime
+    }
     requestModule.post(platformUri + '/rest/events/', {
             json: {
                 'payload': myEvent
@@ -295,13 +297,17 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
 
     var filterSpec = {
         "payload.serverDateTime": {
-            "$gte": cutoff
+            "$gte": {
+                "$date": moment(cutoff).format()
+            }
         }
     };
 
     if (selectedLanguage) {
         filterSpec["payload.properties.Language"] = selectedLanguage;
     }
+
+    console.log("-----------------" + filterSpec);
 
     var options = {
         url: platformUri + '/rest/events/filter',
