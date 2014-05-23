@@ -492,8 +492,12 @@ var filterToLastMonth = function(streamId) {
     return {
         'payload.streamid': streamId,
         'payload.serverDateTime': {
-            '$gt': start,
-            '$lte': end
+            '$gt': {
+                "$date": moment(start).format()
+            },
+            '$lte': {
+                "$date": moment(end).format()
+            }
         }
     };
 }
@@ -516,6 +520,7 @@ var calculateQuantifiedDev_driver = function(stream) {
 
         console.log(stream);
         var lastMonth = filterToLastMonth(stream.streamid);
+        console.log("filtering records for last month : " + lastMonth);
         var filterSpec = lastMonth;
 
         var options = {
