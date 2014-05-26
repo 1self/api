@@ -34,16 +34,19 @@ mongoClient.connect(mongoUri, function(err, db) {
 console.log('Connecting to PLATFORM_BASE_URI : ' + platformUri);
 
 var encryptPassword = function() {
-    var tokens = sharedSecret.split(":");
-    var encryptionKey = tokens[0];
-    var password = tokens[1];
-    var iv = new Buffer('');
-    var key = new Buffer(encryptionKey, 'hex'); //secret key for encryption
-    var cipher = crypto.createCipheriv('aes-128-ecb', key, iv);
-    var encryptedPassword = cipher.update(password, 'utf-8', 'hex');
-    encryptedPassword += cipher.final('hex');
-    console.log("encryptedPassword : " + encryptedPassword);
-    return encryptedPassword;
+    if (sharedSecret) {
+        var tokens = sharedSecret.split(":");
+        var encryptionKey = tokens[0];
+        var password = tokens[1];
+        var iv = new Buffer('');
+        var key = new Buffer(encryptionKey, 'hex'); //secret key for encryption
+        var cipher = crypto.createCipheriv('aes-128-ecb', key, iv);
+        var encryptedPassword = cipher.update(password, 'utf-8', 'hex');
+        encryptedPassword += cipher.final('hex');
+        console.log("encryptedPassword : " + encryptedPassword);
+
+        return encryptedPassword;
+    }
 };
 
 var encryptedPassword = encryptPassword();
