@@ -16,6 +16,9 @@ var aDay = 24 * 60 * 60 * 1000;
 var mongoAppKey = process.env.DBKEY;
 var mongoUri = process.env.DBURI;
 var platformUri = process.env.PLATFORM_BASE_URI;
+var sharedSecret = process.env.SHARED_SECRET;
+
+console.log("sharedSecret : " + sharedSecret);
 
 console.log("Connecting to: " + mongoUri);
 var qdDb;
@@ -29,6 +32,21 @@ mongoClient.connect(mongoUri, function(err, db) {
 });
 
 console.log('Connecting to PLATFORM_BASE_URI : ' + platformUri);
+
+var encryptPassword = function() {
+    var tokens = sharedSecret.split(":");
+    var encryptionKey = tokens[0];
+    var password = tokens[1];
+    var iv = new Buffer('');
+    var key = new Buffer(encryptionKey, 'hex'); //secret key for encryption
+    var cipher = crypto.createCipheriv('aes-128-ecb', key, iv);
+    var encryptedPassword = cipher.update(password, 'utf-8', 'hex');
+    encryptedPassword += cipher.final('hex');
+    console.log("encryptedPassword : " + encryptedPassword);
+    return encryptedPassword;
+};
+
+var encryptedPassword = encryptPassword();
 
 app.all('*', function(req, res, next) {
     console.log("hit all rule");
@@ -185,11 +203,17 @@ var saveEvent_driver = function(myEvent, stream, serverDateTime, res, rm) {
     myEvent.serverDateTime = {
         "$date": serverDateTime
     }
-    requestModule.post(platformUri + '/rest/events/', {
-            json: {
-                'payload': myEvent
-            }
+    var options = {
+        url: platformUri + '/rest/events/',
+        auth: {
+            user: "",
+            password: encryptedPassword
         },
+        json: {
+            'payload': myEvent
+        }
+    };
+    requestModule.post(options,
         function(error, response, body) {
             if (!error && response.statusCode == 200) {
                 res.send(body)
@@ -212,33 +236,10 @@ var postEvent = function(req, res) {
         }
     );
 };
-// No usages in client
-app.post('/upgrade/event', function(req, res) {
 
-    var start = new Date(new Date() - 32 * aDay);
-    var end = new Date();
-    var findSpec = {
-        serverDateTime: {
-            $gte: start,
-            $lte: end
-        }
-    };
-
-    console.log(findSpec);
-
-    qdDb.collection('event').find(
-        findSpec,
-        function(err, events) {
-            events.toArray(function(err, docs) {
-                console.log("error:\n" + err);
-                console.log("docs:\n" + docs);
-                res.send(docs);
-            });
-        }
-    )
-});
 // Migrate
 app.post('/stream/:id/event', postEvent);
+
 //Migrate
 app.get('/stream/:id/event', function(req, res) {
     var readToken = req.headers.authorization;
@@ -260,6 +261,10 @@ app.get('/stream/:id/event', function(req, res) {
             }
             var options = {
                 url: platformUri + '/rest/events/filter',
+                auth: {
+                    user: "",
+                    password: encryptedPassword
+                },
                 qs: {
                     'filterSpec': JSON.stringify(filterSpec)
                 },
@@ -311,6 +316,10 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
 
     var options = {
         url: platformUri + '/rest/events/filter',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
         qs: {
             'filterSpec': JSON.stringify(filterSpec)
         },
@@ -525,6 +534,10 @@ var calculateQuantifiedDev_driver = function(stream) {
 
         var options = {
             url: platformUri + '/rest/events/filter',
+            auth: {
+                user: "",
+                password: encryptedPassword
+            },
             qs: {
                 'filterSpec': JSON.stringify(filterSpec)
             },
