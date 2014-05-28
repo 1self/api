@@ -1,3 +1,4 @@
+require('newrelic');
 var requestModule = require('request');
 var cheerio = require('cheerio');
 var express = require("express");
