@@ -115,7 +115,6 @@ app.post('/stream', function(req, res) {
             if (err) {
                 res.status(500).send("Database error");
             } else {
-                console.log("Inserted stream is : " + JSON.stringify(insertedRecords));
                 res.send(insertedRecords[0]);
             }
         });
@@ -173,8 +172,6 @@ var authenticateToken = function(tokenComparer, id, error, success) {
                 var stream = {
                     streamid: stream.streamid
                 }
-                console.log('Calling success');
-                console.log(stream);
                 success(stream);
             }
         })
@@ -277,14 +274,11 @@ app.get('/stream/:id/event', function(req, res) {
             function callback(error, response, body) {
                 if (!error && response.statusCode == 200) {
                     var info = JSON.parse(body);
-                    console.log("Yayyyyyyy! Success");
                     res.send(info)
                 } else {
-                    console.log("Aww Failure")
                     res.status(500).send("Something went wrong!");
                 }
             }
-            console.log("options are :: ", options);
             requestModule(options, callback);
 
         }
@@ -332,10 +326,8 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
             var info = JSON.parse(body);
-            console.log("Yayyyyyyy! Success");
             res.send(info)
         } else {
-            console.log("Aww Failure")
             res.status(500).send("Something went wrong!");
         }
     }
@@ -462,7 +454,12 @@ var generateDates = function() {
     for (var i = 0; i <= numberOfDaysToReportBuildsOn; i++) {
         var eachDay = startDate - 0 + (i * aDay);
         eachDay = new Date(eachDay);
-        var dateKey = (eachDay.getMonth() + 1) + '/' + eachDay.getDate() + '/' + eachDay.getFullYear();
+        month = eachDay.getMonth() + 1;
+        if (month < 10) {
+            month = '0' + month
+        }
+        var dateKey = (month) + '/' + eachDay.getDate() + '/' + eachDay.getFullYear();
+        console.log("dateKey :", dateKey)
         result[dateKey] = {
             date: dateKey,
             failed: 0,
@@ -473,28 +470,6 @@ var generateDates = function() {
     return result;
 }
 
-var rollupByDay = function(build, dates) {
-    if (!build) {
-        cnosole.log(dbRes);
-    }
-    var options = {}
-    var sdt = new Date(build.payload.serverDateTime);
-    var dateKey = (sdt.getMonth() + 1) + '/' + sdt.getDate() + '/' + sdt.getFullYear();
-    var buildsOnDay = dates[dateKey];
-
-    if (build.payload.actionTags.indexOf("Build") >= 0 && build.payload.actionTags.indexOf("Finish") >= 0) {
-
-        if (build.payload.properties.Result == "Success") {
-            console.log("found succes build event")
-            buildsOnDay.passed += 1;
-        } else if (build.payload.properties.Result == "Failure") {
-            console.log("did not find succes build event")
-            buildsOnDay.failed += 1;
-        }
-    }
-
-    dates[dateKey] = buildsOnDay;
-};
 
 var filterToLastMonth = function(streamId) {
     var start = new Date(new Date() - numberOfDaysToReportBuildsOn * aDay);
@@ -529,41 +504,75 @@ var calculateQuantifiedDev_driver = function(stream) {
         var noId = {
             _id: 0
         };
+        var groupQuery = {
+            "$groupBy": {
+                "fields": [{
+                    "name": "payload.serverDateTime",
+                    "format": "MM/dd/yyyy"
+                }],
+                "filterSpec": {
+                    "payload.streamid": stream.streamid,
+                    "payload.actionTags": "Finish"
+                },
+                "projectionSpec": {
+                    "payload.serverDateTime": "date",
+                    "payload.properties": "properties"
+                },
+                "orderSpec": {}
+            }
+        };
+        var countSuccessQuery = {
+            "$count": {
+                "data": groupQuery,
+                "filterSpec": {
+                    "properties.Result": "Success"
+                },
+                "projectionSpec": {
+                    "resultField": "passed"
+                }
+            }
+        };
+        var countFailureQuery = {
+            "$count": {
+                "data": groupQuery,
+                "filterSpec": {
+                    "properties.Result": "Success"
+                },
+                "projectionSpec": {
+                    "resultField": "failed"
+                }
+            }
+        }
 
-        console.log(stream);
         var lastMonth = filterToLastMonth(stream.streamid);
-        console.log("filtering records for last month : " + lastMonth);
         var filterSpec = lastMonth;
 
         var options = {
-            url: platformUri + '/rest/events/filter',
+            url: platformUri + '/rest/analytics/aggregate',
             auth: {
                 user: "",
                 password: encryptedPassword
             },
             qs: {
-                'filterSpec': JSON.stringify(filterSpec)
+                spec: JSON.stringify([countSuccessQuery, countFailureQuery]),
+                merge: true
             },
             method: 'GET'
         };
-
+        
         function callback(error, response, body) {
             if (!error && response.statusCode == 200) {
-                var rawEvents = JSON.parse(body);
-                console.log("Raw events :: ", rawEvents);
-                console.log("Yayyyyyyy! Success");
+                var result = JSON.parse(body);
                 var buildsByDay = generateDates();
-                rawEvents.forEach(function(build) {
-                    rollupByDay(build, buildsByDay)
-                });
-
+                for (date in result) {
+                    buildsByDay[date].passed = result[date].passed
+                    buildsByDay[date].failed = result[date].failed
+                }
                 deferred.resolve(rollupToArray(buildsByDay))
             } else {
-                console.log("Aww Failure")
                 res.status(500).send("Something went wrong!");
             }
         }
-        console.log("options are :: ", options);
         requestModule(options, callback);
 
         return deferred.promise;
@@ -581,9 +590,6 @@ app.get('/quantifieddev/mydev/:streamid', function(req, res) {
     authenticateReadToken_p(stream)
         .then(calculateQuantifiedDev_driver)
         .then(function(response) {
-            console.log("Trying to send back to the client");
-            console.log("Res is:")
-            console.log(response);
             res.send(response)
             // Do something with value4
         })
