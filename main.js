@@ -536,7 +536,7 @@ var calculateQuantifiedDev_driver = function(stream) {
             "$count": {
                 "data": groupQuery,
                 "filterSpec": {
-                    "properties.Result": "Success"
+                    "properties.Result": "Failure"
                 },
                 "projectionSpec": {
                     "resultField": "failed"
