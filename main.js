@@ -563,6 +563,7 @@ var calculateQuantifiedDev_driver = function(stream) {
         };
         
         function callback(error, response, body) {
+            console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
             if (!error && response.statusCode == 200) {
                 var result = JSON.parse(body);
                 var buildsByDay = generateDates();
@@ -572,7 +573,7 @@ var calculateQuantifiedDev_driver = function(stream) {
                 }
                 deferred.resolve(rollupToArray(buildsByDay))
             } else {
-                res.status(500).send("Something went wrong!");
+                response.status(500).send("Something went wrong!");
             }
         }
         requestModule(options, callback);
