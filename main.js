@@ -54,9 +54,10 @@ var encryptedPassword = encryptPassword();
 
 app.all('*', function(req, res, next) {
     console.log("hit all rule");
-    res.header('Access-Control-Allow-Origin', 'http://quantifieddev.azurewebsites.net');
+    res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,accept,x-requested-with,x-withio-delay');
+    console.log("hit all rule -- req : " + req + " res : " + res + " next : " + next);
     if (req.headers["x-withio-delay"]) {
         var delay = req.headers["x-withio-delay"];
         console.log("request is being delayed by " + delay + " ms")
@@ -591,6 +592,7 @@ app.get('/quantifieddev/mydev/:streamid', function(req, res) {
     authenticateReadToken_p(stream)
         .then(calculateQuantifiedDev_driver)
         .then(function(response) {
+            console.log("res : " + res + " response : " + response);
             res.send(response)
             // Do something with value4
         })
