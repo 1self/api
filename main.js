@@ -54,7 +54,7 @@ var encryptedPassword = encryptPassword();
 
 app.all('*', function(req, res, next) {
     console.log("hit all rule");
-    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Origin', 'http://quantifieddev.azurewebsites.net');
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,accept,x-requested-with,x-withio-delay');
     if (req.headers["x-withio-delay"]) {
