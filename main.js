@@ -57,7 +57,6 @@ app.all('*', function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,accept,x-requested-with,x-withio-delay');
-    console.log("hit all rule -- req : " + req + " res : " + res + " next : " + next);
     if (req.headers["x-withio-delay"]) {
         var delay = req.headers["x-withio-delay"];
         console.log("request is being delayed by " + delay + " ms")
@@ -449,7 +448,7 @@ var authenticateReadToken_p = function(streamDetails) {
 
 var numberOfDaysToReportBuildsOn = 30;
 
-var generateDates = function() {
+var generateDatesFor = function(defaultValues) {
     var result = {};
 
     var currentDate = new Date();
@@ -464,15 +463,15 @@ var generateDates = function() {
         var dateKey = (month) + '/' + eachDay.getDate() + '/' + eachDay.getFullYear();
         console.log("dateKey :", dateKey)
         result[dateKey] = {
-            date: dateKey,
-            failed: 0,
-            passed: 0
+            date: dateKey
         };
-    };
 
+        for (var index in defaultValues) {
+            result[dateKey][defaultValues[index].key] = defaultValues[index].value;
+        }
+    };
     return result;
 }
-
 
 var filterToLastMonth = function(streamId) {
     var start = new Date(new Date() - numberOfDaysToReportBuildsOn * aDay);
@@ -502,7 +501,7 @@ var rollupToArray = function(rollup) {
     return result;
 }
 
-var calculateQuantifiedDev_driver = function(stream) {
+var getBuildEventsFromPlatform = function(stream) {
         var deferred = q.defer();
         var noId = {
             _id: 0
@@ -562,12 +561,20 @@ var calculateQuantifiedDev_driver = function(stream) {
             },
             method: 'GET'
         };
+
         function callback(error, response, body) {
             console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
             if (!error && response.statusCode == 200) {
                 var result = JSON.parse(body);
-                console.log("generating builds per day now... : " + result);
-                var buildsByDay = generateDates();
+                console.log("generating builds per day now... : " + JSON.stringify(result));
+                var defaultBuildValues = [{
+                    key: "passed",
+                    value: 0
+                }, {
+                    key: "failed",
+                    value: 0
+                }];
+                var buildsByDay = generateDatesFor(defaultBuildValues);
                 for (date in result) {
                     buildsByDay[date].passed = result[date].passed
                     buildsByDay[date].failed = result[date].failed
@@ -594,19 +601,89 @@ app.get('/quantifieddev/mydev/:streamid', function(req, res) {
     }
 
     authenticateReadToken_p(stream)
-        .then(calculateQuantifiedDev_driver)
+        .then(getBuildEventsFromPlatform)
         .then(function(response) {
-            console.log("res : " + res + " response : " + response);
             res.send(response)
-            // Do something with value4
+        }).catch(function(error) {
+            // Handle any error from all above steps
+            console.log("stream not found due to : " + error);
+            res.status(404).send("stream not found");
         })
-        .
-    catch(function(error) {
-        // Handle any error from all above steps
-        console.log("stream not found due to : " + error);
-        res.status(404).send("stream not found");
-    })
+});
 
+var getMyWTFsFromPlatform = function(streamid, res) {
+    var groupQuery = {
+        "$groupBy": {
+            "fields": [{
+                "name": "payload.serverDateTime",
+                "format": "MM/dd/yyyy"
+            }],
+            "filterSpec": {
+                "payload.streamid": streamid,
+                "payload.actionTags": "wtf"
+            },
+            "projectionSpec": {
+                "payload.serverDateTime": "date",
+                "payload.properties": "properties"
+            },
+            "orderSpec": {}
+        }
+    };
+    var countWTFQuery = {
+        "$count": {
+            "data": groupQuery,
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "wtfCount"
+            }
+        }
+    };
+
+    var options = {
+        url: platformUri + '/rest/analytics/aggregate',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: {
+            spec: JSON.stringify(countWTFQuery)
+        },
+        method: 'GET'
+    };
+
+    var sendWTFs = function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var result = JSON.parse(body)[0];
+            var defaultWTFValues = [{
+                key: "wtfCount",
+                value: 0
+            }];
+            var wtfsByDay = generateDatesFor(defaultWTFValues);
+            for (date in result) {
+                wtfsByDay[date].wtfCount = result[date].wtfCount;
+            }
+            res.send(rollupToArray(wtfsByDay));
+        } else {
+            console.log("error during call to platform: " + error);
+            res.status(500).send(error);
+        }
+    };
+    requestModule(options, sendWTFs);
+};
+
+app.get('/quantifieddev/mywtf/:streamid', function(req, res) {
+    var readToken = req.headers.authorization;
+    var streamid = req.params.streamid;
+
+    var onAuthSuccess = function(data) {
+        console.log("data of my wtf : " + data);
+        getMyWTFsFromPlatform(streamid, res);
+    };
+    var onAuthFailure = function(err) {
+        console.log("error during fetching my wtf : " + err);
+        res.status(404).send("stream not found");
+    };
+    authenticateReadToken(readToken, streamid, onAuthFailure, onAuthSuccess)
 });
 
 app.get('/quantifieddev/extensions/message', function(req, res) {
