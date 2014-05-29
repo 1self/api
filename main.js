@@ -304,7 +304,8 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
             "$gte": {
                 "$date": moment(cutoff).format()
             }
-        }
+        },
+        "payload.actionTags": "Build"
     };
 
     if (selectedLanguage) {
