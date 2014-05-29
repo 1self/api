@@ -409,7 +409,7 @@ app.post('/test/datagenerator/event/:day/:count', function(req, res) {
     });
 });
 
-var authenticateReadToken_p = function(streamDetails) {
+var authenticateReadToken_p = function(streamDetails, res) {
     console.log("Authing");
     var deferred = q.defer();
 
@@ -501,7 +501,7 @@ var rollupToArray = function(rollup) {
     return result;
 }
 
-var calculateQuantifiedDev_driver = function(stream) {
+var calculateQuantifiedDev_driver = function(stream, res) {
         var deferred = q.defer();
         var noId = {
             _id: 0
@@ -561,7 +561,6 @@ var calculateQuantifiedDev_driver = function(stream) {
             },
             method: 'GET'
         };
-        
         function callback(error, response, body) {
             console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
             if (!error && response.statusCode == 200) {
@@ -573,7 +572,7 @@ var calculateQuantifiedDev_driver = function(stream) {
                 }
                 deferred.resolve(rollupToArray(buildsByDay))
             } else {
-                response.status(500).send("Something went wrong!");
+                res.status(500).send("Something went wrong!");
             }
         }
         requestModule(options, callback);
@@ -590,7 +589,7 @@ app.get('/quantifieddev/mydev/:streamid', function(req, res) {
         streamid: streamid
     }
 
-    authenticateReadToken_p(stream)
+    authenticateReadToken_p(stream, res)
         .then(calculateQuantifiedDev_driver)
         .then(function(response) {
             console.log("res : " + res + " response : " + response);
