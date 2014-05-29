@@ -409,7 +409,7 @@ app.post('/test/datagenerator/event/:day/:count', function(req, res) {
     });
 });
 
-var authenticateReadToken_p = function(streamDetails, res) {
+var authenticateReadToken_p = function(streamDetails) {
     console.log("Authing");
     var deferred = q.defer();
 
@@ -501,7 +501,7 @@ var rollupToArray = function(rollup) {
     return result;
 }
 
-var calculateQuantifiedDev_driver = function(stream, res) {
+var calculateQuantifiedDev_driver = function(stream) {
         var deferred = q.defer();
         var noId = {
             _id: 0
@@ -565,6 +565,7 @@ var calculateQuantifiedDev_driver = function(stream, res) {
             console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
             if (!error && response.statusCode == 200) {
                 var result = JSON.parse(body);
+                console.log("generating builds per day now... : " + result);
                 var buildsByDay = generateDates();
                 for (date in result) {
                     buildsByDay[date].passed = result[date].passed
@@ -572,7 +573,9 @@ var calculateQuantifiedDev_driver = function(stream, res) {
                 }
                 deferred.resolve(rollupToArray(buildsByDay))
             } else {
-                res.status(500).send("Something went wrong!");
+                console.log("error during call to platform: " + error);
+                deferred.reject(error);
+                // res.status(500).send("Something went wrong!");
             }
         }
         requestModule(options, callback);
@@ -589,7 +592,7 @@ app.get('/quantifieddev/mydev/:streamid', function(req, res) {
         streamid: streamid
     }
 
-    authenticateReadToken_p(stream, res)
+    authenticateReadToken_p(stream)
         .then(calculateQuantifiedDev_driver)
         .then(function(response) {
             console.log("res : " + res + " response : " + response);
