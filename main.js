@@ -602,7 +602,7 @@ app.get('/quantifieddev/mydev/:streamid', function(req, res) {
         .
     catch(function(error) {
         // Handle any error from all above steps
-        console.log(error);
+        console.log("stream not found due to : " + error);
         res.status(404).send("stream not found");
     })
 
