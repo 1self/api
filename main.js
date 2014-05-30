@@ -611,7 +611,8 @@ app.get('/quantifieddev/mydev/:streamid', function(req, res) {
         })
 });
 
-var getMyWTFsFromPlatform = function(streamid, res) {
+var getMyWTFsFromPlatform = function(streamid) {
+    var deferred = q.defer();
     var groupQuery = {
         "$groupBy": {
             "fields": [{
@@ -662,28 +663,28 @@ var getMyWTFsFromPlatform = function(streamid, res) {
             for (date in result) {
                 wtfsByDay[date].wtfCount = result[date].wtfCount;
             }
-            res.send(rollupToArray(wtfsByDay));
+            deferred.resolve(rollupToArray(wtfsByDay))
         } else {
             console.log("error during call to platform: " + error);
-            res.status(500).send(error);
+            deferred.reject(error);
         }
     };
     requestModule(options, sendWTFs);
+    return deferred.promise;
 };
 
 app.get('/quantifieddev/mywtf/:streamid', function(req, res) {
     var readToken = req.headers.authorization;
     var streamid = req.params.streamid;
 
-    var onAuthSuccess = function(data) {
-        console.log("data of my wtf : " + data);
-        getMyWTFsFromPlatform(streamid, res);
-    };
-    var onAuthFailure = function(err) {
-        console.log("error during fetching my wtf : " + err);
-        res.status(404).send("stream not found");
-    };
-    authenticateReadToken(readToken, streamid, onAuthFailure, onAuthSuccess)
+    authenticateReadToken_p(streamid)
+        .then(getMyWTFsFromPlatform)
+        .then(function(response) {
+            res.send(response)
+        }).catch(function(error) {
+            console.log("stream not found due to : " + error);
+            res.status(404).send("stream not found");
+        });
 });
 
 app.get('/quantifieddev/extensions/message', function(req, res) {
