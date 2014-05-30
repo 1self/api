@@ -294,6 +294,7 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
     };
 
     var durationMins = req.params.durationMins;
+    var selectedEventType = req.query.eventType;
     var selectedLanguage = req.query.lang;
     var dateNow = new Date();
     var cutoff = new Date(dateNow - (durationMins * 1000 * 60));
@@ -305,7 +306,9 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
             }
         }
     };
-
+    if (selectedEventType) {
+        filterSpec["payload.actionTags"] = selectedEventType;
+    }
     if (selectedLanguage) {
         filterSpec["payload.properties.Language"] = selectedLanguage;
     }
