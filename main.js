@@ -458,11 +458,15 @@ var generateDatesFor = function(defaultValues) {
     for (var i = 0; i <= numberOfDaysToReportBuildsOn; i++) {
         var eachDay = startDate - 0 + (i * aDay);
         eachDay = new Date(eachDay);
-        month = eachDay.getMonth() + 1;
+        var month = eachDay.getMonth() + 1;
         if (month < 10) {
             month = '0' + month
         }
-        var dateKey = (month) + '/' + eachDay.getDate() + '/' + eachDay.getFullYear();
+        var day = eachDay.getDate()
+        if (day < 10) {
+            day = '0' + day
+        }
+        var dateKey = (month) + '/' + day + '/' + eachDay.getFullYear();
         console.log("dateKey :", dateKey)
         result[dateKey] = {
             date: dateKey
