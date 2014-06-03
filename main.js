@@ -101,8 +101,8 @@ app.post('/stream', function(req, res) {
             streamId.push(charCode);
         };
 
-        writeToken = crypto.randomBytes(256).toString('base64');
-        readToken = crypto.randomBytes(256).toString('base64');
+        writeToken = crypto.randomBytes(22).toString('base64');
+        readToken = crypto.randomBytes(22).toString('base64');
 
         var stream = {
             streamid: streamId.join(''),
