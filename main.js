@@ -581,8 +581,10 @@ var getBuildEventsFromPlatform = function(stream) {
                 }];
                 var buildsByDay = generateDatesFor(defaultBuildValues);
                 for (date in result) {
-                    buildsByDay[date].passed = result[date].passed
-                    buildsByDay[date].failed = result[date].failed
+                    if (buildsByDay[date] !== undefined) {
+                        buildsByDay[date].passed = result[date].passed
+                        buildsByDay[date].failed = result[date].failed
+                    }
                 }
                 deferred.resolve(rollupToArray(buildsByDay))
             } else {
@@ -666,7 +668,9 @@ var getMyWTFsFromPlatform = function(streamDetails) {
             }];
             var wtfsByDay = generateDatesFor(defaultWTFValues);
             for (date in result) {
-                wtfsByDay[date].wtfCount = result[date].wtfCount;
+                if (wtfsByDay[date] !== undefined) {
+                    wtfsByDay[date].wtfCount = result[date].wtfCount;
+                }
             }
             deferred.resolve(rollupToArray(wtfsByDay))
         } else {
