@@ -432,7 +432,6 @@ var authenticateReadToken_p = function(streamDetails) {
                 deferred.reject(new Error("Database error"));
             } else {
                 var stream = docsArray[0] || {};
-                console.log(stream.readToken);
                 if (stream.readToken != streamDetails.readToken) {
                     console.log("Auth failed!");
                     deferred.reject(new Error("Stream auth failed."));
@@ -617,7 +616,7 @@ app.get('/quantifieddev/mydev/:streamid', function(req, res) {
         })
 });
 
-var getMyWTFsFromPlatform = function(streamid) {
+var getMyWTFsFromPlatform = function(streamDetails) {
     var deferred = q.defer();
     var groupQuery = {
         "$groupBy": {
@@ -626,7 +625,7 @@ var getMyWTFsFromPlatform = function(streamid) {
                 "format": "MM/dd/yyyy"
             }],
             "filterSpec": {
-                "payload.streamid": streamid,
+                "payload.streamid": streamDetails.streamid,
                 "payload.actionTags": "wtf"
             },
             "projectionSpec": {
@@ -683,7 +682,12 @@ app.get('/quantifieddev/mywtf/:streamid', function(req, res) {
     var readToken = req.headers.authorization;
     var streamid = req.params.streamid;
 
-    authenticateReadToken_p(streamid)
+    var stream = {
+        readToken: readToken,
+        streamid: streamid
+    }
+
+    authenticateReadToken_p(stream)
         .then(getMyWTFsFromPlatform)
         .then(function(response) {
             res.send(response)
