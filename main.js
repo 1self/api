@@ -701,6 +701,91 @@ app.get('/quantifieddev/mywtf/:streamid', function(req, res) {
         });
 });
 
+var getMyHydrationEventsFromPlatform = function(streamDetails) {
+    var deferred = q.defer();
+    var groupQuery = {
+        "$groupBy": {
+            "fields": [{
+                "name": "payload.serverDateTime",
+                "format": "MM/dd/yyyy"
+            }],
+            "filterSpec": {
+                "payload.streamid": streamDetails.streamid,
+                "payload.actionTags": "drink",
+                "payload.objectTags": "Water"
+            },
+            "projectionSpec": {
+                "payload.serverDateTime": "date",
+                "payload.properties": "properties"
+            },
+            "orderSpec": {}
+        }
+    };
+    var countHydrationQuery = {
+        "$count": {
+            "data": groupQuery,
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "hydrationCount"
+            }
+        }
+    };
+
+    var requestDetails = {
+        url: platformUri + '/rest/analytics/aggregate',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: {
+            spec: JSON.stringify(countHydrationQuery)
+        },
+        method: 'GET'
+    };
+
+    var sendHydrationCount = function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var result = JSON.parse(body)[0];
+            var defaultHydrationValues = [{
+                key: "hydrationCount",
+                value: 0
+            }];
+            var hydrationsByDay = generateDatesFor(defaultHydrationValues);
+            for (date in result) {
+                if (hydrationsByDay[date] !== undefined) {
+                    hydrationsByDay[date].hydrationCount = result[date].hydrationCount;
+                }
+            }
+            deferred.resolve(rollupToArray(hydrationsByDay))
+        } else {
+            console.log("error during call to platform: " + error);
+            deferred.reject(error);
+        }
+    };
+    requestModule(requestDetails, sendHydrationCount);
+    return deferred.promise;
+};
+
+app.get('/quantifieddev/myhydration/:streamid', function(req, res) {
+    var readToken = req.headers.authorization;
+    var streamid = req.params.streamid;
+
+    var stream = {
+        readToken: readToken,
+        streamid: streamid
+    }
+
+    authenticateReadToken_p(stream)
+        .then(getMyHydrationEventsFromPlatform)
+        .then(function(response) {
+            res.send(response)
+        }).catch(function(error) {
+            console.log("stream not found due to : " + error);
+            res.status(404).send("stream not found");
+        });
+});
+
+
 app.get('/quantifieddev/extensions/message', function(req, res) {
     var result = {
         text: "To get involved, receive updates or interact with the quantifieddev community, please go to quantifieddev.org."
