@@ -785,6 +785,89 @@ app.get('/quantifieddev/myhydration/:streamid', function(req, res) {
         });
 });
 
+var getMyCaffeineEventsFromPlatform = function(streamDetails) {
+    var deferred = q.defer();
+    var groupQuery = {
+        "$groupBy": {
+            "fields": [{
+                "name": "payload.serverDateTime",
+                "format": "MM/dd/yyyy"
+            }],
+            "filterSpec": {
+                "payload.streamid": streamDetails.streamid,
+                "payload.actionTags": "drink",
+                "payload.objectTags": "Coffee"
+            },
+            "projectionSpec": {
+                "payload.serverDateTime": "date",
+                "payload.properties": "properties"
+            },
+            "orderSpec": {}
+        }
+    };
+    var countCaffeineQuery = {
+        "$count": {
+            "data": groupQuery,
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "caffeineCount"
+            }
+        }
+    };
+
+    var requestDetails = {
+        url: platformUri + '/rest/analytics/aggregate',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: {
+            spec: JSON.stringify(countCaffeineQuery)
+        },
+        method: 'GET'
+    };
+
+    var sendCaffeineCount = function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var result = JSON.parse(body)[0];
+            var defaultCaffeineValues = [{
+                key: "caffeineCount",
+                value: 0
+            }];
+            var caffeineIntakeByDay = generateDatesFor(defaultCaffeineValues);
+            for (date in result) {
+                if (caffeineIntakeByDay[date] !== undefined) {
+                    caffeineIntakeByDay[date].caffeineCount = result[date].caffeineCount;
+                }
+            }
+            deferred.resolve(rollupToArray(caffeineIntakeByDay))
+        } else {
+            console.log("error during call to platform: " + error);
+            deferred.reject(error);
+        }
+    };
+    requestModule(requestDetails, sendCaffeineCount);
+    return deferred.promise;
+};
+
+app.get('/quantifieddev/mycaffeine/:streamid', function(req, res) {
+    var readToken = req.headers.authorization;
+    var streamid = req.params.streamid;
+
+    var stream = {
+        readToken: readToken,
+        streamid: streamid
+    }
+
+    authenticateReadToken_p(stream)
+        .then(getMyCaffeineEventsFromPlatform)
+        .then(function(response) {
+            res.send(response)
+        }).catch(function(error) {
+            console.log("stream not found due to : " + error);
+            res.status(404).send("stream not found");
+        });
+});
 
 app.get('/quantifieddev/extensions/message', function(req, res) {
     var result = {
