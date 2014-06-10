@@ -705,29 +705,29 @@ app.get('/quantifieddev/mywtf/:streamid', function(req, res) {
 
 var getAvgBuildDurationFromPlatform = function(streamDetails) {
     var deferred = q.defer();
-
+    var groupQuery = {
+        "$groupBy": {
+            "fields": [{
+                "name": "payload.serverDateTime",
+                "format": "MM/dd/yyyy"
+            }],
+            "filterSpec": {
+                "payload.streamid": streamDetails.streamid,
+                "payload.actionTags": "Finish"
+            },
+            "projectionSpec": {
+                "payload.serverDateTime": "date",
+                "payload.properties": "properties"
+            },
+            "orderSpec": {}
+        }
+    };
     var sumOfBuildDurationForBuildFinishEvents = {
         "$sum": {
             "field": {
                 "name": "properties.BuildDuration"
             },
-            "data": {
-                "$groupBy": {
-                    "fields": [{
-                        "name": "payload.serverDateTime",
-                        "format": "MM/dd/yyyy"
-                    }],
-                    "filterSpec": {
-                        "payload.streamid": streamDetails.streamid,
-                        "payload.actionTags": "Finish"
-                    },
-                    "projectionSpec": {
-                        "payload.serverDateTime": "date",
-                        "payload.properties": "properties"
-                    },
-                    "orderSpec": {}
-                }
-            },
+            "data": groupQuery,
             "filterSpec": {},
             "projectionSpec": {
                 "resultField": "totalDuration"
@@ -736,23 +736,7 @@ var getAvgBuildDurationFromPlatform = function(streamDetails) {
     };
     var countBuildFinishEventsQuery = {
         "$count": {
-            "data": {
-                "$groupBy": {
-                    "fields": [{
-                        "name": "payload.serverDateTime",
-                        "format": "MM/dd/yyyy"
-                    }],
-                    "filterSpec": {
-                        "payload.streamid": streamDetails.streamid,
-                        "payload.actionTags": "Finish"
-                    },
-                    "projectionSpec": {
-                        "payload.serverDateTime": "date",
-                        "payload.properties": "properties"
-                    },
-                    "orderSpec": {}
-                }
-            },
+            "data": groupQuery,
             "filterSpec": {},
             "projectionSpec": {
                 "resultField": "eventCount"
@@ -780,24 +764,22 @@ var getAvgBuildDurationFromPlatform = function(streamDetails) {
             var result = JSON.parse(body);
             console.log("generating builds per day now... : " + JSON.stringify(result));
             var defaultBuildValues = [{
-                key: "passed",
-                value: 0
-            }, {
-                key: "failed",
+                key: "avgBuildDuration",
                 value: 0
             }];
-            var buildsByDay = generateDatesFor(defaultBuildValues);
+            var buildDurationByDay = generateDatesFor(defaultBuildValues);
             for (date in result) {
-                if (buildsByDay[date] !== undefined) {
-                    buildsByDay[date].passed = result[date].passed
-                    buildsByDay[date].failed = result[date].failed
+                if (buildDurationByDay[date] !== undefined) {
+                    buildDurationByDay[date].avgBuildDuration = result[date].totalDuration / result[date].eventCount;
                 }
+
             }
-            deferred.resolve(rollupToArray(buildsByDay))
+            console.log("Result is: ", buildDurationByDay);
+            deferred.resolve(rollupToArray(buildDurationByDay))
         } else {
             console.log("error during call to platform: " + error);
             deferred.reject(error);
-            // res.status(500).send("Something went wrong!");
+
         }
     }
 
@@ -825,7 +807,7 @@ app.get('/quantifieddev/buildDuration/:streamid', function(req, res) {
             res.status(404).send("stream not found");
         });
 
-    requestModule(options, callback);
+
 });
 
 
