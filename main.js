@@ -757,6 +757,11 @@ var getAvgBuildDurationFromPlatform = function(streamDetails) {
         },
         method: 'GET'
     };
+    var convertMillisToSeconds = function(milliseconds) {
+
+        return Math.round(milliseconds/ 1000 * 100) / 100;
+
+    }
 
     function callback(error, response, body) {
         console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
@@ -770,7 +775,9 @@ var getAvgBuildDurationFromPlatform = function(streamDetails) {
             var buildDurationByDay = generateDatesFor(defaultBuildValues);
             for (date in result) {
                 if (buildDurationByDay[date] !== undefined) {
-                    buildDurationByDay[date].avgBuildDuration = result[date].totalDuration / result[date].eventCount;
+                    buildDurationInMillis = result[date].totalDuration / result[date].eventCount;
+                    buildDurationByDay[date].avgBuildDuration=convertMillisToSeconds(buildDurationInMillis);
+
                 }
 
             }
