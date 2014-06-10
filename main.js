@@ -507,97 +507,98 @@ var rollupToArray = function(rollup) {
 }
 
 var getBuildEventsFromPlatform = function(stream) {
-        var deferred = q.defer();
-        var noId = {
-            _id: 0
-        };
-        var groupQuery = {
-            "$groupBy": {
-                "fields": [{
-                    "name": "payload.serverDateTime",
-                    "format": "MM/dd/yyyy"
-                }],
-                "filterSpec": {
-                    "payload.streamid": stream.streamid,
-                    "payload.actionTags": "Finish"
-                },
-                "projectionSpec": {
-                    "payload.serverDateTime": "date",
-                    "payload.properties": "properties"
-                },
-                "orderSpec": {}
-            }
-        };
-        var countSuccessQuery = {
-            "$count": {
-                "data": groupQuery,
-                "filterSpec": {
-                    "properties.Result": "Success"
-                },
-                "projectionSpec": {
-                    "resultField": "passed"
-                }
-            }
-        };
-        var countFailureQuery = {
-            "$count": {
-                "data": groupQuery,
-                "filterSpec": {
-                    "properties.Result": "Failure"
-                },
-                "projectionSpec": {
-                    "resultField": "failed"
-                }
+    var deferred = q.defer();
+    var noId = {
+        _id: 0
+    };
+    var groupQuery = {
+        "$groupBy": {
+            "fields": [{
+                "name": "payload.serverDateTime",
+                "format": "MM/dd/yyyy"
+            }],
+            "filterSpec": {
+                "payload.streamid": stream.streamid,
+                "payload.actionTags": "Finish"
+            },
+            "projectionSpec": {
+                "payload.serverDateTime": "date",
+                "payload.properties": "properties"
+            },
+            "orderSpec": {}
+        }
+    };
+    var countSuccessQuery = {
+        "$count": {
+            "data": groupQuery,
+            "filterSpec": {
+                "properties.Result": "Success"
+            },
+            "projectionSpec": {
+                "resultField": "passed"
             }
         }
-
-        var lastMonth = filterToLastMonth(stream.streamid);
-        var filterSpec = lastMonth;
-
-        var options = {
-            url: platformUri + '/rest/analytics/aggregate',
-            auth: {
-                user: "",
-                password: encryptedPassword
+    };
+    var countFailureQuery = {
+        "$count": {
+            "data": groupQuery,
+            "filterSpec": {
+                "properties.Result": "Failure"
             },
-            qs: {
-                spec: JSON.stringify([countSuccessQuery, countFailureQuery]),
-                merge: true
-            },
-            method: 'GET'
-        };
-
-        function callback(error, response, body) {
-            console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
-            if (!error && response.statusCode == 200) {
-                var result = JSON.parse(body);
-                console.log("generating builds per day now... : " + JSON.stringify(result));
-                var defaultBuildValues = [{
-                    key: "passed",
-                    value: 0
-                }, {
-                    key: "failed",
-                    value: 0
-                }];
-                var buildsByDay = generateDatesFor(defaultBuildValues);
-                for (date in result) {
-                    if (buildsByDay[date] !== undefined) {
-                        buildsByDay[date].passed = result[date].passed
-                        buildsByDay[date].failed = result[date].failed
-                    }
-                }
-                deferred.resolve(rollupToArray(buildsByDay))
-            } else {
-                console.log("error during call to platform: " + error);
-                deferred.reject(error);
-                // res.status(500).send("Something went wrong!");
+            "projectionSpec": {
+                "resultField": "failed"
             }
         }
-        requestModule(options, callback);
-
-        return deferred.promise;
     }
-    //Migrate 
+
+    var lastMonth = filterToLastMonth(stream.streamid);
+    var filterSpec = lastMonth;
+
+    var options = {
+        url: platformUri + '/rest/analytics/aggregate',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: {
+            spec: JSON.stringify([countSuccessQuery, countFailureQuery]),
+            merge: true
+        },
+        method: 'GET'
+    };
+
+    function callback(error, response, body) {
+        console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
+        if (!error && response.statusCode == 200) {
+            var result = JSON.parse(body);
+            console.log("generating builds per day now... : " + JSON.stringify(result));
+            var defaultBuildValues = [{
+                key: "passed",
+                value: 0
+            }, {
+                key: "failed",
+                value: 0
+            }];
+            var buildsByDay = generateDatesFor(defaultBuildValues);
+            for (date in result) {
+                if (buildsByDay[date] !== undefined) {
+                    buildsByDay[date].passed = result[date].passed
+                    buildsByDay[date].failed = result[date].failed
+                }
+            }
+            deferred.resolve(rollupToArray(buildsByDay))
+        } else {
+            console.log("error during call to platform: " + error);
+            deferred.reject(error);
+            // res.status(500).send("Something went wrong!");
+        }
+    }
+    requestModule(options, callback);
+
+    return deferred.promise;
+}
+
+//Migrate 
 app.get('/quantifieddev/mydev/:streamid', function(req, res) {
     var readToken = req.headers.authorization;
     var streamid = req.params.streamid;
