@@ -925,7 +925,7 @@ var getAvgBuildDurationFromPlatform = function(streamDetails) {
     };
     var convertMillisToSeconds = function(milliseconds) {
 
-        return Math.round(milliseconds/ 1000 * 100) / 100;
+        return Math.round(milliseconds / 1000 * 100) / 100;
 
     }
 
@@ -942,7 +942,7 @@ var getAvgBuildDurationFromPlatform = function(streamDetails) {
             for (date in result) {
                 if (buildDurationByDay[date] !== undefined) {
                     buildDurationInMillis = result[date].totalDuration / result[date].eventCount;
-                    buildDurationByDay[date].avgBuildDuration=convertMillisToSeconds(buildDurationInMillis);
+                    buildDurationByDay[date].avgBuildDuration = convertMillisToSeconds(buildDurationInMillis);
 
                 }
 
@@ -972,6 +972,134 @@ app.get('/quantifieddev/buildDuration/:streamid', function(req, res) {
 
     authenticateReadToken_p(stream)
         .then(getAvgBuildDurationFromPlatform)
+        .then(function(response) {
+            res.send(response)
+        }).catch(function(error) {
+            // Handle any error from all above steps
+            console.log("stream not found due to : " + error);
+            res.status(404).send("stream not found");
+        });
+
+
+});
+var generateHoursForWeek = function(defaultValues) {
+    var result = {};
+    var numberOfDaysToReportBuildsOn = 7;
+    var currentDate = new Date();
+    var startDate = new Date(currentDate - (7 * aDay));
+    for (var i = 0; i < numberOfDaysToReportBuildsOn; i++) {
+        var eachDay = startDate - 0 + (i * aDay);
+        eachDay = new Date(eachDay);
+        var month = eachDay.getMonth() + 1;
+        if (month < 10) {
+            month = '0' + month
+        }
+        var day = eachDay.getDate()
+        if (day < 10) {
+            day = '0' + day
+        }
+        var dateKey = (month) + '/' + day + '/' + eachDay.getFullYear();
+        for (var j = 1; j <= 24; j++) {
+
+            if (j < 10) {
+                j = '0' + j;
+            }
+            var hoursOfTheWeek = dateKey + ' ' + j;
+
+            result[hoursOfTheWeek] = {
+                date: hoursOfTheWeek
+            };
+            for (var index in defaultValues) {
+                result[hoursOfTheWeek][defaultValues[index].key] = defaultValues[index].value;
+            }
+        }
+    };
+    return result;
+}
+
+var getHourlyBuildCountFromPlatform = function(streamDetails) {
+    var deferred = q.defer();
+    var groupQuery = {
+        "$groupBy": {
+            "fields": [{
+                "name": "payload.serverDateTime",
+                "format": "MM/dd/yyyy hh"
+            }],
+            "filterSpec": {
+                "payload.streamid": streamDetails.streamid,
+                "payload.actionTags": "Build"
+            },
+            "projectionSpec": {
+                "payload.serverDateTime": "date",
+                "payload.properties": "properties"
+            },
+            "orderSpec": {}
+        }
+    };
+    var hourlyBuildCount = {
+        "$count": {
+            "data": groupQuery,
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "buildCount"
+            }
+        }
+    };
+    var options = {
+        url: platformUri + '/rest/analytics/aggregate',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: {
+            spec: JSON.stringify(hourlyBuildCount)
+        },
+        method: 'GET'
+    };
+
+    function callback(error, response, body) {
+        console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
+        if (!error && response.statusCode == 200) {
+
+            var result = JSON.parse(body);
+            var result=result[0];
+            console.log("No of hourly builds is : " + JSON.stringify(result));
+
+            var defaultBuildValues = [{
+                key: "hourlyBuildCount",
+                value: 0
+            }];
+            var hourlyBuilds = generateHoursForWeek(defaultBuildValues);
+            for (date in result) {
+                
+                if (hourlyBuilds[date] !== undefined) {
+                    hourlyBuilds[date].hourlyBuildCount = result[date].buildCount
+                }
+
+            }
+            deferred.resolve(rollupToArray(hourlyBuilds))
+        } else {
+            console.log("error during call to platform: " + error);
+            deferred.reject(error);
+
+        }
+    }
+
+    requestModule(options, callback);
+
+    return deferred.promise;
+}
+app.get('/quantifieddev/hourlyBuildCount/:streamid', function(req, res) {
+    var readToken = req.headers.authorization;
+    var streamid = req.params.streamid;
+
+    var stream = {
+        readToken: readToken,
+        streamid: streamid
+    }
+
+    authenticateReadToken_p(stream)
+        .then(getHourlyBuildCountFromPlatform)
         .then(function(response) {
             res.send(response)
         }).catch(function(error) {
