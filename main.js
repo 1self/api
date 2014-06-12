@@ -181,7 +181,7 @@ var authenticateToken = function(tokenComparer, id, error, success) {
 
 var authenticateReadToken = function(token, id, error, success) {
     authenticateToken(function(stream) {
-            stream.readToken != token;
+            return stream.readToken != token;
         },
         id,
         error,
@@ -190,7 +190,7 @@ var authenticateReadToken = function(token, id, error, success) {
 
 var authenticateWriteToken = function(token, id, error, success) {
     authenticateToken(function(stream) {
-            stream.writeToken != token;
+            return stream.writeToken != token;
         },
         id,
         error,
@@ -418,13 +418,10 @@ var authenticateReadToken_p = function(streamDetails) {
     var mongoQuery = {
         "streamid": streamDetails.streamid
     };
-
     console.log("streamdetails: " + streamDetails);
     var spec = {
         streamid: streamDetails.streamid
     }
-
-
     console.log(spec);
     qdDb.collection('stream').find(spec, function(err, docs) {
         docs.toArray(function(err, docsArray) {
