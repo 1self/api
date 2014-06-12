@@ -158,45 +158,6 @@ app.get('/:ip', function(req, res) {
     })
 });
 
-var authenticateToken = function(tokenComparer, id, error, success) {
-    console.log('streamid:' + id);
-    qdDb.collection('stream').find({
-        streamid: id
-    }, function(err, docs) {
-        docs.toArray(function(err, docsArray) {
-            var stream = docsArray[0] || {};
-            console.log("streamVV: ");
-            console.log(stream);
-            if (tokenComparer(stream)) {
-                error();
-            } else {
-                var stream = {
-                    streamid: stream.streamid
-                }
-                success(stream);
-            }
-        })
-    });
-};
-
-var authenticateReadToken = function(token, id, error, success) {
-    authenticateToken(function(stream) {
-            return stream.readToken != token;
-        },
-        id,
-        error,
-        success);
-};
-
-var authenticateWriteToken = function(token, id, error, success) {
-    authenticateToken(function(stream) {
-            return stream.writeToken != token;
-        },
-        id,
-        error,
-        success);
-};
-
 var saveEvent_driver = function(myEvent, stream, serverDateTime, res, rm) {
     console.log("My Event: ");
     console.log(myEvent);
@@ -224,6 +185,26 @@ var saveEvent_driver = function(myEvent, stream, serverDateTime, res, rm) {
         })
 }
 
+var authenticateWriteToken = function(token, id, error, success) {
+    console.log('streamid:' + id);
+    qdDb.collection('stream').find({
+        streamid: id
+    }, function(err, docs) {
+        docs.toArray(function(err, docsArray) {
+            var stream = docsArray[0] || {};
+            console.log("write token from DB : " + stream.writeToken + " token from user : " + token);
+            if (stream.writeToken != token) {
+                error();
+            } else {
+                var stream = {
+                    streamid: stream.streamid
+                }
+                success(stream);
+            }
+        })
+    });
+};
+
 var postEvent = function(req, res) {
     var writeToken = req.headers.authorization;
     authenticateWriteToken(
@@ -238,53 +219,60 @@ var postEvent = function(req, res) {
     );
 };
 
-// Migrate
 app.post('/stream/:id/event', postEvent);
 
-//Migrate
+var getEventsForStream = function(stream) {
+    var deferred = q.defer();
+    var fields = {
+        _id: 0
+    };
+    var filterSpec = {
+        'payload.streamid': stream.streamid
+    }
+    var options = {
+        url: platformUri + '/rest/events/filter',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: {
+            'filterSpec': JSON.stringify(filterSpec)
+        },
+        method: 'GET'
+    };
+
+    var getEventsFromPlatform = function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var result = JSON.parse(body);
+            deferred.resolve(result);
+        } else {
+            console.log("error during call to platform: " + error);
+            deferred.reject(error);
+        }
+    }
+    requestModule(options, getEventsFromPlatform);
+    return deferred.promise;
+};
+
 app.get('/stream/:id/event', function(req, res) {
     var readToken = req.headers.authorization;
     var streamid = req.params.id;
-    authenticateReadToken(
-        readToken,
-        streamid,
-        function() {
+
+    var stream = {
+        readToken: readToken,
+        streamid: streamid
+    };
+    authenticateReadToken_p(stream)
+        .then(getEventsForStream)
+        .then(function(response) {
+            res.send(response)
+        }).catch(function(error) {
+            // Handle any error from all above steps
+            console.log("stream not found due to : " + error);
             res.status(404).send("stream not found");
-        },
-        function(stream) {
-
-            var fields = {
-                _id: 0
-            };
-
-            var filterSpec = {
-                'payload.streamid': streamid
-            }
-            var options = {
-                url: platformUri + '/rest/events/filter',
-                auth: {
-                    user: "",
-                    password: encryptedPassword
-                },
-                qs: {
-                    'filterSpec': JSON.stringify(filterSpec)
-                },
-                method: 'GET'
-            };
-
-            function callback(error, response, body) {
-                if (!error && response.statusCode == 200) {
-                    var info = JSON.parse(body);
-                    res.send(info)
-                } else {
-                    res.status(500).send("Something went wrong!");
-                }
-            }
-            requestModule(options, callback);
-
-        }
-    );
+        });
 });
+
 //Migrate
 app.get('/live/devbuild/:durationMins', function(req, res) {
     console.log("finding live builds");
@@ -1059,7 +1047,7 @@ var getHourlyBuildCountFromPlatform = function(streamDetails) {
         if (!error && response.statusCode == 200) {
 
             var result = JSON.parse(body);
-            var result=result[0];
+            var result = result[0];
             console.log("No of hourly builds is : " + JSON.stringify(result));
 
             var defaultBuildValues = [{
@@ -1068,7 +1056,7 @@ var getHourlyBuildCountFromPlatform = function(streamDetails) {
             }];
             var hourlyBuilds = generateHoursForWeek(defaultBuildValues);
             for (date in result) {
-                
+
                 if (hourlyBuilds[date] !== undefined) {
                     hourlyBuilds[date].hourlyBuildCount = result[date].buildCount
                 }
