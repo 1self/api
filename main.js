@@ -1012,7 +1012,7 @@ var getHourlyBuildCountFromPlatform = function(streamDetails) {
             }],
             "filterSpec": {
                 "payload.streamid": streamDetails.streamid,
-                "payload.actionTags": "Build"
+                "payload.actionTags": "Finish"
             },
             "projectionSpec": {
                 "payload.serverDateTime": "date",
