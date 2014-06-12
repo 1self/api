@@ -972,7 +972,7 @@ var generateHoursForWeek = function(defaultValues) {
     var numberOfDaysToReportBuildsOn = 7;
     var currentDate = new Date();
     var startDate = new Date(currentDate - (7 * aDay));
-    for (var i = 0; i < numberOfDaysToReportBuildsOn; i++) {
+    for (var i = 1; i <= numberOfDaysToReportBuildsOn; i++) {
         var eachDay = startDate - 0 + (i * aDay);
         eachDay = new Date(eachDay);
         var month = eachDay.getMonth() + 1;
