@@ -967,39 +967,33 @@ app.get('/quantifieddev/buildDuration/:streamid', function(req, res) {
 
 
 });
+var orderDateAsPerWeek = function(date) {
+    var dayOfWeek = new Date(date).getDay();
+    var orderedDates = [];
+    orderedDates[dayOfWeek] = date;
+    return orderedDates;
+}
 var generateHoursForWeek = function(defaultValues) {
     var result = {};
     var numberOfDaysToReportBuildsOn = 7;
     var currentDate = new Date();
     var startDate = new Date(currentDate - (7 * aDay));
-    for (var i = 1; i <= numberOfDaysToReportBuildsOn; i++) {
-        var eachDay = startDate - 0 + (i * aDay);
-        eachDay = new Date(eachDay);
-        var month = eachDay.getMonth() + 1;
-        if (month < 10) {
-            month = '0' + month
-        }
-        var day = eachDay.getDate()
-        if (day < 10) {
-            day = '0' + day
-        }
-        var dateKey = (month) + '/' + day + '/' + eachDay.getFullYear();
+    for (var i = 1; i <= 7; i++) {
         for (var j = 1; j <= 24; j++) {
-
             if (j < 10) {
                 j = '0' + j;
             }
-            var hoursOfTheWeek = dateKey + ' ' + j;
-
-            result[hoursOfTheWeek] = {
-                date: hoursOfTheWeek
+            var hourOfDay = i + " " + j;
+            result[hourOfDay] = {
+                day: hourOfDay
             };
             for (var index in defaultValues) {
-                result[hoursOfTheWeek][defaultValues[index].key] = defaultValues[index].value;
+                result[hourOfDay][defaultValues[index].key] = defaultValues[index].value;
             }
         }
-    };
-    return result;
+    }
+    console.log("Result is : ", result);
+     return result;
 }
 
 var getHourlyBuildCountFromPlatform = function(streamDetails) {
@@ -1008,7 +1002,7 @@ var getHourlyBuildCountFromPlatform = function(streamDetails) {
         "$groupBy": {
             "fields": [{
                 "name": "payload.serverDateTime",
-                "format": "MM/dd/yyyy hh"
+                "format": "e hh"
             }],
             "filterSpec": {
                 "payload.streamid": streamDetails.streamid,
