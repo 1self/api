@@ -1002,7 +1002,7 @@ var getHourlyBuildCountFromPlatform = function(streamDetails) {
         "$groupBy": {
             "fields": [{
                 "name": "payload.serverDateTime",
-                "format": "e hh"
+                "format": "e H"
             }],
             "filterSpec": {
                 "payload.streamid": streamDetails.streamid,
@@ -1050,13 +1050,11 @@ var getHourlyBuildCountFromPlatform = function(streamDetails) {
             }];
             var hourlyBuilds = generateHoursForWeek(defaultBuildValues);
             for (date in result) {
-
                 if (hourlyBuilds[date] !== undefined) {
                     hourlyBuilds[date].hourlyBuildCount = result[date].buildCount
                 }
-
             }
-            deferred.resolve(rollupToArray(hourlyBuilds))
+            deferred.resolve(rollupToArray(hourlyBuilds));
         } else {
             console.log("error during call to platform: " + error);
             deferred.reject(error);
