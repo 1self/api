@@ -1002,7 +1002,7 @@ var getHourlyBuildCountFromPlatform = function(streamDetails) {
         "$groupBy": {
             "fields": [{
                 "name": "payload.serverDateTime",
-                "format": "e H"
+                "format": "e HH"
             }],
             "filterSpec": {
                 "payload.streamid": streamDetails.streamid,
