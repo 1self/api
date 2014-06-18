@@ -1097,7 +1097,7 @@ var getMyActiveDuration = function(streamDetails) {
                 "format": "MM/dd/yyyy"
             }],
             "filterSpec": {
-                "payload.streamid": "LMOQPHQGFTEQCYPH",
+                "payload.streamid": streamDetails.streamid,
                 "payload.actionTags": "Develop",
                 "payload.properties.isUserActive": true
             },
