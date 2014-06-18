@@ -944,7 +944,7 @@ var getAvgBuildDurationFromPlatform = function(streamDetails) {
     requestModule(options, callback);
 
     return deferred.promise;
-}
+};
 
 app.get('/quantifieddev/buildDuration/:streamid', function(req, res) {
     var readToken = req.headers.authorization;
@@ -993,7 +993,7 @@ var generateHoursForWeek = function(defaultValues) {
         }
     }
     console.log("Result is : ", result);
-     return result;
+    return result;
 }
 
 var getHourlyBuildCountFromPlatform = function(streamDetails) {
@@ -1077,6 +1077,122 @@ app.get('/quantifieddev/hourlyBuildCount/:streamid', function(req, res) {
 
     authenticateReadToken_p(stream)
         .then(getHourlyBuildCountFromPlatform)
+        .then(function(response) {
+            res.send(response)
+        }).catch(function(error) {
+            // Handle any error from all above steps
+            console.log("stream not found due to : " + error);
+            res.status(404).send("stream not found");
+        });
+
+
+});
+
+var getMyActiveDuration = function(streamDetails) {
+    var deferred = q.defer();
+    var groupQuery = {
+        "$groupBy": {
+            "fields": [{
+                "name": "payload.serverDateTime",
+                "format": "MM/dd/yyyy"
+            }],
+            "filterSpec": {
+                "payload.streamid": "LMOQPHQGFTEQCYPH",
+                "payload.actionTags": "Develop",
+                "payload.properties.isUserActive": "true"
+            },
+            "projectionSpec": {
+                "payload.serverDateTime": "date",
+                "payload.properties": "properties"
+            },
+            "orderSpec": {}
+        }
+    };
+    var sumOfActiveEvents = {
+        "$sum": {
+            "field": {
+                "name": "properties.duration"
+            },
+            "data": groupQuery,
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "totalActiveDuration"
+            }
+        }
+    };
+    var countOfActiveEvents = {
+        "$count": {
+            "data": groupQuery,
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "activeCount"
+            }
+        }
+    };
+    var options = {
+        url: platformUri + '/rest/analytics/aggregate',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: {
+            spec: JSON.stringify([sumOfActiveEvents,
+                countOfActiveEvents
+            ]),
+            merge: true
+        },
+        method: 'GET'
+    };
+    var convertMillisToMinutes = function(milliseconds) {
+        return Math.round(milliseconds / (1000 * 60) * 100) / 100;
+    }
+
+    function callback(error, response, body) {
+        console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
+        if (!error && response.statusCode == 200) {
+            var result = JSON.parse(body);
+            console.log("generating active events per day now... : " + JSON.stringify(result));
+            var defaulActiveDurationValues = [{
+                key: "totalActiveDuration",
+                value: 0
+            }, {
+                key: "inActiveCount",
+                value: 0
+            }];
+            var activeDurationByDay = generateDatesFor(defaulActiveDurationValues);
+            console.log("Active Duration By day: " + JSON.stringify(activeDurationByDay));
+            for (date in result) {
+                if (activeDurationByDay[date] !== undefined) {
+                    activeDurationByDay[date].totalActiveDuration = convertMillisToMinutes(result[date].totalActiveDuration);
+                    activeDurationByDay[date].inActiveCount = result[date].activeCount - 1;
+                }
+
+            }
+            console.log("Result is: ", activeDurationByDay);
+            deferred.resolve(rollupToArray(activeDurationByDay))
+        } else {
+            console.log("error during call to platform: " + error);
+            deferred.reject(error);
+
+        }
+    }
+
+    requestModule(options, callback);
+
+    return deferred.promise;
+};
+
+app.get('/quantifieddev/myActiveEvents/:streamid', function(req, res) {
+    var readToken = req.headers.authorization;
+    var streamid = req.params.streamid;
+
+    var stream = {
+        readToken: readToken,
+        streamid: streamid
+    }
+
+    authenticateReadToken_p(stream)
+        .then(getMyActiveDuration)
         .then(function(response) {
             res.send(response)
         }).catch(function(error) {
