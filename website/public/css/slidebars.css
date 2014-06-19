@@ -1,0 +1,591 @@
+/* -----------------------------------
+ * Slidebars
+ * Version 0.8.1
+ * http://plugins.adchsm.me/slidebars/
+ *
+ * Written by Adam Smith
+ * http://www.adchsm.me/
+ *
+ * Released under MIT License
+ * http://plugins.adchsm.me/slidebars/license.txt
+ *
+ * -------------------
+ * Slidebars CSS Index
+ *
+ * 001 - Box Model, Html & Body
+ * 002 - Site
+ * 003 - Slidebars
+ * 004 - Animation
+ *
+ * ----------------------------
+ * 001 - Box Model, Html & Body
+ */
+
+html, body, #sb-site, .sb-slidebar {
+	margin: 0;
+	padding: 0;
+	-webkit-box-sizing: border-box;
+	   -moz-box-sizing: border-box;
+	        box-sizing: border-box;
+}
+
+html, body {
+	width: 100%;
+}
+
+html {
+	min-height: 100%;
+}
+
+body {
+	height: 100%;
+}
+
+/* ----------
+ * 002 - Site
+ */
+
+#sb-site {
+	width: 100%;
+	min-height: 100%; /* Initially set here but accurate height is set by slidebars.js */
+	position: relative;
+	z-index: 1; /* Site sits above Slidebars */
+	background-color: #515151; /* Default background colour, overwrite this with your own css. */
+}
+
+/* ---------------
+ * 003 - Slidebars
+ */
+
+.sb-slidebar {
+	height: 100%;
+	overflow-y: auto; /* Enable vertical scrolling on Slidebars when needed. */
+	position: fixed;
+	top: 0;
+	z-index: 0; /* Slidebars sit behind sb-site. */
+	visibility: hidden; /* Initially hide the Slidebars. */
+	background-color: #333; /* Default Slidebars background colour, overwrite this with your own css. */
+}
+
+.sb-static { /* Makes Slidebars scroll naturally with the site, and unfixes them for Android Browser 2.X. */
+	position: absolute;
+}
+
+.sb-left {
+	left: 0; /* Sets Slidebar to the left. */
+}
+
+.sb-right {
+	right: 0; /* Sets Slidebar to the right. */
+}
+
+html.sb-active-left .sb-left,
+html.sb-active-right .sb-right {
+	visibility: visible; /* Makes Slidebars visibile when open. */
+	padding: 10px;
+}
+
+/* Slidebar Widths */
+
+.sb-slidebar {
+	width: 30%; /* Browsers that don't support media queries. */
+}
+
+.sb-width-custom {
+	/* To set a custom width, add this class to your Slidebar and pass a px or % value as a data attribute 'data-sb-width'. */
+}
+
+@media (max-width: 480px) {
+	.sb-slidebar {
+		width: 70%; /* Slidebar width on extra small screens. */
+	}
+}
+
+@media (min-width: 481px) {
+	.sb-slidebar {
+		width: 55%; /* Slidebar width on small screens. */
+	}
+}
+
+@media (min-width: 768px) {
+	.sb-slidebar {
+		width: 40%; /* Slidebar width on small screens. */
+	}
+}
+
+@media (min-width: 992px) {
+	.sb-slidebar {
+		width: 30%; /* Slidebar width on medium screens. */
+	}
+}
+
+@media (min-width: 1200px) {
+	.sb-slidebar {
+		width: 20%; /* Slidebar width on large screens. */
+	}
+}
+
+/* ---------------
+ * 004 - Animation
+ */
+
+html.sb-anim-type-translate .sb-slide, html.sb-anim-type-side .sb-slide {
+	-webkit-transition: -webkit-transform 400ms ease;
+	   -moz-transition: -moz-transform 400ms ease;
+	     -o-transition: -o-transform 400ms ease;
+	        transition: transform 400ms ease;
+	-webkit-transition-property: -webkit-transform, left; /* Add 'left' for Android < 4.4 */
+	-webkit-backface-visibility: hidden; /* Prevents flickering. */
+}
+
+
+
+
+
+
+/* CSS Snippets */
+
+ul.cart {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+ul.cart li {
+  position: relative;
+  line-height: 16px;
+  padding: 10px 80px 10px 15px;
+  font-weight: 500;
+  border-bottom: 1px solid #444;
+  color: #eee;
+}
+ul.cart li:first-child {
+  margin-top: -1px;
+  padding-top: 11px;
+}
+
+ul.cart li .cart-item-pic {
+  position: relative;
+  float: left;
+  margin: -2px 12px 0 -7px;
+}
+ul.cart li .cart-item-pic > img {
+  display: block;
+  height: 36px;
+  width: 36px;
+  border-radius: 3px;
+}
+ul.cart li .cart-item-pic:before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  bottom: -1px;
+  left: -1px;
+  right: -1px;
+  border: 1px solid #666;
+  border-radius: 2px;
+}
+
+ul.cart li .cart-item-desc {
+  display: block;
+  font-size: 12px;
+  font-weight: normal;
+}
+
+ul.cart li .cart-item-price {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  margin-top: -10px;
+  color: #eee;
+}
+
+.cart-bottom {
+  line-height: 31px;
+  padding: 10px 10px 10px 15px;
+  font-weight: 600;
+  background: #484848;
+  color: #eee;
+}
+.cart-bottom > .cart-button {
+  float: right;
+}
+
+.cart-button {
+  line-height: 29px;
+  padding: 0 10px;
+  color: white;
+  text-decoration: none;
+  background: #1e91cf;
+  border-radius: 2px;
+}
+.cart-button:hover {
+  background-color: #1377AD;
+  color: white;
+}
+
+/* Profile */
+.user-profile{
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #4D4D4D;
+  background-image: url(../img/debut-dark.png);
+}
+.profile-container{
+  margin-bottom: 10px;
+  text-align: center;
+}
+.profile-container img.user-img{
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border: 5px solid #1e91cf;
+  display: inline-block;
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 10px auto;
+}
+.profile-container .desc{
+  margin-bottom: 20px;
+  color: #ccc;
+}
+.profile-container .desc h4{
+  font-size: 21px;
+  margin: 0 0 5px 0;
+}
+.profile-container .desc p{
+  font-size: 11px;
+  margin: 0 0 10px 0;
+}
+
+ul.ftr-link {
+  margin: 0;
+  padding: 0;
+}
+
+ul.ftr-link li {
+  border-right: 1px solid #4D4D4D;
+  display: inline-block;
+  line-height: 30px;
+  margin: 0;
+  text-align: center;
+  width: 32%;
+}
+
+ul.ftr-link li a {
+  color: #999;
+  display: block;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+ul.ftr-link li a:hover, ul.ftr-link li.active a {
+  color: #58c9f3;
+}
+
+ul.ftr-link li:last-child {
+  border-right: none;
+}
+
+ul.ftr-link li a i {
+  display: block;
+}
+
+/* Panels */
+.sb-slidebar .block {
+  margin-bottom: 10px;
+  width: 100%;
+  border: 1px solid #4D4D4D;
+  background-image: url(../img/debut-dark.png);
+}
+.sb-slidebar .block .heading {
+  background-color: #404040;
+  border-bottom: 1px solid #4D4D4D;
+  padding: 10px;
+  color: #eeeeee;
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0px;
+}
+.sb-slidebar .block .wrapper{
+  padding: 10px 15px;
+  background-color: transparent;
+}
+
+
+/* OS stats */
+.os-stats{
+  text-align: center;
+  color: #eeeeee;
+  background: transparent;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  padding: 10px;
+}
+
+.os-stats .block{
+  display: inline-block;
+  width: 30%;
+  text-align: center;
+  margin-bottom: 5px;
+  padding: 10px 0;
+}
+.os-stats .block i:before {
+  font-size: 30px;
+  display: block;
+  margin-bottom: 7px;
+}
+
+/* Sliding Tags */
+ul.sliding-tags {
+  zoom: 1;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+.sliding-tags:before, .sliding-tags:after {
+  content: '';
+  display: table;
+}
+.sliding-tags:after {
+  clear: both;
+}
+.sliding-tags li {
+  position: relative;
+  float: left;
+  margin: 0 10px 8px 0;
+}
+.sliding-tags li:active {
+  margin-top: 1px;
+  margin-bottom: 7px;
+}
+.sliding-tags li:after {
+  content: '';
+  z-index: 2;
+  position: absolute;
+  top: 10px;
+  right: -2px;
+  width: 5px;
+  height: 6px;
+  opacity: .95;
+  background: #eb6b22;
+  border-radius: 3px 0 0 3px;
+  -webkit-box-shadow: inset 1px 0 #99400e;
+  box-shadow: inset 1px 0 #99400e;
+}
+.sliding-tags a, .sliding-tags span {
+  display: block;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.sliding-tags a {
+  height: 26px;
+  line-height: 26px;
+  padding: 0 9px 0 8px;
+  font-size: 12px;
+  color: #555;
+  text-decoration: none;
+  text-shadow: 0 1px white;
+  background: #fafafa;
+  border-width: 1px 0 1px 1px;
+  border-style: solid;
+  border-color: #dadada;
+  border-radius: 3px 0 0 3px;
+  -webkit-box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7), 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.sliding-tags a:hover {
+  color: #555;
+}
+.sliding-tags a:hover span {
+  padding: 0 7px 0 6px;
+  max-width: 40px;
+  -webkit-box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15), 1px 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15), 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+.sliding-tags span {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  z-index: 2;
+  overflow: hidden;
+  max-width: 0;
+  height: 26px;
+  line-height: 26px;
+  padding: 0 0 0 2px;
+  color: white;
+  text-shadow: 0 -1px rgba(0, 0, 0, 0.3);
+  background: #eb6b22;
+  border: 1px solid;
+  border-color: #d15813;
+  border-radius: 0 2px 2px 0;
+  opacity: .95;
+  -webkit-transition: 0.3s ease-out;
+  -moz-transition: 0.3s ease-out;
+  -o-transition: 0.3s ease-out;
+  transition: 0.3s ease-out;
+  -webkit-transition-property: padding, max-width;
+  -moz-transition-property: padding, max-width;
+  -o-transition-property: padding, max-width;
+  transition-property: padding, max-width;
+}
+
+.tags-green li:after {
+  background: #8FBB6C;
+  -webkit-box-shadow: inset 1px 0 #3a6b1e;
+  box-shadow: inset 1px 0 #3a6b1e;
+}
+.tags-green span {
+  background: #8FBB6C;
+  border-color: #549b2b;
+}
+
+.tags-blue li:after {
+  background: #1e91cf;
+  -webkit-box-shadow: inset 1px 0 #276f9e;
+  box-shadow: inset 1px 0 #276f9e;
+}
+.tags-blue span {
+  background: #1e91cf;
+  border-color: #3591cd;
+}
+
+
+/* Online Users */
+.online-users {
+  margin: 0px;
+  padding: 0;
+  list-style-type: none;
+}
+.online-users li{
+  padding: 5px 0;
+}
+.online-users li a {
+  position: relative;
+  display: block;
+  color: #eeeeee;
+}
+.online-users li a img {
+  margin-right: 3px;
+  width: 16px;
+  height: 16px; 
+}
+.online-users li a .user-name {
+  display: inline-block; 
+}
+.online-users li a .user-status, .online-users li a .user-status.online, .online-users li a .user-status.busy, .online-users li a .user-status.away {
+  position: absolute;
+  top: 6px;
+  right: 0px;
+  width: 8px;
+  height: 8px;
+  -webkit-border-radius: 100%;
+  -moz-border-radius: 100%;
+  border-radius: 100%;
+  background: #cccccc;
+  -webkit-box-shadow: 0 0 4px #999999 inset;
+  -moz-box-shadow: 0 0 4px #999999 inset;
+  box-shadow: 0 0 4px #999999 inset; 
+}
+.online-users li a .user-status.online, .online-users li a .user-status.online.online, .online-users li a .user-status.busy.online, .online-users li a .user-status.away.online {
+  background: #a9d96c; 
+}
+.online-users li a .user-status.busy, .online-users li a .user-status.online.busy, .online-users li a .user-status.busy.busy, .online-users li a .user-status.away.busy {
+  background: #e73c3c; 
+}
+.online-users li a .user-status.away, .online-users li a .user-status.online.away, .online-users li a .user-status.busy.away, .online-users li a .user-status.away.away {
+  background: #f3cd33; 
+}
+
+/* Progress statistics */
+.progress-statistics {
+  list-style-type: none;
+  margin: 0;
+  padding: 0; 
+}
+.progress-statistics li {
+  padding: 10px;
+  color: #eeeeee;
+  -webkit-transition: All 0.5s ease;
+  -moz-transition: All 0.5s ease;
+  -ms-transition: All 0.5s ease;
+  -o-transition: All 0.5s ease;
+  transition: All 0.5s ease;
+}
+.progress-statistics li .progress {
+  background-color: #e0e0e0;
+  margin-top: 3px;
+  margin-bottom: 3px; 
+}
+.progress-statistics li .details {
+  font-size: 11px;
+  font-weight: 500;
+  display: inline;
+}
+
+/* Infos */
+.infos {
+  margin: 0 10px;
+  padding: 0; 
+}
+.infos li {
+  display: block;
+  border-bottom: 1px solid #444;
+  padding: 8px 0;
+  cursor: pointer; 
+}
+.infos li .label {
+  padding: 6px;
+  width: 24px;
+  text-align: center;
+  display: inline-block;
+  margin-right: 10px; 
+}
+.infos li .label i {
+  font-size: 10px; 
+}
+.infos li .user img {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #cccccc;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%; 
+}
+.infos li .info {
+  margin-left: 34px;
+  color: #eeeeee; 
+}
+.infos li .info h6 {
+  margin: 0;
+  padding: 0;
+  font-weight: 200;
+  line-height: 100%;
+  font-size: 11px;
+  margin-bottom: 3px;
+  color: #eeeeee;
+}
+.infos li .info p {
+  margin: 0;
+  padding: 0;
+  color: #999999;
+  font-size: 10px;
+  line-height: 100%; 
+}
+.infos li .info small {
+  color: #666666;
+  font-size: 11px; 
+}
+.infos li a {
+  color: #33393c;
+  font-weight: 500; 
+}
+.infos li a span {
+  color: gray;
+  font-size: 11px;
+  font-weight: 200; 
+}
+.infos li:last-child {
+  border-bottom: 0; 
+}

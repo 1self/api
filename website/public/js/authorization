@@ -1,0 +1,5 @@
+var authorization = function(){
+	
+};
+
+authorization();

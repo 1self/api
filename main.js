@@ -1,5 +1,7 @@
 require('newrelic');
+var swig = require('swig');
 var requestModule = require('request');
+var path = require('path');
 var cheerio = require('cheerio');
 var express = require("express");
 var moment = require("moment")
@@ -10,6 +12,14 @@ var q = require('q');
 var mongoClient = require('mongodb').MongoClient;
 app.use(express.logger());
 app.use(express.bodyParser());
+app.use(express.static(path.join(__dirname, 'website/public')));
+app.engine('html', swig.renderFile);
+app.set('view engine', 'html');
+app.set('view cache', false);
+app.set('views', __dirname + '/website/views');
+swig.setDefaults({
+    cache: false
+});
 
 // Constants
 var aDay = 24 * 60 * 60 * 1000;
@@ -69,6 +79,40 @@ app.all('*', function(req, res, next) {
     }
 });
 
+var getFilterValuesFrom = function(req) {
+    var lastHour = 60;
+    var selectedLanguage = req.query.language ? req.query.language : "all";
+    var selectedEvent = req.query.event ? req.query.event : "all";
+    var selectedDuration = req.query.duration ? req.query.duration : lastHour;
+    var filterValues = {
+        globe: {
+            lang: selectedLanguage,
+            duration: selectedDuration,
+            event: selectedEvent
+        },
+        country: {
+            lang: selectedLanguage,
+            duration: selectedDuration,
+            event: selectedEvent
+        }
+    };
+    return filterValues;
+}
+
+app.get("/app/community.html", function(req, res) {
+    res.render('community', getFilterValuesFrom(req));
+});
+
+app.get("/app/dashboard.html", function(req, res) {
+    var streamId = req.query.streamId ? req.query.streamId : "";
+    var readToken = req.query.readToken ? req.query.readToken : "";
+    
+    res.render('dashboard', {
+        streamId: streamId,
+        readToken: readToken
+    });
+});
+
 app.get('/', function(request, response) {
     response.send('quantified dev service');
 });
@@ -101,8 +145,8 @@ app.post('/stream', function(req, res) {
             streamId.push(charCode);
         };
 
-        writeToken = crypto.randomBytes(22).toString('base64');
-        readToken = crypto.randomBytes(22).toString('base64');
+        writeToken = crypto.randomBytes(22).toString('hex');
+        readToken = crypto.randomBytes(22).toString('hex');
 
         var stream = {
             streamid: streamId.join(''),
