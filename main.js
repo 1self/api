@@ -113,6 +113,16 @@ app.get("/dashboard", function(req, res) {
     });
 });
 
+app.get("/app/compare.html", function(req, res) {
+    var streamId = req.query.streamId ? req.query.streamId : "";
+    var readToken = req.query.readToken ? req.query.readToken : "";
+    
+    res.render('compare', {
+        streamId: streamId,
+        readToken: readToken
+    });
+});
+
 app.get('/', function(request, response) {
     response.send('quantified dev service');
 });
