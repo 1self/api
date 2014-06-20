@@ -1132,6 +1132,287 @@ app.get('/quantifieddev/hourlyBuildCount/:streamid', function(req, res) {
 
 });
 
+var getHourlyWtfCount = function(streamDetails) {
+    var deferred = q.defer();
+    var groupQuery = {
+        "$groupBy": {
+            "fields": [{
+                "name": "payload.serverDateTime",
+                "format": "e HH"
+            }],
+            "filterSpec": {
+                "payload.streamid": streamDetails.streamid,
+                "payload.actionTags": "wtf"
+            },
+            "projectionSpec": {
+                "payload.serverDateTime": "date",
+                "payload.properties": "properties"
+            },
+            "orderSpec": {}
+        }
+    };
+    var hourlyWtfCount = {
+        "$count": {
+            "data": groupQuery,
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "wtfCount"
+            }
+        }
+    };
+    var options = {
+        url: platformUri + '/rest/analytics/aggregate',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: {
+            spec: JSON.stringify(hourlyWtfCount)
+        },
+        method: 'GET'
+    };
+
+    function callback(error, response, body) {
+        console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
+        if (!error && response.statusCode == 200) {
+
+            var result = JSON.parse(body);
+            var result = result[0];
+            console.log("No of wtfs is : " + JSON.stringify(result));
+
+            var defaultBuildValues = [{
+                key: "wtfCount",
+                value: 0
+            }];
+            var hourlyWtfs = generateHoursForWeek(defaultBuildValues);
+            for (date in result) {
+                if (hourlyWtfs[date] !== undefined) {
+                    hourlyWtfs[date].wtfCount = result[date].wtfCount
+                }
+            }
+            deferred.resolve(rollupToArray(hourlyWtfs));
+        } else {
+            console.log("error during call to platform: " + error);
+            deferred.reject(error);
+
+        }
+    }
+
+    requestModule(options, callback);
+
+    return deferred.promise;
+};
+
+app.get('/quantifieddev/hourlyWtfCount/:streamid', function(req, res) {
+    var readToken = req.headers.authorization;
+    var streamid = req.params.streamid;
+
+    var stream = {
+        readToken: readToken,
+        streamid: streamid
+    }
+
+    authenticateReadToken_p(stream)
+        .then(getHourlyWtfCount)
+        .then(function(response) {
+            res.send(response)
+        }).catch(function(error) {
+            // Handle any error from all above steps
+            console.log("stream not found due to : " + error);
+            res.status(404).send("stream not found");
+        });
+
+
+});
+
+var getHourlyHydrationCount = function(streamDetails) {
+    var deferred = q.defer();
+    var groupQuery = {
+        "$groupBy": {
+            "fields": [{
+                "name": "payload.serverDateTime",
+                "format": "e HH"
+            }],
+            "filterSpec": {
+                "payload.streamid": streamDetails.streamid,
+                "payload.actionTags": "drink",
+                "payload.objectTags": "Water"
+            },
+            "projectionSpec": {
+                "payload.serverDateTime": "date",
+                "payload.properties": "properties"
+            },
+            "orderSpec": {}
+        }
+    };
+    var hourlyHydrationCount = {
+        "$count": {
+            "data": groupQuery,
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "hydrationCount"
+            }
+        }
+    };
+    var options = {
+        url: platformUri + '/rest/analytics/aggregate',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: {
+            spec: JSON.stringify(hourlyHydrationCount)
+        },
+        method: 'GET'
+    };
+
+    function callback(error, response, body) {
+        console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
+        if (!error && response.statusCode == 200) {
+
+            var result = JSON.parse(body);
+            var result = result[0];
+            console.log("Hydration count is : " + JSON.stringify(result));
+
+            var defaultBuildValues = [{
+                key: "hydrationCount",
+                value: 0
+            }];
+            var hourlyHydration = generateHoursForWeek(defaultBuildValues);
+            for (date in result) {
+                if (hourlyHydration[date] !== undefined) {
+                    hourlyHydration[date].hydrationCount = result[date].hydrationCount
+                }
+            }
+            deferred.resolve(rollupToArray(hourlyHydration));
+        } else {
+            console.log("error during call to platform: " + error);
+            deferred.reject(error);
+
+        }
+    }
+
+    requestModule(options, callback);
+
+    return deferred.promise;
+};
+
+app.get('/quantifieddev/hourlyHydrationCount/:streamid', function(req, res) {
+    var readToken = req.headers.authorization;
+    var streamid = req.params.streamid;
+
+    var stream = {
+        readToken: readToken,
+        streamid: streamid
+    }
+
+    authenticateReadToken_p(stream)
+        .then(getHourlyHydrationCount)
+        .then(function(response) {
+            res.send(response)
+        }).catch(function(error) {
+            // Handle any error from all above steps
+            console.log("stream not found due to : " + error);
+            res.status(404).send("stream not found");
+        });
+
+
+});
+
+var getHourlyCaffeineCount = function(streamDetails) {
+    var deferred = q.defer();
+    var groupQuery = {
+        "$groupBy": {
+            "fields": [{
+                "name": "payload.serverDateTime",
+                "format": "e HH"
+            }],
+            "filterSpec": {
+                "payload.streamid": streamDetails.streamid,
+                "payload.actionTags": "drink",
+                "payload.objectTags": "Coffee"
+            },
+            "projectionSpec": {
+                "payload.serverDateTime": "date",
+                "payload.properties": "properties"
+            },
+            "orderSpec": {}
+        }
+    };
+    var hourlyCaffeineCount = {
+        "$count": {
+            "data": groupQuery,
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "caffeineCount"
+            }
+        }
+    };
+    var options = {
+        url: platformUri + '/rest/analytics/aggregate',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: {
+            spec: JSON.stringify(hourlyCaffeineCount)
+        },
+        method: 'GET'
+    };
+
+    function callback(error, response, body) {
+        console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
+        if (!error && response.statusCode == 200) {
+
+            var result = JSON.parse(body);
+            var result = result[0];
+            console.log("Caffeine count is : " + JSON.stringify(result));
+
+            var defaultBuildValues = [{
+                key: "caffeineCount",
+                value: 0
+            }];
+            var hourlyCaffeine = generateHoursForWeek(defaultBuildValues);
+            for (date in result) {
+                if (hourlyCaffeine[date] !== undefined) {
+                    hourlyCaffeine[date].caffeineCount = result[date].caffeineCount
+                }
+            }
+            deferred.resolve(rollupToArray(hourlyCaffeine));
+        } else {
+            console.log("error during call to platform: " + error);
+            deferred.reject(error);
+
+        }
+    }
+
+    requestModule(options, callback);
+
+    return deferred.promise;
+};
+
+app.get('/quantifieddev/hourlyCaffeineCount/:streamid', function(req, res) {
+    var readToken = req.headers.authorization;
+    var streamid = req.params.streamid;
+
+    var stream = {
+        readToken: readToken,
+        streamid: streamid
+    }
+
+    authenticateReadToken_p(stream)
+        .then(getHourlyCaffeineCount)
+        .then(function(response) {
+            res.send(response)
+        }).catch(function(error) {
+            // Handle any error from all above steps
+            console.log("stream not found due to : " + error);
+            res.status(404).send("stream not found");
+        });
+
+
+});
+
 var getMyActiveDuration = function(streamDetails) {
     var deferred = q.defer();
     var groupQuery = {

@@ -52,15 +52,15 @@
       <ul id="mini-nav" class="hidden-xs">
         <li class="arrow-box list-box">
           <a href="#">
-          <i class="icon-reorder text-warning"></i>
+            <i class="icon-reorder text-warning"></i>
           </a>
         </li>
         </ul><!-- Mini Nav Left End -->
         <ul id="mini-nav-right">
           <li class="list-box hidden-lg hidden-md hidden-sm" id="mob-nav">
             <a href="#">
-            <span>Menu</span>
-            <i class="icon-reorder"></i>
+              <span>Menu</span>
+              <i class="icon-reorder"></i>
             </a>
           </li>
           </ul><!-- Mini Nav Right End -->
@@ -75,33 +75,33 @@
               <ul>
                 <li class="highlight">
                   <a href='dashboard.html'>
-                  <i class="icon-dashboard"></i>
-                  <span>My Dev Dashboard</span>
-                  <em class="arrow-active"></em>
+                    <i class="icon-dashboard"></i>
+                    <span>My Dev Dashboard</span>
+                    <em class="arrow-active"></em>
                   </a>
                 </li>
                 <li class="highlight">
                   <a href='community.html'>
-                  <i class="glyphicon glyphicon-globe"></i>
-                  <span>Community</span>
+                    <i class="glyphicon glyphicon-globe"></i>
+                    <span>Community</span>
                   </a>
                 </li>
                 <li class="highlight">
                   <a href='http://quantifieddev.org/#download' target="_blank">
-                  <i class="glyphicon glyphicon-save"></i>
-                  <span>Get Quantified Dev</span>
+                    <i class="glyphicon glyphicon-save"></i>
+                    <span>Get Quantified Dev</span>
                   </a>
                 </li>
                 <li class="highlight">
                   <a href='http://blog.quantifieddev.org' target="_blank">
-                  <i class="glyphicon glyphicon-edit"></i>
-                  <span>Quantified Dev Blog</span>
+                    <i class="glyphicon glyphicon-edit"></i>
+                    <span>Quantified Dev Blog</span>
                   </a>
                 </li>
                 <li class="highlight">
                   <a href='http://blog.quantifieddev.org/ask' target="_blank">
-                  <i class="glyphicon glyphicon-comment"></i>
-                  <span>Ask Us Anything</span>
+                    <i class="glyphicon glyphicon-comment"></i>
+                    <span>Ask Us Anything</span>
                   </a>
                 </li>
               </ul>
@@ -277,7 +277,18 @@
                     </div>
                   </div>
                 </div>
-                 </div>
+              </div>
+              <div class="row sortable">
+                <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+                  <div class="panel panel-secondary fixed-height">
+                    <div class="panel-heading cursor-move">
+                      <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Wtfs</h3>
+                    </div>
+                    <div class="panel-body">
+                      <div id="hourlyWtf-heat-map"></div>
+                    </div>
+                  </div>
+                </div>
                 <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
                   <div class="panel panel-secondary fixed-height">
                     <div class="panel-heading cursor-move">
@@ -289,8 +300,18 @@
                     </div>
                   </div>
                 </div>
-             
+              </div>
               <div class="row sortable">
+                <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+                  <div class="panel panel-secondary fixed-height">
+                    <div class="panel-heading cursor-move">
+                      <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Water Intake</h3>
+                    </div>
+                    <div class="panel-body">
+                      <div id="hourlyHydration-heat-map"></div>
+                    </div>
+                  </div>
+                </div>
                 <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
                   <div class="panel panel-secondary fixed-height">
                     <div class="panel-heading cursor-move">
@@ -299,6 +320,19 @@
                     </div>
                     <div class="panel-body">
                       <div id="hydration-history"></div>
+                    </div>
+                  </div>
+                </div>
+                
+              </div>
+              <div class="row sortable">
+                <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+                  <div class="panel panel-secondary fixed-height">
+                    <div class="panel-heading cursor-move">
+                      <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Caffeine Intake</h3>
+                    </div>
+                    <div class="panel-body">
+                      <div id="hourlyCaffeine-heat-map"></div>
                     </div>
                   </div>
                 </div>
@@ -313,6 +347,8 @@
                     </div>
                   </div>
                 </div>
+              </div>
+              <div class="row sortable">
                 <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
                   <div class="panel panel-secondary fixed-height">
                     <div class="panel-heading cursor-move">
@@ -324,8 +360,6 @@
                     </div>
                   </div>
                 </div>
-                </div>
-                <div class="row sortable">
                 <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
                   <div class="panel panel-secondary fixed-height">
                     <div class="panel-heading cursor-move">
@@ -337,52 +371,56 @@
                     </div>
                   </div>
                 </div>
-              
               </div>
-              <!-- Bootstrap Container End -->
+              
             </div>
+            <!-- Bootstrap Container End -->
           </div>
-          <!-- Main Container End -->
-          <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-          <script src="/js/jquery.js"></script>
-          
-          <!-- Include all compiled plugins (below), or include individual files as needed -->
-          <script src="/js/bootstrap.min.js"></script>
-          <script src="/js/bootstrap-modal.js"></script>
-          <script src="/js/bootstrap-modalmanager.js"></script>
-          <script src="/js/underscore-min.js"></script>
-          <!-- jQuery UI JS -->
-          <script src="/js/jquery-ui-v1.10.3.js"></script>
-          <!-- Sparkline graphs -- >
-          <script src="/js/sparkline.js"></script>
-          <!-- Data tables -->
-          <script src="/js/jquery.datatables.js"></script>
-          <!-- Date Range -->
-          <script src="/js/daterange/moment.js"></script>
-          <script src="/js/daterange/daterangepicker.js"></script>
-          <!-- Animated Right Sidebar -->
-          <script src="/js/slidebars.js"></script>
-          <!-- JVector Map -->
-          <script src="/js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
-          <script src="/js/jvectormap/jquery-jvectormap-usa.js"></script>
-          <!-- Custom JS -->
-          <script src="/js/custom.js"></script>
-          <script src="/js/custom-index.js"></script>
-          <script src="/js/authorization.js"></script>
-          <script src="/packages/d3/d3.js"></script>
-          <script src="/packages/d3/d3.geo.projection.v0.min.js"></script>
-          <script src="/packages/d3/topojson.v1.min.js"></script>
-          <script src="/packages/d3/queue.v1.min.js"></script>
-          <script src="/packages/regressionjs/regression.js"></script>
-          <script src="/js/1self.js"></script>
-          <script src="/js/quantified-dev.js"></script>
-          <script src="/js/build-history-d3.js"></script>
-          <script src="/js/wtf-history-d3.js"></script>
-          <script src="/js/hydration-history-d3.js"></script>
-          <script src="/js/caffeine-history-d3.js"></script>
-          <script src="/js/buildDuration-history-d3.js"></script>
-          <script src="/js/active-events-d3.js"></script>
-          <script src="/js/hourlyBuild-heatMap-d3.js"></script>
-          <script src="/js/dashboard.js"></script>
-        </body>
-      </html>
+        </div>
+        <!-- Main Container End -->
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="/js/jquery.js"></script>
+        
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="/js/bootstrap.min.js"></script>
+        <script src="/js/bootstrap-modal.js"></script>
+        <script src="/js/bootstrap-modalmanager.js"></script>
+        <script src="/js/underscore-min.js"></script>
+        <!-- jQuery UI JS -->
+        <script src="/js/jquery-ui-v1.10.3.js"></script>
+        <!-- Sparkline graphs -- >
+        <script src="/js/sparkline.js"></script>
+        <!-- Data tables -->
+        <script src="/js/jquery.datatables.js"></script>
+        <!-- Date Range -->
+        <script src="/js/daterange/moment.js"></script>
+        <script src="/js/daterange/daterangepicker.js"></script>
+        <!-- Animated Right Sidebar -->
+        <script src="/js/slidebars.js"></script>
+        <!-- JVector Map -->
+        <script src="/js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
+        <script src="/js/jvectormap/jquery-jvectormap-usa.js"></script>
+        <!-- Custom JS -->
+        <script src="/js/custom.js"></script>
+        <script src="/js/custom-index.js"></script>
+        <script src="/js/authorization.js"></script>
+        <script src="/packages/d3/d3.js"></script>
+        <script src="/packages/d3/d3.geo.projection.v0.min.js"></script>
+        <script src="/packages/d3/topojson.v1.min.js"></script>
+        <script src="/packages/d3/queue.v1.min.js"></script>
+        <script src="/packages/regressionjs/regression.js"></script>
+        <script src="/js/1self.js"></script>
+        <script src="/js/quantified-dev.js"></script>
+        <script src="/js/build-history-d3.js"></script>
+        <script src="/js/wtf-history-d3.js"></script>
+        <script src="/js/hydration-history-d3.js"></script>
+        <script src="/js/caffeine-history-d3.js"></script>
+        <script src="/js/buildDuration-history-d3.js"></script>
+        <script src="/js/active-events-d3.js"></script>
+        <script src="/js/hourlyBuild-heatMap-d3.js"></script>
+        <script src="/js/hourlyWtf-heatMap-d3.js"></script>
+        <script src="/js/hourlyHydration-heatMap-d3.js"></script>
+        <script src="/js/hourlyCaffeine-heatMap-d3.js"></script>
+        <script src="/js/dashboard.js"></script>
+      </body>
+    </html>

@@ -129,6 +129,54 @@ var qd = function() {
             }
         });
     };
+    result.updateHourlyWtfHeatMap = function() {
+        $.ajax({
+            url: url("hourlyWtfCount"),
+            headers: {
+                "Authorization": result.readToken,
+                "Content-Type": "application/json"
+            },
+            success: function(hourlyWtfEvents) {
+                var timezoneOffset = new Date().getTimezoneOffset();
+                var timezoneDifferenceInHours = Math.round(timezoneOffset / 60);
+                result.timezoneDifferenceInHours = timezoneDifferenceInHours;
+                result.hourlyWtfEvents = hourlyWtfEvents;
+                result.plotHourlyWtfHeatMap();
+            }
+        });
+    };
+    result.updateHourlyHydrationHeatMap = function() {
+        $.ajax({
+            url: url("hourlyHydrationCount"),
+            headers: {
+                "Authorization": result.readToken,
+                "Content-Type": "application/json"
+            },
+            success: function(hourlyHydrationEvents) {
+                var timezoneOffset = new Date().getTimezoneOffset();
+                var timezoneDifferenceInHours = Math.round(timezoneOffset / 60);
+                result.timezoneDifferenceInHours = timezoneDifferenceInHours;
+                result.hourlyHydrationEvents = hourlyHydrationEvents;
+                result.plotHourlyHydrationHeatMap();
+            }
+        });
+    };
+    result.updateHourlyCaffeineHeatMap = function() {
+        $.ajax({
+            url: url("hourlyCaffeineCount"),
+            headers: {
+                "Authorization": result.readToken,
+                "Content-Type": "application/json"
+            },
+            success: function(hourlyCaffeineEvents) {
+                var timezoneOffset = new Date().getTimezoneOffset();
+                var timezoneDifferenceInHours = Math.round(timezoneOffset / 60);
+                result.timezoneDifferenceInHours = timezoneDifferenceInHours;
+                result.hourlyCaffeineEvents = hourlyCaffeineEvents;
+                result.plotHourlyCaffeineHeatMap();
+            }
+        });
+    };
     result.updateActiveEvents = function() {
         $.ajax({
             url: url("myActiveEvents"),
@@ -152,6 +200,9 @@ var qd = function() {
         result.updateCaffeineModel();
         result.updateBuildDurationModel();
         result.updateHourlyBuildHeatMap();
+        result.updateHourlyWtfHeatMap();
+        result.updateHourlyHydrationHeatMap();
+        result.updateHourlyCaffeineHeatMap();
         result.updateActiveEvents();
     }
 
@@ -166,6 +217,9 @@ var qd = function() {
         result.updateCaffeineModel();
         result.updateBuildDurationModel();
         result.updateHourlyBuildHeatMap();
+        result.updateHourlyWtfHeatMap();
+        result.updateHourlyHydrationHeatMap();
+        result.updateHourlyCaffeineHeatMap();
         result.updateActiveEvents();
     }
 
