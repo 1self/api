@@ -1,4 +1,4 @@
-require('newrelic');
+// require('newrelic');
 var swig = require('swig');
 var requestModule = require('request');
 var path = require('path');
