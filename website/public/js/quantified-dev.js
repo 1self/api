@@ -42,7 +42,7 @@ var qd = function() {
             url: url("mydev"),
             headers: {
                 "Authorization": result.readToken,
-                "Content-Type": "application/json"
+                "Accept": "application/json"
             },
             success: function(buildEvents) {
                 $("#stream-id-errors").text("");
@@ -63,7 +63,7 @@ var qd = function() {
             url: url("mywtf"),
             headers: {
                 "Authorization": result.readToken,
-                "Content-Type": "application/json"
+                "Accept": "application/json"
             },
             success: function(wtfEvents) {
                 result.wtfEvents = wtfEvents;
@@ -77,7 +77,7 @@ var qd = function() {
             url: url("myhydration"),
             headers: {
                 "Authorization": result.readToken,
-                "Content-Type": "application/json"
+                "Accept": "application/json"
             },
             success: function(hydrationEvents) {
                 result.hydrationEvents = hydrationEvents;
@@ -91,7 +91,7 @@ var qd = function() {
             url: url("mycaffeine"),
             headers: {
                 "Authorization": result.readToken,
-                "Content-Type": "application/json"
+                "Accept": "application/json"
             },
             success: function(caffeineEvents) {
                 result.caffeineEvents = caffeineEvents;
@@ -105,7 +105,7 @@ var qd = function() {
             url: url("buildDuration"),
             headers: {
                 "Authorization": result.readToken,
-                "Content-Type": "application/json"
+                "Accept": "application/json"
             },
             success: function(buildDurationEvents) {
                 result.buildDurationEvents = buildDurationEvents;
@@ -118,7 +118,7 @@ var qd = function() {
             url: url("hourlyBuildCount"),
             headers: {
                 "Authorization": result.readToken,
-                "Content-Type": "application/json"
+                "Accept": "application/json"
             },
             success: function(hourlyBuildEvents) {
                 var timezoneOffset = new Date().getTimezoneOffset();
@@ -134,7 +134,7 @@ var qd = function() {
             url: url("hourlyWtfCount"),
             headers: {
                 "Authorization": result.readToken,
-                "Content-Type": "application/json"
+                "Accept": "application/json"
             },
             success: function(hourlyWtfEvents) {
                 var timezoneOffset = new Date().getTimezoneOffset();
@@ -150,7 +150,7 @@ var qd = function() {
             url: url("hourlyHydrationCount"),
             headers: {
                 "Authorization": result.readToken,
-                "Content-Type": "application/json"
+                "Accept": "application/json"
             },
             success: function(hourlyHydrationEvents) {
                 var timezoneOffset = new Date().getTimezoneOffset();
@@ -166,7 +166,7 @@ var qd = function() {
             url: url("hourlyCaffeineCount"),
             headers: {
                 "Authorization": result.readToken,
-                "Content-Type": "application/json"
+                "Accept": "application/json"
             },
             success: function(hourlyCaffeineEvents) {
                 var timezoneOffset = new Date().getTimezoneOffset();
@@ -182,7 +182,7 @@ var qd = function() {
             url: url("myActiveEvents"),
             headers: {
                 "Authorization": result.readToken,
-                "Content-Type": "application/json"
+                "Accept": "application/json"
             },
             success: function(activeEvents) {
                 result.activeEvents = activeEvents;
