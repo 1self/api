@@ -337,6 +337,69 @@ var qd = function() {
         $('#tweetMyActiveDuration').attr('href', "https://twitter.com/share?url=''&hashtags=" + hashTags + "&text=" + tweetText);
     };
 
+    var urlForCompare = function(resource, streamId) {
+        var result = "";
+        if (location.hostname == "localhost") {
+            result = "http://" + location.hostname + ":5000/quantifieddev/" + resource + "/" + streamId;
+        } else {
+            result = "http://quantifieddev.herokuapp.com/quantifieddev/" + resource + "/" + streamId;
+        }
+        return result;
+    };
+
+    var updateStreamIdAndReadTokenForCompare = function() {
+        result.myStreamId = window.localStorage.myStreamId;
+        result.myReadToken = window.localStorage.myReadToken;
+        result.withStreamId = window.localStorage.withStreamId;
+        result.withReadToken = window.localStorage.withReadToken;
+    };
+
+    updateStreamIdAndReadTokenForCompare();
+
+    result.updateBuildHistoryModelForMyStreamId = function() {
+        return $.ajax({
+            url: urlForCompare("mydev", window.localStorage.myStreamId),
+            headers: {
+                "Authorization": result.myReadToken,
+                "Content-Type": "application/json"
+            }
+        });
+    };
+
+    result.updateBuildHistoryModelForWithStreamId = function() {
+        return $.ajax({
+            url: urlForCompare("mydev", window.localStorage.withStreamId),
+            headers: {
+                "Authorization": result.withReadToken,
+                "Content-Type": "application/json"
+            }
+        });
+    };
+
+    result.compareBuildHistories = function(myBuildEvents, withBuildEvents) {
+        result.plotBuildHistory(myBuildEvents[0], "#my-build-history");
+        result.plotBuildHistory(withBuildEvents[0], "#with-build-history");
+    };
+
+    result.saveStreamIds = function(myStreamId, myReadToken, withStreamId, withReadToken) {
+        window.localStorage.myStreamId = myStreamId;
+        window.localStorage.myReadToken = myReadToken;
+        window.localStorage.withStreamId = withStreamId;
+        window.localStorage.withReadToken = withReadToken;
+        updateStreamIdAndReadTokenForCompare();
+        $.when(result.updateBuildHistoryModelForMyStreamId(), result.updateBuildHistoryModelForWithStreamId())
+            .done(result.compareBuildHistories).fail("Error in promise");
+
+    };
+
+    if (result.myStreamId && result.myReadToken) {
+        result.updateBuildHistoryModelForMyStreamId();
+    }
+
+    if (result.withStreamId && result.withReadToken) {
+        result.updateBuildHistoryModelForWithStreamId();
+    }
+
     return result;
 }
 
