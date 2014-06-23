@@ -125,23 +125,23 @@
                     <li>How I Compare With ...</li>
                   </ul>
                 </div>
-                 <div class="col-lg-2 col-md-1 col-sm-12 col-xs-12">
-                <label>Me</label>
+                <div class="col-lg-2 col-md-1 col-sm-12 col-xs-12">
+                  <label>Me</label>
                 </div>
                 <div class="col-lg-2 col-md-1 col-sm-12 col-xs-12">
-                  <span><input id="stream-id" type="text" class="form-control input-sm" placeholder="stream id" value="{{ streamId }}"></span>
+                  <span><input id="my-stream-id" type="text" class="form-control input-sm" placeholder="stream id" value="{{ myStreamId }}"></span>
                 </div>
                 <div class="col-lg-4 col-md-1 col-sm-12 col-xs-12">
-                  <span><input id="read-token" type="text" class="form-control input-sm" placeholder="read token" value="{{ readToken }}"></span>
-                </div>
-                 <div class="col-lg-2 col-md-1 col-sm-12 col-xs-12">
-                <label>With</label>
+                  <span><input id="my-read-token" type="text" class="form-control input-sm" placeholder="read token" value="{{ myReadToken }}"></span>
                 </div>
                 <div class="col-lg-2 col-md-1 col-sm-12 col-xs-12">
-                  <span><input id="stream-id" type="text" class="form-control input-sm" placeholder="stream id" value="{{ streamId }}"></span>
+                  <label>With</label>
+                </div>
+                <div class="col-lg-2 col-md-1 col-sm-12 col-xs-12">
+                  <span><input id="with-stream-id" type="text" class="form-control input-sm" placeholder="stream id" value="{{ withStreamId }}"></span>
                 </div>
                 <div class="col-lg-4 col-md-1 col-sm-12 col-xs-12">
-                  <span><input id="read-token" type="text" class="form-control input-sm" placeholder="read token" value="{{ readToken }}"></span>
+                  <span><input id="with-read-token" type="text" class="form-control input-sm" placeholder="read token" value="{{ withReadToken }}"></span>
                 </div>
                 <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
                   <span><button id="auth-save" type="button" class="btn btn-default">Save</button></span>
@@ -183,7 +183,7 @@
                 </div>
               </div>
               <!-- Page title end -->
-              <div class="row">
+              <!--  <div class="row">
                 <div class="col-lg-2 col-md-4 col-sm-6">
                   <div class="info-tiles tiles-secondary">
                     <div class="tiles-heading">
@@ -271,27 +271,28 @@
                   </div>
                 </div>
                 
-              </div>
+              </div> -->
               <!-- Row end -->
               <div class="row sortable">
                 <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
                   <div class="panel panel-secondary fixed-height">
                     <div class="panel-heading cursor-move">
-                      <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Builds</h3>
-                    </div>
-                    <div class="panel-body">
-                      <div id="hourlyBuild-heat-map"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-                  <div class="panel panel-secondary fixed-height">
-                    <div class="panel-heading cursor-move">
-                      <h3 class="panel-title"><i class="icon-bar-chart"></i>Build History</h3>
+                      <h3 class="panel-title"><i class="icon-bar-chart"></i>My Build History</h3>
                       <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
                     </div>
                     <div class="panel-body">
-                      <div id="build-history"></div>
+                      <div id="my-build-history"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+                  <div class="panel panel-secondary fixed-height">
+                    <div class="panel-heading cursor-move">
+                      <h3 class="panel-title"><i class="icon-bar-chart"></i>With Build History</h3>
+                      <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
+                    </div>
+                    <div class="panel-body">
+                      <div id="with-build-history"></div>
                     </div>
                   </div>
                 </div>
@@ -300,97 +301,16 @@
                 <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
                   <div class="panel panel-secondary fixed-height">
                     <div class="panel-heading cursor-move">
-                      <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Wtfs</h3>
+                      <h3 class="panel-title"><i class="icon-bar-chart"></i>Comparison Build History</h3>
+                      <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
                     </div>
                     <div class="panel-body">
-                      <div id="hourlyWtf-heat-map"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-                  <div class="panel panel-secondary fixed-height">
-                    <div class="panel-heading cursor-move">
-                      <h3 class="panel-title"><i class="icon-bar-chart"></i>WTF History</h3>
-                      <a id="tweetMyWtfs" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetWtfSparkline()">Tweet</a>
-                    </div>
-                    <div class="panel-body">
-                      <div id="wtf-history"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="row sortable">
-                <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-                  <div class="panel panel-secondary fixed-height">
-                    <div class="panel-heading cursor-move">
-                      <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Water Intake</h3>
-                    </div>
-                    <div class="panel-body">
-                      <div id="hourlyHydration-heat-map"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-                  <div class="panel panel-secondary fixed-height">
-                    <div class="panel-heading cursor-move">
-                      <h3 class="panel-title"><i class="icon-bar-chart"></i>Water Intake History</h3>
-                      <a id="tweetMyHydration" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetHydrationSparkline()">Tweet</a>
-                    </div>
-                    <div class="panel-body">
-                      <div id="hydration-history"></div>
+                      <div id="build-history-compare"></div>
                     </div>
                   </div>
                 </div>
                 
               </div>
-              <div class="row sortable">
-                <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-                  <div class="panel panel-secondary fixed-height">
-                    <div class="panel-heading cursor-move">
-                      <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Caffeine Intake</h3>
-                    </div>
-                    <div class="panel-body">
-                      <div id="hourlyCaffeine-heat-map"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-                  <div class="panel panel-secondary fixed-height">
-                    <div class="panel-heading cursor-move">
-                      <h3 class="panel-title"><i class="icon-bar-chart"></i>Caffeine Intake History</h3>
-                      <a id="tweetMyCaffeine" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetCaffeineSparkline()">Tweet</a>
-                    </div>
-                    <div class="panel-body">
-                      <div id="caffeine-history"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="row sortable">
-                <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-                  <div class="panel panel-secondary fixed-height">
-                    <div class="panel-heading cursor-move">
-                      <h3 class="panel-title"><i class="icon-bar-chart"></i>Build Duration History</h3>
-                      <a id="tweetMyBuildDuration" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildDurationSparkline()">Tweet</a>
-                    </div>
-                    <div class="panel-body">
-                      <div id="buildDuration-history"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-                  <div class="panel panel-secondary fixed-height">
-                    <div class="panel-heading cursor-move">
-                      <h3 class="panel-title"><i class="icon-bar-chart"></i>IDE Active Work History</h3>
-                      <a id="tweetMyActiveDuration" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetActiveEventSparkline()">Tweet</a>
-                    </div>
-                    <div class="panel-body">
-                      <div id="active-event-history"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
             </div>
             <!-- Bootstrap Container End -->
           </div>
@@ -427,8 +347,9 @@
         <script src="/packages/d3/topojson.v1.min.js"></script>
         <script src="/packages/d3/queue.v1.min.js"></script>
         <script src="/packages/regressionjs/regression.js"></script>
-        <script src="/js/1self.js"></script>
         <script src="/js/quantified-dev.js"></script>
+        <script src="/js/compare.js"></script>
+        <script src="/js/build-history-d3-for.js"></script>
         <script src="/js/build-history-d3.js"></script>
         <script src="/js/wtf-history-d3.js"></script>
         <script src="/js/hydration-history-d3.js"></script>

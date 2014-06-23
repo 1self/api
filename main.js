@@ -114,12 +114,15 @@ app.get("/dashboard", function(req, res) {
 });
 
 app.get("/app/compare.html", function(req, res) {
-    var streamId = req.query.streamId ? req.query.streamId : "";
-    var readToken = req.query.readToken ? req.query.readToken : "";
-    
+    var myStreamId = req.query.myStreamId ? req.query.myStreamId : "";
+    var myReadToken = req.query.myReadToken ? req.query.myReadToken : "";
+    var withStreamId = req.query.withStreamId ? req.query.withStreamId : "";
+    var withReadToken = req.query.withReadToken ? req.query.withReadToken : "";
     res.render('compare', {
-        streamId: streamId,
-        readToken: readToken
+        myStreamId: myStreamId,
+        myReadToken: myReadToken,
+        withStreamId: withStreamId,
+        withReadToken: withReadToken
     });
 });
 
