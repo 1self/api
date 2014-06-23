@@ -629,6 +629,7 @@ var getBuildEventsFromPlatform = function(stream) {
 
 //Migrate 
 app.get('/quantifieddev/mydev/:streamid', function(req, res) {
+    console.log("getting mydev details for streamid : " + req.params.streamid);
     var readToken = req.headers.authorization;
     var streamid = req.params.streamid;
 
