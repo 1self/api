@@ -379,6 +379,7 @@ var qd = function() {
     result.compareBuildHistories = function(myBuildEvents, withBuildEvents) {
         result.plotBuildHistory(myBuildEvents[0], "#my-build-history");
         result.plotBuildHistory(withBuildEvents[0], "#with-build-history");
+        result.plotComparison("#compare-build-history",myBuildEvents[0], withBuildEvents[0])
     };
 
     result.saveStreamIds = function(myStreamId, myReadToken, withStreamId, withReadToken) {
@@ -388,7 +389,7 @@ var qd = function() {
         window.localStorage.withReadToken = withReadToken;
         updateStreamIdAndReadTokenForCompare();
         $.when(result.updateBuildHistoryModelForMyStreamId(), result.updateBuildHistoryModelForWithStreamId())
-            .done(result.compareBuildHistories).fail("Error in promise");
+            .done(result.compareBuildHistories).fail("Error getting data!");
 
     };
 
