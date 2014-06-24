@@ -99,11 +99,11 @@ var getFilterValuesFrom = function(req) {
     return filterValues;
 }
 
-app.get("/app/community.html", function(req, res) {
+app.get("/community", function(req, res) {
     res.render('community', getFilterValuesFrom(req));
 });
 
-app.get("/app/dashboard.html", function(req, res) {
+app.get("/dashboard", function(req, res) {
     var streamId = req.query.streamId ? req.query.streamId : "";
     var readToken = req.query.readToken ? req.query.readToken : "";
     
