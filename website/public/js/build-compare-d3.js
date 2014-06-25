@@ -128,6 +128,46 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 	var withPassedBuildEvents = withBuildEventsGroupByStatus[1];
 	y.domain([0, _yMax([myPassedBuildEvents, myFailedBuildEvents, withPassedBuildEvents, withFailedBuildEvents])]);
 
+	var _createLegends = function(legendConfig) {
+		var legend = svg.append("g")
+			.attr("class", "legend")
+			.attr("x", w - 65)
+			.attr("y", 25)
+			.attr("height", 100)
+			.attr("width", 100);
+
+
+		var yOffset = 40;
+		var xOffset = 0;
+		legend.selectAll("g").data(legendConfig)
+			.enter()
+			.append("g")
+			.each(function(d, i) {
+				var g = d3.select(this);
+				if (i === 2) {
+					xOffset = 0;
+					yOffset = yOffset * 2;
+				}
+				console.info("yOffset: ", yOffset);
+				g.append("rect")
+					.attr("x", xOffset)
+					.attr("y", yOffset)
+					.attr("width", 10)
+					.attr("height", 10)
+					.style("fill", legendConfig[i][1]);
+
+				g.append("text")
+					.attr("x", xOffset + 20)
+					.attr("y", yOffset + 8)
+					.attr("height", 30)
+					.attr("width", 100)
+					.style("fill", "black")
+					.text(legendConfig[i][0]);
+
+				xOffset = xOffset + 110;
+			});
+	}
+
 	_createAxesAndLabels();
 
 	//My Successful Builds:
@@ -142,4 +182,10 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 	//With Failed Builds:
 	_plotLineGraph("#F2555C", true, withFailedBuildEvents);
 
+	_createLegends([
+		["My Passed", "#2e4174"],
+		["My Failed", "#ED1C25"],
+		["With Passed", "#73b9e6"],
+		["With Failed", "#F2555C"]
+	]);
 };
