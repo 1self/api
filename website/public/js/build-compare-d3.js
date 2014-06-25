@@ -148,7 +148,6 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 					xOffset = 0;
 					yOffset = yOffset * 2;
 				}
-				console.info("yOffset: ", yOffset);
 				g.append("rect")
 					.attr("x", xOffset)
 					.attr("y", yOffset)
