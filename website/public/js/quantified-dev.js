@@ -361,7 +361,7 @@ var qd = function() {
             url: urlForCompare("mydev", window.localStorage.myStreamId),
             headers: {
                 "Authorization": result.myReadToken,
-                "Content-Type": "application/json"
+                "Accept": "application/json"
             }
         });
     };
@@ -370,7 +370,7 @@ var qd = function() {
             url: urlForCompare("mydev", window.localStorage.withStreamId),
             headers: {
                 "Authorization": result.withReadToken,
-                "Content-Type": "application/json"
+                "Accept": "application/json"
             }
         });
     };
