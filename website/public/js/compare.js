@@ -1,4 +1,4 @@
-$('#auth-save').click(function() {
+$('#auth-save-compare').click(function() {
 	var myStreamId = $('#my-stream-id').val();
 	var myReadToken = $('#my-read-token').val();
 	var withStreamId = $('#with-stream-id').val();
