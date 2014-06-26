@@ -310,6 +310,42 @@
                 </div>
                 
               </div>
+              <div class="row sortable">
+                <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+                  <div class="panel panel-secondary fixed-height">
+                    <div class="panel-heading cursor-move">
+                      <h3 class="panel-title"><i class="icon-bar-chart"></i>My IDE Active Work History</h3>
+                      <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
+                    </div>
+                    <div class="panel-body">
+                      <div id="my-active-events"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+                  <div class="panel panel-secondary fixed-height">
+                    <div class="panel-heading cursor-move">
+                      <h3 class="panel-title"><i class="icon-bar-chart"></i>With IDE Active Work History</h3>
+                      <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
+                    </div>
+                    <div class="panel-body">
+                      <div id="with-active-events"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row sortable">
+                <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+                  <div class="panel panel-secondary fixed-height">
+                    <div class="panel-heading cursor-move">
+                      <h3 class="panel-title"><i class="icon-bar-chart"></i>Comparison Build History</h3>
+                    </div>
+                    <div class="panel-body">
+                      <div id="compare-active-events"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <!-- Bootstrap Container End -->
           </div>
@@ -347,10 +383,6 @@
         <script src="/packages/d3/queue.v1.min.js"></script>
         <script src="/packages/regressionjs/regression.js"></script>
         <script src="/js/quantified-dev.js"></script>
-        <script src="/js/compare.js"></script>
-        <script src="/js/build-history-d3-for.js"></script>
-        <script src="/js/build-history-d3.js"></script>
-        <script src="/js/build-compare-d3.js"></script>
         <script src="/js/wtf-history-d3.js"></script>
         <script src="/js/hydration-history-d3.js"></script>
         <script src="/js/caffeine-history-d3.js"></script>
@@ -361,5 +393,12 @@
         <script src="/js/hourlyHydration-heatMap-d3.js"></script>
         <script src="/js/hourlyCaffeine-heatMap-d3.js"></script>
         <script src="/js/dashboard.js"></script>
+        <script src="/js/compare.js"></script>
+        <script src="/js/build-history-d3-for.js"></script>
+        <script src="/js/active-events-d3-for.js"></script>
+        <script src="/js/build-history-d3.js"></script>
+        <script src="/js/build-compare-d3.js"></script>
+        <script src="/js/active-events-compare-d3.js"></script>
+
       </body>
     </html>
