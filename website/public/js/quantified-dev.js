@@ -125,7 +125,7 @@ var qd = function() {
                 var timezoneDifferenceInHours = Math.round(timezoneOffset / 60);
                 result.timezoneDifferenceInHours = timezoneDifferenceInHours;
                 result.hourlyBuildEvents = hourlyBuildEvents;
-                result.plotHourlyBuildHeatMap();
+                result.plotHourlyEventMap('#hourlyBuild-heat-map');
             }
         });
     };
@@ -141,6 +141,7 @@ var qd = function() {
                 var timezoneDifferenceInHours = Math.round(timezoneOffset / 60);
                 result.timezoneDifferenceInHours = timezoneDifferenceInHours;
                 result.hourlyWtfEvents = hourlyWtfEvents;
+                console.info("Ajax for WTf called");
                 result.plotHourlyWtfHeatMap();
             }
         });
