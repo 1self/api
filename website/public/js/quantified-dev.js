@@ -211,20 +211,6 @@ var qd = function() {
         modelUpdateCallbacks.push(callback);
     }
 
-    if (result.streamId && result.readToken) {
-        result.updateBuildModel();
-        result.updateWTFModel();
-        result.updateHydrationModel();
-        result.updateCaffeineModel();
-        result.updateBuildDurationModel();
-        result.updateHourlyBuildHeatMap();
-        result.updateHourlyWtfHeatMap();
-        result.updateHourlyHydrationHeatMap();
-        result.updateHourlyCaffeineHeatMap();
-        result.updateActiveEvents();
-    }
-
-
     result.tweetBuildSparkline = function() {
         if (result.buildEvents === undefined) {
             return;
