@@ -1,5 +1,4 @@
 window.qd.plotHourlyEventMap = function(divId) {
-	console.info("Plot is called");
 	var margin = {
 			top: 50,
 			right: 0,
@@ -16,7 +15,6 @@ window.qd.plotHourlyEventMap = function(divId) {
 		times = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"];
 
 	var segmentData = [];
-	console.info("Width: Height: P: ", width,height,p);
 	for (var hour = 0; hour < 24 * 7; hour++) {
 		var buildCountForAnHour = window.qd.hourlyBuildEvents[hour].hourlyBuildCount;
 		var segmentDay = window.qd.hourlyBuildEvents[hour].day;
