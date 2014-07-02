@@ -125,7 +125,7 @@ var qd = function() {
                 var timezoneDifferenceInHours = Math.round(timezoneOffset / 60);
                 result.timezoneDifferenceInHours = timezoneDifferenceInHours;
                 result.hourlyBuildEvents = hourlyBuildEvents;
-                result.plotHourlyEventMap('#hourlyBuild-heat-map');
+                result.plotHourlyEventMap('#hourlyBuild-heat-map', hourlyBuildEvents);
             }
         });
     };
@@ -141,8 +141,7 @@ var qd = function() {
                 var timezoneDifferenceInHours = Math.round(timezoneOffset / 60);
                 result.timezoneDifferenceInHours = timezoneDifferenceInHours;
                 result.hourlyWtfEvents = hourlyWtfEvents;
-                console.info("Ajax for WTf called");
-                result.plotHourlyWtfHeatMap();
+                result.plotHourlyEventMap('#hourlyWtf-heat-map', hourlyWtfEvents);
             }
         });
     };
@@ -158,7 +157,7 @@ var qd = function() {
                 var timezoneDifferenceInHours = Math.round(timezoneOffset / 60);
                 result.timezoneDifferenceInHours = timezoneDifferenceInHours;
                 result.hourlyHydrationEvents = hourlyHydrationEvents;
-                result.plotHourlyHydrationHeatMap();
+                result.plotHourlyEventMap('#hourlyHydration-heat-map', hourlyHydrationEvents);
             }
         });
     };
@@ -174,7 +173,7 @@ var qd = function() {
                 var timezoneDifferenceInHours = Math.round(timezoneOffset / 60);
                 result.timezoneDifferenceInHours = timezoneDifferenceInHours;
                 result.hourlyCaffeineEvents = hourlyCaffeineEvents;
-                result.plotHourlyCaffeineHeatMap();
+                result.plotHourlyEventMap('#hourlyCaffeine-heat-map', hourlyCaffeineEvents);
             }
         });
     };

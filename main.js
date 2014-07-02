@@ -106,7 +106,7 @@ app.get("/community", function(req, res) {
 app.get("/dashboard", function(req, res) {
     var streamId = req.query.streamId ? req.query.streamId : "";
     var readToken = req.query.readToken ? req.query.readToken : "";
-    
+
     res.render('dashboard', {
         streamId: streamId,
         readToken: readToken
@@ -1052,7 +1052,12 @@ var generateHoursForWeek = function(defaultValues) {
     }
     console.log("Result is : ", result);
     return result;
-}
+};
+
+var defaultEventValues = [{
+    key: "hourlyEventCount",
+    value: 0
+}];
 
 var getHourlyBuildCountFromPlatform = function(streamDetails) {
     var deferred = q.defer();
@@ -1102,14 +1107,10 @@ var getHourlyBuildCountFromPlatform = function(streamDetails) {
             var result = result[0];
             console.log("No of hourly builds is : " + JSON.stringify(result));
 
-            var defaultBuildValues = [{
-                key: "hourlyBuildCount",
-                value: 0
-            }];
-            var hourlyBuilds = generateHoursForWeek(defaultBuildValues);
+            var hourlyBuilds = generateHoursForWeek(defaultEventValues);
             for (date in result) {
                 if (hourlyBuilds[date] !== undefined) {
-                    hourlyBuilds[date].hourlyBuildCount = result[date].buildCount
+                    hourlyBuilds[date].hourlyEventCount = result[date].buildCount
                 }
             }
             deferred.resolve(rollupToArray(hourlyBuilds));
@@ -1194,14 +1195,10 @@ var getHourlyWtfCount = function(streamDetails) {
             var result = result[0];
             console.log("No of wtfs is : " + JSON.stringify(result));
 
-            var defaultBuildValues = [{
-                key: "wtfCount",
-                value: 0
-            }];
-            var hourlyWtfs = generateHoursForWeek(defaultBuildValues);
+            var hourlyWtfs = generateHoursForWeek(defaultEventValues);
             for (date in result) {
                 if (hourlyWtfs[date] !== undefined) {
-                    hourlyWtfs[date].wtfCount = result[date].wtfCount
+                    hourlyWtfs[date].hourlyEventCount = result[date].wtfCount
                 }
             }
             deferred.resolve(rollupToArray(hourlyWtfs));
@@ -1288,14 +1285,10 @@ var getHourlyHydrationCount = function(streamDetails) {
             var result = result[0];
             console.log("Hydration count is : " + JSON.stringify(result));
 
-            var defaultBuildValues = [{
-                key: "hydrationCount",
-                value: 0
-            }];
-            var hourlyHydration = generateHoursForWeek(defaultBuildValues);
+            var hourlyHydration = generateHoursForWeek(defaultEventValues);
             for (date in result) {
                 if (hourlyHydration[date] !== undefined) {
-                    hourlyHydration[date].hydrationCount = result[date].hydrationCount
+                    hourlyHydration[date].hourlyEventCount = result[date].hydrationCount
                 }
             }
             deferred.resolve(rollupToArray(hourlyHydration));
@@ -1382,14 +1375,10 @@ var getHourlyCaffeineCount = function(streamDetails) {
             var result = result[0];
             console.log("Caffeine count is : " + JSON.stringify(result));
 
-            var defaultBuildValues = [{
-                key: "caffeineCount",
-                value: 0
-            }];
-            var hourlyCaffeine = generateHoursForWeek(defaultBuildValues);
+            var hourlyCaffeine = generateHoursForWeek(defaultEventValues);
             for (date in result) {
                 if (hourlyCaffeine[date] !== undefined) {
-                    hourlyCaffeine[date].caffeineCount = result[date].caffeineCount
+                    hourlyCaffeine[date].hourlyEventCount = result[date].caffeineCount
                 }
             }
             deferred.resolve(rollupToArray(hourlyCaffeine));
