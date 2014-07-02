@@ -5,10 +5,11 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 			bottom: 100,
 			left: 28
 		},
-		width = $(divId).width(),
-    	height = width,
-    	p = [height * 0.05, width * 0.1, height * 0.35, width * 0.05],
+		width = $(divId).width() - 10,
+		height = width / 2.5,
+		p = [height * 0.05, width * 0.1, height * 0.35, width * 0.05],
 		gridSize = Math.floor(width / 24),
+		legendElementWidth = gridSize * 2,
 		buckets = 9,
 		colors = ["#ffffd9", "#edf8b1", "#c7e9b4", "#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#253494", "#081d58"], // alternatively colorbrewer.YlGnBu[9]
 		days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
@@ -25,17 +26,16 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 	}));
 
 	var hourlyBuildCountsMondayToSunday = _.flatten(daywiseHourlyBuildCountsSundayToMonday);
-	
+
 	var _generateHeatMap = function(data) {
 		var colorScale = d3.scale.quantile()
-			.domain([0, buckets - 1, d3.max(data, function(d) {
+			.domain([0, d3.max(data, function(d) {
 				return d.value;
 			})])
 			.range(colors);
-
 		var svg = d3.select(divId).append("svg")
-			.attr("width", width+50)
-			.attr("height", height+50)
+			.attr("width", width + 50)
+			.attr("height", height + 50)
 			.append("g")
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -65,7 +65,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 				return i * gridSize;
 			})
 			.attr("y", 0)
-			.attr("font-size","10px")
+			.attr("font-size", "10px")
 			.style("text-anchor", "middle")
 			.attr("transform", "translate(" + gridSize / 2.5 + ", -6)")
 			.attr("class", function(d, i) {
@@ -81,7 +81,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 			.attr("y", function(d) {
 				return (d.day) * gridSize;
 			})
-			.attr("stroke","lightgrey")
+			.attr("stroke", "lightgrey")
 			.attr("rx", 4)
 			.attr("ry", 4)
 			.attr("class", "hour bordered")
@@ -97,6 +97,36 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 		heatMap.append("title").text(function(d) {
 			return d.value;
 		});
+
+		var legend = svg.selectAll(".legend")
+			.data([0].concat(colorScale.quantiles()), function(d) {
+				return d;
+			})
+			.enter().append("g")
+			.attr("class", "legend");
+
+		legend.append("rect")
+			.attr("x", function(d, i) {
+				return legendElementWidth * i;
+			})
+			.attr("y", height - 23)
+			.attr("width", legendElementWidth)
+			.attr("height", gridSize / 2)
+			.style("fill", function(d, i) {
+				console.info(d, colors[i]);
+				return colors[i];
+			});
+
+		legend.append("text")
+			.attr("class", "mono")
+			.text(function(d) {
+				return "≥ " + Math.round(d * 10)/10;
+			})
+			.attr("font-size","10px")
+			.attr("x", function(d, i) {
+				return legendElementWidth * i;
+			})
+			.attr("y", height + gridSize - 20);
 	};
 
 	var _generateHourlyBuildEventsData = function() {
@@ -113,7 +143,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 		}
 		return data;
 	};
- 
+
 	var buildEventData = _generateHourlyBuildEventsData();
 	_generateHeatMap(buildEventData);
 
