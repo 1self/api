@@ -31,7 +31,6 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 		var maximumEventValue = d3.max([1, d3.max(data, function(d) {
 			return d.value;
 		})]);
-		console.info(maximumEventValue);
 		var colorScale = d3.scale.quantile()
 			.domain([0, maximumEventValue])
 			.range(colors);
