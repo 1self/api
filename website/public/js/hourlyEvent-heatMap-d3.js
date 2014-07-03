@@ -28,10 +28,11 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 	var hourlyBuildCountsMondayToSunday = _.flatten(daywiseHourlyBuildCountsSundayToMonday);
 
 	var _generateHeatMap = function(data) {
+		var maximumEventValue = d3.max([1, d3.max(data, function(d) {
+			return d;
+		})]);
 		var colorScale = d3.scale.quantile()
-			.domain([0, d3.max(data, function(d) {
-				return d.value;
-			})])
+			.domain([0, maximumEventValue])
 			.range(colors);
 		var svg = d3.select(divId).append("svg")
 			.attr("width", width + 50)
@@ -119,9 +120,9 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 		legend.append("text")
 			.attr("class", "mono")
 			.text(function(d) {
-				return "≥ " + Math.round(d * 10)/10;
+				return "≥ " + Math.round(d * 10) / 10;
 			})
-			.attr("font-size","10px")
+			.attr("font-size", "10px")
 			.attr("x", function(d, i) {
 				return legendElementWidth * i;
 			})
