@@ -113,7 +113,6 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 			.attr("width", legendElementWidth)
 			.attr("height", gridSize / 2)
 			.style("fill", function(d, i) {
-				console.info(d, colors[i]);
 				return colors[i];
 			});
 
