@@ -9,10 +9,12 @@ var url = require('url');
 var crypto = require('crypto');
 var app = express();
 var q = require('q');
+
 var mongoClient = require('mongodb').MongoClient;
 app.use(express.logger());
 app.use(express.bodyParser());
 app.use(express.static(path.join(__dirname, 'website/public')));
+
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 app.set('view cache', false);
@@ -20,6 +22,33 @@ app.set('views', __dirname + '/website/views');
 swig.setDefaults({
     cache: false
 });
+var passport = require('passport');
+var githubStrategy = require('passport-github').Strategy;
+app.use(passport.initialize());
+app.use(passport.session());
+var GITHUB_CLIENT_ID = "cc6753d5fc88fa5bcdef"
+var GITHUB_CLIENT_SECRET = "80068a017d434fc51a190206e0ec798a3bb1b1bf";
+passport.serializeUser(function(user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function(obj, done) {
+    done(null, obj);
+});
+
+passport.use(new githubStrategy({
+        clientID: GITHUB_CLIENT_ID,
+        clientSecret: GITHUB_CLIENT_SECRET,
+        callbackURL: "http://localhost:5000/auth/github/callback"
+    },
+    function(accessToken, refreshToken, profile, done) {
+        console.log("accessToken :: ", accessToken);
+        console.log("refreshToken :: ", refreshToken);
+        return done(null, profile);
+    }
+));
+
+
 
 // Constants
 var aDay = 24 * 60 * 60 * 1000;
@@ -78,6 +107,15 @@ app.all('*', function(req, res, next) {
         next();
     }
 });
+app.get('/auth/github', passport.authenticate('github'), function(req, res) {});
+
+
+app.get('/auth/github/callback', passport.authenticate('github', {
+    failureRedirect: '/signup'
+}), function(req, res) {
+    console.log("Inside callback")
+    res.redirect('/dashboard');
+});
 
 var getFilterValuesFrom = function(req) {
     var lastHour = 60;
@@ -101,6 +139,9 @@ var getFilterValuesFrom = function(req) {
 
 app.get("/community", function(req, res) {
     res.render('community', getFilterValuesFrom(req));
+});
+app.get("/signup", function(req, res) {
+    res.render('signup');
 });
 
 app.get("/dashboard", function(req, res) {
