@@ -39,7 +39,7 @@ passport.deserializeUser(function(obj, done) {
 passport.use(new githubStrategy({
         clientID: GITHUB_CLIENT_ID,
         clientSecret: GITHUB_CLIENT_SECRET,
-        callbackURL: "http://localhost:5000/auth/github/callback"
+        callbackURL: "http://app.quantifieddev.org/auth/github/callback"
     },
     function(accessToken, refreshToken, profile, done) {
         console.log("accessToken :: ", accessToken);
