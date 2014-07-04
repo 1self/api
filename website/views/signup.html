@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Quantified Dev {ALPHA}</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="Quantified Dev My Dev Dashboard" />
+		<meta name="keywords" content="Quantified Dev Development QuantifiedSelf Quantified Self" />
+		<meta name="author" content="Quantified Dev" />
+		<link rel="shortcut icon" href="/img/quantified-dev-favicon.ico">
+		<link href="/css/twitter.css" rel="stylesheet">
+		<link href="/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/css/animate.css" rel="stylesheet">
+		<link href="/fonts/font-awesome.css" rel="stylesheet">
+		<script>
+		(function(i, s, o, g, r, a, m) {
+		i['GoogleAnalyticsObject'] = r;
+		i[r] = i[r] || function() {
+		(i[r].q = i[r].q || []).push(arguments)
+		}, i[r].l = 1 * new Date();
+		a = s.createElement(o),
+		m = s.getElementsByTagName(o)[0];
+		a.async = 1;
+		a.src = g;
+		m.parentNode.insertBefore(a, m)
+		})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+		ga('create', 'UA-49828181-1', 'quantifieddev.org');
+		ga('send', 'pageview');
+		/*
+		var mc_embedded_subscribe_click = document.getElementById('mc-embedded-subscribe');
+		addListener(mc_embedded_subscribe_click, 'click', function() {
+		alert('sup click');
+		ga('send', 'event', 'signup_button', 'click', 'mc-embedded-subscribe');
+		});*/
+		/**
+		* Utility to wrap the different behaviors between W3C-compliant browsers
+		* and IE when adding event handlers.
+		*
+		* @param {Object} element Object on which to attach the event listener.
+		* @param {string} type A string representing the event type to listen for
+		*     (e.g. load, click, etc.).
+		* @param {function()} callback The function that receives the notification.
+		
+		function addListener(element, type, callback) {
+		if (element.addEventListener) element.addEventListener(type, callback);
+		else if (element.attachEvent) element.attachEvent('on' + type, callback);
+		}*/
+		</script>
+	</head>
+		<body class="animated fadeInDown">
+			<div class="top-bar" style="background: #373737">
+				<a href="index.html" class="logo"><img src="/img/quantified-dev-logo.png" alt="QuantifiedDev"></a>
+			</div>
+			<div class="dashboard-wrapper">
+				<div class="container">
+					<div class="row page-title">
+						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+							<h2>Sign-in</h2>
+							<h4>Identify yourself</h4>
+							<button type="button" class="btn btn-success btn-lg" onclick="location.href= 'http://localhost:5000/auth/github'">GitHub</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			
+			<script src="js/jquery.js"></script>
+			<script src="js/jquery-ui-v1.10.3.js"></script>
+			<script src="/js/signup.js"></script>
+		</body>
+	</html>
