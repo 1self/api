@@ -1,23 +1,23 @@
-.page-title .dropdown{
-	list-style-type: none;	
+.page-title .dropdown {
+	list-style-type: none;
 	border-radius: 2px;
 }
-
-.menu-side{
+.menu-side {
 	color: white;
 	padding-left: 18px;
 }
-
-	.x.axis {
-	   stroke-width: 1.0;
-	}
-
-	.domain { 
-  fill: none; 
-  stroke: black; 
-  stroke-width; 1px; 
-} 
-
-.fixed-height{
+x.axis {
+	stroke-width: 1.0;
+}
+.domain {
+	fill: none;
+	stroke: black;
+	stroke-width;
+	1px;
+}
+.fixed-height {
 	height: 430px;
+}
+.top-buffer {
+	margin-top:5px;
 }
