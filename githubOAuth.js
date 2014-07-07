@@ -19,9 +19,6 @@ module.exports = function(app, passport) {
 			callbackURL: "http://localhost:5000/auth/github/callback"
 		},
 		function(accessToken, refreshToken, profile, done) {
-			console.log("accessToken :: ", accessToken);
-			console.log("refreshToken :: ", refreshToken);
-			console.log("User profile :: ", profile.username);
 			return done(null, profile);
 		}
 	));
@@ -33,7 +30,7 @@ module.exports = function(app, passport) {
 	app.get('/auth/github/callback', passport.authenticate('github', {
 		failureRedirect: '/signup'
 	}), function(req, res) {
-		console.log("Inside redirect callback ");
-		res.redirect('/dashboard');
+		console.log("REs User : ",res.socket.user);
+		res.redirect('/claimUsername?username=radhika');
 	});
 };

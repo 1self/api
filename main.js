@@ -108,6 +108,11 @@ app.get("/signup", function(req, res) {
     res.render('signup');
 });
 
+app.get("/claimUsername", function(req, res) {
+    console.log("REQ in main.js : ", req);
+    res.render('claimUsername', {username: req.query.username});
+});
+
 app.get("/dashboard", function(req, res) {
     var streamId = req.query.streamId ? req.query.streamId : "";
     var readToken = req.query.readToken ? req.query.readToken : "";
