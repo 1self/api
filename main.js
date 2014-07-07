@@ -8,12 +8,13 @@ var moment = require("moment")
 var url = require('url');
 var crypto = require('crypto');
 var app = express();
+var passport = require('passport')
 var q = require('q');
-
 var mongoClient = require('mongodb').MongoClient;
 app.use(express.logger());
 app.use(express.bodyParser());
 app.use(express.static(path.join(__dirname, 'website/public')));
+
 
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
@@ -22,34 +23,6 @@ app.set('views', __dirname + '/website/views');
 swig.setDefaults({
     cache: false
 });
-var passport = require('passport');
-var githubStrategy = require('passport-github').Strategy;
-app.use(passport.initialize());
-app.use(passport.session());
-var GITHUB_CLIENT_ID = "6d5e909097263fcfb218"
-var GITHUB_CLIENT_SECRET = "f1a1135bc128f99f83aa7d5614bdecc284a4210b";
-passport.serializeUser(function(user, done) {
-    done(null, user);
-});
-
-passport.deserializeUser(function(obj, done) {
-    done(null, obj);
-});
-
-passport.use(new githubStrategy({
-        clientID: GITHUB_CLIENT_ID,
-        clientSecret: GITHUB_CLIENT_SECRET,
-        callbackURL: "http://app.quantifieddev.org/auth/github/callback"
-    },
-    function(accessToken, refreshToken, profile, done) {
-        console.log("accessToken :: ", accessToken);
-        console.log("refreshToken :: ", refreshToken);
-        return done(null, profile);
-    }
-));
-
-
-
 // Constants
 var aDay = 24 * 60 * 60 * 1000;
 
@@ -91,6 +64,9 @@ var encryptPassword = function() {
 
 var encryptedPassword = encryptPassword();
 
+require('./githubOAuth')(app, passport)
+//require('./signup.js')(app, passport)
+
 app.all('*', function(req, res, next) {
     console.log("hit all rule");
     res.header('Access-Control-Allow-Origin', '*');
@@ -107,15 +83,7 @@ app.all('*', function(req, res, next) {
         next();
     }
 });
-app.get('/auth/github', passport.authenticate('github'), function(req, res) {});
 
-
-app.get('/auth/github/callback', passport.authenticate('github', {
-    failureRedirect: '/signup'
-}), function(req, res) {
-    console.log("Inside callback")
-    res.redirect('/dashboard');
-});
 
 var getFilterValuesFrom = function(req) {
     var lastHour = 60;
@@ -140,6 +108,8 @@ var getFilterValuesFrom = function(req) {
 app.get("/community", function(req, res) {
     res.render('community', getFilterValuesFrom(req));
 });
+
+
 app.get("/signup", function(req, res) {
     res.render('signup');
 });
