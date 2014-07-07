@@ -336,8 +336,8 @@ var qd = function() {
     var updateStreamIdAndReadTokenForCompare = function() {
         result.myStreamId = window.localStorage.myStreamId;
         result.myReadToken = window.localStorage.myReadToken;
-        result.withStreamId = window.localStorage.withStreamId;
-        result.withReadToken = window.localStorage.withReadToken;
+        result.theirStreamId = window.localStorage.theirStreamId;
+        result.theirReadToken = window.localStorage.theirReadToken;
     };
 
     updateStreamIdAndReadTokenForCompare();
@@ -351,11 +351,11 @@ var qd = function() {
             }
         });
     };
-    result.updateBuildHistoryModelForWithStreamId = function() {
+    result.updateBuildHistoryModelForTheirStreamId = function() {
         return $.ajax({
-            url: urlForCompare("mydev", window.localStorage.withStreamId),
+            url: urlForCompare("mydev", window.localStorage.theirStreamId),
             headers: {
-                "Authorization": result.withReadToken,
+                "Authorization": result.theirReadToken,
                 "Accept": "application/json"
             }
         });
@@ -369,34 +369,34 @@ var qd = function() {
             }
         });
     };
-    result.updateActiveEventsModelForWithStreamId = function() {
+    result.updateActiveEventsModelForTheirStreamId = function() {
         return $.ajax({
-            url: urlForCompare("myActiveEvents", window.localStorage.withStreamId),
+            url: urlForCompare("myActiveEvents", window.localStorage.theirStreamId),
             headers: {
-                "Authorization": result.withReadToken,
+                "Authorization": result.theirReadToken,
                 "Accept": "application/json"
             }
         });
     };
-    result.compareBuildHistories = function(myBuildEvents, withBuildEvents) {
+    result.compareBuildHistories = function(myBuildEvents, theirBuildEvents) {
         result.plotBuildHistory(myBuildEvents[0], "#my-build-history");
-        result.plotBuildHistory(withBuildEvents[0], "#with-build-history");
-        result.plotComparison("#compare-build-history", myBuildEvents[0], withBuildEvents[0])
+        result.plotBuildHistory(theirBuildEvents[0], "#their-build-history");
+        result.plotComparison("#compare-build-history", myBuildEvents[0], theirBuildEvents[0])
     };
-    result.compareActiveEvents = function(myActiveEvents, withActiveEvents) {
+    result.compareActiveEvents = function(myActiveEvents, theirActiveEvents) {
        result.plotActiveEventsFor(myActiveEvents[0], "#my-active-events");
-        result.plotActiveEventsFor(withActiveEvents[0], "#with-active-events");
-        result.plotComparisonForActiveEvents("#compare-active-events", myActiveEvents[0], withActiveEvents[0])
+        result.plotActiveEventsFor(theirActiveEvents[0], "#their-active-events");
+        result.plotComparisonForActiveEvents("#compare-active-events", myActiveEvents[0], theirActiveEvents[0])
     };
-    result.saveStreamIds = function(myStreamId, myReadToken, withStreamId, withReadToken) {
+    result.saveStreamIds = function(myStreamId, myReadToken, theirStreamId, theirReadToken) {
         window.localStorage.myStreamId = myStreamId;
         window.localStorage.myReadToken = myReadToken;
-        window.localStorage.withStreamId = withStreamId;
-        window.localStorage.withReadToken = withReadToken;
+        window.localStorage.theirStreamId = theirStreamId;
+        window.localStorage.theirReadToken = theirReadToken;
         updateStreamIdAndReadTokenForCompare();
-        $.when(result.updateBuildHistoryModelForMyStreamId(), result.updateBuildHistoryModelForWithStreamId())
+        $.when(result.updateBuildHistoryModelForMyStreamId(), result.updateBuildHistoryModelForTheirStreamId())
             .done(result.compareBuildHistories).fail("Error getting build data!");
-        $.when(result.updateActiveEventsModelForMyStreamId(), result.updateActiveEventsModelForWithStreamId())
+        $.when(result.updateActiveEventsModelForMyStreamId(), result.updateActiveEventsModelForTheirStreamId())
            .done(result.compareActiveEvents).fail("Error getting active events!");
 
     };
@@ -406,9 +406,9 @@ var qd = function() {
         result.updateActiveEventsModelForMyStreamId();
     }
 
-    if (result.withStreamId && result.withReadToken) {
-        result.updateBuildHistoryModelForWithStreamId();
-        result.updateActiveEventsModelForWithStreamId();
+    if (result.theirStreamId && result.theirReadToken) {
+        result.updateBuildHistoryModelForTheirStreamId();
+        result.updateActiveEventsModelForTheirStreamId();
     }
 
     return result;

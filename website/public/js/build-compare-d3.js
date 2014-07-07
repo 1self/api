@@ -184,7 +184,7 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 	_createLegends([
 		["My Passed", "#2e4174"],
 		["My Failed", "#ED1C25"],
-		["With Passed", "#73b9e6"],
-		["With Failed", "#F2555C"]
+		["Their Passed", "#73b9e6"],
+		["Their Failed", "#F2555C"]
 	]);
 };

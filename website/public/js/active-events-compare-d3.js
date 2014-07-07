@@ -1,4 +1,4 @@
-window.qd.plotComparisonForActiveEvents = function(divId, myActiveEvents, withActiveEvents) {
+window.qd.plotComparisonForActiveEvents = function(divId, myActiveEvents, theirActiveEvents) {
 	var s = $(divId).empty();
 	s = d3.select(divId);
 
@@ -120,10 +120,10 @@ window.qd.plotComparisonForActiveEvents = function(divId, myActiveEvents, withAc
 		return d.x;
 	}));
 	xLinear.domain([0, myActiveEvents.length]);
-	var withActiveEvents = _groupActiveEvents(withActiveEvents);
-	withActiveEvents = withActiveEvents[0];
+	var theirActiveEvents = _groupActiveEvents(theirActiveEvents);
+	theirActiveEvents = theirActiveEvents[0];
 
-	y.domain([0, _yMax([myActiveEvents, withActiveEvents])]);
+	y.domain([0, _yMax([myActiveEvents, theirActiveEvents])]);
 
 	var _createLegends = function(legendConfig) {
 		var legend = svg.append("g")
@@ -169,11 +169,11 @@ window.qd.plotComparisonForActiveEvents = function(divId, myActiveEvents, withAc
 	//My Active Events:
 	_plotLineGraph("#2e4174", false, myActiveEvents);
 
-	//With Active Events:
-	_plotLineGraph("#F2555C", true, withActiveEvents);
+	//Their Active Events:
+	_plotLineGraph("#F2555C", true, theirActiveEvents);
 
 	_createLegends([
 		["My Active", "#2e4174"],
-		["With Active", "#F2555C"]
+		["Their Active", "#F2555C"]
 	]);
 };

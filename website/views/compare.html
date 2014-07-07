@@ -140,13 +140,13 @@
                   </div>
                   <div class="row top-buffer">
                     <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                      <label>Comparison details</label>
+                      <label>Their details</label>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                      <span><input id="with-stream-id" type="text" class="form-control input-sm" placeholder="stream id" value="{{ withStreamId }}"></span>
+                      <span><input id="their-stream-id" type="text" class="form-control input-sm" placeholder="stream id" value="{{ theirStreamId }}"></span>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                      <span><input id="with-read-token" type="text" class="form-control input-sm" placeholder="read token" value="{{ withReadToken }}"></span>
+                      <span><input id="their-read-token" type="text" class="form-control input-sm" placeholder="read token" value="{{ theirReadToken }}"></span>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                       <span><button id="auth-save-compare" type="button" class="btn btn-default">Save</button></span>
@@ -299,11 +299,11 @@
                 <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
                   <div class="panel panel-secondary fixed-height">
                     <div class="panel-heading cursor-move">
-                      <h3 class="panel-title"><i class="icon-bar-chart"></i>With Build History</h3>
+                      <h3 class="panel-title"><i class="icon-bar-chart"></i>Their Build History</h3>
                       <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
                     </div>
                     <div class="panel-body">
-                      <div id="with-build-history"></div>
+                      <div id="their-build-history"></div>
                     </div>
                   </div>
                 </div>
@@ -312,7 +312,7 @@
                 <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
                   <div class="panel panel-secondary fixed-height">
                     <div class="panel-heading cursor-move">
-                      <h3 class="panel-title"><i class="icon-bar-chart"></i>Comparison Build History</h3>
+                      <h3 class="panel-title"><i class="icon-bar-chart"></i>Combined Build History</h3>
                     </div>
                     <div class="panel-body">
                       <div id="compare-build-history"></div>
@@ -336,11 +336,11 @@
                 <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
                   <div class="panel panel-secondary fixed-height">
                     <div class="panel-heading cursor-move">
-                      <h3 class="panel-title"><i class="icon-bar-chart"></i>With IDE Active Work History</h3>
+                      <h3 class="panel-title"><i class="icon-bar-chart"></i>Their IDE Active Work History</h3>
                       <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
                     </div>
                     <div class="panel-body">
-                      <div id="with-active-events"></div>
+                      <div id="their-active-events"></div>
                     </div>
                   </div>
                 </div>
@@ -349,7 +349,7 @@
                 <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
                   <div class="panel panel-secondary fixed-height">
                     <div class="panel-heading cursor-move">
-                      <h3 class="panel-title"><i class="icon-bar-chart"></i>Comparison IDE Active Work History</h3>
+                      <h3 class="panel-title"><i class="icon-bar-chart"></i>Combined IDE Active Work History</h3>
                     </div>
                     <div class="panel-body">
                       <div id="compare-active-events"></div>
