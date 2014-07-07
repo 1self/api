@@ -32,7 +32,6 @@ var platformUri = process.env.PLATFORM_BASE_URI;
 var sharedSecret = process.env.SHARED_SECRET;
 
 console.log("sharedSecret : " + sharedSecret);
-
 console.log("Connecting to: " + mongoUri);
 var qdDb;
 mongoClient.connect(mongoUri, function(err, db) {
@@ -56,8 +55,6 @@ var encryptPassword = function() {
         var cipher = crypto.createCipheriv('aes-128-ecb', key, iv);
         var encryptedPassword = cipher.update(password, 'utf-8', 'hex');
         encryptedPassword += cipher.final('hex');
-        console.log("encryptedPassword : " + encryptedPassword);
-
         return encryptedPassword;
     }
 };
@@ -65,25 +62,22 @@ var encryptPassword = function() {
 var encryptedPassword = encryptPassword();
 
 require('./githubOAuth')(app, passport)
-//require('./signup.js')(app, passport)
 
 app.all('*', function(req, res, next) {
-    console.log("hit all rule");
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,accept,x-requested-with,x-withio-delay');
     if (req.headers["x-withio-delay"]) {
         var delay = req.headers["x-withio-delay"];
-        console.log("request is being delayed by " + delay + " ms")
+        //console.log("request is being delayed by " + delay + " ms")
         setTimeout(function() {
-            console.log("proceeding with request");
+            //console.log("proceeding with request");
             next();
         }, delay);
     } else {
         next();
     }
 });
-
 
 var getFilterValuesFrom = function(req) {
     var lastHour = 60;
@@ -161,8 +155,6 @@ app.post('/stream', function(req, res) {
     crypto.randomBytes(16, function(ex, buf) {
         if (ex) throw ex;
 
-        console.log(buf);
-
         var streamId = [];
         for (var i = 0; i < buf.length; i++) {
             var charCode = String.fromCharCode((buf[i] % 26) + 65);
@@ -177,9 +169,6 @@ app.post('/stream', function(req, res) {
             writeToken: writeToken,
             readToken: readToken
         };
-
-        console.log("stream:");
-        console.log(stream);
         qdDb.collection('stream').insert(stream, function(err, insertedRecords) {
             if (err) {
                 res.status(500).send("Database error");
@@ -196,12 +185,10 @@ app.post('/stream', function(req, res) {
 app.get('/stream/:id', function(req, res) {
     var readToken = req.headers.authorization;
 
-    console.log(req.params.id);
     var spec = {
         streamid: req.params.id
     };
 
-    console.log(spec);
     qdDb.collection('stream').find(spec, function(err, docs) {
         docs.toArray(function(err, streamArray) {
             var stream = streamArray[0] || {};
@@ -211,7 +198,6 @@ app.get('/stream/:id', function(req, res) {
                 var response = {
                     streamid: stream.streamid
                 }
-                console.log(response);
                 res.send(JSON.stringify(response));
             }
         })
@@ -227,8 +213,6 @@ app.get('/:ip', function(req, res) {
 });
 
 var saveEvent_driver = function(myEvent, stream, serverDateTime, res, rm) {
-    console.log("My Event: ");
-    console.log(myEvent);
     myEvent.streamid = stream.streamid;
     myEvent.serverDateTime = {
         "$date": serverDateTime
@@ -254,13 +238,11 @@ var saveEvent_driver = function(myEvent, stream, serverDateTime, res, rm) {
 }
 
 var authenticateWriteToken = function(token, id, error, success) {
-    console.log('streamid:' + id);
     qdDb.collection('stream').find({
         streamid: id
     }, function(err, docs) {
         docs.toArray(function(err, docsArray) {
             var stream = docsArray[0] || {};
-            console.log("write token from DB : " + stream.writeToken + " token from user : " + token);
             if (stream.writeToken != token) {
                 error();
             } else {
@@ -314,7 +296,6 @@ var getEventsForStream = function(stream) {
             var result = JSON.parse(body);
             deferred.resolve(result);
         } else {
-            console.log("error during call to platform: " + error);
             deferred.reject(error);
         }
     }
@@ -335,15 +316,11 @@ app.get('/stream/:id/event', function(req, res) {
         .then(function(response) {
             res.send(response)
         }).catch(function(error) {
-            // Handle any error from all above steps
-            console.log("stream not found due to : " + error);
             res.status(404).send("stream not found");
         });
 });
 
-//Migrate
 app.get('/live/devbuild/:durationMins', function(req, res) {
-    console.log("finding live builds");
     var fields = {
         _id: 0,
         streamid: 0,
@@ -369,8 +346,6 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
         filterSpec["payload.properties.Language"] = selectedLanguage;
     }
 
-    console.log("-----------------" + filterSpec);
-
     var options = {
         url: platformUri + '/rest/events/filter',
         auth: {
@@ -391,94 +366,19 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
             res.status(500).send("Something went wrong!");
         }
     }
-    console.log("options are :: ", options);
     requestModule(options, callback);
 
 });
 
-app.post('/test/datagenerator/event/:day/:count', function(req, res) {
-    var writeToken = req.headers.authorization;
-    var stream = req.body.stream;
-    var template = req.body.template;
-
-    var gen = {
-        day: parseInt(req.params.day),
-        count: parseInt(req.params.count),
-        dates: []
-    };
-
-    console.log(gen);
-
-    var generateEventsOnDay = function(day, count) {
-        var result = [];
-        for (var i = count - 1; i >= 0; i--) {
-            var randomTimeInDay = new Date(Date.parse(day));
-            var randomHour = 8 + (Math.random() * 9); // simulate coding between 8 and 13
-            var randomMinute = Math.random() * 59;
-            randomTimeInDay.setHours(randomHour);
-            randomTimeInDay.setMinutes(randomMinute);
-
-            console.log(JSON.stringify(randomTimeInDay));
-            result.push(randomTimeInDay);
-        };
-
-        return result;
-    }
-
-    var responses = [];
-    var startDate = new Date(new Date() - (gen.day * aDay));
-    currentDate = startDate;
-    console.log("startDate: " + startDate);
-    console.log("currentDate: " + currentDate);
-
-    var eventsToAdd = [];
-    for (var i = 0; i <= gen.day; i++) {
-        times = generateEventsOnDay(currentDate, Math.random() * gen.count);
-        for (j = 0; j < times.length; j++) {
-            var newEvent = JSON.parse(JSON.stringify(template));
-            newEvent.serverDateTime = times[j];
-            newEvent.dateTime = times[j];
-            eventsToAdd.push(newEvent);
-        }
-        currentDate = new Date(currentDate - 0 + aDay);
-        console.log("CurrentDate: " + currentDate);
-    }
-
-    console.log(eventsToAdd);
-
-    var responses
-    var aggregatedResponses = {
-        count: 0,
-        send: function(data) {
-            responses.push(data);
-            console.log(responses.length);
-            console.log(eventsToAdd.length);
-            if (responses.length == eventsToAdd.length) {
-                console.log("All data created");
-                console.log(responses);
-                res.send(responses);
-            }
-        }
-    };
-
-    eventsToAdd.forEach(function(d, i) {
-        console.log(d);
-        saveEvent_driver(d, stream, d.dateTime, aggregatedResponses, requestModule);
-    });
-});
-
 var authenticateReadToken_p = function(streamDetails) {
-    console.log("Authing");
     var deferred = q.defer();
 
     var mongoQuery = {
         "streamid": streamDetails.streamid
     };
-    console.log("streamdetails: " + streamDetails);
     var spec = {
         streamid: streamDetails.streamid
     }
-    console.log(spec);
     qdDb.collection('stream').find(spec, function(err, docs) {
         docs.toArray(function(err, docsArray) {
             if (err) {
@@ -486,11 +386,8 @@ var authenticateReadToken_p = function(streamDetails) {
             } else {
                 var stream = docsArray[0] || {};
                 if (stream.readToken != streamDetails.readToken) {
-                    console.log("Auth failed!");
                     deferred.reject(new Error("Stream auth failed."));
                 } else {
-                    console.log("Deferring auth read token:");
-                    console.log(streamDetails);
                     deferred.resolve(streamDetails);
                 }
             }
@@ -519,7 +416,6 @@ var generateDatesFor = function(defaultValues) {
             day = '0' + day
         }
         var dateKey = (month) + '/' + day + '/' + eachDay.getFullYear();
-        console.log("dateKey :", dateKey)
         result[dateKey] = {
             date: dateKey
         };
@@ -534,8 +430,6 @@ var generateDatesFor = function(defaultValues) {
 var filterToLastMonth = function(streamId) {
     var start = new Date(new Date() - numberOfDaysToReportBuildsOn * aDay);
     var end = new Date();
-    console.log("filter start: " + start);
-    console.log("filter end: " + end);
     return {
         'payload.streamid': streamId,
         'payload.serverDateTime': {
@@ -554,8 +448,6 @@ var rollupToArray = function(rollup) {
     for (var r in rollup) {
         result.push(rollup[r]);
     }
-    console.log("rollupToArray:");
-    console.log(result);
     return result;
 }
 
@@ -621,10 +513,8 @@ var getBuildEventsFromPlatform = function(stream) {
     };
 
     function callback(error, response, body) {
-        console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
-            console.log("generating builds per day now... : " + JSON.stringify(result));
             var defaultBuildValues = [{
                 key: "passed",
                 value: 0
@@ -641,9 +531,7 @@ var getBuildEventsFromPlatform = function(stream) {
             }
             deferred.resolve(rollupToArray(buildsByDay))
         } else {
-            console.log("error during call to platform: " + error);
             deferred.reject(error);
-            // res.status(500).send("Something went wrong!");
         }
     }
     requestModule(options, callback);
@@ -651,9 +539,7 @@ var getBuildEventsFromPlatform = function(stream) {
     return deferred.promise;
 }
 
-//Migrate 
 app.get('/quantifieddev/mydev/:streamid', function(req, res) {
-    console.log("getting mydev details for streamid : " + req.params.streamid);
     var readToken = req.headers.authorization;
     var streamid = req.params.streamid;
 
@@ -667,8 +553,6 @@ app.get('/quantifieddev/mydev/:streamid', function(req, res) {
         .then(function(response) {
             res.send(response)
         }).catch(function(error) {
-            // Handle any error from all above steps
-            console.log("stream not found due to : " + error);
             res.status(404).send("stream not found");
         })
 });
@@ -729,7 +613,6 @@ var getMyWTFsFromPlatform = function(streamDetails) {
             }
             deferred.resolve(rollupToArray(wtfsByDay))
         } else {
-            console.log("error during call to platform: " + error);
             deferred.reject(error);
         }
     };
@@ -751,7 +634,6 @@ app.get('/quantifieddev/mywtf/:streamid', function(req, res) {
         .then(function(response) {
             res.send(response)
         }).catch(function(error) {
-            console.log("stream not found due to : " + error);
             res.status(404).send("stream not found");
         });
 });
@@ -813,7 +695,6 @@ var getMyHydrationEventsFromPlatform = function(streamDetails) {
             }
             deferred.resolve(rollupToArray(hydrationsByDay))
         } else {
-            console.log("error during call to platform: " + error);
             deferred.reject(error);
         }
     };
@@ -835,7 +716,6 @@ app.get('/quantifieddev/myhydration/:streamid', function(req, res) {
         .then(function(response) {
             res.send(response)
         }).catch(function(error) {
-            console.log("stream not found due to : " + error);
             res.status(404).send("stream not found");
         });
 });
@@ -897,7 +777,6 @@ var getMyCaffeineEventsFromPlatform = function(streamDetails) {
             }
             deferred.resolve(rollupToArray(caffeineIntakeByDay))
         } else {
-            console.log("error during call to platform: " + error);
             deferred.reject(error);
         }
     };
@@ -919,7 +798,6 @@ app.get('/quantifieddev/mycaffeine/:streamid', function(req, res) {
         .then(function(response) {
             res.send(response)
         }).catch(function(error) {
-            console.log("stream not found due to : " + error);
             res.status(404).send("stream not found");
         });
 });
@@ -984,10 +862,8 @@ var getAvgBuildDurationFromPlatform = function(streamDetails) {
     }
 
     function callback(error, response, body) {
-        console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
-            console.log("generating builds per day now... : " + JSON.stringify(result));
             var defaultBuildValues = [{
                 key: "avgBuildDuration",
                 value: 0
@@ -1001,10 +877,8 @@ var getAvgBuildDurationFromPlatform = function(streamDetails) {
                 }
 
             }
-            console.log("Result is: ", buildDurationByDay);
             deferred.resolve(rollupToArray(buildDurationByDay))
         } else {
-            console.log("error during call to platform: " + error);
             deferred.reject(error);
 
         }
@@ -1029,8 +903,6 @@ app.get('/quantifieddev/buildDuration/:streamid', function(req, res) {
         .then(function(response) {
             res.send(response)
         }).catch(function(error) {
-            // Handle any error from all above steps
-            console.log("stream not found due to : " + error);
             res.status(404).send("stream not found");
         });
 
@@ -1061,7 +933,6 @@ var generateHoursForWeek = function(defaultValues) {
             }
         }
     }
-    console.log("Result is : ", result);
     return result;
 };
 
@@ -1111,12 +982,12 @@ var getHourlyBuildCountFromPlatform = function(streamDetails) {
     };
 
     function callback(error, response, body) {
-        console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
+        //console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
         if (!error && response.statusCode == 200) {
 
             var result = JSON.parse(body);
             var result = result[0];
-            console.log("No of hourly builds is : " + JSON.stringify(result));
+            //console.log("No of hourly builds is : " + JSON.stringify(result));
 
             var hourlyBuilds = generateHoursForWeek(defaultEventValues);
             for (date in result) {
@@ -1126,7 +997,7 @@ var getHourlyBuildCountFromPlatform = function(streamDetails) {
             }
             deferred.resolve(rollupToArray(hourlyBuilds));
         } else {
-            console.log("error during call to platform: " + error);
+            //console.log("error during call to platform: " + error);
             deferred.reject(error);
 
         }
@@ -1151,7 +1022,7 @@ app.get('/quantifieddev/hourlyBuildCount/:streamid', function(req, res) {
             res.send(response)
         }).catch(function(error) {
             // Handle any error from all above steps
-            console.log("stream not found due to : " + error);
+            //console.log("stream not found due to : " + error);
             res.status(404).send("stream not found");
         });
 
@@ -1199,12 +1070,10 @@ var getHourlyWtfCount = function(streamDetails) {
     };
 
     function callback(error, response, body) {
-        console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
         if (!error && response.statusCode == 200) {
 
             var result = JSON.parse(body);
             var result = result[0];
-            console.log("No of wtfs is : " + JSON.stringify(result));
 
             var hourlyWtfs = generateHoursForWeek(defaultEventValues);
             for (date in result) {
@@ -1214,7 +1083,6 @@ var getHourlyWtfCount = function(streamDetails) {
             }
             deferred.resolve(rollupToArray(hourlyWtfs));
         } else {
-            console.log("error during call to platform: " + error);
             deferred.reject(error);
 
         }
@@ -1239,8 +1107,6 @@ app.get('/quantifieddev/hourlyWtfCount/:streamid', function(req, res) {
         .then(function(response) {
             res.send(response)
         }).catch(function(error) {
-            // Handle any error from all above steps
-            console.log("stream not found due to : " + error);
             res.status(404).send("stream not found");
         });
 
@@ -1289,12 +1155,10 @@ var getHourlyHydrationCount = function(streamDetails) {
     };
 
     function callback(error, response, body) {
-        console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
         if (!error && response.statusCode == 200) {
 
             var result = JSON.parse(body);
             var result = result[0];
-            console.log("Hydration count is : " + JSON.stringify(result));
 
             var hourlyHydration = generateHoursForWeek(defaultEventValues);
             for (date in result) {
@@ -1304,7 +1168,6 @@ var getHourlyHydrationCount = function(streamDetails) {
             }
             deferred.resolve(rollupToArray(hourlyHydration));
         } else {
-            console.log("error during call to platform: " + error);
             deferred.reject(error);
 
         }
@@ -1329,8 +1192,6 @@ app.get('/quantifieddev/hourlyHydrationCount/:streamid', function(req, res) {
         .then(function(response) {
             res.send(response)
         }).catch(function(error) {
-            // Handle any error from all above steps
-            console.log("stream not found due to : " + error);
             res.status(404).send("stream not found");
         });
 
@@ -1379,12 +1240,10 @@ var getHourlyCaffeineCount = function(streamDetails) {
     };
 
     function callback(error, response, body) {
-        console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
         if (!error && response.statusCode == 200) {
 
             var result = JSON.parse(body);
             var result = result[0];
-            console.log("Caffeine count is : " + JSON.stringify(result));
 
             var hourlyCaffeine = generateHoursForWeek(defaultEventValues);
             for (date in result) {
@@ -1394,7 +1253,6 @@ var getHourlyCaffeineCount = function(streamDetails) {
             }
             deferred.resolve(rollupToArray(hourlyCaffeine));
         } else {
-            console.log("error during call to platform: " + error);
             deferred.reject(error);
 
         }
@@ -1419,8 +1277,6 @@ app.get('/quantifieddev/hourlyCaffeineCount/:streamid', function(req, res) {
         .then(function(response) {
             res.send(response)
         }).catch(function(error) {
-            // Handle any error from all above steps
-            console.log("stream not found due to : " + error);
             res.status(404).send("stream not found");
         });
 
@@ -1487,10 +1343,8 @@ var getMyActiveDuration = function(streamDetails) {
     }
 
     function callback(error, response, body) {
-        console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
-            console.log("generating active events per day now... : " + JSON.stringify(result));
             var defaulActiveDurationValues = [{
                 key: "totalActiveDuration",
                 value: 0
@@ -1499,7 +1353,6 @@ var getMyActiveDuration = function(streamDetails) {
                 value: 0
             }];
             var activeDurationByDay = generateDatesFor(defaulActiveDurationValues);
-            console.log("Active Duration By day: " + JSON.stringify(activeDurationByDay));
             for (date in result) {
                 if (activeDurationByDay[date] !== undefined) {
                     activeDurationByDay[date].totalActiveDuration = convertMillisToMinutes(result[date].totalActiveDuration);
@@ -1507,10 +1360,8 @@ var getMyActiveDuration = function(streamDetails) {
                 }
 
             }
-            console.log("Result is: ", activeDurationByDay);
             deferred.resolve(rollupToArray(activeDurationByDay))
         } else {
-            console.log("error during call to platform: " + error);
             deferred.reject(error);
 
         }
@@ -1535,8 +1386,6 @@ app.get('/quantifieddev/myActiveEvents/:streamid', function(req, res) {
         .then(function(response) {
             res.send(response)
         }).catch(function(error) {
-            // Handle any error from all above steps
-            console.log("stream not found due to : " + error);
             res.status(404).send("stream not found");
         });
 
@@ -1560,7 +1409,6 @@ app.options('*', function(request, response) {
 });
 
 var port = process.env.PORT || 5000;
-console.log(port);
 app.listen(port, function() {
     console.log("Listening on " + port);
 });
