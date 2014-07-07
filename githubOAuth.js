@@ -21,7 +21,7 @@ module.exports = function(app, passport) {
 		function(accessToken, refreshToken, profile, done) {
 			console.log("accessToken :: ", accessToken);
 			console.log("refreshToken :: ", refreshToken);
-			console.log("User profile :: ", profile);
+			console.log("User profile :: ", profile.username);
 			return done(null, profile);
 		}
 	));
