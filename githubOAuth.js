@@ -30,7 +30,8 @@ module.exports = function(app, passport) {
 	app.get('/auth/github/callback', passport.authenticate('github', {
 		failureRedirect: '/signup'
 	}), function(req, res) {
-		console.log("REs User : ",res.socket.user);
-		res.redirect('/claimUsername?username=radhika');
+		//if user with this github id exists then redirect to dashboard
+		//else
+		res.redirect('/claimUsername?username='+req.user.username);
 	});
 };

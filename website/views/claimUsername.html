@@ -17,8 +17,9 @@
 		<div class="top-bar" style="background: #373737">
 			<a href="index.html" class="logo"><img src="/img/quantified-dev-logo.png" alt="QuantifiedDev"></a>
 		</div>
-		<input type="text" value="{{ username}}">
-		<button type="button" class="btn btn-success btn-lg">Sign Up</button>
-		
+		<form name="username-form" action="/claimUsername" method="post">
+			<input name="username" type="text" value="{{ username}}">
+			<input type="submit" class="btn btn-success btn-lg" value="Sign Up" >
+		</form>
 	</body>
 </html>
