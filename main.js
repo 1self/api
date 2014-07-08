@@ -26,6 +26,8 @@ swig.setDefaults({
 var mongoAppKey = process.env.DBKEY;
 var mongoUri = process.env.DBURI;
 var qdDb;
+
+
 // Constants
 var aDay = 24 * 60 * 60 * 1000;
 
@@ -44,8 +46,6 @@ mongoClient.connect(mongoUri, function(err, db) {
     }
 });
 
-var qdDb = require("./mongoDB");
-console.log("qdDB when requiring:: ", qdDb);
 console.log('Connecting to PLATFORM_BASE_URI : ' + platformUri);
 
 var encryptPassword = function() {
@@ -385,7 +385,6 @@ var authenticateReadToken_p = function(streamDetails) {
     var spec = {
         streamid: streamDetails.streamid
     }
-    console.log("qdDB in here :: ", qdDb);
     qdDb.collection('stream').find(spec, function(err, docs) {
         docs.toArray(function(err, docsArray) {
             if (err) {
