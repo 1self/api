@@ -22,7 +22,7 @@ $(document).ready(function() {
 		return window.localStorage.theirStreamId && window.localStorage.theirReadToken;
 	}
 	var populateTheirTextboxes = function() {
-		$('#their-stream-id').val(window.localStorage.myReadToken);
+		$('#their-stream-id').val(window.localStorage.theirStreamId);
 		$('#their-read-token').val(window.localStorage.theirReadToken);
 	}
 
