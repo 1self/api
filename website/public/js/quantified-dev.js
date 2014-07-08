@@ -2,13 +2,6 @@ var qd = function() {
     var result = {};
     var modelUpdateCallbacks = [];
 
-    /*var updateStreamIdAndReadToken = function() {
-        window.localStorage.streamId = window.localStorage.streamId;
-        window.localStorage.readToken = window.localStorage.readToken;
-    };
-
-    updateStreamIdAndReadToken();*/
-
     var url = function(resource) {
         var result = "";
         if (location.hostname == "localhost") {
@@ -190,10 +183,7 @@ var qd = function() {
             }
         });
     };
-    result.save = function(streamId, readToken) {
-        window.localStorage.streamId = streamId;
-        window.localStorage.readToken = readToken;
-        // updateStreamIdAndReadToken();
+    result.plotDashboardGraphs = function() {
         result.updateBuildModel();
         result.updateWTFModel();
         result.updateHydrationModel();
@@ -386,16 +376,6 @@ var qd = function() {
         $.when(result.updateActiveEventsModelForMyStreamId(), result.updateActiveEventsModelForTheirStreamId())
            .done(result.compareActiveEvents).fail("Error getting active events!");
     };
-
-    if (window.localStorage.streamId && window.localStorage.readToken) {
-        result.updateBuildHistoryModelForMyStreamId();
-        result.updateActiveEventsModelForMyStreamId();
-    }
-
-    if (window.localStorage.theirStreamId && window.localStorage.theirReadToken) {
-        result.updateBuildHistoryModelForTheirStreamId();
-        result.updateActiveEventsModelForTheirStreamId();
-    }
 
     return result;
 }

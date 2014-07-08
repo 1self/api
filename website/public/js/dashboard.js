@@ -1,7 +1,11 @@
+var updateLocalStorage = function() {
+	window.localStorage.streamId = $('#stream-id').val();
+	window.localStorage.readToken = $('#read-token').val();
+};
+
 $('#auth-save').click(function() {
-	var streamId = $('#stream-id').val();
-	var readToken = $('#read-token').val();
-	window.qd.save(streamId, readToken);
+	updateLocalStorage();
+	window.qd.plotDashboardGraphs();
 });
 
 $("#builds-x").ready(function() {
@@ -11,7 +15,7 @@ $("#builds-x").ready(function() {
 			var buildComparison = Math.abs(comparisonValue);
 			if (buildComparison && buildComparison !== Infinity) {
 				$(comparisonElementId).text(buildComparison + "%");
-				if (comparisonValue< 0) {
+				if (comparisonValue < 0) {
 					$(comparisonElementId).addClass("icon-caret-down");
 				} else if (comparisonValue > 0) {
 					$(comparisonElementId).addClass("icon-caret-up");
@@ -28,15 +32,24 @@ $("#builds-x").ready(function() {
 $(document).ready(function() {
 	// if url contains latest stream values, update local storage
 	// else get the values from local storage and update textfield values.
-	var streamId = $('#stream-id').val();
-	var readToken = $('#read-token').val();
-	if (streamId && readToken) {
-		window.qd.save(streamId, readToken);
-	} else {
-		if (window.localStorage.streamId && window.localStorage.readToken) {
-			$('#stream-id').val(window.localStorage.streamId);
-			$('#read-token').val(window.localStorage.readToken);
-			window.qd.save(window.localStorage.streamId, window.localStorage.readToken);
-		}
+	var queryParamsExist = function() {
+		return $('#stream-id').val() && $('#read-token').val();
+	}
+
+	var localStorageHasValues = function() {
+		return window.localStorage.streamId && window.localStorage.readToken;
+	}
+
+	var populateTextboxes = function() {
+		$('#stream-id').val(window.localStorage.streamId);
+		$('#read-token').val(window.localStorage.readToken);
+	}
+
+	if (queryParamsExist()) {
+		updateLocalStorage();
+		window.qd.plotDashboardGraphs();
+	} else if (localStorageHasValues()) {
+		populateTextboxes();
+		window.qd.plotDashboardGraphs();
 	}
 });

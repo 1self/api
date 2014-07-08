@@ -124,16 +124,7 @@ app.get("/dashboard", function(req, res) {
 });
 
 app.get("/compare", function(req, res) {
-    var myStreamId = req.query.myStreamId ? req.query.myStreamId : "";
-    var myReadToken = req.query.myReadToken ? req.query.myReadToken : "";
-    var theirStreamId = req.query.theirStreamId ? req.query.theirStreamId : "";
-    var theirReadToken = req.query.theirReadToken ? req.query.theirReadToken : "";
-    res.render('compare', {
-        myStreamId: myStreamId,
-        myReadToken: myReadToken,
-        theirStreamId: theirStreamId,
-        theirReadToken: theirReadToken
-    });
+    res.render('compare');
 });
 
 app.get('/', function(request, response) {
