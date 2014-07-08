@@ -102,6 +102,10 @@ var getFilterValuesFrom = function(req) {
     return filterValues;
 }
 
+app.getQdDb=function(){
+    return qdDb;
+}
+
 app.get("/community", function(req, res) {
     res.render('community', getFilterValuesFrom(req));
 });

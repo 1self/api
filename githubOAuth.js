@@ -30,8 +30,16 @@ module.exports = function(app, passport) {
 	app.get('/auth/github/callback', passport.authenticate('github', {
 		failureRedirect: '/signup'
 	}), function(req, res) {
-		//if user with this github id exists then redirect to dashboard
-		//else
-		res.redirect('/claimUsername?username='+req.user.username);
+		var qdDb = app.getQdDb();
+		var byGitHubUsername = {
+			"githubUsername": req.user.username
+		};
+		qdDb.collection('users').findOne(byGitHubUsername, function(err, user) {
+			if (user) {
+				res.redirect('/dashboard?username=' + user.username)
+			} else {
+				res.redirect('/claimUsername?username=' + req.user.username);
+			}
+		});
 	});
 };
