@@ -2,12 +2,12 @@ var qd = function() {
     var result = {};
     var modelUpdateCallbacks = [];
 
-    var updateStreamIdAndReadToken = function() {
-        result.streamId = window.localStorage.streamId;
-        result.readToken = window.localStorage.readToken;
+    /*var updateStreamIdAndReadToken = function() {
+        window.localStorage.streamId = window.localStorage.streamId;
+        window.localStorage.readToken = window.localStorage.readToken;
     };
 
-    updateStreamIdAndReadToken();
+    updateStreamIdAndReadToken();*/
 
     var url = function(resource) {
         var result = "";
@@ -41,7 +41,7 @@ var qd = function() {
         $.ajax({
             url: url("mydev"),
             headers: {
-                "Authorization": result.readToken,
+                "Authorization": window.localStorage.readToken,
                 "Accept": "application/json"
             },
             success: function(buildEvents) {
@@ -62,7 +62,7 @@ var qd = function() {
         $.ajax({
             url: url("mywtf"),
             headers: {
-                "Authorization": result.readToken,
+                "Authorization": window.localStorage.readToken,
                 "Accept": "application/json"
             },
             success: function(wtfEvents) {
@@ -76,7 +76,7 @@ var qd = function() {
         $.ajax({
             url: url("myhydration"),
             headers: {
-                "Authorization": result.readToken,
+                "Authorization": window.localStorage.readToken,
                 "Accept": "application/json"
             },
             success: function(hydrationEvents) {
@@ -90,7 +90,7 @@ var qd = function() {
         $.ajax({
             url: url("mycaffeine"),
             headers: {
-                "Authorization": result.readToken,
+                "Authorization": window.localStorage.readToken,
                 "Accept": "application/json"
             },
             success: function(caffeineEvents) {
@@ -104,7 +104,7 @@ var qd = function() {
         $.ajax({
             url: url("buildDuration"),
             headers: {
-                "Authorization": result.readToken,
+                "Authorization": window.localStorage.readToken,
                 "Accept": "application/json"
             },
             success: function(buildDurationEvents) {
@@ -117,7 +117,7 @@ var qd = function() {
         $.ajax({
             url: url("hourlyBuildCount"),
             headers: {
-                "Authorization": result.readToken,
+                "Authorization": window.localStorage.readToken,
                 "Accept": "application/json"
             },
             success: function(hourlyBuildEvents) {
@@ -133,7 +133,7 @@ var qd = function() {
         $.ajax({
             url: url("hourlyWtfCount"),
             headers: {
-                "Authorization": result.readToken,
+                "Authorization": window.localStorage.readToken,
                 "Accept": "application/json"
             },
             success: function(hourlyWtfEvents) {
@@ -149,7 +149,7 @@ var qd = function() {
         $.ajax({
             url: url("hourlyHydrationCount"),
             headers: {
-                "Authorization": result.readToken,
+                "Authorization": window.localStorage.readToken,
                 "Accept": "application/json"
             },
             success: function(hourlyHydrationEvents) {
@@ -165,7 +165,7 @@ var qd = function() {
         $.ajax({
             url: url("hourlyCaffeineCount"),
             headers: {
-                "Authorization": result.readToken,
+                "Authorization": window.localStorage.readToken,
                 "Accept": "application/json"
             },
             success: function(hourlyCaffeineEvents) {
@@ -181,7 +181,7 @@ var qd = function() {
         $.ajax({
             url: url("myActiveEvents"),
             headers: {
-                "Authorization": result.readToken,
+                "Authorization": window.localStorage.readToken,
                 "Accept": "application/json"
             },
             success: function(activeEvents) {
@@ -193,7 +193,7 @@ var qd = function() {
     result.save = function(streamId, readToken) {
         window.localStorage.streamId = streamId;
         window.localStorage.readToken = readToken;
-        updateStreamIdAndReadToken();
+        // updateStreamIdAndReadToken();
         result.updateBuildModel();
         result.updateWTFModel();
         result.updateHydrationModel();
@@ -333,20 +333,11 @@ var qd = function() {
         return result;
     };
 
-    var updateStreamIdAndReadTokenForCompare = function() {
-        result.myStreamId = window.localStorage.myStreamId;
-        result.myReadToken = window.localStorage.myReadToken;
-        result.theirStreamId = window.localStorage.theirStreamId;
-        result.theirReadToken = window.localStorage.theirReadToken;
-    };
-
-    updateStreamIdAndReadTokenForCompare();
-
     result.updateBuildHistoryModelForMyStreamId = function() {
         return $.ajax({
-            url: urlForCompare("mydev", window.localStorage.myStreamId),
+            url: urlForCompare("mydev", window.localStorage.streamId),
             headers: {
-                "Authorization": result.myReadToken,
+                "Authorization": window.localStorage.readToken,
                 "Accept": "application/json"
             }
         });
@@ -355,16 +346,16 @@ var qd = function() {
         return $.ajax({
             url: urlForCompare("mydev", window.localStorage.theirStreamId),
             headers: {
-                "Authorization": result.theirReadToken,
+                "Authorization": window.localStorage.theirReadToken,
                 "Accept": "application/json"
             }
         });
     };
     result.updateActiveEventsModelForMyStreamId = function() {
         return $.ajax({
-            url: urlForCompare("myActiveEvents", window.localStorage.myStreamId),
+            url: urlForCompare("myActiveEvents", window.localStorage.streamId),
             headers: {
-                "Authorization": result.myReadToken,
+                "Authorization": window.localStorage.readToken,
                 "Accept": "application/json"
             }
         });
@@ -373,7 +364,7 @@ var qd = function() {
         return $.ajax({
             url: urlForCompare("myActiveEvents", window.localStorage.theirStreamId),
             headers: {
-                "Authorization": result.theirReadToken,
+                "Authorization": window.localStorage.theirReadToken,
                 "Accept": "application/json"
             }
         });
@@ -388,25 +379,20 @@ var qd = function() {
         result.plotActiveEventsFor(theirActiveEvents[0], "#their-active-events");
         result.plotComparisonForActiveEvents("#compare-active-events", myActiveEvents[0], theirActiveEvents[0])
     };
-    result.saveStreamIds = function(myStreamId, myReadToken, theirStreamId, theirReadToken) {
-        window.localStorage.myStreamId = myStreamId;
-        window.localStorage.myReadToken = myReadToken;
-        window.localStorage.theirStreamId = theirStreamId;
-        window.localStorage.theirReadToken = theirReadToken;
-        updateStreamIdAndReadTokenForCompare();
+    
+    result.plotComparisonGraphs = function() {
         $.when(result.updateBuildHistoryModelForMyStreamId(), result.updateBuildHistoryModelForTheirStreamId())
             .done(result.compareBuildHistories).fail("Error getting build data!");
         $.when(result.updateActiveEventsModelForMyStreamId(), result.updateActiveEventsModelForTheirStreamId())
            .done(result.compareActiveEvents).fail("Error getting active events!");
-
     };
 
-    if (result.myStreamId && result.myReadToken) {
+    if (window.localStorage.streamId && window.localStorage.readToken) {
         result.updateBuildHistoryModelForMyStreamId();
         result.updateActiveEventsModelForMyStreamId();
     }
 
-    if (result.theirStreamId && result.theirReadToken) {
+    if (window.localStorage.theirStreamId && window.localStorage.theirReadToken) {
         result.updateBuildHistoryModelForTheirStreamId();
         result.updateActiveEventsModelForTheirStreamId();
     }

@@ -33,10 +33,10 @@ $(document).ready(function() {
 	if (streamId && readToken) {
 		window.qd.save(streamId, readToken);
 	} else {
-		if (window.qd.streamId && window.qd.readToken) {
-			$('#stream-id').val(window.qd.streamId);
-			$('#read-token').val(window.qd.readToken);
-			window.qd.save(window.qd.streamId, window.qd.readToken);
+		if (window.localStorage.streamId && window.localStorage.readToken) {
+			$('#stream-id').val(window.localStorage.streamId);
+			$('#read-token').val(window.localStorage.readToken);
+			window.qd.save(window.localStorage.streamId, window.localStorage.readToken);
 		}
 	}
 });

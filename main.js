@@ -126,13 +126,13 @@ app.get("/dashboard", function(req, res) {
 app.get("/compare", function(req, res) {
     var myStreamId = req.query.myStreamId ? req.query.myStreamId : "";
     var myReadToken = req.query.myReadToken ? req.query.myReadToken : "";
-    var withStreamId = req.query.withStreamId ? req.query.withStreamId : "";
-    var withReadToken = req.query.withReadToken ? req.query.withReadToken : "";
+    var theirStreamId = req.query.theirStreamId ? req.query.theirStreamId : "";
+    var theirReadToken = req.query.theirReadToken ? req.query.theirReadToken : "";
     res.render('compare', {
         myStreamId: myStreamId,
         myReadToken: myReadToken,
-        withStreamId: withStreamId,
-        withReadToken: withReadToken
+        theirStreamId: theirStreamId,
+        theirReadToken: theirReadToken
     });
 });
 

@@ -1,25 +1,38 @@
+var updateLocalStorage = function() {
+	window.localStorage.streamId = $('#my-stream-id').val();
+	window.localStorage.readToken = $('#my-read-token').val();
+	window.localStorage.theirStreamId = $('#their-stream-id').val();
+	window.localStorage.theirReadToken = $('#their-read-token').val();
+};
+
 $('#auth-save-compare').click(function() {
-	var myStreamId = $('#my-stream-id').val();
-	var myReadToken = $('#my-read-token').val();
-	var theirStreamId = $('#their-stream-id').val();
-	var theirReadToken = $('#their-read-token').val();
-	window.qd.saveStreamIds(myStreamId, myReadToken, theirStreamId, theirReadToken);
+	updateLocalStorage();
+	window.qd.plotComparisonGraphs();
 });
 
 $(document).ready(function() {
-	var myStreamId = $('#my-stream-id').val();
-	var myReadToken = $('#my-read-token').val();
-	var theirStreamId = $('#their-stream-id').val();
-	var theirReadToken = $('#their-read-token').val();
-	if (myStreamId && myReadToken && theirStreamId && theirReadToken) {
-		window.qd.saveStreamIds(myStreamId, myReadToken, theirStreamId, theirReadToken);
-	} else {
-		if (window.qd.myStreamId && window.qd.myReadToken && window.qd.theirStreamId && window.qd.theirReadToken) {
-			$('#my-stream-id').val(window.qd.myStreamId);
-			$('#my-read-token').val(window.qd.myReadToken);
-			$('#their-stream-id').val(window.qd.theirStreamId);
-			$('#their-read-token').val(window.qd.theirReadToken);
-			window.qd.saveStreamIds(window.qd.myStreamId, window.qd.myReadToken, window.qd.theirStreamId, window.qd.theirReadToken);
-		}
+	var myDetailsAreAvailable = function() {
+		return window.localStorage.streamId && window.localStorage.readToken;
+	}
+	var populateMyTextboxes = function() {
+		$('#my-stream-id').val(window.localStorage.streamId);
+		$('#my-read-token').val(window.localStorage.readToken);
+	}
+	var theirDetailsAreAvailable = function() {
+		return window.localStorage.theirStreamId && window.localStorage.theirReadToken;
+	}
+	var populateTheirTextboxes = function() {
+		$('#their-stream-id').val(window.localStorage.myReadToken);
+		$('#their-read-token').val(window.localStorage.theirReadToken);
+	}
+
+	if (myDetailsAreAvailable()) {
+		populateMyTextboxes();
+	}
+	if (theirDetailsAreAvailable()) {
+		populateTheirTextboxes();
+	}
+	if (myDetailsAreAvailable() && theirDetailsAreAvailable()) {
+		window.qd.plotComparisonGraphs();
 	}
 });
