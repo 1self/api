@@ -118,9 +118,6 @@ app.get("/claimUsername", function(req, res) {
 });
 
 app.post("/claimUsername", function(req, res) {
-    //  res.send("Success! Req form :: " + req.body.username);
-    //1. Search in db if this username already exists
-    //2.If not then insert userRecord into db
     var oneselfUsername = req.body.username;
     var githubUsername = req.body.githubUsername;
 
@@ -133,18 +130,21 @@ app.post("/claimUsername", function(req, res) {
             res.render('claimUsername', {
                 username: oneselfUsername,
                 githubUsername: githubUsername,
-                error: "Username already taken. Please choose another."
+                error: "Username already taken. Please choose another one."
             });
         } else {
-            var userRecord = {
-                username: oneselfUsername,
-                githubUsername: githubUsername
-            }
-            qdDb.collection('users').insert(userRecord, function(err, insertedRecords) {
+            var byGithubUsername = {
+                "githubUser.username": githubUsername
+            };
+            qdDb.collection('users').update(byGithubUsername, {
+                $set: {
+                    username: oneselfUsername
+                }
+            }, function(err, user) {
                 if (err) {
                     res.status(500).send("Database error");
                 } else {
-                    res.redirect('/dashboard?username=' + oneselfUsername + "&githubUsername=" + githubUsername);
+                    res.redirect('/dashboard?username=' + oneselfUsername);
                 }
             });
         }
