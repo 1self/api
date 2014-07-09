@@ -8,8 +8,10 @@ module.exports = function(app, passport) {
 
 	var handleGithubCallback = function(req, res) {
 		var qdDb = app.getQdDb();
-		var githubUser = req.user;
+		var githubUser = req.user.profile;
+		var githubUserAccessToken = req.user.accessToken;
 		console.log("githubUser " + JSON.stringify(githubUser));
+		console.log("githubUser accessToken : " + githubUserAccessToken);
 
 		var isNewUser = function(user) {
 			return !user;
@@ -61,13 +63,20 @@ module.exports = function(app, passport) {
 			callbackURL: CONTEXT_URI + "/auth/github/callback"
 		},
 		function(accessToken, refreshToken, profile, done) {
-			return done(null, profile);
+			console.log("copy this url for user's email address : https://api.github.com/user/emails?access_token=" + accessToken)
+			var githubProfile = {
+				profile: profile,
+				accessToken: accessToken
+			};
+			return done(null, githubProfile);
 		}
 	));
 	app.use(passport.initialize());
 	app.use(passport.session());
 
-	app.get('/auth/github', passport.authenticate('github'));
+	app.get('/auth/github', passport.authenticate('github', {
+		scope: 'user:email'
+	}));
 
 	app.get('/auth/github/callback', passport.authenticate('github', {
 		failureRedirect: '/signup'
