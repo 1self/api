@@ -31,14 +31,16 @@ module.exports = function(app, passport) {
 		failureRedirect: '/signup'
 	}), function(req, res) {
 		var qdDb = app.getQdDb();
+		var githubUser = req.user;
+		console.log("githubUser " + JSON.stringify(githubUser));
 		var byGitHubUsername = {
-			"githubUsername": req.user.username
+			"githubUsername": githubUser.username
 		};
 		qdDb.collection('users').findOne(byGitHubUsername, function(err, user) {
 			if (user) {
 				res.redirect('/dashboard?username=' + user.username)
 			} else {
-				res.redirect('/claimUsername?username=' + req.user.username);
+				res.redirect('/claimUsername?username=' + githubUser.username);
 			}
 		});
 	});

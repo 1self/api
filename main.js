@@ -102,7 +102,7 @@ var getFilterValuesFrom = function(req) {
     return filterValues;
 }
 
-app.getQdDb=function(){
+app.getQdDb = function() {
     return qdDb;
 }
 
@@ -110,22 +110,52 @@ app.get("/community", function(req, res) {
     res.render('community', getFilterValuesFrom(req));
 });
 
+app.get("/claimUsername", function(req, res) {
+    res.render('claimUsername', {
+        username: req.query.username,
+        githubUsername: req.query.username
+    });
+});
+
 app.post("/claimUsername", function(req, res) {
     //  res.send("Success! Req form :: " + req.body.username);
+    //1. Search in db if this username already exists
+    //2.If not then insert userRecord into db
+    var oneselfUsername = req.body.username;
+    var githubUsername = req.body.githubUsername;
 
-    res.redirect('/dashboard');
+    var byOneselfUsername = {
+        "username": oneselfUsername
+    };
+
+    qdDb.collection('users').findOne(byOneselfUsername, function(err, user) {
+        if (user) {
+            res.render('claimUsername', {
+                username: oneselfUsername,
+                githubUsername: githubUsername,
+                error: "Username already taken. Please choose another."
+            });
+        } else {
+            var userRecord = {
+                username: oneselfUsername,
+                githubUsername: githubUsername
+            }
+            qdDb.collection('users').insert(userRecord, function(err, insertedRecords) {
+                if (err) {
+                    res.status(500).send("Database error");
+                } else {
+                    res.redirect('/dashboard?username=' + oneselfUsername + "&githubUsername=" + githubUsername);
+                }
+            });
+        }
+    });
 });
 
 app.get("/signup", function(req, res) {
     res.render('signup');
 });
 
-app.get("/claimUsername", function(req, res) {
-    console.log("REQ in main.js : ", req);
-    res.render('claimUsername', {
-        username: req.query.username
-    });
-});
+
 
 app.get("/dashboard", function(req, res) {
     var streamId = req.query.streamId ? req.query.streamId : "";
