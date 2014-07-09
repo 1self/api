@@ -1,5 +1,8 @@
 var githubStrategy = require('passport-github').Strategy;
 
+console.log("GITHUB_CLIENT_ID : " + process.env.GITHUB_CLIENT_ID);
+console.log("GITHUB_CLIENT_SECRET : " + process.env.GITHUB_CLIENT_SECRET);
+
 var GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 var GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 
