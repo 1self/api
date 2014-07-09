@@ -1,3 +1,5 @@
+var request = require("request");
+
 var githubStrategy = require('passport-github').Strategy;
 
 var GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
@@ -10,8 +12,6 @@ module.exports = function(app, passport) {
 		var qdDb = app.getQdDb();
 		var githubUser = req.user.profile;
 		var githubUserAccessToken = req.user.accessToken;
-		console.log("githubUser " + JSON.stringify(githubUser));
-		console.log("githubUser accessToken : " + githubUserAccessToken);
 
 		var isNewUser = function(user) {
 			return !user;
@@ -23,16 +23,33 @@ module.exports = function(app, passport) {
 			res.redirect(url + "?username=" + user.username);
 		};
 		var insertGithubProfileInDb = function() {
-			var githubUserRecord = {
-				githubUser: githubUser
-			}
-			qdDb.collection('users').insert(githubUserRecord, function(err, insertedRecords) {
-				if (err) {
-					res.status(500).send("Database error");
+			var options = {
+				url: "https://api.github.com/user/emails?access_token=" + githubUserAccessToken,
+				headers: {
+					"User-Agent": "Quantified Dev Localhost"
+				},
+			};
+			request(options, function(err, res, body) {
+				if (!err) {
+					var userEmails = JSON.parse(body);
+					for (var i in userEmails) {
+						githubUser.emails.push(userEmails[i]);
+					}
+					var githubUserRecord = {
+						githubUser: githubUser
+					}
+					qdDb.collection('users').insert(githubUserRecord, function(err, insertedRecords) {
+						if (err) {
+							res.status(500).send("Database error");
+						} else {
+							redirect(githubUser, "/claimUsername");
+						}
+					});
 				} else {
-					redirect(githubUser, "/claimUsername");
+					res.status(500).send("Could not fetch email addresses for user.");
 				}
 			});
+
 		};
 
 		var byGitHubUsername = {
@@ -63,7 +80,6 @@ module.exports = function(app, passport) {
 			callbackURL: CONTEXT_URI + "/auth/github/callback"
 		},
 		function(accessToken, refreshToken, profile, done) {
-			console.log("copy this url for user's email address : https://api.github.com/user/emails?access_token=" + accessToken)
 			var githubProfile = {
 				profile: profile,
 				accessToken: accessToken
