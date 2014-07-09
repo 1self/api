@@ -1,11 +1,14 @@
 var githubStrategy = require('passport-github').Strategy;
 
+var GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
+var GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
+
+// production
 // var GITHUB_CLIENT_ID = "6d5e909097263fcfb218"
 // var GITHUB_CLIENT_SECRET = "f1a1135bc128f99f83aa7d5614bdecc284a4210b";
-
 // localhost
-var GITHUB_CLIENT_ID = "cc6753d5fc88fa5bcdef"
-var GITHUB_CLIENT_SECRET = "80068a017d434fc51a190206e0ec798a3bb1b1bf";
+// var GITHUB_CLIENT_ID = "cc6753d5fc88fa5bcdef"
+// var GITHUB_CLIENT_SECRET = "80068a017d434fc51a190206e0ec798a3bb1b1bf";
 
 module.exports = function(app, passport) {
 
