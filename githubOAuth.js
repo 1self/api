@@ -42,6 +42,8 @@ module.exports = function(app, passport) {
 						if (err) {
 							res.status(500).send("Database error");
 						} else {
+							req.session.githubUsername = githubUser.username;
+							console.log("github login done, redirecting to claimUsername " + req.session.githubUsername);
 							redirect(githubUser, "/claimUsername");
 						}
 					});
@@ -49,7 +51,6 @@ module.exports = function(app, passport) {
 					res.status(500).send("Could not fetch email addresses for user.");
 				}
 			});
-
 		};
 
 		var byGitHubUsername = {
@@ -59,8 +60,11 @@ module.exports = function(app, passport) {
 			if (isNewUser(user)) {
 				insertGithubProfileInDb();
 			} else if (isUserRegisteredWithOneself(user)) {
+				req.session.username = user.username;
+				req.session.githubUsername = user.githubUser.username;
 				redirect(user, "/dashboard");
 			} else {
+				req.session.githubUsername = user.githubUser.username;
 				redirect(githubUser, "/claimUsername");
 			}
 		});

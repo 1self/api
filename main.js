@@ -4,18 +4,29 @@ var requestModule = require('request');
 var path = require('path');
 var cheerio = require('cheerio');
 var express = require("express");
-var moment = require("moment")
+var moment = require("moment");
 var url = require('url');
 var crypto = require('crypto');
-var app = express();
+var session = require("express-session");
 var passport = require('passport')
 var q = require('q');
 var mongoClient = require('mongodb').MongoClient;
+var sessionManager = require("./sessionManagement");
+
+var app = express();
+app.use(express.cookieParser());
+var sessionSecret = process.env.SESSION_SECRET;
+app.use(session({
+    secret: sessionSecret,
+    resave: true,
+    saveUninitialized: true,
+    cookie: {
+        secure: false // change to true when using https
+    }
+}));
 app.use(express.logger());
 app.use(express.bodyParser());
 app.use(express.static(path.join(__dirname, 'website/public')));
-
-
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 app.set('view cache', false);
@@ -34,6 +45,7 @@ var aDay = 24 * 60 * 60 * 1000;
 
 var platformUri = process.env.PLATFORM_BASE_URI;
 var sharedSecret = process.env.SHARED_SECRET;
+
 
 console.log("sharedSecret : " + sharedSecret);
 
@@ -144,6 +156,7 @@ app.post("/claimUsername", function(req, res) {
                 if (err) {
                     res.status(500).send("Database error");
                 } else {
+                    req.session.username = oneselfUsername;
                     res.redirect('/dashboard?username=' + oneselfUsername);
                 }
             });
@@ -155,9 +168,7 @@ app.get("/signup", function(req, res) {
     res.render('signup');
 });
 
-
-
-app.get("/dashboard", function(req, res) {
+app.get("/dashboard", sessionManager.requiresSession, function(req, res) {
     var streamId = req.query.streamId ? req.query.streamId : "";
     var readToken = req.query.readToken ? req.query.readToken : "";
 
@@ -167,7 +178,7 @@ app.get("/dashboard", function(req, res) {
     });
 });
 
-app.get("/compare", function(req, res) {
+app.get("/compare", sessionManager.requiresSession, function(req, res) {
     res.render('compare');
 });
 
