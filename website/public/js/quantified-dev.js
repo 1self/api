@@ -15,7 +15,7 @@ var qd = function() {
     };
     var postAjax = function(urlParam, successCallback, failureCallback) {
         $.ajax({
-            url: url(urlParam,window.localStorage.streamid),
+            url: url(urlParam,window.localStorage.streamId),
             headers: {
                 "Authorization": window.localStorage.readToken,
                 "Accept": "application/json"
