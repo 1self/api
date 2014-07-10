@@ -11,177 +11,136 @@ var qd = function() {
         }
         return result;
     }
+    var postAjax = function(urlParam, successCallback, failureCallback) {
+        $.ajax({
+            url: url(urlParam),
+            headers: {
+                "Authorization": window.localStorage.readToken,
+                "Accept": "application/json"
+            },
+            success: function(data) {
+                successCallback(data);
+            },
+            error: function(error) {
+                if (failureCallback)
+                    failureCallback(error);
+            }
+        });
 
+    }
     var compare = function(todaysEvents, yesterdayEvents) {
         var difference = todaysEvents - yesterdayEvents;
         var percentChange = (difference / yesterdayEvents) * 100;
         return Math.ceil(percentChange);
     }
-
-    result.updateBuildModel = function() {
-        var populateBuildTilesData = function(buildEvents) {
-            var todaysBuild = buildEvents[buildEvents.length - 1]; // last record
-            var yesterdaysBuild = buildEvents[buildEvents.length - 2];
-            var totalBuildsForToday = todaysBuild.passed + todaysBuild.failed;
-            var totalBuildsForYesterday = yesterdaysBuild.passed + yesterdaysBuild.failed;
-            result.todaysPassedBuildCount = todaysBuild.passed;
-            result.todaysFailedBuildCount = todaysBuild.failed;
-            result.todaysTotalBuildCount = totalBuildsForToday;
-            result.totalBuildComparison = compare(totalBuildsForToday, totalBuildsForYesterday);
-            result.passedBuildComparison = compare(todaysBuild.passed, yesterdaysBuild.passed);
-            result.failedBuildComparison = compare(todaysBuild.failed, yesterdaysBuild.failed);
-        }
-        $.ajax({
-            url: url("mydev"),
-            headers: {
-                "Authorization": window.localStorage.readToken,
-                "Accept": "application/json"
-            },
-            success: function(buildEvents) {
-                $("#stream-id-errors").text("");
-                result.buildEvents = buildEvents;
-                populateBuildTilesData(buildEvents);
-                modelUpdateCallbacks.forEach(function(c) {
-                    c();
-                });
-            },
-            error: function(error) {
-                $("#stream-id-errors").text("Incorrect streamid or read token!");
-            }
+    var myDevSuccessCallback = function(buildEvents) {
+        $("#stream-id-errors").text("");
+        result.buildEvents = buildEvents;
+        populateBuildTilesData(buildEvents);
+        modelUpdateCallbacks.forEach(function(c) {
+            c();
         });
+
+    }
+    var myDevFailureCallback = function() {
+        $("#stream-id-errors").text("Incorrect streamid or read token!");
+    }
+    var populateBuildTilesData = function(buildEvents) {
+        var todaysBuild = buildEvents[buildEvents.length - 1]; // last record
+        var yesterdaysBuild = buildEvents[buildEvents.length - 2];
+        var totalBuildsForToday = todaysBuild.passed + todaysBuild.failed;
+        var totalBuildsForYesterday = yesterdaysBuild.passed + yesterdaysBuild.failed;
+        result.todaysPassedBuildCount = todaysBuild.passed;
+        result.todaysFailedBuildCount = todaysBuild.failed;
+        result.todaysTotalBuildCount = totalBuildsForToday;
+        result.totalBuildComparison = compare(totalBuildsForToday, totalBuildsForYesterday);
+        result.passedBuildComparison = compare(todaysBuild.passed, yesterdaysBuild.passed);
+        result.failedBuildComparison = compare(todaysBuild.failed, yesterdaysBuild.failed);
+    }
+    result.updateBuildModel = function() {
+        postAjax("mydev", myDevSuccessCallback, myDevFailureCallback)
+    }
+    var myWtfSuccessCallback = function(wtfEvents) {
+        result.wtfEvents = wtfEvents;
+        result.plotWTFHistory();
+    }
+    result.updateWTFModel = function() {
+        postAjax("mywtf", myWtfSuccessCallback)
+    };
+    var myHydrationSuccessCallback = function(hydrationEvents) {
+        result.hydrationEvents = hydrationEvents;
+        result.plotHydrationHistory();
+    }
+    result.updateHydrationModel = function() {
+        postAjax("myhydration", myHydrationSuccessCallback)
+    };
+    var myCaffeineSuccessCallback = function(caffeineEvents) {
+        result.caffeineEvents = caffeineEvents;
+        result.plotCaffeineHistory();
+    }
+    result.updateCaffeineModel = function() {
+        postAjax("mycaffeine", myCaffeineSuccessCallback)
+
+    };
+    var buildDurationSuccessCallback = function(buildDurationEvents) {
+        result.buildDurationEvents = buildDurationEvents;
+        result.plotBuildDurationHistory();
+    }
+    result.updateBuildDurationModel = function() {
+        postAjax("buildDuration", buildDurationSuccessCallback)
+
+    };
+    var hourlyBuildSuccessCallback = function(hourlyBuildEvents) {
+        var timezoneOffset = new Date().getTimezoneOffset();
+        var timezoneDifferenceInHours = Math.round(timezoneOffset / 60);
+        result.timezoneDifferenceInHours = timezoneDifferenceInHours;
+        result.hourlyBuildEvents = hourlyBuildEvents;
+        result.plotHourlyEventMap('#hourlyBuild-heat-map', hourlyBuildEvents);
     }
 
-    result.updateWTFModel = function() {
-        $.ajax({
-            url: url("mywtf"),
-            headers: {
-                "Authorization": window.localStorage.readToken,
-                "Accept": "application/json"
-            },
-            success: function(wtfEvents) {
-                result.wtfEvents = wtfEvents;
-                result.plotWTFHistory();
-            }
-        });
-    };
-
-    result.updateHydrationModel = function() {
-        $.ajax({
-            url: url("myhydration"),
-            headers: {
-                "Authorization": window.localStorage.readToken,
-                "Accept": "application/json"
-            },
-            success: function(hydrationEvents) {
-                result.hydrationEvents = hydrationEvents;
-                result.plotHydrationHistory();
-            }
-        });
-    };
-
-    result.updateCaffeineModel = function() {
-        $.ajax({
-            url: url("mycaffeine"),
-            headers: {
-                "Authorization": window.localStorage.readToken,
-                "Accept": "application/json"
-            },
-            success: function(caffeineEvents) {
-                result.caffeineEvents = caffeineEvents;
-                result.plotCaffeineHistory();
-            }
-        });
-    };
-
-    result.updateBuildDurationModel = function() {
-        $.ajax({
-            url: url("buildDuration"),
-            headers: {
-                "Authorization": window.localStorage.readToken,
-                "Accept": "application/json"
-            },
-            success: function(buildDurationEvents) {
-                result.buildDurationEvents = buildDurationEvents;
-                result.plotBuildDurationHistory();
-            }
-        });
-    };
     result.updateHourlyBuildHeatMap = function() {
-        $.ajax({
-            url: url("hourlyBuildCount"),
-            headers: {
-                "Authorization": window.localStorage.readToken,
-                "Accept": "application/json"
-            },
-            success: function(hourlyBuildEvents) {
-                var timezoneOffset = new Date().getTimezoneOffset();
-                var timezoneDifferenceInHours = Math.round(timezoneOffset / 60);
-                result.timezoneDifferenceInHours = timezoneDifferenceInHours;
-                result.hourlyBuildEvents = hourlyBuildEvents;
-                result.plotHourlyEventMap('#hourlyBuild-heat-map', hourlyBuildEvents);
-            }
-        });
+        postAjax("hourlyBuildCount", hourlyBuildSuccessCallback)
+
     };
+    var hourlyWtfSuccessCallback = function(hourlyWtfEvents) {
+        var timezoneOffset = new Date().getTimezoneOffset();
+        var timezoneDifferenceInHours = Math.round(timezoneOffset / 60);
+        result.timezoneDifferenceInHours = timezoneDifferenceInHours;
+        result.hourlyWtfEvents = hourlyWtfEvents;
+        result.plotHourlyEventMap('#hourlyWtf-heat-map', hourlyWtfEvents);
+    }
     result.updateHourlyWtfHeatMap = function() {
-        $.ajax({
-            url: url("hourlyWtfCount"),
-            headers: {
-                "Authorization": window.localStorage.readToken,
-                "Accept": "application/json"
-            },
-            success: function(hourlyWtfEvents) {
-                var timezoneOffset = new Date().getTimezoneOffset();
-                var timezoneDifferenceInHours = Math.round(timezoneOffset / 60);
-                result.timezoneDifferenceInHours = timezoneDifferenceInHours;
-                result.hourlyWtfEvents = hourlyWtfEvents;
-                result.plotHourlyEventMap('#hourlyWtf-heat-map', hourlyWtfEvents);
-            }
-        });
+        postAjax("hourlyWtfCount", hourlyWtfSuccessCallback)
     };
+
+    var hourlyHydrationSuccessCallback = function(hourlyHydrationEvents) {
+        var timezoneOffset = new Date().getTimezoneOffset();
+        var timezoneDifferenceInHours = Math.round(timezoneOffset / 60);
+        result.timezoneDifferenceInHours = timezoneDifferenceInHours;
+        result.hourlyHydrationEvents = hourlyHydrationEvents;
+        result.plotHourlyEventMap('#hourlyHydration-heat-map', hourlyHydrationEvents);
+    }
     result.updateHourlyHydrationHeatMap = function() {
-        $.ajax({
-            url: url("hourlyHydrationCount"),
-            headers: {
-                "Authorization": window.localStorage.readToken,
-                "Accept": "application/json"
-            },
-            success: function(hourlyHydrationEvents) {
-                var timezoneOffset = new Date().getTimezoneOffset();
-                var timezoneDifferenceInHours = Math.round(timezoneOffset / 60);
-                result.timezoneDifferenceInHours = timezoneDifferenceInHours;
-                result.hourlyHydrationEvents = hourlyHydrationEvents;
-                result.plotHourlyEventMap('#hourlyHydration-heat-map', hourlyHydrationEvents);
-            }
-        });
+        postAjax("hourlyHydrationCount", hourlyHydrationSuccessCallback)
+
     };
+    var hourlyCaffeineSuccessCallback = function(hourlyCaffeineEvents) {
+        var timezoneOffset = new Date().getTimezoneOffset();
+        var timezoneDifferenceInHours = Math.round(timezoneOffset / 60);
+        result.timezoneDifferenceInHours = timezoneDifferenceInHours;
+        result.hourlyCaffeineEvents = hourlyCaffeineEvents;
+        result.plotHourlyEventMap('#hourlyCaffeine-heat-map', hourlyCaffeineEvents);
+    }
     result.updateHourlyCaffeineHeatMap = function() {
-        $.ajax({
-            url: url("hourlyCaffeineCount"),
-            headers: {
-                "Authorization": window.localStorage.readToken,
-                "Accept": "application/json"
-            },
-            success: function(hourlyCaffeineEvents) {
-                var timezoneOffset = new Date().getTimezoneOffset();
-                var timezoneDifferenceInHours = Math.round(timezoneOffset / 60);
-                result.timezoneDifferenceInHours = timezoneDifferenceInHours;
-                result.hourlyCaffeineEvents = hourlyCaffeineEvents;
-                result.plotHourlyEventMap('#hourlyCaffeine-heat-map', hourlyCaffeineEvents);
-            }
-        });
+        postAjax("hourlyCaffeineCount", hourlyCaffeineSuccessCallback)
     };
+    var activitySuccessCallback = function(myActiveEvents) {
+        result.activeEvents = activeEvents;
+        result.plotActiveEvents();
+    }
     result.updateActiveEvents = function() {
-        $.ajax({
-            url: url("myActiveEvents"),
-            headers: {
-                "Authorization": window.localStorage.readToken,
-                "Accept": "application/json"
-            },
-            success: function(activeEvents) {
-                result.activeEvents = activeEvents;
-                result.plotActiveEvents();
-            }
-        });
+        postAjax("myActiveEvents", activitySuccessCallback)
+
     };
     result.plotDashboardGraphs = function() {
         result.updateBuildModel();
@@ -365,16 +324,16 @@ var qd = function() {
         result.plotComparison("#compare-build-history", myBuildEvents[0], theirBuildEvents[0])
     };
     result.compareActiveEvents = function(myActiveEvents, theirActiveEvents) {
-       result.plotActiveEventsFor(myActiveEvents[0], "#my-active-events");
+        result.plotActiveEventsFor(myActiveEvents[0], "#my-active-events");
         result.plotActiveEventsFor(theirActiveEvents[0], "#their-active-events");
         result.plotComparisonForActiveEvents("#compare-active-events", myActiveEvents[0], theirActiveEvents[0])
     };
-    
+
     result.plotComparisonGraphs = function() {
         $.when(result.updateBuildHistoryModelForMyStreamId(), result.updateBuildHistoryModelForTheirStreamId())
             .done(result.compareBuildHistories).fail("Error getting build data!");
         $.when(result.updateActiveEventsModelForMyStreamId(), result.updateActiveEventsModelForTheirStreamId())
-           .done(result.compareActiveEvents).fail("Error getting active events!");
+            .done(result.compareActiveEvents).fail("Error getting active events!");
     };
 
     return result;
