@@ -3,18 +3,19 @@ var qd = function() {
     var modelUpdateCallbacks = [];
 
     //change this to accomodate varying streamids (for compare functionality)
-    var url = function(resource) {
+   
+    var url = function(resource, streamId) {
         var result = "";
         if (location.hostname == "localhost") {
-            result = "http://" + location.hostname + ":5000/quantifieddev/" + resource + "/" + window.localStorage.streamId;
+            result = "http://" + location.hostname + ":5000/quantifieddev/" + resource + "/" + streamId;
         } else {
-            result = "http://quantifieddev.herokuapp.com/quantifieddev/" + resource + "/" + window.localStorage.streamId;
+            result = "http://quantifieddev.herokuapp.com/quantifieddev/" + resource + "/" + streamId;
         }
         return result;
-    }
+    };
     var postAjax = function(urlParam, successCallback, failureCallback) {
         $.ajax({
-            url: url(urlParam),
+            url: url(urlParam,window.localStorage.streamid),
             headers: {
                 "Authorization": window.localStorage.readToken,
                 "Accept": "application/json"
@@ -266,19 +267,10 @@ var qd = function() {
         $('#tweetMyActiveDuration').attr('href', "https://twitter.com/share?url=''&hashtags=" + hashTags + "&text=" + tweetText);
     };
 
-    var urlForCompare = function(resource, streamId) {
-        var result = "";
-        if (location.hostname == "localhost") {
-            result = "http://" + location.hostname + ":5000/quantifieddev/" + resource + "/" + streamId;
-        } else {
-            result = "http://quantifieddev.herokuapp.com/quantifieddev/" + resource + "/" + streamId;
-        }
-        return result;
-    };
 
     result.updateBuildHistoryModelForMyStreamId = function() {
         return $.ajax({
-            url: urlForCompare("mydev", window.localStorage.streamId),
+            url: url("mydev", window.localStorage.streamId),
             headers: {
                 "Authorization": window.localStorage.readToken,
                 "Accept": "application/json"
@@ -287,7 +279,7 @@ var qd = function() {
     };
     result.updateBuildHistoryModelForTheirStreamId = function() {
         return $.ajax({
-            url: urlForCompare("mydev", window.localStorage.theirStreamId),
+            url: url("mydev", window.localStorage.theirStreamId),
             headers: {
                 "Authorization": window.localStorage.theirReadToken,
                 "Accept": "application/json"
@@ -296,7 +288,7 @@ var qd = function() {
     };
     result.updateActiveEventsModelForMyStreamId = function() {
         return $.ajax({
-            url: urlForCompare("myActiveEvents", window.localStorage.streamId),
+            url: url("myActiveEvents", window.localStorage.streamId),
             headers: {
                 "Authorization": window.localStorage.readToken,
                 "Accept": "application/json"
@@ -305,7 +297,7 @@ var qd = function() {
     };
     result.updateActiveEventsModelForTheirStreamId = function() {
         return $.ajax({
-            url: urlForCompare("myActiveEvents", window.localStorage.theirStreamId),
+            url: url("myActiveEvents", window.localStorage.theirStreamId),
             headers: {
                 "Authorization": window.localStorage.theirReadToken,
                 "Accept": "application/json"
