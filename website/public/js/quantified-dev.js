@@ -2,6 +2,7 @@ var qd = function() {
     var result = {};
     var modelUpdateCallbacks = [];
 
+    //change this to accomodate varying streamids (for compare functionality)
     var url = function(resource) {
         var result = "";
         if (location.hostname == "localhost") {
@@ -18,9 +19,7 @@ var qd = function() {
                 "Authorization": window.localStorage.readToken,
                 "Accept": "application/json"
             },
-            success: function(data) {
-                successCallback(data);
-            },
+            success: successCallback,
             error: function(error) {
                 if (failureCallback)
                     failureCallback(error);
@@ -42,8 +41,10 @@ var qd = function() {
         });
 
     }
-    var myDevFailureCallback = function() {
-        $("#stream-id-errors").text("Incorrect streamid or read token!");
+    var failureCallback = function(divId, msg) {
+        return function() {
+            $(divId).text(msg);
+        }
     }
     var populateBuildTilesData = function(buildEvents) {
         var todaysBuild = buildEvents[buildEvents.length - 1]; // last record
@@ -58,7 +59,7 @@ var qd = function() {
         result.failedBuildComparison = compare(todaysBuild.failed, yesterdaysBuild.failed);
     }
     result.updateBuildModel = function() {
-        postAjax("mydev", myDevSuccessCallback, myDevFailureCallback)
+        postAjax("mydev", myDevSuccessCallback, failureCallback("#stream-id-errors", "Incorrect streamid or read token!"))
     }
     var myWtfSuccessCallback = function(wtfEvents) {
         result.wtfEvents = wtfEvents;
@@ -143,7 +144,7 @@ var qd = function() {
 
     };
     result.plotGraphs = function(graphs) {
-        graphs.forEach(function(graph){
+        graphs.forEach(function(graph) {
             result[graph]();
         })
     }
@@ -322,9 +323,14 @@ var qd = function() {
         result.plotComparisonForActiveEvents("#compare-active-events", myActiveEvents[0], theirActiveEvents[0])
     };
 
+    var handlePlotComparisonGraphsSuccess = function(myBuildEvents, theirBuildEvents) {
+         $("#compare-stream-id-errors").text("");
+         result.compareBuildHistories(myBuildEvents, theirBuildEvents)
+    }
+
     result.plotComparisonGraphs = function() {
         $.when(result.updateBuildHistoryModelForMyStreamId(), result.updateBuildHistoryModelForTheirStreamId())
-            .done(result.compareBuildHistories).fail("Error getting build data!");
+            .done(handlePlotComparisonGraphsSuccess).fail(failureCallback("#compare-stream-id-errors","Incorrect streamid or read token!"));
         $.when(result.updateActiveEventsModelForMyStreamId(), result.updateActiveEventsModelForTheirStreamId())
             .done(result.compareActiveEvents).fail("Error getting active events!");
     };
