@@ -1,3 +1,5 @@
+var dashboardGraphs = ['updateBuildModel', 'updateWTFModel', 'updateHydrationModel', 'updateCaffeineModel', 'updateBuildDurationModel', 'updateHourlyBuildHeatMap', 'updateHourlyWtfHeatMap', 'updateHourlyHydrationHeatMap', 'updateHourlyCaffeineHeatMap', 'updateActiveEvents'];
+
 var updateLocalStorage = function() {
 	window.localStorage.streamId = $('#stream-id').val();
 	window.localStorage.readToken = $('#read-token').val();
@@ -5,7 +7,7 @@ var updateLocalStorage = function() {
 
 $('#auth-save').click(function() {
 	updateLocalStorage();
-	window.qd.plotDashboardGraphs();
+	window.qd.plotGraphs(dashboardGraphs);
 });
 
 $("#builds-x").ready(function() {
@@ -30,6 +32,8 @@ $("#builds-x").ready(function() {
 });
 
 $(document).ready(function() {
+
+
 	// if url contains latest stream values, update local storage
 	// else get the values from local storage and update textfield values.
 	var queryParamsExist = function() {
@@ -47,9 +51,9 @@ $(document).ready(function() {
 
 	if (queryParamsExist()) {
 		updateLocalStorage();
-		window.qd.plotDashboardGraphs();
+		window.qd.plotGraphs(dashboardGraphs);
 	} else if (localStorageHasValues()) {
 		populateTextboxes();
-		window.qd.plotDashboardGraphs();
+		window.qd.plotGraphs(dashboardGraphs);
 	}
 });

@@ -142,17 +142,10 @@ var qd = function() {
         postAjax("myActiveEvents", activitySuccessCallback)
 
     };
-    result.plotDashboardGraphs = function() {
-        result.updateBuildModel();
-        result.updateWTFModel();
-        result.updateHydrationModel();
-        result.updateCaffeineModel();
-        result.updateBuildDurationModel();
-        result.updateHourlyBuildHeatMap();
-        result.updateHourlyWtfHeatMap();
-        result.updateHourlyHydrationHeatMap();
-        result.updateHourlyCaffeineHeatMap();
-        result.updateActiveEvents();
+    result.plotGraphs = function(graphs) {
+        graphs.forEach(function(graph){
+            result[graph]();
+        })
     }
 
     result.registerForBuildModelUpdates = function(callback) {
