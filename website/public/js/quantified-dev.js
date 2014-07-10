@@ -135,7 +135,7 @@ var qd = function() {
         postAjax("hourlyCaffeineCount", hourlyCaffeineSuccessCallback)
     };
     var activitySuccessCallback = function(myActiveEvents) {
-        result.activeEvents = activeEvents;
+        result.activeEvents = myActiveEvents;
         result.plotActiveEvents();
     }
     result.updateActiveEvents = function() {
