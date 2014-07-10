@@ -1,12 +1,12 @@
 var request = require("request");
-
+var passport = require('passport')
 var githubStrategy = require('passport-github').Strategy;
 
 var GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 var GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 var CONTEXT_URI = process.env.CONTEXT_URI;
 
-module.exports = function(app, passport) {
+module.exports = function(app) {
 
 	var handleGithubCallback = function(req, res) {
 		var qdDb = app.getQdDb();

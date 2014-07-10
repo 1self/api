@@ -1,19 +1,32 @@
 // require('newrelic');
-var swig = require('swig');
+
 var requestModule = require('request');
-var path = require('path');
 var cheerio = require('cheerio');
 var express = require("express");
 var moment = require("moment");
 var url = require('url');
 var crypto = require('crypto');
+var swig = require('swig');
+var path = require('path');
 var session = require("express-session");
-var passport = require('passport')
 var q = require('q');
 var mongoClient = require('mongodb').MongoClient;
-var sessionManager = require("./sessionManagement");
-
 var app = express();
+app.use(express.logger());
+app.use(express.bodyParser());
+
+var mongoAppKey = process.env.DBKEY;
+var mongoUri = process.env.DBURI;
+var qdDb;
+
+app.engine('html', swig.renderFile);
+app.use(express.static(path.join(__dirname, 'website/public')));
+app.set('view engine', 'html');
+app.set('view cache', false);
+app.set('views', __dirname + '/website/views');
+swig.setDefaults({
+    cache: false
+});
 app.use(express.cookieParser());
 var sessionSecret = process.env.SESSION_SECRET;
 app.use(session({
@@ -24,29 +37,11 @@ app.use(session({
         secure: false // change to true when using https
     }
 }));
-app.use(express.logger());
-app.use(express.bodyParser());
-app.use(express.static(path.join(__dirname, 'website/public')));
-app.engine('html', swig.renderFile);
-app.set('view engine', 'html');
-app.set('view cache', false);
-app.set('views', __dirname + '/website/views');
-swig.setDefaults({
-    cache: false
-});
-var mongoAppKey = process.env.DBKEY;
-var mongoUri = process.env.DBURI;
-var qdDb;
-
 
 // Constants
 var aDay = 24 * 60 * 60 * 1000;
-
-
 var platformUri = process.env.PLATFORM_BASE_URI;
 var sharedSecret = process.env.SHARED_SECRET;
-
-
 console.log("sharedSecret : " + sharedSecret);
 
 mongoClient.connect(mongoUri, function(err, db) {
@@ -59,6 +54,8 @@ mongoClient.connect(mongoUri, function(err, db) {
 });
 
 console.log('Connecting to PLATFORM_BASE_URI : ' + platformUri);
+require('./githubOAuth')(app);
+require('./quantifieddevRoutes')(app, express);
 
 var encryptPassword = function() {
     if (sharedSecret) {
@@ -75,8 +72,6 @@ var encryptPassword = function() {
 };
 
 var encryptedPassword = encryptPassword();
-
-require('./githubOAuth')(app, passport)
 
 app.all('*', function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -117,70 +112,6 @@ var getFilterValuesFrom = function(req) {
 app.getQdDb = function() {
     return qdDb;
 }
-
-app.get("/community", function(req, res) {
-    res.render('community', getFilterValuesFrom(req));
-});
-
-app.get("/claimUsername", function(req, res) {
-    res.render('claimUsername', {
-        username: req.query.username,
-        githubUsername: req.query.username
-    });
-});
-
-app.post("/claimUsername", function(req, res) {
-    var oneselfUsername = req.body.username;
-    var githubUsername = req.body.githubUsername;
-
-    var byOneselfUsername = {
-        "username": oneselfUsername
-    };
-
-    qdDb.collection('users').findOne(byOneselfUsername, function(err, user) {
-        if (user) {
-            res.render('claimUsername', {
-                username: oneselfUsername,
-                githubUsername: githubUsername,
-                error: "Username already taken. Please choose another one."
-            });
-        } else {
-            var byGithubUsername = {
-                "githubUser.username": githubUsername
-            };
-            qdDb.collection('users').update(byGithubUsername, {
-                $set: {
-                    username: oneselfUsername
-                }
-            }, function(err, user) {
-                if (err) {
-                    res.status(500).send("Database error");
-                } else {
-                    req.session.username = oneselfUsername;
-                    res.redirect('/dashboard?username=' + oneselfUsername);
-                }
-            });
-        }
-    });
-});
-
-app.get("/signup", function(req, res) {
-    res.render('signup');
-});
-
-app.get("/dashboard", sessionManager.requiresSession, function(req, res) {
-    var streamId = req.query.streamId ? req.query.streamId : "";
-    var readToken = req.query.readToken ? req.query.readToken : "";
-
-    res.render('dashboard', {
-        streamId: streamId,
-        readToken: readToken
-    });
-});
-
-app.get("/compare", sessionManager.requiresSession, function(req, res) {
-    res.render('compare');
-});
 
 app.get('/', function(request, response) {
     response.send('quantified dev service');
