@@ -94,11 +94,25 @@ module.exports = function(app) {
 	app.use(passport.initialize());
 	app.use(passport.session());
 
-	app.get('/auth/github', passport.authenticate('github', {
-		scope: 'user:email'
-	}));
 
-	app.get('/auth/github/callback', passport.authenticate('github', {
-		failureRedirect: '/signup'
-	}), handleGithubCallback);
+    app.get('/auth/github', function (req, res, next) {
+        req.session.foo = "foo"
+        passport.authenticate('github', {
+            scope: 'user:email'
+        })(req, res, next)
+
+    }, function () {
+        console.log("/auth/github callback error. REPORT THIS.")
+    });
+
+
+    app.get('/auth/github/callback', function(req, res, next){
+        var foo = req.session.foo;
+        console.log("Foo from session is", foo);
+        passport.authenticate('github', {
+            failureRedirect: '/signup'
+        })(req, res, next);
+    }, handleGithubCallback);
+
+
 };
