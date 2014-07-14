@@ -1,6 +1,7 @@
 var sessionManager = require("./sessionManagement");
 
 module.exports = function(app, express) {
+
     app.get("/signup", function(req, res) {
         res.render('signup');
     });
@@ -29,7 +30,7 @@ module.exports = function(app, express) {
         var byOneselfUsername = {
             "username": oneselfUsername
         };
-
+        qdDb = app.getQdDb();
         qdDb.collection('users').findOne(byOneselfUsername, function(err, user) {
             if (user) {
                 res.render('claimUsername', {

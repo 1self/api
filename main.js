@@ -33,6 +33,7 @@ app.use(session({
     secret: sessionSecret,
     resave: true,
     saveUninitialized: true,
+    maxAge: -1,
     cookie: {
         secure: false // change to true when using https
     }
