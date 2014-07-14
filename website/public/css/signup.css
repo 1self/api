@@ -1,0 +1,77 @@
+body{
+	line-height: 18px;
+}
+.page-title .dropdown {
+	list-style-type: none;
+	border-radius: 2px;
+}
+.menu-side {
+	color: white;
+	padding-left: 18px;
+}
+x.axis {
+	stroke-width: 1.0;
+}
+.domain {
+	fill: none;
+	stroke: black;
+	stroke-width;
+	1px;
+}
+.fixed-height {
+	height: 430px;
+}
+.top-buffer {
+	margin-top:5px;
+}
+.white-background {
+	 background:white;
+}
+.signup-form {
+	 background: #515151;
+}
+.header-text {
+	color: #E2E2E2;
+}
+.signup-details {
+	color: #979797;
+}
+.signup-button {
+	background:#1AC8A2;
+	border: 1px solid #54FFFA;
+	width: 100%;
+}
+.logo{
+	padding: 12px 0;
+	display: inline-block;
+}
+.signup-form{
+	border: none;
+}
+.container {
+	padding: 30px;
+	width: 98%;
+	margin: 0 auto;
+	background: #515151;
+	border-radius: 5px;
+}
+.step-heading{
+	margin: 40px 0 0 0;
+}
+.margin-top-five{
+	margin-top: 5px;
+}
+.btn:hover, .btn:focus,.signup-button{
+	color: #FFF;
+
+}
+@media (min-width: 600px){
+	.container {
+		width: 400px;
+	}
+}
+@media screen and (min-width: 768px){
+	.jumbotron {
+	padding-top: 100px;
+	}
+}
