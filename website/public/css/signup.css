@@ -1,29 +1,6 @@
 body{
 	line-height: 18px;
 }
-.page-title .dropdown {
-	list-style-type: none;
-	border-radius: 2px;
-}
-.menu-side {
-	color: white;
-	padding-left: 18px;
-}
-x.axis {
-	stroke-width: 1.0;
-}
-.domain {
-	fill: none;
-	stroke: black;
-	stroke-width;
-	1px;
-}
-.fixed-height {
-	height: 430px;
-}
-.top-buffer {
-	margin-top:5px;
-}
 .white-background {
 	 background:white;
 }
@@ -40,6 +17,9 @@ x.axis {
 	background:#1AC8A2;
 	border: 1px solid #54FFFA;
 	width: 100%;
+}
+.error {
+	color: #C66868;
 }
 .logo{
 	padding: 12px 0;
