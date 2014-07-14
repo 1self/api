@@ -10,10 +10,64 @@ module.exports = function(app, express) {
         var streamId = req.query.streamId ? req.query.streamId : "";
         var readToken = req.query.readToken ? req.query.readToken : "";
 
-        res.render('dashboard', {
-            streamId: streamId,
-            readToken: readToken
-        });
+        /* if url contains streamId and readToken {
+            if username and streamid mapping does not exist {
+                insert the mapping in db
+            }
+            fetch all associated streamids for username and render dashboard.
+        }
+        else if username and streamid mapping does not exist {
+                Show overlay
+        } else {
+                fetch all associated streamids for username and render dashboard    
+            }
+        */
+        if (streamId && readToken) {
+            var oneselfUsername = req.session.username;
+            var streamidUsernameMapping = {
+                "username": oneselfUsername,
+                "streams": {
+                    "$elemMatch": {
+                        "streamId": streamId
+                    }
+                }
+            };
+            qdDb = app.getQdDb();
+            qdDb.collection('users').findOne(streamidUsernameMapping, function(err, user) {
+                if (user) {
+                    res.render('dashboard', {
+                        streamId: streamId,
+                        readToken: readToken
+                    });
+                } else {
+                    var mappingToInsert = {
+                        "$push": {
+                            "streams": {
+                                "streamId": streamId,
+                                "readToken": readToken
+                            }
+                        }
+                    };
+                    qdDb.collection('users').update({
+                        "username": oneselfUsername
+                    }, mappingToInsert, function(err, user) {
+                        if (user) {
+                            res.render('dashboard', {
+                                streamId: streamId,
+                                readToken: readToken
+                            });
+                        } else {
+                            res.status(500).send("Database error");
+                        }
+                    });
+                }
+            });
+        } else {
+            res.render('dashboard', {
+                streamId: streamId,
+                readToken: readToken
+            });
+        }
     });
 
     app.get("/claimUsername", function(req, res) {
