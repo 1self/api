@@ -61,7 +61,27 @@ module.exports = function(app, express) {
     app.get("/compare", sessionManager.requiresSession, function(req, res) {
         res.render('compare');
     });
-
+    
+    var getFilterValuesFrom = function(req) {
+        var lastHour = 60;
+        var selectedLanguage = req.query.language ? req.query.language : "all";
+        var selectedEvent = req.query.event ? req.query.event : "all";
+        var selectedDuration = req.query.duration ? req.query.duration : lastHour;
+        var filterValues = {
+            globe: {
+                lang: selectedLanguage,
+                duration: selectedDuration,
+                event: selectedEvent
+            },
+            country: {
+                lang: selectedLanguage,
+                duration: selectedDuration,
+                event: selectedEvent
+            }
+        };
+        return filterValues;
+    };
+    
     app.get("/community", function(req, res) {
         res.render('community', getFilterValuesFrom(req));
     });
