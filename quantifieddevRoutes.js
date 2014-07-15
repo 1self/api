@@ -29,7 +29,6 @@ module.exports = function(app, express) {
                 "streamId": streamId
             }).length > 0;
         }
-
         if (streamId && readToken) {
             var getStreamsForUser = function() {
                 var oneselfUsername = req.session.username;
@@ -45,7 +44,6 @@ module.exports = function(app, express) {
                     if (err) {
                         deferred.reject(err);
                     } else {
-                        console.log("got user in getStreamsForUser : " + user);
                         deferred.resolve(user);
                     }
                 });
@@ -66,10 +64,8 @@ module.exports = function(app, express) {
                     "username": req.session.username
                 }, mappingToInsert, function(err, user) {
                     if (user) {
-                        console.log("insertStreamForUser stream inserted for user : ");
                         deferred.resolve();
                     } else {
-                        console.log("insertStreamForUser error in stream insertion : ");
                         deferred.reject(err);
                     }
                 });
@@ -79,10 +75,8 @@ module.exports = function(app, express) {
             var decideWhatToDoWithStream = function(user) {
                 var deferred = Q.defer();
                 if (streamExists(streamId, user)) {
-                    console.log("decideWhatToDoWithStream stream exist in user : ");
                     deferred.resolve();
                 } else {
-                    console.log("decideWhatToDoWithStream stream doesn't exist in user : ");
                     return insertStreamForUser(user, streamId);
                 }
                 return deferred.promise;
@@ -137,7 +131,13 @@ module.exports = function(app, express) {
                         res.status(500).send("Database error");
                     } else {
                         req.session.username = oneselfUsername;
-                        res.redirect('/dashboard?username=' + oneselfUsername);
+                        if (req.session.redirectUrl) {
+                            var redirectUrl = req.session.redirectUrl;
+                            delete req.session.redirectUrl;
+                            res.redirect(redirectUrl);
+                        } else {
+                            res.redirect('/dashboard?username=' + oneselfUsername);
+                        }
                     }
                 });
             }
