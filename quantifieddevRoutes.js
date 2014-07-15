@@ -1,4 +1,6 @@
 var sessionManager = require("./sessionManagement");
+var _ = require("underscore");
+var Q = require('q');
 
 module.exports = function(app, express) {
 
@@ -22,45 +24,75 @@ module.exports = function(app, express) {
                 fetch all associated streamids for username and render dashboard    
             }
         */
+        var streamExists = function(streamId, user) {
+            return _.where(user.streams, {
+                "streamId": streamId
+            }).length > 0;
+        }
+
         if (streamId && readToken) {
-            var oneselfUsername = req.session.username;
-            var streamidUsernameMapping = {
-                "username": oneselfUsername,
-                "streams": {
-                    "$elemMatch": {
-                        "streamId": streamId
+            var getStreamsForUser = function() {
+                var oneselfUsername = req.session.username;
+                var streamidUsernameMapping = {
+                    "username": oneselfUsername
+                };
+                qdDb = app.getQdDb();
+                var deferred = Q.defer();
+
+                qdDb.collection('users').findOne(streamidUsernameMapping, {
+                    "streams": 1
+                }, function(err, user) {
+                    if (err) {
+                        deferred.reject(err);
+                    } else {
+                        console.log("got user in getStreamsForUser : " + user);
+                        deferred.resolve(user);
                     }
-                }
+                });
+                return deferred.promise;
             };
-            qdDb = app.getQdDb();
-            qdDb.collection('users').findOne(streamidUsernameMapping, function(err, user) {
-                if (user) {
-                    res.render('dashboard', {
-                        streamId: streamId,
-                        readToken: readToken
-                    });
+            var insertStreamForUser = function(user, streamId) {
+                qdDb = app.getQdDb();
+                var deferred = Q.defer();
+                var mappingToInsert = {
+                    "$push": {
+                        "streams": {
+                            "streamId": streamId,
+                            "readToken": readToken
+                        }
+                    }
+                };
+                qdDb.collection('users').update({
+                    "username": req.session.username
+                }, mappingToInsert, function(err, user) {
+                    if (user) {
+                        console.log("insertStreamForUser stream inserted for user : ");
+                        deferred.resolve();
+                    } else {
+                        console.log("insertStreamForUser error in stream insertion : ");
+                        deferred.reject(err);
+                    }
+                });
+                return deferred.promise;
+            };
+
+            var decideWhatToDoWithStream = function(user) {
+                var deferred = Q.defer();
+                if (streamExists(streamId, user)) {
+                    console.log("decideWhatToDoWithStream stream exist in user : ");
+                    deferred.resolve();
                 } else {
-                    var mappingToInsert = {
-                        "$push": {
-                            "streams": {
-                                "streamId": streamId,
-                                "readToken": readToken
-                            }
-                        }
-                    };
-                    qdDb.collection('users').update({
-                        "username": oneselfUsername
-                    }, mappingToInsert, function(err, user) {
-                        if (user) {
-                            res.render('dashboard', {
-                                streamId: streamId,
-                                readToken: readToken
-                            });
-                        } else {
-                            res.status(500).send("Database error");
-                        }
-                    });
+                    console.log("decideWhatToDoWithStream stream doesn't exist in user : ");
+                    return insertStreamForUser(user, streamId);
                 }
+                return deferred.promise;
+            };
+
+            getStreamsForUser().then(decideWhatToDoWithStream).then(function() {
+                res.render('dashboard', {
+                    streamId: streamId,
+                    readToken: readToken
+                });
             });
         } else {
             res.render('dashboard', {
