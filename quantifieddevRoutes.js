@@ -89,10 +89,7 @@ module.exports = function(app, express) {
                 });
             });
         } else {
-            res.render('dashboard', {
-                streamId: streamId,
-                readToken: readToken
-            });
+            res.render('dashboard');
         }
     });
 
