@@ -144,7 +144,7 @@ module.exports = function(app, express) {
     app.get("/compare", sessionManager.requiresSession, function(req, res) {
         res.render('compare');
     });
-    
+
     var getFilterValuesFrom = function(req) {
         var lastHour = 60;
         var selectedLanguage = req.query.language ? req.query.language : "all";
@@ -164,7 +164,7 @@ module.exports = function(app, express) {
         };
         return filterValues;
     };
-    
+
     app.get("/community", function(req, res) {
         res.render('community', getFilterValuesFrom(req));
     });

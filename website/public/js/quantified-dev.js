@@ -3,7 +3,6 @@ var qd = function() {
     var modelUpdateCallbacks = [];
 
     //change this to accomodate varying streamids (for compare functionality)
-   
     var url = function(resource) {
         var result = "";
         if (location.hostname == "localhost") {
@@ -17,7 +16,8 @@ var qd = function() {
         $.ajax({
             url: url(urlParam),
             headers: {
-                "Accept": "application/json"
+                "Accept": "application/json",
+                "Authorization": $.cookie("username")
             },
             success: successCallback,
             error: function(error) {
@@ -265,7 +265,8 @@ var qd = function() {
         return $.ajax({
             url: url("mydev"),
             headers: {
-                "Accept": "application/json"
+                "Accept": "application/json",
+                "Authorization": $.cookie("username")
             }
         });
     };
@@ -273,7 +274,8 @@ var qd = function() {
         return $.ajax({
             url: url("mydev"),
             headers: {
-                "Accept": "application/json"
+                "Accept": "application/json",
+                "Authorization": $.cookie("username")
             }
         });
     };
@@ -281,7 +283,8 @@ var qd = function() {
         return $.ajax({
             url: url("myActiveEvents"),
             headers: {
-                "Accept": "application/json"
+                "Accept": "application/json",
+                "Authorization": $.cookie("username")
             }
         });
     };
@@ -289,7 +292,8 @@ var qd = function() {
         return $.ajax({
             url: url("myActiveEvents"),
             headers: {
-                "Accept": "application/json"
+                "Accept": "application/json",
+                "Authorization": $.cookie("username")
             }
         });
     };
@@ -305,19 +309,19 @@ var qd = function() {
     };
 
     var handlePlotComparisonGraphsSuccess = function(myBuildEvents, theirBuildEvents) {
-         $("#compare-stream-id-errors").text("");
-         result.compareBuildHistories(myBuildEvents, theirBuildEvents)
+        $("#compare-stream-id-errors").text("");
+        result.compareBuildHistories(myBuildEvents, theirBuildEvents)
     }
 
-    var setTimezoneDifferenceInHours = function(){
-       var timezoneOffset = new Date().getTimezoneOffset();
-       var timezoneDifferenceInHours = Math.round(timezoneOffset / 60);
-       result.timezoneDifferenceInHours = timezoneDifferenceInHours;
-    }    
+    var setTimezoneDifferenceInHours = function() {
+        var timezoneOffset = new Date().getTimezoneOffset();
+        var timezoneDifferenceInHours = Math.round(timezoneOffset / 60);
+        result.timezoneDifferenceInHours = timezoneDifferenceInHours;
+    }
 
     result.plotComparisonGraphs = function() {
         $.when(result.updateBuildHistoryModelForMyStreamId(), result.updateBuildHistoryModelForTheirStreamId())
-            .done(handlePlotComparisonGraphsSuccess).fail(failureCallback("#compare-stream-id-errors","Incorrect streamid or read token!"));
+            .done(handlePlotComparisonGraphsSuccess).fail(failureCallback("#compare-stream-id-errors", "Incorrect streamid or read token!"));
         $.when(result.updateActiveEventsModelForMyStreamId(), result.updateActiveEventsModelForTheirStreamId())
             .done(result.compareActiveEvents).fail("Error getting active events!");
     };
