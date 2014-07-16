@@ -1,5 +1,4 @@
 // require('newrelic');
-
 var requestModule = require('request');
 var cheerio = require('cheerio');
 var express = require("express");
@@ -74,21 +73,7 @@ var encryptPassword = function() {
 
 var encryptedPassword = encryptPassword();
 
-app.all('*', function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,accept,x-requested-with,x-withio-delay');
-    if (req.headers["x-withio-delay"]) {
-        var delay = req.headers["x-withio-delay"];
-        //console.log("request is being delayed by " + delay + " ms")
-        setTimeout(function() {
-            //console.log("proceeding with request");
-            next();
-        }, delay);
-    } else {
-        next();
-    }
-});
+
 
 var getFilterValuesFrom = function(req) {
     var lastHour = 60;
@@ -114,79 +99,6 @@ app.getQdDb = function() {
     return qdDb;
 }
 
-app.get('/', function(request, response) {
-    response.send('quantified dev service');
-});
-
-app.post('/echo', function(request, response) {
-    console.log(request.body);
-    response.send(request.body);
-});
-
-app.get('/health', function(request, response) {
-    response.send("I'm alive");
-});
-
-app.get('/demo', function(request, response) {
-    response.send("This is a demo");
-});
-
-//create stream
-app.post('/stream', function(req, res) {
-
-    // async
-    crypto.randomBytes(16, function(ex, buf) {
-        if (ex) throw ex;
-
-        var streamid = [];
-        for (var i = 0; i < buf.length; i++) {
-            var charCode = String.fromCharCode((buf[i] % 26) + 65);
-            streamid.push(charCode);
-        };
-
-        writeToken = crypto.randomBytes(22).toString('hex');
-        readToken = crypto.randomBytes(22).toString('hex');
-
-        var stream = {
-            streamid: streamid.join(''),
-            writeToken: writeToken,
-            readToken: readToken
-        };
-        qdDb.collection('stream').insert(stream, function(err, insertedRecords) {
-            if (err) {
-                res.status(500).send("Database error");
-            } else {
-                res.send(insertedRecords[0]);
-            }
-        });
-
-    });
-
-
-});
-
-app.get('/stream/:id', function(req, res) {
-    var readToken = req.headers.authorization;
-
-    var spec = {
-        streamid: req.params.id
-    };
-
-    qdDb.collection('stream').find(spec, function(err, docs) {
-        docs.toArray(function(err, streamArray) {
-            var stream = streamArray[0] || {};
-            if (stream.readToken != readToken) {
-                res.status(404).send("stream not found");
-            } else {
-                var response = {
-                    streamid: stream.streamid
-                }
-                res.send(JSON.stringify(response));
-            }
-        })
-    });
-});
-
 var getStreamIdForUsername = function(username) {
     var deferred = q.defer();
     var byUsername = {
@@ -203,25 +115,6 @@ var getStreamIdForUsername = function(username) {
     });
     return deferred.promise;
 };
-
-app.get('/event', function(req, res) {
-    console.log("fetching all events");
-    getStreamIdForUsername("quantifieddevtest")
-        .then(getEventsForStream)
-        .then(function(response) {
-            res.send(response)
-        }).catch(function(error) {
-            res.status(404).send("stream not found");
-        });
-});
-
-app.get('/:ip', function(req, res) {
-    requestModule('http://freegeoip.net/json/' + req.params.ip, function(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            res.send(body)
-        }
-    })
-});
 
 var saveEvent_driver = function(myEvent, stream, serverDateTime, res, rm) {
     myEvent.streamid = stream.streamid;
@@ -280,8 +173,6 @@ var postEvent = function(req, res) {
     );
 };
 
-app.post('/stream/:id/event', postEvent);
-
 var getEventsForStream = function(stream) {
     var deferred = q.defer();
     var fields = {
@@ -313,59 +204,6 @@ var getEventsForStream = function(stream) {
     requestModule(options, getEventsFromPlatform);
     return deferred.promise;
 };
-
-
-
-app.get('/live/devbuild/:durationMins', function(req, res) {
-    var fields = {
-        _id: 0,
-        streamid: 0,
-    };
-
-    var durationMins = req.params.durationMins;
-    var selectedEventType = req.query.eventType;
-    var selectedLanguage = req.query.lang;
-    var dateNow = new Date();
-    var cutoff = new Date(dateNow - (durationMins * 1000 * 60));
-
-    var filterSpec = {
-        "payload.serverDateTime": {
-            "$gte": {
-                "$date": moment(cutoff).format()
-            }
-        },
-        "payload.actionTags": ["Build", "wtf"]
-    };
-    if (selectedEventType) {
-        filterSpec["payload.actionTags"] = selectedEventType;
-    }
-    if (selectedLanguage) {
-        filterSpec["payload.properties.Language"] = selectedLanguage;
-    }
-
-    var options = {
-        url: platformUri + '/rest/events/filter',
-        auth: {
-            user: "",
-            password: encryptedPassword
-        },
-        qs: {
-            'filterSpec': JSON.stringify(filterSpec)
-        },
-        method: 'GET'
-    };
-
-    function callback(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var info = JSON.parse(body);
-            res.send(info)
-        } else {
-            res.status(500).send("Something went wrong!");
-        }
-    }
-    requestModule(options, callback);
-
-});
 
 var authenticateReadToken_p = function(streamDetails) {
     var deferred = q.defer();
@@ -536,17 +374,6 @@ var getBuildEventsFromPlatform = function(stream) {
     return deferred.promise;
 }
 
-app.get('/quantifieddev/mydev', function(req, res) {
-
-    getStreamIdForUsername("quantifieddevtest")
-        .then(getBuildEventsFromPlatform)
-        .then(function(response) {
-            res.send(response)
-        }).catch(function(error) {
-            res.status(404).send("stream not found");
-        })
-});
-
 var getMyWTFsFromPlatform = function(streamDetails) {
     var deferred = q.defer();
     console.log("Stream Id for user: " + JSON.stringify(streamDetails) + "   " + streamDetails.streamid);
@@ -610,16 +437,6 @@ var getMyWTFsFromPlatform = function(streamDetails) {
     requestModule(options, sendWTFs);
     return deferred.promise;
 };
-
-app.get('/quantifieddev/mywtf', function(req, res) {
-    getStreamIdForUsername("quantifieddevtest")
-        .then(getMyWTFsFromPlatform)
-        .then(function(response) {
-            res.send(response)
-        }).catch(function(error) {
-            res.status(404).send("stream not found");
-        });
-});
 
 var getMyHydrationEventsFromPlatform = function(streamDetails) {
     var deferred = q.defer();
@@ -685,16 +502,6 @@ var getMyHydrationEventsFromPlatform = function(streamDetails) {
     return deferred.promise;
 };
 
-app.get('/quantifieddev/myhydration', function(req, res) {
-    getStreamIdForUsername("quantifieddevtest")
-        .then(getMyHydrationEventsFromPlatform)
-        .then(function(response) {
-            res.send(response)
-        }).catch(function(error) {
-            res.status(404).send("stream not found");
-        });
-});
-
 var getMyCaffeineEventsFromPlatform = function(streamDetails) {
     var deferred = q.defer();
     var groupQuery = {
@@ -759,15 +566,6 @@ var getMyCaffeineEventsFromPlatform = function(streamDetails) {
     return deferred.promise;
 };
 
-app.get('/quantifieddev/mycaffeine', function(req, res) {
-    getStreamIdForUsername("quantifieddevtest")
-        .then(getMyCaffeineEventsFromPlatform)
-        .then(function(response) {
-            res.send(response)
-        }).catch(function(error) {
-            res.status(404).send("stream not found");
-        });
-});
 var getAvgBuildDurationFromPlatform = function(streamDetails) {
     var deferred = q.defer();
     var groupQuery = {
@@ -856,15 +654,6 @@ var getAvgBuildDurationFromPlatform = function(streamDetails) {
     return deferred.promise;
 };
 
-app.get('/quantifieddev/buildDuration', function(req, res) {
-    getStreamIdForUsername("quantifieddevtest")
-        .then(getAvgBuildDurationFromPlatform)
-        .then(function(response) {
-            res.send(response)
-        }).catch(function(error) {
-            res.status(404).send("stream not found");
-        });
-});
 var orderDateAsPerWeek = function(date) {
     var dayOfWeek = new Date(date).getDay();
     var orderedDates = [];
@@ -963,16 +752,7 @@ var getHourlyBuildCountFromPlatform = function(streamDetails) {
     requestModule(options, callback);
 
     return deferred.promise;
-}
-app.get('/quantifieddev/hourlyBuildCount', function(req, res) {
-    getStreamIdForUsername("quantifieddevtest")
-        .then(getHourlyBuildCountFromPlatform)
-        .then(function(response) {
-            res.send(response)
-        }).catch(function(error) {
-            res.status(404).send("stream not found");
-        });
-});
+};
 
 var getHourlyWtfCount = function(streamDetails) {
     var deferred = q.defer();
@@ -1037,16 +817,6 @@ var getHourlyWtfCount = function(streamDetails) {
 
     return deferred.promise;
 };
-
-app.get('/quantifieddev/hourlyWtfCount', function(req, res) {
-    getStreamIdForUsername("quantifieddevtest")
-        .then(getHourlyWtfCount)
-        .then(function(response) {
-            res.send(response)
-        }).catch(function(error) {
-            res.status(404).send("stream not found");
-        });
-});
 
 var getHourlyHydrationCount = function(streamDetails) {
     var deferred = q.defer();
@@ -1113,16 +883,6 @@ var getHourlyHydrationCount = function(streamDetails) {
     return deferred.promise;
 };
 
-app.get('/quantifieddev/hourlyHydrationCount', function(req, res) {
-    getStreamIdForUsername("quantifieddevtest")
-        .then(getHourlyHydrationCount)
-        .then(function(response) {
-            res.send(response)
-        }).catch(function(error) {
-            res.status(404).send("stream not found");
-        });
-});
-
 var getHourlyCaffeineCount = function(streamDetails) {
     var deferred = q.defer();
     var groupQuery = {
@@ -1187,16 +947,6 @@ var getHourlyCaffeineCount = function(streamDetails) {
 
     return deferred.promise;
 };
-
-app.get('/quantifieddev/hourlyCaffeineCount', function(req, res) {
-    getStreamIdForUsername("quantifieddevtest")
-        .then(getHourlyCaffeineCount)
-        .then(function(response) {
-            res.send(response)
-        }).catch(function(error) {
-            res.status(404).send("stream not found");
-        });
-});
 
 var getMyActiveDuration = function(streamDetails) {
     var deferred = q.defer();
@@ -1287,6 +1037,252 @@ var getMyActiveDuration = function(streamDetails) {
     return deferred.promise;
 };
 
+app.all('*', function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,accept,x-requested-with,x-withio-delay');
+    if (req.headers["x-withio-delay"]) {
+        var delay = req.headers["x-withio-delay"];
+        //console.log("request is being delayed by " + delay + " ms")
+        setTimeout(function() {
+            //console.log("proceeding with request");
+            next();
+        }, delay);
+    } else {
+        next();
+    }
+});
+
+app.get('/', function(request, response) {
+    response.send('quantified dev service');
+});
+
+app.post('/echo', function(request, response) {
+    console.log(request.body);
+    response.send(request.body);
+});
+
+app.get('/health', function(request, response) {
+    response.send("I'm alive");
+});
+
+app.get('/demo', function(request, response) {
+    response.send("This is a demo");
+});
+
+app.post('/stream', function(req, res) {
+    crypto.randomBytes(16, function(ex, buf) {
+        if (ex) throw ex;
+
+        var streamid = [];
+        for (var i = 0; i < buf.length; i++) {
+            var charCode = String.fromCharCode((buf[i] % 26) + 65);
+            streamid.push(charCode);
+        };
+
+        writeToken = crypto.randomBytes(22).toString('hex');
+        readToken = crypto.randomBytes(22).toString('hex');
+
+        var stream = {
+            streamid: streamid.join(''),
+            writeToken: writeToken,
+            readToken: readToken
+        };
+        qdDb.collection('stream').insert(stream, function(err, insertedRecords) {
+            if (err) {
+                res.status(500).send("Database error");
+            } else {
+                res.send(insertedRecords[0]);
+            }
+        });
+    });
+});
+
+app.get('/stream/:id', function(req, res) {
+    var readToken = req.headers.authorization;
+
+    var spec = {
+        streamid: req.params.id
+    };
+
+    qdDb.collection('stream').find(spec, function(err, docs) {
+        docs.toArray(function(err, streamArray) {
+            var stream = streamArray[0] || {};
+            if (stream.readToken != readToken) {
+                res.status(404).send("stream not found");
+            } else {
+                var response = {
+                    streamid: stream.streamid
+                }
+                res.send(JSON.stringify(response));
+            }
+        })
+    });
+});
+
+app.get('/event', function(req, res) {
+    console.log("fetching all events");
+    getStreamIdForUsername("quantifieddevtest")
+        .then(getEventsForStream)
+        .then(function(response) {
+            res.send(response)
+        }).catch(function(error) {
+            res.status(404).send("stream not found");
+        });
+});
+
+app.get('/:ip', function(req, res) {
+    requestModule('http://freegeoip.net/json/' + req.params.ip, function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            res.send(body)
+        }
+    })
+});
+
+app.post('/stream/:id/event', postEvent);
+
+app.get('/live/devbuild/:durationMins', function(req, res) {
+    var fields = {
+        _id: 0,
+        streamid: 0,
+    };
+
+    var durationMins = req.params.durationMins;
+    var selectedEventType = req.query.eventType;
+    var selectedLanguage = req.query.lang;
+    var dateNow = new Date();
+    var cutoff = new Date(dateNow - (durationMins * 1000 * 60));
+
+    var filterSpec = {
+        "payload.serverDateTime": {
+            "$gte": {
+                "$date": moment(cutoff).format()
+            }
+        },
+        "payload.actionTags": ["Build", "wtf"]
+    };
+    if (selectedEventType) {
+        filterSpec["payload.actionTags"] = selectedEventType;
+    }
+    if (selectedLanguage) {
+        filterSpec["payload.properties.Language"] = selectedLanguage;
+    }
+
+    var options = {
+        url: platformUri + '/rest/events/filter',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: {
+            'filterSpec': JSON.stringify(filterSpec)
+        },
+        method: 'GET'
+    };
+
+    function callback(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var info = JSON.parse(body);
+            res.send(info)
+        } else {
+            res.status(500).send("Something went wrong!");
+        }
+    }
+    requestModule(options, callback);
+
+});
+
+app.get('/quantifieddev/mydev', function(req, res) {
+
+    getStreamIdForUsername("quantifieddevtest")
+        .then(getBuildEventsFromPlatform)
+        .then(function(response) {
+            res.send(response)
+        }).catch(function(error) {
+            res.status(404).send("stream not found");
+        })
+});
+
+app.get('/quantifieddev/mywtf', function(req, res) {
+    getStreamIdForUsername("quantifieddevtest")
+        .then(getMyWTFsFromPlatform)
+        .then(function(response) {
+            res.send(response)
+        }).catch(function(error) {
+            res.status(404).send("stream not found");
+        });
+});
+
+app.get('/quantifieddev/myhydration', function(req, res) {
+    getStreamIdForUsername("quantifieddevtest")
+        .then(getMyHydrationEventsFromPlatform)
+        .then(function(response) {
+            res.send(response)
+        }).catch(function(error) {
+            res.status(404).send("stream not found");
+        });
+});
+
+app.get('/quantifieddev/mycaffeine', function(req, res) {
+    getStreamIdForUsername("quantifieddevtest")
+        .then(getMyCaffeineEventsFromPlatform)
+        .then(function(response) {
+            res.send(response)
+        }).catch(function(error) {
+            res.status(404).send("stream not found");
+        });
+});
+
+app.get('/quantifieddev/buildDuration', function(req, res) {
+    getStreamIdForUsername("quantifieddevtest")
+        .then(getAvgBuildDurationFromPlatform)
+        .then(function(response) {
+            res.send(response)
+        }).catch(function(error) {
+            res.status(404).send("stream not found");
+        });
+});
+
+app.get('/quantifieddev/hourlyBuildCount', function(req, res) {
+    getStreamIdForUsername("quantifieddevtest")
+        .then(getHourlyBuildCountFromPlatform)
+        .then(function(response) {
+            res.send(response)
+        }).catch(function(error) {
+            res.status(404).send("stream not found");
+        });
+});
+
+app.get('/quantifieddev/hourlyWtfCount', function(req, res) {
+    getStreamIdForUsername("quantifieddevtest")
+        .then(getHourlyWtfCount)
+        .then(function(response) {
+            res.send(response)
+        }).catch(function(error) {
+            res.status(404).send("stream not found");
+        });
+});
+
+app.get('/quantifieddev/hourlyHydrationCount', function(req, res) {
+    getStreamIdForUsername("quantifieddevtest")
+        .then(getHourlyHydrationCount)
+        .then(function(response) {
+            res.send(response)
+        }).catch(function(error) {
+            res.status(404).send("stream not found");
+        });
+});
+
+app.get('/quantifieddev/hourlyCaffeineCount', function(req, res) {
+    getStreamIdForUsername("quantifieddevtest")
+        .then(getHourlyCaffeineCount)
+        .then(function(response) {
+            res.send(response)
+        }).catch(function(error) {
+            res.status(404).send("stream not found");
+        });
+});
+
 app.get('/quantifieddev/myActiveEvents', function(req, res) {
     getStreamIdForUsername("quantifieddevtest")
         .then(getMyActiveDuration)
@@ -1304,14 +1300,13 @@ app.get('/quantifieddev/extensions/message', function(req, res) {
     res.send(JSON.stringify(result));
 });
 
-// We need this to allow requests coming from origins other than the webservices domain to be served. Right now we're just allowing anyone to post a request
-// to the backend services
 app.options('*', function(request, response) {
     response.header('Access-Control-Allow-Origin', '*');
     response.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
     response.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,accept,x-requested-with,x-withio-delay');
     response.send();
 });
+
 
 var port = process.env.PORT || 5000;
 app.listen(port, function() {
