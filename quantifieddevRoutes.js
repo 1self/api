@@ -9,7 +9,7 @@ module.exports = function(app, express) {
     });
 
     app.get("/dashboard", sessionManager.requiresSession, function(req, res) {
-        var streamId = req.query.streamId ? req.query.streamId : "";
+        var streamid = req.query.streamId ? req.query.streamId : "";
         var readToken = req.query.readToken ? req.query.readToken : "";
 
         /* if url contains streamId and readToken {
@@ -24,12 +24,12 @@ module.exports = function(app, express) {
                 fetch all associated streamids for username and render dashboard    
             }
         */
-        var streamExists = function(streamId, user) {
+        var streamExists = function(streamid, user) {
             return _.where(user.streams, {
-                "streamId": streamId
+                "streamid": streamid
             }).length > 0;
         }
-        if (streamId && readToken) {
+        if (streamid && readToken) {
             var getStreamsForUser = function() {
                 var oneselfUsername = req.session.username;
                 var streamidUsernameMapping = {
@@ -49,13 +49,13 @@ module.exports = function(app, express) {
                 });
                 return deferred.promise;
             };
-            var insertStreamForUser = function(user, streamId) {
+            var insertStreamForUser = function(user, streamid) {
                 qdDb = app.getQdDb();
                 var deferred = Q.defer();
                 var mappingToInsert = {
                     "$push": {
                         "streams": {
-                            "streamId": streamId,
+                            "streamid": streamid,
                             "readToken": readToken
                         }
                     }
@@ -74,17 +74,17 @@ module.exports = function(app, express) {
 
             var decideWhatToDoWithStream = function(user) {
                 var deferred = Q.defer();
-                if (streamExists(streamId, user)) {
+                if (streamExists(streamid, user)) {
                     deferred.resolve();
                 } else {
-                    return insertStreamForUser(user, streamId);
+                    return insertStreamForUser(user, streamid);
                 }
                 return deferred.promise;
             };
 
             getStreamsForUser().then(decideWhatToDoWithStream).then(function() {
                 res.render('dashboard', {
-                    streamId: streamId,
+                    streamid: streamid,
                     readToken: readToken
                 });
             });

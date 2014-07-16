@@ -138,17 +138,17 @@ app.post('/stream', function(req, res) {
     crypto.randomBytes(16, function(ex, buf) {
         if (ex) throw ex;
 
-        var streamId = [];
+        var streamid = [];
         for (var i = 0; i < buf.length; i++) {
             var charCode = String.fromCharCode((buf[i] % 26) + 65);
-            streamId.push(charCode);
+            streamid.push(charCode);
         };
 
         writeToken = crypto.randomBytes(22).toString('hex');
         readToken = crypto.randomBytes(22).toString('hex');
 
         var stream = {
-            streamid: streamId.join(''),
+            streamid: streamid.join(''),
             writeToken: writeToken,
             readToken: readToken
         };
@@ -185,6 +185,34 @@ app.get('/stream/:id', function(req, res) {
             }
         })
     });
+});
+
+var getStreamIdForUsername = function(username) {
+    var deferred = q.defer();
+    var byUsername = {
+        "username": username
+    };
+    qdDb.collection('users').findOne(byUsername, {
+        "streams": 1
+    }, function(err, user) {
+        if (err) {
+            deferred.reject(err);
+        } else {
+            deferred.resolve(user.streams[0]);
+        }
+    });
+    return deferred.promise;
+};
+
+app.get('/event', function(req, res) {
+    console.log("fetching all events");
+    getStreamIdForUsername("quantifieddevtest")
+        .then(getEventsForStream)
+        .then(function(response) {
+            res.send(response)
+        }).catch(function(error) {
+            res.status(404).send("stream not found");
+        });
 });
 
 app.get('/:ip', function(req, res) {
@@ -286,22 +314,7 @@ var getEventsForStream = function(stream) {
     return deferred.promise;
 };
 
-app.get('/stream/:id/event', function(req, res) {
-    var readToken = req.headers.authorization;
-    var streamid = req.params.id;
 
-    var stream = {
-        readToken: readToken,
-        streamid: streamid
-    };
-    getStreamIdForUsername("quantifieddevtest")
-        .then(getEventsForStream)
-        .then(function(response) {
-            res.send(response)
-        }).catch(function(error) {
-            res.status(404).send("stream not found");
-        });
-});
 
 app.get('/live/devbuild/:durationMins', function(req, res) {
     var fields = {
@@ -411,11 +424,11 @@ var generateDatesFor = function(defaultValues) {
     return result;
 }
 
-var filterToLastMonth = function(streamId) {
+var filterToLastMonth = function(streamid) {
     var start = new Date(new Date() - numberOfDaysToReportBuildsOn * aDay);
     var end = new Date();
     return {
-        'payload.streamid': streamId,
+        'payload.streamid': streamid,
         'payload.serverDateTime': {
             '$gt': {
                 "$date": moment(start).format()
@@ -523,23 +536,6 @@ var getBuildEventsFromPlatform = function(stream) {
     return deferred.promise;
 }
 
-var getStreamIdForUsername = function(username) {
-    var deferred = q.defer();
-    var byUsername = {
-        "username": username
-    };
-    qdDb.collection('users').findOne(byUsername, {
-        "streams": 1
-    }, function(err, user) {
-        if (err) {
-            deferred.reject(err);
-        } else {
-            deferred.resolve(user.streams[0]);
-        }
-    });
-    return deferred.promise;
-};
-
 app.get('/quantifieddev/mydev', function(req, res) {
 
     getStreamIdForUsername("quantifieddevtest")
@@ -553,6 +549,7 @@ app.get('/quantifieddev/mydev', function(req, res) {
 
 var getMyWTFsFromPlatform = function(streamDetails) {
     var deferred = q.defer();
+    console.log("Stream Id for user: " + JSON.stringify(streamDetails) + "   " + streamDetails.streamid);
     var groupQuery = {
         "$groupBy": {
             "fields": [{
