@@ -33,7 +33,6 @@ var qd = function() {
         return Math.ceil(percentChange);
     }
     var myDevSuccessCallback = function(buildEvents) {
-        $("#stream-id-errors").text("");
         result.buildEvents = buildEvents;
         populateBuildTilesData(buildEvents);
         modelUpdateCallbacks.forEach(function(c) {
@@ -59,7 +58,7 @@ var qd = function() {
         result.failedBuildComparison = compare(todaysBuild.failed, yesterdaysBuild.failed);
     }
     result.updateBuildModel = function() {
-        postAjax("mydev", myDevSuccessCallback, failureCallback("#stream-id-errors", "Incorrect streamid or read token!"))
+        postAjax("mydev", myDevSuccessCallback)
     }
     var myWtfSuccessCallback = function(wtfEvents) {
         result.wtfEvents = wtfEvents;
@@ -289,7 +288,7 @@ var qd = function() {
     };
 
     var handlePlotComparisonGraphsSuccess = function(myBuildEvents, theirBuildEvents) {
-        $("#compare-stream-id-errors").text("");
+        $("#compare-username-errors").text("");
         result.compareBuildHistories(myBuildEvents, theirBuildEvents)
     }
 
@@ -303,7 +302,7 @@ var qd = function() {
         var myUsername = $.cookie("username");
         $.when(result.updateBuildHistoryModelFor(myUsername), result.updateBuildHistoryModelFor(theirUsername))
             .done(handlePlotComparisonGraphsSuccess)
-            .fail(failureCallback("#compare-username-errors", "Incorrect streamid or read token!"));
+            .fail(failureCallback("#compare-username-errors", "Username doesn't exist!"));
         $.when(result.updateActiveEventsModelFor(myUsername), result.updateActiveEventsModelFor(theirUsername))
             .done(result.compareActiveEvents)
             .fail("Error getting active events!");
