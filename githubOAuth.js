@@ -62,7 +62,13 @@ module.exports = function(app) {
 			} else if (isUserRegisteredWithOneself(user)) {
 				req.session.username = user.username;
 				req.session.githubUsername = user.githubUser.username;
-				redirect(user, "/dashboard");
+				if (req.session.redirectUrl) {
+					var redirectUrl = req.session.redirectUrl;
+					delete req.session.redirectUrl;
+					res.redirect(redirectUrl);
+				} else {
+					redirect(user, "/dashboard");
+				}
 			} else {
 				req.session.githubUsername = user.githubUser.username;
 				redirect(githubUser, "/claimUsername");
