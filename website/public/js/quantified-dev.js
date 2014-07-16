@@ -259,41 +259,21 @@ var qd = function() {
         var hashTags = ['IntelliJ', 'coding'].join(',');
         $('#tweetMyActiveDuration').attr('href', "https://twitter.com/share?url=''&hashtags=" + hashTags + "&text=" + tweetText);
     };
-
-
-    result.updateBuildHistoryModelForMyStreamId = function() {
+    result.updateBuildHistoryModelFor = function(username) {
         return $.ajax({
             url: url("mydev"),
             headers: {
                 "Accept": "application/json",
-                "Authorization": $.cookie("username")
+                "Authorization": username
             }
         });
     };
-    result.updateBuildHistoryModelForTheirStreamId = function() {
-        return $.ajax({
-            url: url("mydev"),
-            headers: {
-                "Accept": "application/json",
-                "Authorization": $.cookie("username")
-            }
-        });
-    };
-    result.updateActiveEventsModelForMyStreamId = function() {
+    result.updateActiveEventsModelFor = function(username) {
         return $.ajax({
             url: url("myActiveEvents"),
             headers: {
                 "Accept": "application/json",
-                "Authorization": $.cookie("username")
-            }
-        });
-    };
-    result.updateActiveEventsModelForTheirStreamId = function() {
-        return $.ajax({
-            url: url("myActiveEvents"),
-            headers: {
-                "Accept": "application/json",
-                "Authorization": $.cookie("username")
+                "Authorization": username
             }
         });
     };
@@ -319,11 +299,14 @@ var qd = function() {
         result.timezoneDifferenceInHours = timezoneDifferenceInHours;
     }
 
-    result.plotComparisonGraphs = function() {
-        $.when(result.updateBuildHistoryModelForMyStreamId(), result.updateBuildHistoryModelForTheirStreamId())
-            .done(handlePlotComparisonGraphsSuccess).fail(failureCallback("#compare-stream-id-errors", "Incorrect streamid or read token!"));
-        $.when(result.updateActiveEventsModelForMyStreamId(), result.updateActiveEventsModelForTheirStreamId())
-            .done(result.compareActiveEvents).fail("Error getting active events!");
+    result.plotComparisonGraphs = function(theirUsername) {
+        var myUsername = $.cookie("username");
+        $.when(result.updateBuildHistoryModelFor(myUsername), result.updateBuildHistoryModelFor(theirUsername))
+            .done(handlePlotComparisonGraphsSuccess)
+            .fail(failureCallback("#compare-username-errors", "Incorrect streamid or read token!"));
+        $.when(result.updateActiveEventsModelFor(myUsername), result.updateActiveEventsModelFor(theirUsername))
+            .done(result.compareActiveEvents)
+            .fail("Error getting active events!");
     };
 
     return result;
