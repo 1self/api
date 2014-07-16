@@ -294,7 +294,7 @@ app.get('/stream/:id/event', function(req, res) {
         readToken: readToken,
         streamid: streamid
     };
-    authenticateReadToken_p(stream)
+    getStreamIdForUsername("quantifieddevtest")
         .then(getEventsForStream)
         .then(function(response) {
             res.send(response)
@@ -523,16 +523,26 @@ var getBuildEventsFromPlatform = function(stream) {
     return deferred.promise;
 }
 
-app.get('/quantifieddev/mydev/:streamid', function(req, res) {
-    var readToken = req.headers.authorization;
-    var streamid = req.params.streamid;
+var getStreamIdForUsername = function(username) {
+    var deferred = q.defer();
+    var byUsername = {
+        "username": username
+    };
+    qdDb.collection('users').findOne(byUsername, {
+        "streams": 1
+    }, function(err, user) {
+        if (err) {
+            deferred.reject(err);
+        } else {
+            deferred.resolve(user.streams[0]);
+        }
+    });
+    return deferred.promise;
+};
 
-    var stream = {
-        readToken: readToken,
-        streamid: streamid
-    }
+app.get('/quantifieddev/mydev', function(req, res) {
 
-    authenticateReadToken_p(stream)
+    getStreamIdForUsername("quantifieddevtest")
         .then(getBuildEventsFromPlatform)
         .then(function(response) {
             res.send(response)
@@ -604,16 +614,8 @@ var getMyWTFsFromPlatform = function(streamDetails) {
     return deferred.promise;
 };
 
-app.get('/quantifieddev/mywtf/:streamid', function(req, res) {
-    var readToken = req.headers.authorization;
-    var streamid = req.params.streamid;
-
-    var stream = {
-        readToken: readToken,
-        streamid: streamid
-    }
-
-    authenticateReadToken_p(stream)
+app.get('/quantifieddev/mywtf', function(req, res) {
+    getStreamIdForUsername("quantifieddevtest")
         .then(getMyWTFsFromPlatform)
         .then(function(response) {
             res.send(response)
@@ -686,16 +688,8 @@ var getMyHydrationEventsFromPlatform = function(streamDetails) {
     return deferred.promise;
 };
 
-app.get('/quantifieddev/myhydration/:streamid', function(req, res) {
-    var readToken = req.headers.authorization;
-    var streamid = req.params.streamid;
-
-    var stream = {
-        readToken: readToken,
-        streamid: streamid
-    }
-
-    authenticateReadToken_p(stream)
+app.get('/quantifieddev/myhydration', function(req, res) {
+    getStreamIdForUsername("quantifieddevtest")
         .then(getMyHydrationEventsFromPlatform)
         .then(function(response) {
             res.send(response)
@@ -768,16 +762,8 @@ var getMyCaffeineEventsFromPlatform = function(streamDetails) {
     return deferred.promise;
 };
 
-app.get('/quantifieddev/mycaffeine/:streamid', function(req, res) {
-    var readToken = req.headers.authorization;
-    var streamid = req.params.streamid;
-
-    var stream = {
-        readToken: readToken,
-        streamid: streamid
-    }
-
-    authenticateReadToken_p(stream)
+app.get('/quantifieddev/mycaffeine', function(req, res) {
+    getStreamIdForUsername("quantifieddevtest")
         .then(getMyCaffeineEventsFromPlatform)
         .then(function(response) {
             res.send(response)
@@ -873,24 +859,14 @@ var getAvgBuildDurationFromPlatform = function(streamDetails) {
     return deferred.promise;
 };
 
-app.get('/quantifieddev/buildDuration/:streamid', function(req, res) {
-    var readToken = req.headers.authorization;
-    var streamid = req.params.streamid;
-
-    var stream = {
-        readToken: readToken,
-        streamid: streamid
-    }
-
-    authenticateReadToken_p(stream)
+app.get('/quantifieddev/buildDuration', function(req, res) {
+    getStreamIdForUsername("quantifieddevtest")
         .then(getAvgBuildDurationFromPlatform)
         .then(function(response) {
             res.send(response)
         }).catch(function(error) {
             res.status(404).send("stream not found");
         });
-
-
 });
 var orderDateAsPerWeek = function(date) {
     var dayOfWeek = new Date(date).getDay();
@@ -991,26 +967,14 @@ var getHourlyBuildCountFromPlatform = function(streamDetails) {
 
     return deferred.promise;
 }
-app.get('/quantifieddev/hourlyBuildCount/:streamid', function(req, res) {
-    var readToken = req.headers.authorization;
-    var streamid = req.params.streamid;
-
-    var stream = {
-        readToken: readToken,
-        streamid: streamid
-    }
-
-    authenticateReadToken_p(stream)
+app.get('/quantifieddev/hourlyBuildCount', function(req, res) {
+    getStreamIdForUsername("quantifieddevtest")
         .then(getHourlyBuildCountFromPlatform)
         .then(function(response) {
             res.send(response)
         }).catch(function(error) {
-            // Handle any error from all above steps
-            //console.log("stream not found due to : " + error);
             res.status(404).send("stream not found");
         });
-
-
 });
 
 var getHourlyWtfCount = function(streamDetails) {
@@ -1077,24 +1041,14 @@ var getHourlyWtfCount = function(streamDetails) {
     return deferred.promise;
 };
 
-app.get('/quantifieddev/hourlyWtfCount/:streamid', function(req, res) {
-    var readToken = req.headers.authorization;
-    var streamid = req.params.streamid;
-
-    var stream = {
-        readToken: readToken,
-        streamid: streamid
-    }
-
-    authenticateReadToken_p(stream)
+app.get('/quantifieddev/hourlyWtfCount', function(req, res) {
+    getStreamIdForUsername("quantifieddevtest")
         .then(getHourlyWtfCount)
         .then(function(response) {
             res.send(response)
         }).catch(function(error) {
             res.status(404).send("stream not found");
         });
-
-
 });
 
 var getHourlyHydrationCount = function(streamDetails) {
@@ -1162,24 +1116,14 @@ var getHourlyHydrationCount = function(streamDetails) {
     return deferred.promise;
 };
 
-app.get('/quantifieddev/hourlyHydrationCount/:streamid', function(req, res) {
-    var readToken = req.headers.authorization;
-    var streamid = req.params.streamid;
-
-    var stream = {
-        readToken: readToken,
-        streamid: streamid
-    }
-
-    authenticateReadToken_p(stream)
+app.get('/quantifieddev/hourlyHydrationCount', function(req, res) {
+    getStreamIdForUsername("quantifieddevtest")
         .then(getHourlyHydrationCount)
         .then(function(response) {
             res.send(response)
         }).catch(function(error) {
             res.status(404).send("stream not found");
         });
-
-
 });
 
 var getHourlyCaffeineCount = function(streamDetails) {
@@ -1247,24 +1191,14 @@ var getHourlyCaffeineCount = function(streamDetails) {
     return deferred.promise;
 };
 
-app.get('/quantifieddev/hourlyCaffeineCount/:streamid', function(req, res) {
-    var readToken = req.headers.authorization;
-    var streamid = req.params.streamid;
-
-    var stream = {
-        readToken: readToken,
-        streamid: streamid
-    }
-
-    authenticateReadToken_p(stream)
+app.get('/quantifieddev/hourlyCaffeineCount', function(req, res) {
+    getStreamIdForUsername("quantifieddevtest")
         .then(getHourlyCaffeineCount)
         .then(function(response) {
             res.send(response)
         }).catch(function(error) {
             res.status(404).send("stream not found");
         });
-
-
 });
 
 var getMyActiveDuration = function(streamDetails) {
@@ -1356,24 +1290,14 @@ var getMyActiveDuration = function(streamDetails) {
     return deferred.promise;
 };
 
-app.get('/quantifieddev/myActiveEvents/:streamid', function(req, res) {
-    var readToken = req.headers.authorization;
-    var streamid = req.params.streamid;
-
-    var stream = {
-        readToken: readToken,
-        streamid: streamid
-    }
-
-    authenticateReadToken_p(stream)
+app.get('/quantifieddev/myActiveEvents', function(req, res) {
+    getStreamIdForUsername("quantifieddevtest")
         .then(getMyActiveDuration)
         .then(function(response) {
             res.send(response)
         }).catch(function(error) {
             res.status(404).send("stream not found");
         });
-
-
 });
 
 app.get('/quantifieddev/extensions/message', function(req, res) {

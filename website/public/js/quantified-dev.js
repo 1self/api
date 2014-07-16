@@ -4,20 +4,19 @@ var qd = function() {
 
     //change this to accomodate varying streamids (for compare functionality)
    
-    var url = function(resource, streamId) {
+    var url = function(resource) {
         var result = "";
         if (location.hostname == "localhost") {
-            result = "http://" + location.hostname + ":5000/quantifieddev/" + resource + "/" + streamId;
+            result = "http://" + location.hostname + ":5000/quantifieddev/" + resource;
         } else {
-            result = "http://quantifieddev.herokuapp.com/quantifieddev/" + resource + "/" + streamId;
+            result = "http://quantifieddev.herokuapp.com/quantifieddev/" + resource;
         }
         return result;
     };
     var postAjax = function(urlParam, successCallback, failureCallback) {
         $.ajax({
-            url: url(urlParam,window.localStorage.streamId),
+            url: url(urlParam),
             headers: {
-                "Authorization": window.localStorage.readToken,
                 "Accept": "application/json"
             },
             success: successCallback,
@@ -264,36 +263,32 @@ var qd = function() {
 
     result.updateBuildHistoryModelForMyStreamId = function() {
         return $.ajax({
-            url: url("mydev", window.localStorage.streamId),
+            url: url("mydev"),
             headers: {
-                "Authorization": window.localStorage.readToken,
                 "Accept": "application/json"
             }
         });
     };
     result.updateBuildHistoryModelForTheirStreamId = function() {
         return $.ajax({
-            url: url("mydev", window.localStorage.theirStreamId),
+            url: url("mydev"),
             headers: {
-                "Authorization": window.localStorage.theirReadToken,
                 "Accept": "application/json"
             }
         });
     };
     result.updateActiveEventsModelForMyStreamId = function() {
         return $.ajax({
-            url: url("myActiveEvents", window.localStorage.streamId),
+            url: url("myActiveEvents"),
             headers: {
-                "Authorization": window.localStorage.readToken,
                 "Accept": "application/json"
             }
         });
     };
     result.updateActiveEventsModelForTheirStreamId = function() {
         return $.ajax({
-            url: url("myActiveEvents", window.localStorage.theirStreamId),
+            url: url("myActiveEvents"),
             headers: {
-                "Authorization": window.localStorage.theirReadToken,
                 "Accept": "application/json"
             }
         });
