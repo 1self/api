@@ -4,9 +4,6 @@ body{
 .white-background {
 	 background:white;
 }
-.signup-form {
-	 background: #515151;
-}
 .header-text {
 	color: #E2E2E2;
 }
@@ -27,10 +24,13 @@ body{
 }
 .signup-form{
 	border: none;
+	padding: 0;
+	background: #515151;
+	margin-bottom: 0;
 }
 .container {
 	padding: 30px;
-	padding-top: 0px;
+	padding-top: 6px;
 	width: 98%;
 	margin: 0 auto;
 	background: #515151;
@@ -38,13 +38,41 @@ body{
 }
 .step-heading{
 	margin: 35px 0 0 0;
+	font-weight: bold;
+	font-size: 15px;
 }
-.margin-top-five{
+.margin-top-five,.custom-error{
 	margin-top: 5px;
+}
+.custom-error{
+	display: inline-block;
+}
+.login-link-container,.signup-message{
+	margin-top: 15px;
+}
+.login-link-container{
+	font-size: 18px;
+}
+.signup-message{
+	font-size: 13px;
 }
 .btn:hover, .btn:focus,.signup-button{
 	color: #FFF;
-
+}
+.step-two-signup-button{
+	padding-top: 5px;
+	padding-bottom: 5px;
+	border-radius: 4px;
+}
+.margin-top-ten{
+	margin-top: 10px;
+}
+.form-control{
+	padding: 3px 12px 6px 12px; 
+	font-size: 18px;
+}
+.signup-stpe2-label{
+	font-size: 17px;
 }
 @media (min-width: 600px){
 	.container {

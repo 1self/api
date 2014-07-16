@@ -30,28 +30,24 @@
 					</div>
 					<div class="row margin-top-five">
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							<span class="signup-details">Pick a username, so that others can find you</span>
+							<span class="signup-details signup-stpe2-label">Pick a username, so that others can find you</span>
 						</div>
 					</div>
-					<div class="row">
+					<div class="row margin-top-five">
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 							<input class="form-control" name="username" type="text" value="{{ username}}">
 							{% if error %}
-								<span class="error">{{ error }}</span>
+								<span class="error custom-error">{{ error }}</span>
 							{% endif %}
 							
 							<input name="githubUsername" type="hidden" value="{{ githubUsername}}">
 						</div>
 					</div>
-					<div class="row margin-top-five">
-						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							<span class="signup-details">We'll use your github email address to talk to you.</span>
-						</div>
-					</div>
 					
-					<div class="row margin-top-five">
+					
+					<div class="row margin-top-ten">
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-								<input type="submit" class="btn btn-lg signup-button" value="Save and Finish">
+								<input type="submit" class="btn btn-lg signup-button step-two-signup-button" value="Save and Finish">
 							
 						</div>
 					</div>
