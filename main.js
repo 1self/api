@@ -109,7 +109,11 @@ var getStreamIdForUsername = function(username) {
         if (err) {
             deferred.reject(err);
         } else {
-            deferred.resolve(user.streams[0]);
+            if (user.streams) {
+                deferred.resolve(user.streams[0]);
+            } else {
+                deferred.reject();
+            }
         }
     });
     return deferred.promise;
@@ -1126,7 +1130,7 @@ app.get('/event', function(req, res) {
         .then(function(response) {
             res.send(response)
         }).catch(function(error) {
-            res.status(404).send("stream not found");
+            res.status(404).send("No stream associated with user.");
         });
 });
 
