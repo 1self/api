@@ -7,6 +7,7 @@ var url = require('url');
 var crypto = require('crypto');
 var swig = require('swig');
 var path = require('path');
+var _ = require("underscore");
 var session = require("express-session");
 var q = require('q');
 var mongoClient = require('mongodb').MongoClient;
@@ -72,8 +73,6 @@ var encryptPassword = function() {
 
 var encryptedPassword = encryptPassword();
 
-
-
 var getFilterValuesFrom = function(req) {
     var lastHour = 60;
     var selectedLanguage = req.query.language ? req.query.language : "all";
@@ -109,8 +108,8 @@ var getStreamIdForUsername = function(username) {
         if (err) {
             deferred.reject(err);
         } else {
-            if (user.streams) {
-                deferred.resolve(user.streams[0]);
+            if (user && user.streams) {
+                deferred.resolve(user.streams);
             } else {
                 deferred.reject();
             }
@@ -176,13 +175,16 @@ var postEvent = function(req, res) {
     );
 };
 
-var getEventsForStream = function(stream) {
+var getEventsForStreams = function(streams) {
+    var streamids = _.map(streams, function(stream) {
+        return stream.streamid;
+    });
     var deferred = q.defer();
     var fields = {
         _id: 0
     };
     var filterSpec = {
-        'payload.streamid': stream.streamid
+        'payload.streamid': streamids
     }
     var options = {
         url: platformUri + '/rest/events/filter',
@@ -208,38 +210,9 @@ var getEventsForStream = function(stream) {
     return deferred.promise;
 };
 
-var authenticateReadToken_p = function(streamDetails) {
-    var deferred = q.defer();
-
-    var mongoQuery = {
-        "streamid": streamDetails.streamid
-    };
-    var spec = {
-        streamid: streamDetails.streamid
-    }
-    qdDb.collection('stream').find(spec, function(err, docs) {
-        docs.toArray(function(err, docsArray) {
-            if (err) {
-                deferred.reject(new Error("Database error"));
-            } else {
-                var stream = docsArray[0] || {};
-                if (stream.readToken != streamDetails.readToken) {
-                    deferred.reject(new Error("Stream auth failed."));
-                } else {
-                    deferred.resolve(streamDetails);
-                }
-            }
-        })
-    });
-
-    return deferred.promise;
-};
-
-var numberOfDaysToReportBuildsOn = 30;
-
 var generateDatesFor = function(defaultValues) {
     var result = {};
-
+    var numberOfDaysToReportBuildsOn = 30;
     var currentDate = new Date();
     var startDate = new Date(currentDate - (30 * aDay));
     for (var i = 0; i <= numberOfDaysToReportBuildsOn; i++) {
@@ -265,22 +238,6 @@ var generateDatesFor = function(defaultValues) {
     return result;
 }
 
-var filterToLastMonth = function(streamid) {
-    var start = new Date(new Date() - numberOfDaysToReportBuildsOn * aDay);
-    var end = new Date();
-    return {
-        'payload.streamid': streamid,
-        'payload.serverDateTime': {
-            '$gt': {
-                "$date": moment(start).format()
-            },
-            '$lte': {
-                "$date": moment(end).format()
-            }
-        }
-    };
-}
-
 var rollupToArray = function(rollup) {
     var result = [];
     for (var r in rollup) {
@@ -289,7 +246,10 @@ var rollupToArray = function(rollup) {
     return result;
 }
 
-var getBuildEventsFromPlatform = function(stream) {
+var getBuildEventsFromPlatform = function(streams) {
+    var streamids = _.map(streams, function(stream) {
+        return stream.streamid;
+    });
     var deferred = q.defer();
     var noId = {
         _id: 0
@@ -301,7 +261,7 @@ var getBuildEventsFromPlatform = function(stream) {
                 "format": "MM/dd/yyyy"
             }],
             "filterSpec": {
-                "payload.streamid": stream.streamid,
+                "payload.streamid": streamids,
                 "payload.actionTags": "Finish"
             },
             "projectionSpec": {
@@ -333,10 +293,6 @@ var getBuildEventsFromPlatform = function(stream) {
             }
         }
     }
-
-    var lastMonth = filterToLastMonth(stream.streamid);
-    var filterSpec = lastMonth;
-
     var options = {
         url: platformUri + '/rest/analytics/aggregate',
         auth: {
@@ -377,9 +333,11 @@ var getBuildEventsFromPlatform = function(stream) {
     return deferred.promise;
 }
 
-var getMyWTFsFromPlatform = function(streamDetails) {
+var getMyWTFsFromPlatform = function(streams) {
+    var streamids = _.map(streams, function(stream) {
+        return stream.streamid;
+    });
     var deferred = q.defer();
-    console.log("Stream Id for user: " + JSON.stringify(streamDetails) + "   " + streamDetails.streamid);
     var groupQuery = {
         "$groupBy": {
             "fields": [{
@@ -387,7 +345,7 @@ var getMyWTFsFromPlatform = function(streamDetails) {
                 "format": "MM/dd/yyyy"
             }],
             "filterSpec": {
-                "payload.streamid": streamDetails.streamid,
+                "payload.streamid": streamids,
                 "payload.actionTags": "wtf"
             },
             "projectionSpec": {
@@ -441,7 +399,10 @@ var getMyWTFsFromPlatform = function(streamDetails) {
     return deferred.promise;
 };
 
-var getMyHydrationEventsFromPlatform = function(streamDetails) {
+var getMyHydrationEventsFromPlatform = function(streams) {
+    var streamids = _.map(streams, function(stream) {
+        return stream.streamid;
+    });
     var deferred = q.defer();
     var groupQuery = {
         "$groupBy": {
@@ -450,7 +411,7 @@ var getMyHydrationEventsFromPlatform = function(streamDetails) {
                 "format": "MM/dd/yyyy"
             }],
             "filterSpec": {
-                "payload.streamid": streamDetails.streamid,
+                "payload.streamid": streamids,
                 "payload.actionTags": "drink",
                 "payload.objectTags": "Water"
             },
@@ -505,7 +466,10 @@ var getMyHydrationEventsFromPlatform = function(streamDetails) {
     return deferred.promise;
 };
 
-var getMyCaffeineEventsFromPlatform = function(streamDetails) {
+var getMyCaffeineEventsFromPlatform = function(streams) {
+    var streamids = _.map(streams, function(stream) {
+        return stream.streamid;
+    });
     var deferred = q.defer();
     var groupQuery = {
         "$groupBy": {
@@ -514,7 +478,7 @@ var getMyCaffeineEventsFromPlatform = function(streamDetails) {
                 "format": "MM/dd/yyyy"
             }],
             "filterSpec": {
-                "payload.streamid": streamDetails.streamid,
+                "payload.streamid": streamids,
                 "payload.actionTags": "drink",
                 "payload.objectTags": "Coffee"
             },
@@ -569,7 +533,10 @@ var getMyCaffeineEventsFromPlatform = function(streamDetails) {
     return deferred.promise;
 };
 
-var getAvgBuildDurationFromPlatform = function(streamDetails) {
+var getAvgBuildDurationFromPlatform = function(streams) {
+    var streamids = _.map(streams, function(stream) {
+        return stream.streamid;
+    });
     var deferred = q.defer();
     var groupQuery = {
         "$groupBy": {
@@ -578,7 +545,7 @@ var getAvgBuildDurationFromPlatform = function(streamDetails) {
                 "format": "MM/dd/yyyy"
             }],
             "filterSpec": {
-                "payload.streamid": streamDetails.streamid,
+                "payload.streamid": streamids,
                 "payload.actionTags": "Finish"
             },
             "projectionSpec": {
@@ -668,7 +635,7 @@ var generateHoursForWeek = function(defaultValues) {
     var numberOfDaysToReportBuildsOn = 7;
     var currentDate = new Date();
     var startDate = new Date(currentDate - (7 * aDay));
-    for (var i = 1; i <= 7; i++) {
+    for (var i = 1; i <= numberOfDaysToReportBuildsOn; i++) {
         for (var j = 1; j <= 24; j++) {
             if (j < 10) {
                 j = '0' + j;
@@ -690,7 +657,10 @@ var defaultEventValues = [{
     value: 0
 }];
 
-var getHourlyBuildCountFromPlatform = function(streamDetails) {
+var getHourlyBuildCountFromPlatform = function(streams) {
+    var streamids = _.map(streams, function(stream) {
+        return stream.streamid;
+    });
     var deferred = q.defer();
     var groupQuery = {
         "$groupBy": {
@@ -699,7 +669,7 @@ var getHourlyBuildCountFromPlatform = function(streamDetails) {
                 "format": "e HH"
             }],
             "filterSpec": {
-                "payload.streamid": streamDetails.streamid,
+                "payload.streamid": streamids,
                 "payload.actionTags": "Finish"
             },
             "projectionSpec": {
@@ -757,7 +727,10 @@ var getHourlyBuildCountFromPlatform = function(streamDetails) {
     return deferred.promise;
 };
 
-var getHourlyWtfCount = function(streamDetails) {
+var getHourlyWtfCount = function(streams) {
+    var streamids = _.map(streams, function(stream) {
+        return stream.streamid;
+    });
     var deferred = q.defer();
     var groupQuery = {
         "$groupBy": {
@@ -766,7 +739,7 @@ var getHourlyWtfCount = function(streamDetails) {
                 "format": "e HH"
             }],
             "filterSpec": {
-                "payload.streamid": streamDetails.streamid,
+                "payload.streamid": streamids,
                 "payload.actionTags": "wtf"
             },
             "projectionSpec": {
@@ -821,7 +794,10 @@ var getHourlyWtfCount = function(streamDetails) {
     return deferred.promise;
 };
 
-var getHourlyHydrationCount = function(streamDetails) {
+var getHourlyHydrationCount = function(streams) {
+    var streamids = _.map(streams, function(stream) {
+        return stream.streamid;
+    });
     var deferred = q.defer();
     var groupQuery = {
         "$groupBy": {
@@ -830,7 +806,7 @@ var getHourlyHydrationCount = function(streamDetails) {
                 "format": "e HH"
             }],
             "filterSpec": {
-                "payload.streamid": streamDetails.streamid,
+                "payload.streamid": streamids,
                 "payload.actionTags": "drink",
                 "payload.objectTags": "Water"
             },
@@ -886,7 +862,10 @@ var getHourlyHydrationCount = function(streamDetails) {
     return deferred.promise;
 };
 
-var getHourlyCaffeineCount = function(streamDetails) {
+var getHourlyCaffeineCount = function(streams) {
+    var streamids = _.map(streams, function(stream) {
+        return stream.streamid;
+    });
     var deferred = q.defer();
     var groupQuery = {
         "$groupBy": {
@@ -895,7 +874,7 @@ var getHourlyCaffeineCount = function(streamDetails) {
                 "format": "e HH"
             }],
             "filterSpec": {
-                "payload.streamid": streamDetails.streamid,
+                "payload.streamid": streamids,
                 "payload.actionTags": "drink",
                 "payload.objectTags": "Coffee"
             },
@@ -951,7 +930,10 @@ var getHourlyCaffeineCount = function(streamDetails) {
     return deferred.promise;
 };
 
-var getMyActiveDuration = function(streamDetails) {
+var getMyActiveDuration = function(streams) {
+    var streamids = _.map(streams, function(stream) {
+        return stream.streamid;
+    });
     var deferred = q.defer();
     var groupQuery = {
         "$groupBy": {
@@ -960,7 +942,7 @@ var getMyActiveDuration = function(streamDetails) {
                 "format": "MM/dd/yyyy"
             }],
             "filterSpec": {
-                "payload.streamid": streamDetails.streamid,
+                "payload.streamid": streamids,
                 "payload.actionTags": "Develop",
                 "payload.properties.isUserActive": true
             },
@@ -1126,7 +1108,7 @@ app.get('/stream/:id', function(req, res) {
 app.get('/event', function(req, res) {
     var username = req.headers.authorization;
     getStreamIdForUsername(username)
-        .then(getEventsForStream)
+        .then(getEventsForStreams)
         .then(function(response) {
             res.send(response)
         }).catch(function(error) {
