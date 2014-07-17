@@ -1126,7 +1126,8 @@ ul.recent-tweets {
   border-top: 0; }
 
 .panel-body {
-  padding: 10px 20px;
+  /*padding: 10px 20px;*/
+  padding: 10px 5px;
   position: relative; }
 
 .panel-heading {
@@ -2521,3 +2522,14 @@ iframe.wysihtml5-sandbox {
   iframe.wysihtml5-sandbox:focus {
     outline: none;
     border: 1px solid #1e91cf !important; }
+
+.hourlyHeatMapContainer{
+  width: 90%;
+}
+
+@media screen and (max-width: 500px){
+  .hourlyHeatMapContainer{
+  width: 100%;
+}
+}
+

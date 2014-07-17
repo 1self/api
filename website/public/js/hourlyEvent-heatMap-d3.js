@@ -34,99 +34,196 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 		var colorScale = d3.scale.quantile()
 			.domain([0, maximumEventValue])
 			.range(colors);
-		var svg = d3.select(divId).append("svg")
-			.attr("width", width + 50)
-			.attr("height", height + 50)
-			.append("g")
-			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+		var createSvg = function(width, height) {
+			return d3.select(divId).append("svg")
+				.attr("width", width)
+				.attr("height", height)
+				.append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+		};
+		if ($(window).width() < 500) {
+			var svgWidth = 320;
+			var svgHeight = 450;
+			gridDaySize = Math.floor(190/7);
+			gridTimeSize = Math.floor(400/24);
+			var svg = createSvg(svgWidth, svgHeight);
+			var dayLabels = svg.selectAll(".dayLabel")
+				.data(days)
+				.enter().append("text")
+				.text(function(d) {
+					return d;
+				})
+				.attr("y", 0)
+				.attr("x", function(d, i) {
+					return (i * gridDaySize) - 10;
+				})
+				.style("text-anchor", "end")
+				.attr("transform", "translate(" + gridDaySize / 1.5 + ",-6)")
+				.attr("class", function(d, i) {
+					return ((i >= 0 && i <= 4) ? "dayLabel mono axis axis-workweek" : "dayLabel mono axis");
+				});
 
-		var dayLabels = svg.selectAll(".dayLabel")
-			.data(days)
-			.enter().append("text")
-			.text(function(d) {
-				return d;
-			})
-			.attr("x", 0)
-			.attr("y", function(d, i) {
-				return i * gridSize;
-			})
-			.style("text-anchor", "end")
-			.attr("transform", "translate(-6," + gridSize / 1.5 + ")")
-			.attr("class", function(d, i) {
-				return ((i >= 0 && i <= 4) ? "dayLabel mono axis axis-workweek" : "dayLabel mono axis");
+			var timeLabels = svg.selectAll(".timeLabel")
+				.data(times)
+				.enter().append("text")
+				.text(function(d) {
+					return d;
+				})
+				.attr("y", function(d, i) {
+					return i * (gridTimeSize);
+				})
+				.attr("x", -15)
+				.attr("font-size", "10px")
+				.style("text-anchor", "middle")
+				.attr("transform", "translate( -6," + (gridTimeSize) / 2.5 + ")")
+				.attr("class", function(d, i) {
+					return ((i >= 7 && i <= 16) ? "timeLabel mono axis axis-worktime" : "timeLabel mono axis");
+				});
+
+			var heatMap = svg.selectAll(".hour")
+				.data(data)
+				.enter().append("rect")
+				.attr("y", function(d) {
+					return ((d.hour) * gridTimeSize) - 2.5;
+				})
+				.attr("x", function(d) {
+					return ((d.day) * gridDaySize) -10;
+				})
+				.attr("stroke", "lightgrey")
+				.attr("rx", 4)
+				.attr("ry", 4)
+				.attr("class", "hour bordered")
+				.attr("width", gridDaySize)
+				.attr("height", gridTimeSize)
+				.style("fill", colors[0]);
+
+			heatMap.transition().duration(1000)
+				.style("fill", function(d) {
+					return colorScale(d.value);
+				});
+
+			heatMap.append("title").text(function(d) {
+				return d.value;
 			});
+			var legend = svg.selectAll(".legend")
+				.data([0].concat(colorScale.quantiles()), function(d) {
+					return d;
+				})
+				.enter().append("g")
+				.attr("class", "legend");
+			var legendRectXaxis = (gridDaySize*7) - 5;
+			var legendTextXaxis = legendRectXaxis + (gridSize/2) + 2;
+			legend.append("rect")
+				.attr("y", function(d, i) {
+					return legendElementWidth * i;
+				})
+				.attr("x", legendRectXaxis)
+				.attr("height", legendElementWidth+10)
+				.attr("width", gridSize / 2)
+				.style("fill", function(d, i) {
+					return colors[i];
+				});
 
-		var timeLabels = svg.selectAll(".timeLabel")
-			.data(times)
-			.enter().append("text")
-			.text(function(d) {
-				return d;
-			})
-			.attr("x", function(d, i) {
-				return i * gridSize;
-			})
-			.attr("y", 0)
-			.attr("font-size", "10px")
-			.style("text-anchor", "middle")
-			.attr("transform", "translate(" + gridSize / 2.5 + ", -6)")
-			.attr("class", function(d, i) {
-				return ((i >= 7 && i <= 16) ? "timeLabel mono axis axis-worktime" : "timeLabel mono axis");
+			legend.append("text")
+				.attr("class", "mono")
+				.text(function(d) {
+					return "≥ " + Math.round(d * 10) / 10;
+				})
+				.attr("font-size", "10px")
+				.attr("y", function(d, i) {
+					return legendElementWidth * i;
+				})
+				.attr("x", legendTextXaxis);
+		} else {
+			var svg = createSvg(width+50, height+50);
+			var dayLabels = svg.selectAll(".dayLabel")
+				.data(days)
+				.enter().append("text")
+				.text(function(d) {
+					return d;
+				})
+				.attr("x", 0)
+				.attr("y", function(d, i) {
+					return i * gridSize;
+				})
+				.style("text-anchor", "end")
+				.attr("transform", "translate(-6," + gridSize / 1.5 + ")")
+				.attr("class", function(d, i) {
+					return ((i >= 0 && i <= 4) ? "dayLabel mono axis axis-workweek" : "dayLabel mono axis");
+				});
+
+			var timeLabels = svg.selectAll(".timeLabel")
+				.data(times)
+				.enter().append("text")
+				.text(function(d) {
+					return d;
+				})
+				.attr("x", function(d, i) {
+					return i * gridSize;
+				})
+				.attr("y", 0)
+				.attr("font-size", "10px")
+				.style("text-anchor", "middle")
+				.attr("transform", "translate(" + gridSize / 2.5 + ", -6)")
+				.attr("class", function(d, i) {
+					return ((i >= 7 && i <= 16) ? "timeLabel mono axis axis-worktime" : "timeLabel mono axis");
+				});
+
+			var heatMap = svg.selectAll(".hour")
+				.data(data)
+				.enter().append("rect")
+				.attr("x", function(d) {
+					return (d.hour) * gridSize;
+				})
+				.attr("y", function(d) {
+					return (d.day) * gridSize;
+				})
+				.attr("stroke", "lightgrey")
+				.attr("rx", 4)
+				.attr("ry", 4)
+				.attr("class", "hour bordered")
+				.attr("width", gridSize)
+				.attr("height", gridSize)
+				.style("fill", colors[0]);
+
+			heatMap.transition().duration(1000)
+				.style("fill", function(d) {
+					return colorScale(d.value);
+				});
+
+			heatMap.append("title").text(function(d) {
+				return d.value;
 			});
+			var legend = svg.selectAll(".legend")
+				.data([0].concat(colorScale.quantiles()), function(d) {
+					return d;
+				})
+				.enter().append("g")
+				.attr("class", "legend");
 
-		var heatMap = svg.selectAll(".hour")
-			.data(data)
-			.enter().append("rect")
-			.attr("x", function(d) {
-				return (d.hour) * gridSize;
-			})
-			.attr("y", function(d) {
-				return (d.day) * gridSize;
-			})
-			.attr("stroke", "lightgrey")
-			.attr("rx", 4)
-			.attr("ry", 4)
-			.attr("class", "hour bordered")
-			.attr("width", gridSize)
-			.attr("height", gridSize)
-			.style("fill", colors[0]);
+			legend.append("rect")
+				.attr("x", function(d, i) {
+					return legendElementWidth * i;
+				})
+				.attr("y", height - 23)
+				.attr("width", legendElementWidth)
+				.attr("height", gridSize / 2)
+				.style("fill", function(d, i) {
+					return colors[i];
+				});
 
-		heatMap.transition().duration(1000)
-			.style("fill", function(d) {
-				return colorScale(d.value);
-			});
+			legend.append("text")
+				.attr("class", "mono")
+				.text(function(d) {
+					return "≥ " + Math.round(d * 10) / 10;
+				})
+				.attr("font-size", "10px")
+				.attr("x", function(d, i) {
+					return legendElementWidth * i;
+				})
+				.attr("y", height + gridSize - 20);
+		}
 
-		heatMap.append("title").text(function(d) {
-			return d.value;
-		});
-
-		var legend = svg.selectAll(".legend")
-			.data([0].concat(colorScale.quantiles()), function(d) {
-				return d;
-			})
-			.enter().append("g")
-			.attr("class", "legend");
-
-		legend.append("rect")
-			.attr("x", function(d, i) {
-				return legendElementWidth * i;
-			})
-			.attr("y", height - 23)
-			.attr("width", legendElementWidth)
-			.attr("height", gridSize / 2)
-			.style("fill", function(d, i) {
-				return colors[i];
-			});
-
-		legend.append("text")
-			.attr("class", "mono")
-			.text(function(d) {
-				return "≥ " + Math.round(d * 10) / 10;
-			})
-			.attr("font-size", "10px")
-			.attr("x", function(d, i) {
-				return legendElementWidth * i;
-			})
-			.attr("y", height + gridSize - 20);
 	};
 
 	var _generateHourlyBuildEventsData = function() {
@@ -148,3 +245,8 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 	_generateHeatMap(buildEventData);
 
 };
+$(window).resize(function() {
+	//if (($(window).width() < 500 && $(window).width() > 499) || ($(window).width() > 500 && $(window).width() < 501) ) {
+		 location.reload();
+	//}
+});

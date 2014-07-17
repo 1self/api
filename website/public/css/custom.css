@@ -16,7 +16,7 @@ x.axis {
 	1px;
 }
 .fixed-height {
-	height: 430px;
+	height:auto;
 }
 .top-buffer {
 	margin-top:5px;
