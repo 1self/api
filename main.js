@@ -380,14 +380,16 @@ var getMyWTFsFromPlatform = function(streams) {
     var sendWTFs = function(error, response, body) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body)[0];
-            var defaultWTFValues = [{
-                key: "wtfCount",
-                value: 0
-            }];
-            var wtfsByDay = generateDatesFor(defaultWTFValues);
-            for (date in result) {
-                if (wtfsByDay[date] !== undefined) {
-                    wtfsByDay[date].wtfCount = result[date].wtfCount;
+            if (result.length > 0) {
+                var defaultWTFValues = [{
+                    key: "wtfCount",
+                    value: 0
+                }];
+                var wtfsByDay = generateDatesFor(defaultWTFValues);
+                for (date in result) {
+                    if (wtfsByDay[date] !== undefined) {
+                        wtfsByDay[date].wtfCount = result[date].wtfCount;
+                    }
                 }
             }
             deferred.resolve(rollupToArray(wtfsByDay))
@@ -1126,7 +1128,7 @@ app.get('/:ip', function(req, res) {
 
 app.post('/stream/:id/event', postEvent);
 
-app.get('/live/devbuild/:durationMins', function(req, res) {
+app.get('mylive/devbuild/:durationMins', function(req, res) {
     var fields = {
         _id: 0,
         streamid: 0,

@@ -60,9 +60,19 @@ var qd = function() {
     result.updateBuildModel = function() {
         postAjax("mydev", myDevSuccessCallback)
     }
+    var charts = {
+        'wtfEvents': function() {
+            result.plotWTFHistory()
+        }
+    };
+
+    var plotGraphWith = function(eventType, values) {
+        result[eventType] = values;
+        if (values.length > 0)
+            charts[eventType]();
+    }
     var myWtfSuccessCallback = function(wtfEvents) {
-        result.wtfEvents = wtfEvents;
-        result.plotWTFHistory();
+        plotGraphWith('wtfEvents', wtfEvents)
     }
     result.updateWTFModel = function() {
         postAjax("mywtf", myWtfSuccessCallback)
