@@ -201,11 +201,13 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 				.enter().append("g")
 				.attr("class", "legend");
 
+			var legendRectYaxis = (gridSize*7) + 5;
+			var legendTextYaxis = legendRectYaxis + 20;
 			legend.append("rect")
 				.attr("x", function(d, i) {
 					return legendElementWidth * i;
 				})
-				.attr("y", height - 23)
+				.attr("y", legendRectYaxis)
 				.attr("width", legendElementWidth)
 				.attr("height", gridSize / 2)
 				.style("fill", function(d, i) {
@@ -221,7 +223,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 				.attr("x", function(d, i) {
 					return legendElementWidth * i;
 				})
-				.attr("y", height + gridSize - 20);
+				.attr("y", legendTextYaxis);
 		}
 
 	};

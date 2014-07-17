@@ -16,8 +16,15 @@ x.axis {
 	1px;
 }
 .fixed-height {
-	height:auto;
+	height:460px;
 }
 .top-buffer {
 	margin-top:5px;
 }
+@media screen and (max-width: 500px){
+.fixed-height {
+  height:auto;
+  }
+}
+
+
