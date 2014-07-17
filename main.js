@@ -210,38 +210,9 @@ var getEventsForStreams = function(streams) {
     return deferred.promise;
 };
 
-var authenticateReadToken_p = function(streamDetails) {
-    var deferred = q.defer();
-
-    var mongoQuery = {
-        "streamid": streamDetails.streamid
-    };
-    var spec = {
-        streamid: streamDetails.streamid
-    }
-    qdDb.collection('stream').find(spec, function(err, docs) {
-        docs.toArray(function(err, docsArray) {
-            if (err) {
-                deferred.reject(new Error("Database error"));
-            } else {
-                var stream = docsArray[0] || {};
-                if (stream.readToken != streamDetails.readToken) {
-                    deferred.reject(new Error("Stream auth failed."));
-                } else {
-                    deferred.resolve(streamDetails);
-                }
-            }
-        })
-    });
-
-    return deferred.promise;
-};
-
-var numberOfDaysToReportBuildsOn = 30;
-
 var generateDatesFor = function(defaultValues) {
     var result = {};
-
+    var numberOfDaysToReportBuildsOn = 30;
     var currentDate = new Date();
     var startDate = new Date(currentDate - (30 * aDay));
     for (var i = 0; i <= numberOfDaysToReportBuildsOn; i++) {
@@ -664,7 +635,7 @@ var generateHoursForWeek = function(defaultValues) {
     var numberOfDaysToReportBuildsOn = 7;
     var currentDate = new Date();
     var startDate = new Date(currentDate - (7 * aDay));
-    for (var i = 1; i <= 7; i++) {
+    for (var i = 1; i <= numberOfDaysToReportBuildsOn; i++) {
         for (var j = 1; j <= 24; j++) {
             if (j < 10) {
                 j = '0' + j;
