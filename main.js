@@ -108,7 +108,7 @@ var getStreamIdForUsername = function(username) {
         if (err) {
             deferred.reject(err);
         } else {
-            if (user.streams) {
+            if (user && user.streams) {
                 deferred.resolve(user.streams);
             } else {
                 deferred.reject();
