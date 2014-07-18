@@ -1,14 +1,16 @@
 var sessionManager = require("./sessionManagement");
 var _ = require("underscore");
 var Q = require('q');
+var encryptUsername = function(username) {
+    return crypto.createHash('sha256').update(username).digest('hex')
+};
+module.exports = function(app, express) {
 
-module.exports = function (app, express) {
-
-    app.get("/signup", function (req, res) {
+    app.get("/signup", function(req, res) {
         res.render('signup');
     });
 
-    app.get("/dashboard", sessionManager.requiresSession, function (req, res) {
+    app.get("/dashboard", sessionManager.requiresSession, function(req, res) {
         var streamid = req.query.streamId ? req.query.streamId : "";
         var readToken = req.query.readToken ? req.query.readToken : "";
 
@@ -24,13 +26,13 @@ module.exports = function (app, express) {
          fetch all associated streamids for username and render dashboard
          }
          */
-        var streamExists = function (streamid, user) {
+        var streamExists = function(streamid, user) {
             return _.where(user.streams, {
                 "streamid": streamid
             }).length > 0;
         };
 
-        var getStreamsForUser = function () {
+        var getStreamsForUser = function() {
             var oneselfUsername = req.session.username;
             var streamidUsernameMapping = {
                 "username": oneselfUsername
@@ -40,7 +42,7 @@ module.exports = function (app, express) {
 
             qdDb.collection('users').findOne(streamidUsernameMapping, {
                 "streams": 1
-            }, function (err, user) {
+            }, function(err, user) {
                 if (err) {
                     deferred.reject(err);
                 } else {
@@ -51,7 +53,7 @@ module.exports = function (app, express) {
         };
 
         if (streamid && readToken) {
-            var insertStreamForUser = function (user, streamid) {
+            var insertStreamForUser = function(user, streamid) {
                 qdDb = app.getQdDb();
                 var deferred = Q.defer();
                 var mappingToInsert = {
@@ -64,7 +66,7 @@ module.exports = function (app, express) {
                 };
                 qdDb.collection('users').update({
                     "username": req.session.username
-                }, mappingToInsert, function (err, user) {
+                }, mappingToInsert, function(err, user) {
                     if (user) {
                         deferred.resolve();
                     } else {
@@ -74,7 +76,7 @@ module.exports = function (app, express) {
                 return deferred.promise;
             };
 
-            var decideWhatToDoWithStream = function (user) {
+            var decideWhatToDoWithStream = function(user) {
                 var deferred = Q.defer();
                 if (streamExists(streamid, user)) {
                     deferred.resolve();
@@ -84,7 +86,7 @@ module.exports = function (app, express) {
                 return deferred.promise;
             };
 
-            getStreamsForUser().then(decideWhatToDoWithStream).then(function () {
+            getStreamsForUser().then(decideWhatToDoWithStream).then(function() {
                 res.render('dashboard', {
                     streamid: streamid,
                     readToken: readToken
@@ -92,9 +94,9 @@ module.exports = function (app, express) {
             });
         } else {
             getStreamsForUser().then(function(user) {
-                if(user.streams){
+                if (user.streams) {
                     res.render('dashboard');
-                }else{
+                } else {
                     res.render('dashboard', {
                         showOverlay: true
                     });
@@ -110,15 +112,16 @@ module.exports = function (app, express) {
         });
     });
 
-    app.post("/claimUsername", function (req, res) {
-        var oneselfUsername = req.body.username;
+    app.post("/claimUsername", function(req, res) {
+        var encryptedUsername = encryptUsername(req.body.username)
+        var byOneselfUsername = req.body.username;
         var githubUsername = req.body.githubUsername;
 
         var byOneselfUsername = {
             "username": oneselfUsername
         };
         qdDb = app.getQdDb();
-        qdDb.collection('users').findOne(byOneselfUsername, function (err, user) {
+        qdDb.collection('users').findOne(byOneselfUsername, function(err, user) {
             if (user) {
                 res.render('claimUsername', {
                     username: oneselfUsername,
@@ -131,13 +134,15 @@ module.exports = function (app, express) {
                 };
                 qdDb.collection('users').update(byGithubUsername, {
                     $set: {
-                        username: oneselfUsername
+                        username: oneselfUsername,
+                        encryptedUsername: encryptedUsername
                     }
-                }, function (err, user) {
+                }, function(err, user) {
                     if (err) {
                         res.status(500).send("Database error");
                     } else {
                         req.session.username = oneselfUsername;
+                        req.session.encryptedUsername = encryptedUsername;
                         if (req.session.redirectUrl) {
                             var redirectUrl = req.session.redirectUrl;
                             delete req.session.redirectUrl;
@@ -151,11 +156,11 @@ module.exports = function (app, express) {
         });
     });
 
-    app.get("/compare", sessionManager.requiresSession, function (req, res) {
+    app.get("/compare", sessionManager.requiresSession, function(req, res) {
         res.render('compare');
     });
 
-    var getFilterValuesFrom = function (req) {
+    var getFilterValuesFrom = function(req) {
         var lastHour = 60;
         var selectedLanguage = req.query.language ? req.query.language : "all";
         var selectedEvent = req.query.event ? req.query.event : "all";
@@ -175,7 +180,7 @@ module.exports = function (app, express) {
         return filterValues;
     };
 
-    app.get("/community", function (req, res) {
+    app.get("/community", function(req, res) {
         res.render('community', getFilterValuesFrom(req));
     });
 }
