@@ -142,7 +142,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="noDataSourceMessageLabel">Link Streamid from Plugin</h4>
+                <h4 class="modal-title" id="noDataSourceMessageLabel">Link Stream Id from Plugin</h4>
             </div>
             <div class="modal-body">
                 Currently, no streamid is linked to your username. Linking your streamid is easy! Follow the steps:
@@ -151,6 +151,15 @@
                     <li>Click on the button in the plugin which brings you here</li>
                     <li>DONE! Your streamid will be linked...</li>
                 </ul>
+                For VS plugin users, you can enter your streamid here to link it. <br /><br />
+                <form action="/dashboard" method="get">
+                    <label for="streamId">Stream Id</label> <input name="streamId" class="form-control" type="text" id="streamId">
+                    <label for="readToken">Read Token</label> <input name="readToken" class="form-control" type="text" id="readToken">
+
+                    <br />
+                    <input type="submit" class="btn btn-success" value="Click here to link your streamid">
+                </form>
+
             </div>
         </div>
     </div>
