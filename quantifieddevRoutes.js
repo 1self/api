@@ -103,7 +103,7 @@ module.exports = function (app, express) {
         }
     });
 
-    app.get("/claimUsername", function (req, res) {
+    app.get("/claimUsername", sessionManager.requiresSession, function (req, res) {
         res.render('claimUsername', {
             username: req.query.username,
             githubUsername: req.query.username
