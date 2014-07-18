@@ -137,27 +137,34 @@
 <div id="showOverlayFlag" showOverlay="{{showOverlay}}"></div>
 
 <div class="modal fade" id="noDataSourceMessage" tabindex="-1" role="dialog"
-     aria-labelledby="noDataSourceMessageLabel" aria-hidden="false" style="padding-top: 10%;">
+     aria-labelledby="noDataSourceMessageLabel" aria-hidden="false">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="noDataSourceMessageLabel">Link Stream Id from Plugin</h4>
+                <h4 class="modal-title" id="noDataSourceMessageLabel">Start linking data sources</h4>
             </div>
             <div class="modal-body">
-                Currently, no streamid is linked to your username. Linking your streamid is easy! Follow the steps:
-                <ul>
-                    <li>Download the plugins we offer, if you haven't already.</li>
-                    <li>Click on the button in the plugin which brings you here</li>
-                    <li>DONE! Your streamid will be linked...</li>
-                </ul>
-                For VS plugin users, you can enter your streamid here to link it. <br /><br />
+                In order to start seeing your data on the QuantifiedDev dashboard, you need to start linking up data sources.
+                <br /><br />
+                It's easy.
+                <br /><br />
+                    1. Download and install our plugins from <a href='http://quantifieddev.org/#download' target="_blank">here</a>
+                    <br /><br />
+                    Then
+                    <br /><br />
+                    2. Click on the "QuantifiedDev Dashboard" button in the plugin window (Not available yet on Visual Studio)
+                    <br /><br />
+                    Or
+                    <br /><br />
+                    2. Find your Stream Id and Read Token in the admin window of your plugin, enter them in the boxes and click the button below
+                    <br />
                 <form action="/dashboard" method="get">
                     <label for="streamId">Stream Id</label> <input name="streamId" class="form-control" type="text" id="streamId">
                     <label for="readToken">Read Token</label> <input name="readToken" class="form-control" type="text" id="readToken">
 
                     <br />
-                    <input type="submit" class="btn btn-success" value="Click here to link your streamid">
+                    <input type="submit" class="btn btn-success" value="Manually link your Stream Id">
                 </form>
 
             </div>
