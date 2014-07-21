@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html>
 	<head>
 		<title>Quantified Dev {ALPHA}</title>
@@ -35,7 +35,7 @@
 					</div>
 					<div class="row margin-top-five">
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							<input class="form-control" name="username" type="text" value="{{ username}}">
+							<input class="form-control" name="username" type="text" required pattern="^[_a-zA-Z0-9]*$" value="{{ username}}">
 							{% if error %}
 								<span class="error custom-error">{{ error }}</span>
 							{% endif %}
