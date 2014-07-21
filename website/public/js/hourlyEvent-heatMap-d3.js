@@ -41,53 +41,50 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 				.append("g")
 				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 		};
-		if ($(window).width() < 500) {
-			var svgWidth = 320;
-			var svgHeight = 450;
-			gridDaySize = Math.floor(190/7);
-			gridTimeSize = Math.floor(400/24);
-			var svg = createSvg(svgWidth, svgHeight);
-			var dayLabels = svg.selectAll(".dayLabel")
+		var createDayLabels = function(svg, constantAxis, changingAxis, changingAxisAdjustment, gridSize, transformAttribute) {
+			return svg.selectAll(".dayLabel")
 				.data(days)
 				.enter().append("text")
 				.text(function(d) {
 					return d;
 				})
-				.attr("y", 0)
-				.attr("x", function(d, i) {
-					return (i * gridDaySize) - 10;
+				.attr(constantAxis, 0)
+				.attr(changingAxis, function(d, i) {
+					return (i * gridSize) - changingAxisAdjustment;
 				})
 				.style("text-anchor", "end")
-				.attr("transform", "translate(" + gridDaySize / 1.5 + ",-6)")
+				.attr("transform", transformAttribute)
 				.attr("class", function(d, i) {
 					return ((i >= 0 && i <= 4) ? "dayLabel mono axis axis-workweek" : "dayLabel mono axis");
 				});
-
-			var timeLabels = svg.selectAll(".timeLabel")
+		};
+		var createTimeLabels = function(svg, constantAxis, changingAxis, constantAxisAdjustment, gridSize, transformAttribute) {
+			return svg.selectAll(".timeLabel")
 				.data(times)
 				.enter().append("text")
 				.text(function(d) {
 					return d;
 				})
-				.attr("y", function(d, i) {
-					return i * (gridTimeSize);
+				.attr(constantAxis, constantAxisAdjustment)
+				.attr(changingAxis, function(d, i) {
+					return (i * gridSize);
 				})
-				.attr("x", -15)
 				.attr("font-size", "10px")
 				.style("text-anchor", "middle")
-				.attr("transform", "translate( -6," + (gridTimeSize) / 2.5 + ")")
+				.attr("transform", transformAttribute)
 				.attr("class", function(d, i) {
 					return ((i >= 7 && i <= 16) ? "timeLabel mono axis axis-worktime" : "timeLabel mono axis");
 				});
-
-			var heatMap = svg.selectAll(".hour")
+		};
+		var createHeatMap = function(svg, timeAxis, dayAxis, timeAxisAdjustment, dayAxisAdjustment, gridDaySize, gridTimeSize) {
+			return svg.selectAll(".hour")
 				.data(data)
 				.enter().append("rect")
-				.attr("y", function(d) {
-					return ((d.hour) * gridTimeSize) - 2.5;
+				.attr(timeAxis, function(d) {
+					return ((d.hour) * gridTimeSize) - timeAxisAdjustment;
 				})
-				.attr("x", function(d) {
-					return ((d.day) * gridDaySize) -10;
+				.attr(dayAxis, function(d) {
+					return ((d.day) * gridDaySize) - dayAxisAdjustment;
 				})
 				.attr("stroke", "lightgrey")
 				.attr("rx", 4)
@@ -96,29 +93,41 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 				.attr("width", gridDaySize)
 				.attr("height", gridTimeSize)
 				.style("fill", colors[0]);
-
-			heatMap.transition().duration(1000)
-				.style("fill", function(d) {
-					return colorScale(d.value);
-				});
-
-			heatMap.append("title").text(function(d) {
-				return d.value;
-			});
-			var legend = svg.selectAll(".legend")
+		};
+		var createLegend = function() {
+			return svg.selectAll(".legend")
 				.data([0].concat(colorScale.quantiles()), function(d) {
 					return d;
 				})
 				.enter().append("g")
 				.attr("class", "legend");
-			var legendRectXaxis = (gridDaySize*7) - 5;
-			var legendTextXaxis = legendRectXaxis + (gridSize/2) + 2;
+		};
+		
+		if ($(window).width() < 500) {
+			var svgWidth = 320;
+			var svgHeight = 450;
+			gridDaySize = Math.floor(190 / 7);
+			gridTimeSize = Math.floor(400 / 24);
+			var svg = createSvg(svgWidth, svgHeight);
+			var dayLabels = createDayLabels(svg, "y", "x", 10, gridDaySize, "translate(" + gridDaySize / 1.5 + ",-6)");
+			var timeLabels = createTimeLabels(svg, "x", "y", -15, gridTimeSize, "translate( -6," + (gridTimeSize) / 2.5 + ")");
+			var heatMap = createHeatMap(svg, "y", "x", 2.5, 10, gridDaySize, gridTimeSize);
+			heatMap.transition().duration(1000)
+				.style("fill", function(d) {
+					return colorScale(d.value);
+				});
+			heatMap.append("title").text(function(d) {
+				return d.value;
+			});
+			var legend = createLegend();
+			var legendRectXaxis = (gridDaySize * 7) - 5;
+			var legendTextXaxis = legendRectXaxis + (gridSize / 2) + 2;
 			legend.append("rect")
 				.attr("y", function(d, i) {
 					return legendElementWidth * i;
 				})
 				.attr("x", legendRectXaxis)
-				.attr("height", legendElementWidth+10)
+				.attr("height", legendElementWidth + 10)
 				.attr("width", gridSize / 2)
 				.style("fill", function(d, i) {
 					return colors[i];
@@ -135,56 +144,10 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 				})
 				.attr("x", legendTextXaxis);
 		} else {
-			var svg = createSvg(width+50, height+50);
-			var dayLabels = svg.selectAll(".dayLabel")
-				.data(days)
-				.enter().append("text")
-				.text(function(d) {
-					return d;
-				})
-				.attr("x", 0)
-				.attr("y", function(d, i) {
-					return i * gridSize;
-				})
-				.style("text-anchor", "end")
-				.attr("transform", "translate(-6," + gridSize / 1.5 + ")")
-				.attr("class", function(d, i) {
-					return ((i >= 0 && i <= 4) ? "dayLabel mono axis axis-workweek" : "dayLabel mono axis");
-				});
-
-			var timeLabels = svg.selectAll(".timeLabel")
-				.data(times)
-				.enter().append("text")
-				.text(function(d) {
-					return d;
-				})
-				.attr("x", function(d, i) {
-					return i * gridSize;
-				})
-				.attr("y", 0)
-				.attr("font-size", "10px")
-				.style("text-anchor", "middle")
-				.attr("transform", "translate(" + gridSize / 2.5 + ", -6)")
-				.attr("class", function(d, i) {
-					return ((i >= 7 && i <= 16) ? "timeLabel mono axis axis-worktime" : "timeLabel mono axis");
-				});
-
-			var heatMap = svg.selectAll(".hour")
-				.data(data)
-				.enter().append("rect")
-				.attr("x", function(d) {
-					return (d.hour) * gridSize;
-				})
-				.attr("y", function(d) {
-					return (d.day) * gridSize;
-				})
-				.attr("stroke", "lightgrey")
-				.attr("rx", 4)
-				.attr("ry", 4)
-				.attr("class", "hour bordered")
-				.attr("width", gridSize)
-				.attr("height", gridSize)
-				.style("fill", colors[0]);
+			var svg = createSvg(width + 50, height + 50);
+			var dayLabels = createDayLabels(svg, "x", "y", 0, gridSize, "translate(-6," + gridSize / 1.5 + ")");
+			var timeLabels = createTimeLabels(svg, "y", "x", 0, gridSize, "translate(" + gridSize / 2.5 + ", -6)");
+			var heatMap = createHeatMap(svg, "x", "y", 0, 0, gridSize, gridSize);
 
 			heatMap.transition().duration(1000)
 				.style("fill", function(d) {
@@ -194,14 +157,9 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 			heatMap.append("title").text(function(d) {
 				return d.value;
 			});
-			var legend = svg.selectAll(".legend")
-				.data([0].concat(colorScale.quantiles()), function(d) {
-					return d;
-				})
-				.enter().append("g")
-				.attr("class", "legend");
+			var legend = createLegend();
 
-			var legendRectYaxis = (gridSize*7) + 5;
+			var legendRectYaxis = (gridSize * 7) + 5;
 			var legendTextYaxis = legendRectYaxis + 20;
 			legend.append("rect")
 				.attr("x", function(d, i) {
@@ -249,6 +207,6 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 };
 $(window).resize(function() {
 	//if (($(window).width() < 500 && $(window).width() > 499) || ($(window).width() > 500 && $(window).width() < 501) ) {
-		 location.reload();
+	location.reload();
 	//}
 });
