@@ -32,7 +32,7 @@ var qd = function() {
         return Math.ceil(percentChange);
     }
     var myDevSuccessCallback = function(buildEvents) {
-        plotGraphWith('buildEvents', buildEvents);
+        plotGraphWith('buildEvents', buildEvents, "#build-history-parent");
         populateBuildTilesData(buildEvents);
         modelUpdateCallbacks.forEach(function(c) {
             c();
@@ -78,31 +78,33 @@ var qd = function() {
             result.plotActiveEvents();
         }
     };
-    var plotGraphWith = function(eventType, graphData) {
+    var plotGraphWith = function(eventType, graphData, graphTileId) {
         result[eventType] = graphData;
-        if (graphData.length > 0)
+        if (graphData.length > 0) {
+            $(graphTileId).show();
             charts[eventType]();
+        }
     }
     var myWtfSuccessCallback = function(wtfEvents) {
-        plotGraphWith('wtfEvents', wtfEvents)
+        plotGraphWith('wtfEvents', wtfEvents, "#wtf-history-parent")
     }
     result.updateWTFModel = function() {
         postAjax("mywtf", myWtfSuccessCallback)
     };
     var myHydrationSuccessCallback = function(hydrationEvents) {
-        plotGraphWith('hydrationEvents', hydrationEvents);
+        plotGraphWith('hydrationEvents', hydrationEvents, "#hydration-history-parent");
     }
     result.updateHydrationModel = function() {
         postAjax("myhydration", myHydrationSuccessCallback)
     };
     var myCaffeineSuccessCallback = function(caffeineEvents) {
-        plotGraphWith('caffeineEvents', caffeineEvents);
+        plotGraphWith('caffeineEvents', caffeineEvents, "#caffeine-history-parent");
     };
     result.updateCaffeineModel = function() {
         postAjax("mycaffeine", myCaffeineSuccessCallback)
     };
     var buildDurationSuccessCallback = function(buildDurationEvents) {
-        plotGraphWith('buildDurationEvents', buildDurationEvents);
+        plotGraphWith('buildDurationEvents', buildDurationEvents, "#buildDuration-history-parent");
     };
     result.updateBuildDurationModel = function() {
         postAjax("buildDuration", buildDurationSuccessCallback)
@@ -141,7 +143,7 @@ var qd = function() {
         postAjax("hourlyCaffeineCount", hourlyCaffeineSuccessCallback)
     };
     var activitySuccessCallback = function(myActiveEvents) {
-        plotGraphWith('myActiveEvents', myActiveEvents);
+        plotGraphWith('myActiveEvents', myActiveEvents, "#active-event-history-parent");
     }
     result.updateActiveEvents = function() {
         postAjax("myActiveEvents", activitySuccessCallback)
