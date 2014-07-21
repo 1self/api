@@ -2,7 +2,6 @@ var qd = function() {
     var result = {};
     var modelUpdateCallbacks = [];
 
-    //change this to accomodate varying streamids (for compare functionality)
     var url = function(resource) {
         var result = "";
         if (location.hostname == "localhost") {
@@ -33,12 +32,11 @@ var qd = function() {
         return Math.ceil(percentChange);
     }
     var myDevSuccessCallback = function(buildEvents) {
-        result.buildEvents = buildEvents;
+        plotGraphWith('buildEvents', buildEvents, "#build-history-parent");
         populateBuildTilesData(buildEvents);
         modelUpdateCallbacks.forEach(function(c) {
             c();
         });
-
     }
     var failureCallback = function(divId, msg) {
         return function() {
@@ -60,87 +58,103 @@ var qd = function() {
     result.updateBuildModel = function() {
         postAjax("mydev", myDevSuccessCallback)
     }
+    var charts = {
+        buildEvents: function() {
+            result.plotBuildHistory();
+        },
+        wtfEvents: function() {
+            result.plotWTFHistory();
+        },
+        hydrationEvents: function() {
+            result.plotHydrationHistory();
+        },
+        caffeineEvents: function() {
+            result.plotCaffeineHistory();
+        },
+        buildDurationEvents: function() {
+            result.plotBuildDurationHistory();
+        },
+        myActiveEvents: function() {
+            result.plotActiveEvents();
+        }
+    };
+    var plotGraphWith = function(eventType, graphData, graphParentTileId) {
+        result[eventType] = graphData;
+        if (graphData.length > 0) {
+            $(graphParentTileId).show();
+            charts[eventType]();
+        }
+    };
+    var plotHeatmapWith = function(graphParentTileId, graphTileId, graphData) {
+        if (graphData.length > 0) {
+            $(graphParentTileId).show();
+            result.plotHourlyEventMap(graphTileId, graphData);
+        }
+    };
     var myWtfSuccessCallback = function(wtfEvents) {
-        result.wtfEvents = wtfEvents;
-        result.plotWTFHistory();
+        plotGraphWith('wtfEvents', wtfEvents, "#wtf-history-parent")
     }
     result.updateWTFModel = function() {
         postAjax("mywtf", myWtfSuccessCallback)
     };
     var myHydrationSuccessCallback = function(hydrationEvents) {
-        result.hydrationEvents = hydrationEvents;
-        result.plotHydrationHistory();
+        plotGraphWith('hydrationEvents', hydrationEvents, "#hydration-history-parent");
     }
     result.updateHydrationModel = function() {
         postAjax("myhydration", myHydrationSuccessCallback)
     };
     var myCaffeineSuccessCallback = function(caffeineEvents) {
-        result.caffeineEvents = caffeineEvents;
-        result.plotCaffeineHistory();
+        plotGraphWith('caffeineEvents', caffeineEvents, "#caffeine-history-parent");
     };
     result.updateCaffeineModel = function() {
         postAjax("mycaffeine", myCaffeineSuccessCallback)
-
     };
     var buildDurationSuccessCallback = function(buildDurationEvents) {
-        result.buildDurationEvents = buildDurationEvents;
-        result.plotBuildDurationHistory();
+        plotGraphWith('buildDurationEvents', buildDurationEvents, "#buildDuration-history-parent");
     };
     result.updateBuildDurationModel = function() {
         postAjax("buildDuration", buildDurationSuccessCallback)
-
     };
     var hourlyBuildSuccessCallback = function(hourlyBuildEvents) {
-        setTimezoneDifferenceInHours()
-        result.hourlyBuildEvents = hourlyBuildEvents;
-        result.plotHourlyEventMap('#hourlyBuild-heat-map', hourlyBuildEvents);
+        setTimezoneDifferenceInHours();
+        plotHeatmapWith("#hourlyBuild-heat-map-parent", '#hourlyBuild-heat-map', hourlyBuildEvents);
     }
-
     result.updateHourlyBuildHeatMap = function() {
         postAjax("hourlyBuildCount", hourlyBuildSuccessCallback)
-
     };
     var hourlyWtfSuccessCallback = function(hourlyWtfEvents) {
-        setTimezoneDifferenceInHours()
-        result.hourlyWtfEvents = hourlyWtfEvents;
-        result.plotHourlyEventMap('#hourlyWtf-heat-map', hourlyWtfEvents);
+        setTimezoneDifferenceInHours();
+        plotHeatmapWith("#hourlyWtf-heat-map-parent", '#hourlyWtf-heat-map', hourlyWtfEvents);
     }
-
-
     result.updateHourlyWtfHeatMap = function() {
         postAjax("hourlyWtfCount", hourlyWtfSuccessCallback)
     };
-
     var hourlyHydrationSuccessCallback = function(hourlyHydrationEvents) {
-        setTimezoneDifferenceInHours()
-        result.hourlyHydrationEvents = hourlyHydrationEvents;
-        result.plotHourlyEventMap('#hourlyHydration-heat-map', hourlyHydrationEvents);
-    }
+        setTimezoneDifferenceInHours();
+        plotHeatmapWith("#hourlyHydration-heat-map-parent", '#hourlyHydration-heat-map', hourlyHydrationEvents);
+    };
     result.updateHourlyHydrationHeatMap = function() {
         postAjax("hourlyHydrationCount", hourlyHydrationSuccessCallback)
-
     };
     var hourlyCaffeineSuccessCallback = function(hourlyCaffeineEvents) {
-        setTimezoneDifferenceInHours()
+        setTimezoneDifferenceInHours();
         result.hourlyCaffeineEvents = hourlyCaffeineEvents;
-        result.plotHourlyEventMap('#hourlyCaffeine-heat-map', hourlyCaffeineEvents);
-    }
+        plotHeatmapWith('#hourlyCaffeine-heat-map-parent', '#hourlyCaffeine-heat-map', hourlyCaffeineEvents);
+    };
     result.updateHourlyCaffeineHeatMap = function() {
         postAjax("hourlyCaffeineCount", hourlyCaffeineSuccessCallback)
     };
     var activitySuccessCallback = function(myActiveEvents) {
-        result.activeEvents = myActiveEvents;
-        result.plotActiveEvents();
+        plotGraphWith('myActiveEvents', myActiveEvents, "#active-event-history-parent");
     }
     result.updateActiveEvents = function() {
         postAjax("myActiveEvents", activitySuccessCallback)
-
     };
     result.plotGraphs = function(graphs) {
         graphs.forEach(function(graph) {
             result[graph]();
         })
-    }
+    };
 
     result.registerForBuildModelUpdates = function(callback) {
         modelUpdateCallbacks.push(callback);

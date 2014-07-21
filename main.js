@@ -309,21 +309,25 @@ var getBuildEventsFromPlatform = function(streams) {
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
-            var defaultBuildValues = [{
-                key: "passed",
-                value: 0
-            }, {
-                key: "failed",
-                value: 0
-            }];
-            var buildsByDay = generateDatesFor(defaultBuildValues);
-            for (date in result) {
-                if (buildsByDay[date] !== undefined) {
-                    buildsByDay[date].passed = result[date].passed
-                    buildsByDay[date].failed = result[date].failed
+            if (_.isEmpty(result)) {
+                deferred.resolve(result);
+            } else {
+                var defaultBuildValues = [{
+                    key: "passed",
+                    value: 0
+                }, {
+                    key: "failed",
+                    value: 0
+                }];
+                var buildsByDay = generateDatesFor(defaultBuildValues);
+                for (date in result) {
+                    if (buildsByDay[date] !== undefined) {
+                        buildsByDay[date].passed = result[date].passed
+                        buildsByDay[date].failed = result[date].failed
+                    }
                 }
+                deferred.resolve(rollupToArray(buildsByDay))
             }
-            deferred.resolve(rollupToArray(buildsByDay))
         } else {
             deferred.reject(error);
         }
@@ -380,17 +384,21 @@ var getMyWTFsFromPlatform = function(streams) {
     var sendWTFs = function(error, response, body) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body)[0];
-            var defaultWTFValues = [{
-                key: "wtfCount",
-                value: 0
-            }];
-            var wtfsByDay = generateDatesFor(defaultWTFValues);
-            for (date in result) {
-                if (wtfsByDay[date] !== undefined) {
-                    wtfsByDay[date].wtfCount = result[date].wtfCount;
+            if (_.isEmpty(result)) {
+                deferred.resolve(result);
+            } else {
+                var defaultWTFValues = [{
+                    key: "wtfCount",
+                    value: 0
+                }];
+                var wtfsByDay = generateDatesFor(defaultWTFValues);
+                for (date in result) {
+                    if (wtfsByDay[date] !== undefined) {
+                        wtfsByDay[date].wtfCount = result[date].wtfCount;
+                    }
                 }
+                deferred.resolve(rollupToArray(wtfsByDay))
             }
-            deferred.resolve(rollupToArray(wtfsByDay))
         } else {
             deferred.reject(error);
         }
@@ -447,17 +455,21 @@ var getMyHydrationEventsFromPlatform = function(streams) {
     var sendHydrationCount = function(error, response, body) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body)[0];
-            var defaultHydrationValues = [{
-                key: "hydrationCount",
-                value: 0
-            }];
-            var hydrationsByDay = generateDatesFor(defaultHydrationValues);
-            for (date in result) {
-                if (hydrationsByDay[date] !== undefined) {
-                    hydrationsByDay[date].hydrationCount = result[date].hydrationCount;
+            if (_.isEmpty(result)) {
+                deferred.resolve(result);
+            } else {
+                var defaultHydrationValues = [{
+                    key: "hydrationCount",
+                    value: 0
+                }];
+                var hydrationsByDay = generateDatesFor(defaultHydrationValues);
+                for (date in result) {
+                    if (hydrationsByDay[date] !== undefined) {
+                        hydrationsByDay[date].hydrationCount = result[date].hydrationCount;
+                    }
                 }
+                deferred.resolve(rollupToArray(hydrationsByDay))
             }
-            deferred.resolve(rollupToArray(hydrationsByDay))
         } else {
             deferred.reject(error);
         }
@@ -514,17 +526,21 @@ var getMyCaffeineEventsFromPlatform = function(streams) {
     var sendCaffeineCount = function(error, response, body) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body)[0];
-            var defaultCaffeineValues = [{
-                key: "caffeineCount",
-                value: 0
-            }];
-            var caffeineIntakeByDay = generateDatesFor(defaultCaffeineValues);
-            for (date in result) {
-                if (caffeineIntakeByDay[date] !== undefined) {
-                    caffeineIntakeByDay[date].caffeineCount = result[date].caffeineCount;
+            if (_.isEmpty(result)) {
+                deferred.resolve(result);
+            } else {
+                var defaultCaffeineValues = [{
+                    key: "caffeineCount",
+                    value: 0
+                }];
+                var caffeineIntakeByDay = generateDatesFor(defaultCaffeineValues);
+                for (date in result) {
+                    if (caffeineIntakeByDay[date] !== undefined) {
+                        caffeineIntakeByDay[date].caffeineCount = result[date].caffeineCount;
+                    }
                 }
+                deferred.resolve(rollupToArray(caffeineIntakeByDay))
             }
-            deferred.resolve(rollupToArray(caffeineIntakeByDay))
         } else {
             deferred.reject(error);
         }
@@ -591,31 +607,30 @@ var getAvgBuildDurationFromPlatform = function(streams) {
         method: 'GET'
     };
     var convertMillisToSeconds = function(milliseconds) {
-
         return Math.round(milliseconds / 1000 * 100) / 100;
-
     }
 
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
-            var defaultBuildValues = [{
-                key: "avgBuildDuration",
-                value: 0
-            }];
-            var buildDurationByDay = generateDatesFor(defaultBuildValues);
-            for (date in result) {
-                if (buildDurationByDay[date] !== undefined) {
-                    buildDurationInMillis = result[date].totalDuration / result[date].eventCount;
-                    buildDurationByDay[date].avgBuildDuration = convertMillisToSeconds(buildDurationInMillis);
-
+            if (_.isEmpty(result)) {
+                deferred.resolve(result);
+            } else {
+                var defaultBuildValues = [{
+                    key: "avgBuildDuration",
+                    value: 0
+                }];
+                var buildDurationByDay = generateDatesFor(defaultBuildValues);
+                for (date in result) {
+                    if (buildDurationByDay[date] !== undefined) {
+                        buildDurationInMillis = result[date].totalDuration / result[date].eventCount;
+                        buildDurationByDay[date].avgBuildDuration = convertMillisToSeconds(buildDurationInMillis);
+                    }
                 }
-
+                deferred.resolve(rollupToArray(buildDurationByDay))
             }
-            deferred.resolve(rollupToArray(buildDurationByDay))
         } else {
             deferred.reject(error);
-
         }
     }
 
@@ -703,18 +718,20 @@ var getHourlyBuildCountFromPlatform = function(streams) {
     function callback(error, response, body) {
         //console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
         if (!error && response.statusCode == 200) {
-
             var result = JSON.parse(body);
             var result = result[0];
-            //console.log("No of hourly builds is : " + JSON.stringify(result));
-
-            var hourlyBuilds = generateHoursForWeek(defaultEventValues);
-            for (date in result) {
-                if (hourlyBuilds[date] !== undefined) {
-                    hourlyBuilds[date].hourlyEventCount = result[date].buildCount
+            // console.log("No of hourly builds is : " + JSON.stringify(result));
+            if (_.isEmpty(result)) {
+                deferred.resolve(result);
+            } else {
+                var hourlyBuilds = generateHoursForWeek(defaultEventValues);
+                for (date in result) {
+                    if (hourlyBuilds[date] !== undefined) {
+                        hourlyBuilds[date].hourlyEventCount = result[date].buildCount
+                    }
                 }
+                deferred.resolve(rollupToArray(hourlyBuilds));
             }
-            deferred.resolve(rollupToArray(hourlyBuilds));
         } else {
             //console.log("error during call to platform: " + error);
             deferred.reject(error);
@@ -772,23 +789,23 @@ var getHourlyWtfCount = function(streams) {
 
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
-
             var result = JSON.parse(body);
             var result = result[0];
-
-            var hourlyWtfs = generateHoursForWeek(defaultEventValues);
-            for (date in result) {
-                if (hourlyWtfs[date] !== undefined) {
-                    hourlyWtfs[date].hourlyEventCount = result[date].wtfCount
+            if (_.isEmpty(result)) {
+                deferred.resolve(result);
+            } else {
+                var hourlyWtfs = generateHoursForWeek(defaultEventValues);
+                for (date in result) {
+                    if (hourlyWtfs[date] !== undefined) {
+                        hourlyWtfs[date].hourlyEventCount = result[date].wtfCount
+                    }
                 }
+                deferred.resolve(rollupToArray(hourlyWtfs));
             }
-            deferred.resolve(rollupToArray(hourlyWtfs));
         } else {
             deferred.reject(error);
-
         }
     }
-
     requestModule(options, callback);
 
     return deferred.promise;
@@ -840,23 +857,23 @@ var getHourlyHydrationCount = function(streams) {
 
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
-
             var result = JSON.parse(body);
             var result = result[0];
-
-            var hourlyHydration = generateHoursForWeek(defaultEventValues);
-            for (date in result) {
-                if (hourlyHydration[date] !== undefined) {
-                    hourlyHydration[date].hourlyEventCount = result[date].hydrationCount
+            if (_.isEmpty(result)) {
+                deferred.resolve(result);
+            } else {
+                var hourlyHydration = generateHoursForWeek(defaultEventValues);
+                for (date in result) {
+                    if (hourlyHydration[date] !== undefined) {
+                        hourlyHydration[date].hourlyEventCount = result[date].hydrationCount
+                    }
                 }
+                deferred.resolve(rollupToArray(hourlyHydration));
             }
-            deferred.resolve(rollupToArray(hourlyHydration));
         } else {
             deferred.reject(error);
-
         }
     }
-
     requestModule(options, callback);
 
     return deferred.promise;
@@ -908,23 +925,23 @@ var getHourlyCaffeineCount = function(streams) {
 
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
-
             var result = JSON.parse(body);
             var result = result[0];
-
-            var hourlyCaffeine = generateHoursForWeek(defaultEventValues);
-            for (date in result) {
-                if (hourlyCaffeine[date] !== undefined) {
-                    hourlyCaffeine[date].hourlyEventCount = result[date].caffeineCount
+            if (_.isEmpty(result)) {
+                deferred.resolve(result);
+            } else {
+                var hourlyCaffeine = generateHoursForWeek(defaultEventValues);
+                for (date in result) {
+                    if (hourlyCaffeine[date] !== undefined) {
+                        hourlyCaffeine[date].hourlyEventCount = result[date].caffeineCount
+                    }
                 }
+                deferred.resolve(rollupToArray(hourlyCaffeine));
             }
-            deferred.resolve(rollupToArray(hourlyCaffeine));
         } else {
             deferred.reject(error);
-
         }
     }
-
     requestModule(options, callback);
 
     return deferred.promise;
@@ -995,22 +1012,26 @@ var getMyActiveDuration = function(streams) {
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
-            var defaulActiveDurationValues = [{
-                key: "totalActiveDuration",
-                value: 0
-            }, {
-                key: "inActiveCount",
-                value: 0
-            }];
-            var activeDurationByDay = generateDatesFor(defaulActiveDurationValues);
-            for (date in result) {
-                if (activeDurationByDay[date] !== undefined) {
-                    activeDurationByDay[date].totalActiveDuration = convertMillisToMinutes(result[date].totalActiveDuration);
-                    activeDurationByDay[date].inActiveCount = result[date].activeCount - 1;
-                }
+            if (_.isEmpty(result)) {
+                deferred.resolve(result);
+            } else {
+                var defaulActiveDurationValues = [{
+                    key: "totalActiveDuration",
+                    value: 0
+                }, {
+                    key: "inActiveCount",
+                    value: 0
+                }];
+                var activeDurationByDay = generateDatesFor(defaulActiveDurationValues);
+                for (date in result) {
+                    if (activeDurationByDay[date] !== undefined) {
+                        activeDurationByDay[date].totalActiveDuration = convertMillisToMinutes(result[date].totalActiveDuration);
+                        activeDurationByDay[date].inActiveCount = result[date].activeCount - 1;
+                    }
 
+                }
+                deferred.resolve(rollupToArray(activeDurationByDay))
             }
-            deferred.resolve(rollupToArray(activeDurationByDay))
         } else {
             deferred.reject(error);
 
