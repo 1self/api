@@ -1137,7 +1137,9 @@ ul.recent-tweets {
   border-style: solid;
   -webkit-border-radius: 0px;
   -moz-border-radius: 0px;
-  border-radius: 0px; }
+  border-radius: 0px;
+  margin-bottom: 50px;
+   }
   .panel-heading i {
     margin-right: 8px;
     font-size: 14px; }
@@ -2527,8 +2529,11 @@ iframe.wysihtml5-sandbox {
   width: 90%;
 }
 
-@media screen and (max-width: 500px){
-  .hourlyHeatMapContainer{
-  width: 100%;
-}}
-
+@media screen and (max-width: 500px) {
+    .hourlyHeatMapContainer {
+        width: 100%;
+    }
+     .panel-heading {
+      margin-bottom: 0px;
+    }
+}

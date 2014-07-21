@@ -21,10 +21,13 @@ x.axis {
 .top-buffer {
 	margin-top:5px;
 }
-@media screen and (max-width: 500px){
-.fixed-height {
-  height:auto;
-  }
+@media screen and (max-width: 500px) {
+    .fixed-height {
+        height: auto;
+    }
 }
-
-
+@media screen and (max-width: 318px) {
+    .panel-title {
+        font-size: 13px;
+    }
+}
