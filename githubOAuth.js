@@ -8,6 +8,12 @@ var CONTEXT_URI = process.env.CONTEXT_URI;
 
 module.exports = function(app) {
 
+	var setSession = function(req, res, user) {
+		req.session.username = user.username;
+		req.session.githubUsername = user.githubUser.username;		
+		res.cookie('_eun', user.encodedUsername);
+	}
+
 	var handleGithubCallback = function(req, res) {
 		var qdDb = app.getQdDb();
 		var githubUser = req.user.profile;
@@ -60,8 +66,7 @@ module.exports = function(app) {
 			if (isNewUser(user)) {
 				insertGithubProfileInDb();
 			} else if (isUserRegisteredWithOneself(user)) {
-				req.session.username = user.username;
-				req.session.githubUsername = user.githubUser.username;
+				setSession(req, res, user);
 				if (req.session.redirectUrl) {
 					var redirectUrl = req.session.redirectUrl;
 					delete req.session.redirectUrl;
