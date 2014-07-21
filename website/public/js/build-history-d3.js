@@ -1,4 +1,4 @@
-var plotChart = function() {
+window.qd.plotBuildHistory = function() {
     var s = $('#build-history').empty();
     s = d3.select('#build-history');
 
@@ -280,5 +280,4 @@ var plotChart = function() {
                 .style("fill", "black")
                 .text(legendColours[i][0]);
         });
-}
-window.qd.registerForBuildModelUpdates(plotChart);
+};
