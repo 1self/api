@@ -97,12 +97,12 @@ app.getQdDb = function() {
     return qdDb;
 }
 
-var getStreamIdForUsername = function(username) {
+var getStreamIdForUsername = function(encodedUsername) {
     var deferred = q.defer();
-    var byUsername = {
-        "username": username
+    var byEncodedUsername = {
+        "encodedUsername": encodedUsername
     };
-    qdDb.collection('users').findOne(byUsername, {
+    qdDb.collection('users').findOne(byEncodedUsername, {
         "streams": 1
     }, function(err, user) {
         if (err) {
@@ -1179,6 +1179,7 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
 
 app.get('/quantifieddev/mydev', function(req, res) {
     var username = req.headers.authorization;
+    console.log("Came inside my dev with username : ", username)
     getStreamIdForUsername(username)
         .then(getBuildEventsFromPlatform)
         .then(function(response) {

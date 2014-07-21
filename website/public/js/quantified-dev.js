@@ -12,12 +12,14 @@ var qd = function() {
         }
         return result;
     };
+
     var postAjax = function(urlParam, successCallback, failureCallback) {
+        console.log("Cookie is eun: ", $.cookie("_eun"))
         $.ajax({
             url: url(urlParam),
             headers: {
                 "Accept": "application/json",
-                "Authorization": $.cookie("username")
+                "Authorization": $.cookie("_eun")
             },
             success: successCallback,
             error: function(error) {
@@ -258,21 +260,21 @@ var qd = function() {
         var hashTags = ['IntelliJ', 'coding'].join(',');
         $('#tweetMyActiveDuration').attr('href', "https://twitter.com/share?url=''&hashtags=" + hashTags + "&text=" + tweetText);
     };
-    result.updateBuildHistoryModelFor = function(username) {
+    result.updateBuildHistoryModelFor = function(encodedUsername) {
         return $.ajax({
             url: url("mydev"),
             headers: {
                 "Accept": "application/json",
-                "Authorization": username
+                "Authorization": encodedUsername
             }
         });
     };
-    result.updateActiveEventsModelFor = function(username) {
+    result.updateActiveEventsModelFor = function(encodedUsername) {
         return $.ajax({
             url: url("myActiveEvents"),
             headers: {
                 "Accept": "application/json",
-                "Authorization": username
+                "Authorization": encodedUsername
             }
         });
     };
@@ -299,7 +301,7 @@ var qd = function() {
     }
 
     result.plotComparisonGraphs = function(theirUsername) {
-        var myUsername = $.cookie("username");
+        var myUsername = $.cookie("_eun");
         $.when(result.updateBuildHistoryModelFor(myUsername), result.updateBuildHistoryModelFor(theirUsername))
             .done(handlePlotComparisonGraphsSuccess)
             .fail(failureCallback("#compare-username-errors", "Username doesn't exist!"));

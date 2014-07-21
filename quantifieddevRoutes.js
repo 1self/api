@@ -1,9 +1,8 @@
 var sessionManager = require("./sessionManagement");
 var _ = require("underscore");
 var Q = require('q');
-var encryptUsername = function(username) {
-    return crypto.createHash('sha256').update(username).digest('hex')
-};
+var encoder = require("./encoder")
+
 module.exports = function(app, express) {
 
     app.get("/signup", function(req, res) {
@@ -105,7 +104,7 @@ module.exports = function(app, express) {
         }
     });
 
-    app.get("/claimUsername", sessionManager.requiresSession, function (req, res) {
+    app.get("/claimUsername", sessionManager.requiresSession, function(req, res) {
         res.render('claimUsername', {
             username: req.query.username,
             githubUsername: req.query.username
@@ -113,8 +112,8 @@ module.exports = function(app, express) {
     });
 
     app.post("/claimUsername", function(req, res) {
-        var encryptedUsername = encryptUsername(req.body.username)
-        var byOneselfUsername = req.body.username;
+        var encodedUsername = encoder.encryptUsername(req.body.username)
+        var oneselfUsername = req.body.username;
         var githubUsername = req.body.githubUsername;
 
         var byOneselfUsername = {
@@ -135,14 +134,16 @@ module.exports = function(app, express) {
                 qdDb.collection('users').update(byGithubUsername, {
                     $set: {
                         username: oneselfUsername,
-                        encryptedUsername: encryptedUsername
+                        encodedUsername: encodedUsername
                     }
                 }, function(err, user) {
                     if (err) {
                         res.status(500).send("Database error");
                     } else {
                         req.session.username = oneselfUsername;
-                        req.session.encryptedUsername = encryptedUsername;
+                        req.session.githubUsername = githubUsername;
+                        console.log("setting cookie with user : ", encodedUsername)
+                        res.cookie('_eun', encodedUsername);
                         if (req.session.redirectUrl) {
                             var redirectUrl = req.session.redirectUrl;
                             delete req.session.redirectUrl;
