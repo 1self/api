@@ -78,13 +78,19 @@ var qd = function() {
             result.plotActiveEvents();
         }
     };
-    var plotGraphWith = function(eventType, graphData, graphTileId) {
+    var plotGraphWith = function(eventType, graphData, graphParentTileId) {
         result[eventType] = graphData;
         if (graphData.length > 0) {
-            $(graphTileId).show();
+            $(graphParentTileId).show();
             charts[eventType]();
         }
-    }
+    };
+    var plotHeatmapWith = function(graphParentTileId, graphTileId, graphData) {
+        if (graphData.length > 0) {
+            $(graphParentTileId).show();
+            result.plotHourlyEventMap(graphTileId, graphData);
+        }
+    };
     var myWtfSuccessCallback = function(wtfEvents) {
         plotGraphWith('wtfEvents', wtfEvents, "#wtf-history-parent")
     }
@@ -110,26 +116,22 @@ var qd = function() {
         postAjax("buildDuration", buildDurationSuccessCallback)
     };
     var hourlyBuildSuccessCallback = function(hourlyBuildEvents) {
-        setTimezoneDifferenceInHours()
-        result.hourlyBuildEvents = hourlyBuildEvents;
-        result.plotHourlyEventMap('#hourlyBuild-heat-map', hourlyBuildEvents);
+        setTimezoneDifferenceInHours();
+        plotHeatmapWith("#hourlyBuild-heat-map-parent", '#hourlyBuild-heat-map', hourlyBuildEvents);
     }
     result.updateHourlyBuildHeatMap = function() {
         postAjax("hourlyBuildCount", hourlyBuildSuccessCallback)
-
     };
     var hourlyWtfSuccessCallback = function(hourlyWtfEvents) {
-        setTimezoneDifferenceInHours()
-        result.hourlyWtfEvents = hourlyWtfEvents;
-        result.plotHourlyEventMap('#hourlyWtf-heat-map', hourlyWtfEvents);
+        setTimezoneDifferenceInHours();
+        plotHeatmapWith("#hourlyWtf-heat-map-parent", '#hourlyWtf-heat-map', hourlyWtfEvents);
     }
     result.updateHourlyWtfHeatMap = function() {
         postAjax("hourlyWtfCount", hourlyWtfSuccessCallback)
     };
     var hourlyHydrationSuccessCallback = function(hourlyHydrationEvents) {
-        setTimezoneDifferenceInHours()
-        result.hourlyHydrationEvents = hourlyHydrationEvents;
-        result.plotHourlyEventMap('#hourlyHydration-heat-map', hourlyHydrationEvents);
+        setTimezoneDifferenceInHours();
+        plotHeatmapWith("#hourlyHydration-heat-map-parent", '#hourlyHydration-heat-map', hourlyHydrationEvents);
     };
     result.updateHourlyHydrationHeatMap = function() {
         postAjax("hourlyHydrationCount", hourlyHydrationSuccessCallback)
@@ -137,7 +139,7 @@ var qd = function() {
     var hourlyCaffeineSuccessCallback = function(hourlyCaffeineEvents) {
         setTimezoneDifferenceInHours();
         result.hourlyCaffeineEvents = hourlyCaffeineEvents;
-        result.plotHourlyEventMap('#hourlyCaffeine-heat-map', hourlyCaffeineEvents);
+        plotHeatmapWith('#hourlyCaffeine-heat-map-parent', '#hourlyCaffeine-heat-map', hourlyCaffeineEvents);
     };
     result.updateHourlyCaffeineHeatMap = function() {
         postAjax("hourlyCaffeineCount", hourlyCaffeineSuccessCallback)

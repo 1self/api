@@ -718,18 +718,20 @@ var getHourlyBuildCountFromPlatform = function(streams) {
     function callback(error, response, body) {
         //console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
         if (!error && response.statusCode == 200) {
-
             var result = JSON.parse(body);
             var result = result[0];
-            //console.log("No of hourly builds is : " + JSON.stringify(result));
-
-            var hourlyBuilds = generateHoursForWeek(defaultEventValues);
-            for (date in result) {
-                if (hourlyBuilds[date] !== undefined) {
-                    hourlyBuilds[date].hourlyEventCount = result[date].buildCount
+            // console.log("No of hourly builds is : " + JSON.stringify(result));
+            if (_.isEmpty(result)) {
+                deferred.resolve(result);
+            } else {
+                var hourlyBuilds = generateHoursForWeek(defaultEventValues);
+                for (date in result) {
+                    if (hourlyBuilds[date] !== undefined) {
+                        hourlyBuilds[date].hourlyEventCount = result[date].buildCount
+                    }
                 }
+                deferred.resolve(rollupToArray(hourlyBuilds));
             }
-            deferred.resolve(rollupToArray(hourlyBuilds));
         } else {
             //console.log("error during call to platform: " + error);
             deferred.reject(error);
@@ -787,23 +789,23 @@ var getHourlyWtfCount = function(streams) {
 
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
-
             var result = JSON.parse(body);
             var result = result[0];
-
-            var hourlyWtfs = generateHoursForWeek(defaultEventValues);
-            for (date in result) {
-                if (hourlyWtfs[date] !== undefined) {
-                    hourlyWtfs[date].hourlyEventCount = result[date].wtfCount
+            if (_.isEmpty(result)) {
+                deferred.resolve(result);
+            } else {
+                var hourlyWtfs = generateHoursForWeek(defaultEventValues);
+                for (date in result) {
+                    if (hourlyWtfs[date] !== undefined) {
+                        hourlyWtfs[date].hourlyEventCount = result[date].wtfCount
+                    }
                 }
+                deferred.resolve(rollupToArray(hourlyWtfs));
             }
-            deferred.resolve(rollupToArray(hourlyWtfs));
         } else {
             deferred.reject(error);
-
         }
     }
-
     requestModule(options, callback);
 
     return deferred.promise;
@@ -855,23 +857,23 @@ var getHourlyHydrationCount = function(streams) {
 
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
-
             var result = JSON.parse(body);
             var result = result[0];
-
-            var hourlyHydration = generateHoursForWeek(defaultEventValues);
-            for (date in result) {
-                if (hourlyHydration[date] !== undefined) {
-                    hourlyHydration[date].hourlyEventCount = result[date].hydrationCount
+            if (_.isEmpty(result)) {
+                deferred.resolve(result);
+            } else {
+                var hourlyHydration = generateHoursForWeek(defaultEventValues);
+                for (date in result) {
+                    if (hourlyHydration[date] !== undefined) {
+                        hourlyHydration[date].hourlyEventCount = result[date].hydrationCount
+                    }
                 }
+                deferred.resolve(rollupToArray(hourlyHydration));
             }
-            deferred.resolve(rollupToArray(hourlyHydration));
         } else {
             deferred.reject(error);
-
         }
     }
-
     requestModule(options, callback);
 
     return deferred.promise;
@@ -923,23 +925,23 @@ var getHourlyCaffeineCount = function(streams) {
 
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
-
             var result = JSON.parse(body);
             var result = result[0];
-
-            var hourlyCaffeine = generateHoursForWeek(defaultEventValues);
-            for (date in result) {
-                if (hourlyCaffeine[date] !== undefined) {
-                    hourlyCaffeine[date].hourlyEventCount = result[date].caffeineCount
+            if (_.isEmpty(result)) {
+                deferred.resolve(result);
+            } else {
+                var hourlyCaffeine = generateHoursForWeek(defaultEventValues);
+                for (date in result) {
+                    if (hourlyCaffeine[date] !== undefined) {
+                        hourlyCaffeine[date].hourlyEventCount = result[date].caffeineCount
+                    }
                 }
+                deferred.resolve(rollupToArray(hourlyCaffeine));
             }
-            deferred.resolve(rollupToArray(hourlyCaffeine));
         } else {
             deferred.reject(error);
-
         }
     }
-
     requestModule(options, callback);
 
     return deferred.promise;
