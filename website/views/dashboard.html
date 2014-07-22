@@ -128,13 +128,6 @@
         <!-- Left sidebar end -->
         <div class="dashboard-wrapper">
             <div class="container">
-                <script>
-                $(window).load(function(){
-                if ($("#showOverlayFlag").attr("showOverlay") == 'true'){
-                $("#noDataSourceMessage").modal("show")
-                }
-                })
-                </script>
                 <div id="showOverlayFlag" showOverlay="{{showOverlay}}"></div>
                 <div class="modal fade" id="noDataSourceMessage" tabindex="-1" role="dialog"
                     aria-labelledby="noDataSourceMessageLabel" aria-hidden="false">
@@ -179,9 +172,18 @@
                             <li>Dashboard</li>
                         </ul>
                     </div>
-                    <div class="col-lg-4 col-md-5 col-sm-12 col-xs-12">
+                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                         <a href="#" data-toggle="modal" data-target=".security-info"><h5>About our use of http</h5></a>
                     </div>
+                    {% if streamLinked == "yes" %}
+                         <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12 alert alert-success alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>Stream Id linked successfully!
+                        </div>
+                    {% elseif streamLinked == "no" %}
+                       <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12 alert alert-danger alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>The Stream Id that you tried to link is incorrect. So it is not linked!
+                        </div>
+                    {% endif %}
                     <div>
                         <div class="modal fade security-info" tabindex="-1" role="dialog">
                             <div class="modal-dialog">

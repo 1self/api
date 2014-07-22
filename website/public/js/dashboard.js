@@ -33,6 +33,11 @@ var validateStreamDetails = function() {
 	return false;
 };
 
-$(document).ready(function() {
-	window.qd.plotGraphs(dashboardGraphs);
+$(window).load(function() {
+	//does not work in document.ready()
+	if ($("#showOverlayFlag").attr("showOverlay") == 'true') {
+		$("#noDataSourceMessage").modal("show")
+	} else {
+		window.qd.plotGraphs(dashboardGraphs);
+	}
 });
