@@ -273,7 +273,7 @@ var qd = function() {
         var hashTags = ['IntelliJ', 'coding'].join(',');
         $('#tweetMyActiveDuration').attr('href', "https://twitter.com/share?url=''&hashtags=" + hashTags + "&text=" + tweetText);
     };
-    result.updateBuildHistoryModelFor = function(encodedUsername) {
+    result.getBuildHistoryModelFor = function(encodedUsername) {
         return $.ajax({
             url: url("mydev"),
             headers: {
@@ -282,7 +282,19 @@ var qd = function() {
             }
         });
     };
-    result.updateActiveEventsModelFor = function(encodedUsername) {
+
+    result.getTheirBuildHistoryModel = function(encodedUsername, forUsername) {
+        return $.ajax({
+            data: {forUsername: forUsername},
+            url: url("mydev"),
+            headers: {
+                "Accept": "application/json",
+                "Authorization": encodedUsername
+            }
+        });
+    };
+
+    result.getActiveEventsModelFor = function(encodedUsername) {
         return $.ajax({
             url: url("myActiveEvents"),
             headers: {
@@ -291,6 +303,18 @@ var qd = function() {
             }
         });
     };
+
+    result.getTheirActiveEventsModel = function(encodedUsername, forUsername) {
+        return $.ajax({
+            data: {forUsername: forUsername},
+            url: url("myActiveEvents"),
+            headers: {
+                "Accept": "application/json",
+                "Authorization": encodedUsername
+            }
+        });
+    };
+
     result.compareBuildHistories = function(myBuildEvents, theirBuildEvents) {
         result.plotBuildHistory(myBuildEvents[0], "#my-build-history");
         result.plotBuildHistory(theirBuildEvents[0], "#their-build-history");
@@ -315,10 +339,10 @@ var qd = function() {
 
     result.plotComparisonGraphs = function(theirUsername) {
         var myUsername = $.cookie("_eun");
-        $.when(result.updateBuildHistoryModelFor(myUsername), result.updateBuildHistoryModelFor(theirUsername))
+        $.when(result.getBuildHistoryModelFor(myUsername), result.getTheirBuildHistoryModel(myUsername, theirUsername))
             .done(handlePlotComparisonGraphsSuccess)
             .fail(failureCallback("#compare-username-errors", "Username doesn't exist!"));
-        $.when(result.updateActiveEventsModelFor(myUsername), result.updateActiveEventsModelFor(theirUsername))
+        $.when(result.getActiveEventsModelFor(myUsername), result.getTheirActiveEventsModel(myUsername, theirUsername))
             .done(result.compareActiveEvents)
             .fail("Error getting active events!");
     };

@@ -97,12 +97,20 @@ app.getQdDb = function() {
     return qdDb;
 }
 
-var getStreamIdForUsername = function(encodedUsername) {
+var getStreamIdForUsername = function(encodedUsername, forUsername) {
     var deferred = q.defer();
-    var byEncodedUsername = {
-        "encodedUsername": encodedUsername
-    };
-    qdDb.collection('users').findOne(byEncodedUsername, {
+    var query = null;
+    if (forUsername !== undefined){
+        query = {
+            "username": forUsername
+        };
+    } else {
+        query = {
+            "encodedUsername": encodedUsername
+        };
+    }
+
+    qdDb.collection('users').findOne(query, {
         "streams": 1
     }, function(err, user) {
         if (err) {
@@ -1128,7 +1136,7 @@ app.get('/stream/:id', function(req, res) {
 
 app.get('/event', function(req, res) {
     var username = req.headers.authorization;
-    getStreamIdForUsername(username)
+    getStreamIdForUsername(username, req.query.forUsername)
         .then(getEventsForStreams)
         .then(function(response) {
             res.send(response)
@@ -1201,7 +1209,7 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
 app.get('/quantifieddev/mydev', function(req, res) {
     var username = req.headers.authorization;
     console.log("Came inside my dev with username : ", username)
-    getStreamIdForUsername(username)
+    getStreamIdForUsername(username, req.query.forUsername)
         .then(getBuildEventsFromPlatform)
         .then(function(response) {
             res.send(response)
@@ -1212,7 +1220,7 @@ app.get('/quantifieddev/mydev', function(req, res) {
 
 app.get('/quantifieddev/mywtf', function(req, res) {
     var username = req.headers.authorization;
-    getStreamIdForUsername(username)
+    getStreamIdForUsername(username, req.query.forUsername)
         .then(getMyWTFsFromPlatform)
         .then(function(response) {
             res.send(response)
@@ -1223,7 +1231,7 @@ app.get('/quantifieddev/mywtf', function(req, res) {
 
 app.get('/quantifieddev/myhydration', function(req, res) {
     var username = req.headers.authorization;
-    getStreamIdForUsername(username)
+    getStreamIdForUsername(username, req.query.forUsername)
         .then(getMyHydrationEventsFromPlatform)
         .then(function(response) {
             res.send(response)
@@ -1234,7 +1242,7 @@ app.get('/quantifieddev/myhydration', function(req, res) {
 
 app.get('/quantifieddev/mycaffeine', function(req, res) {
     var username = req.headers.authorization;
-    getStreamIdForUsername(username)
+    getStreamIdForUsername(username, req.query.forUsername)
         .then(getMyCaffeineEventsFromPlatform)
         .then(function(response) {
             res.send(response)
@@ -1245,7 +1253,7 @@ app.get('/quantifieddev/mycaffeine', function(req, res) {
 
 app.get('/quantifieddev/buildDuration', function(req, res) {
     var username = req.headers.authorization;
-    getStreamIdForUsername(username)
+    getStreamIdForUsername(username, req.query.forUsername)
         .then(getAvgBuildDurationFromPlatform)
         .then(function(response) {
             res.send(response)
@@ -1256,7 +1264,7 @@ app.get('/quantifieddev/buildDuration', function(req, res) {
 
 app.get('/quantifieddev/hourlyBuildCount', function(req, res) {
     var username = req.headers.authorization;
-    getStreamIdForUsername(username)
+    getStreamIdForUsername(username, req.query.forUsername)
         .then(getHourlyBuildCountFromPlatform)
         .then(function(response) {
             res.send(response)
@@ -1267,7 +1275,7 @@ app.get('/quantifieddev/hourlyBuildCount', function(req, res) {
 
 app.get('/quantifieddev/hourlyWtfCount', function(req, res) {
     var username = req.headers.authorization;
-    getStreamIdForUsername(username)
+    getStreamIdForUsername(username, req.query.forUsername)
         .then(getHourlyWtfCount)
         .then(function(response) {
             res.send(response)
@@ -1278,7 +1286,7 @@ app.get('/quantifieddev/hourlyWtfCount', function(req, res) {
 
 app.get('/quantifieddev/hourlyHydrationCount', function(req, res) {
     var username = req.headers.authorization;
-    getStreamIdForUsername(username)
+    getStreamIdForUsername(username, req.query.forUsername)
         .then(getHourlyHydrationCount)
         .then(function(response) {
             res.send(response)
@@ -1289,7 +1297,7 @@ app.get('/quantifieddev/hourlyHydrationCount', function(req, res) {
 
 app.get('/quantifieddev/hourlyCaffeineCount', function(req, res) {
     var username = req.headers.authorization;
-    getStreamIdForUsername(username)
+    getStreamIdForUsername(username, req.query.forUsername)
         .then(getHourlyCaffeineCount)
         .then(function(response) {
             res.send(response)
@@ -1300,7 +1308,7 @@ app.get('/quantifieddev/hourlyCaffeineCount', function(req, res) {
 
 app.get('/quantifieddev/myActiveEvents', function(req, res) {
     var username = req.headers.authorization;
-    getStreamIdForUsername(username)
+    getStreamIdForUsername(username, req.query.forUsername)
         .then(getMyActiveDuration)
         .then(function(response) {
             res.send(response)
