@@ -163,7 +163,9 @@
                                     <label for="streamId">Stream Id</label> <input name="streamId" class="form-control" type="text" id="streamId">
                                     <label for="readToken">Read Token</label> <input name="readToken" class="form-control" type="text" id="readToken">
                                     <br />
-                                    <input type="submit" class="btn btn-success" value="Manually link your Stream Id">
+                                    <label id="stream-error" style="color: red; display:none;">Please enter a Stream Id and Read Token</label>
+                                    <br />
+                                    <input type="submit" class="btn btn-success" value="Manually link your Stream Id" onClick="return validateStreamDetails();">
                                 </form>
                             </div>
                         </div>
