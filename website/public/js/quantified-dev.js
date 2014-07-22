@@ -74,7 +74,7 @@ var qd = function() {
         buildDurationEvents: function() {
             result.plotBuildDurationHistory();
         },
-        myActiveEvents: function() {
+        activeEvents: function() {
             result.plotActiveEvents();
         }
     };
@@ -144,8 +144,8 @@ var qd = function() {
     result.updateHourlyCaffeineHeatMap = function() {
         postAjax("hourlyCaffeineCount", hourlyCaffeineSuccessCallback)
     };
-    var activitySuccessCallback = function(myActiveEvents) {
-        plotGraphWith('myActiveEvents', myActiveEvents, "#active-event-history-parent");
+    var activitySuccessCallback = function(activeEvents) {
+        plotGraphWith('activeEvents', activeEvents, "#active-event-history-parent");
     }
     result.updateActiveEvents = function() {
         postAjax("myActiveEvents", activitySuccessCallback)
