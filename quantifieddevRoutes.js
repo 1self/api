@@ -13,18 +13,6 @@ module.exports = function(app, express) {
         var streamid = req.query.streamId ? req.query.streamId : "";
         var readToken = req.query.readToken ? req.query.readToken : "";
 
-        /* if url contains streamId and readToken {
-         if username and streamid mapping does not exist {
-         insert the mapping in db
-         }
-         fetch all associated streamids for username and render dashboard.
-         }
-         else if username and streamid mapping does not exist {
-         Show overlay
-         } else {
-         fetch all associated streamids for username and render dashboard
-         }
-         */
         var isStreamLinkedToUser = function(streamid, user) {
             return _.where(user.streams, {
                 "streamid": streamid
@@ -137,55 +125,67 @@ module.exports = function(app, express) {
         });
     });
 
+    var isUsernameValid = function(username) {
+        return username.match("^[a-z0-9_]*$")
+    };
+
     app.post("/claimUsername", function(req, res) {
-        var oneselfUsername = req.body.username;
-        encoder.encodeUsername(oneselfUsername, function(error, encUserObj) {
+        var oneselfUsername = (req.body.username).toLowerCase();
+        if (isUsernameValid(oneselfUsername)) {
+            encoder.encodeUsername(oneselfUsername, function(error, encUserObj) {
 
-            var githubUsername = req.body.githubUsername;
+                var githubUsername = req.body.githubUsername;
 
-            var byOneselfUsername = {
-                "username": oneselfUsername
-            };
-            qdDb = app.getQdDb();
-            qdDb.collection('users').findOne(byOneselfUsername, function(err, user) {
-                if (user) {
-                    res.render('claimUsername', {
-                        username: oneselfUsername,
-                        githubUsername: githubUsername,
-                        error: "Username already taken. Please choose another one."
-                    });
-                } else {
-                    var byGithubUsername = {
-                        "githubUser.username": githubUsername
-                    };
+                var byOneselfUsername = {
+                    "username": oneselfUsername
+                };
+                qdDb = app.getQdDb();
+                qdDb.collection('users').findOne(byOneselfUsername, function(err, user) {
+                    if (user) {
+                        res.render('claimUsername', {
+                            username: req.body.username,
+                            githubUsername: githubUsername,
+                            error: "Username already taken. Please choose another one."
+                        });
+                    } else {
+                        var byGithubUsername = {
+                            "githubUser.username": githubUsername
+                        };
 
-                    qdDb.collection('users').update(byGithubUsername, {
-                        $set: {
-                            username: oneselfUsername,
-                            encodedUsername: encUserObj.encodedUsername,
-                            salt: encUserObj.salt
-                        }
-                    }, function(err, user) {
-                        if (err) {
-                            res.status(500).send("Database error");
-
-                        } else {
-                            req.session.username = oneselfUsername;
-                            req.session.encodedUsername = encUserObj.encodedUsername;
-                            req.session.githubUsername = githubUsername;
-
-                            if (req.session.redirectUrl) {
-                                var redirectUrl = req.session.redirectUrl;
-                                delete req.session.redirectUrl;
-                                res.redirect(redirectUrl);
-                            } else {
-                                res.redirect('/dashboard?username=' + oneselfUsername);
+                        qdDb.collection('users').update(byGithubUsername, {
+                            $set: {
+                                username: oneselfUsername,
+                                encodedUsername: encUserObj.encodedUsername,
+                                salt: encUserObj.salt
                             }
-                        }
-                    });
-                }
+                        }, function(err, user) {
+                            if (err) {
+                                res.status(500).send("Database error");
+
+                            } else {
+                                req.session.username = oneselfUsername;
+                                req.session.encodedUsername = encUserObj.encodedUsername;
+                                req.session.githubUsername = githubUsername;
+
+                                if (req.session.redirectUrl) {
+                                    var redirectUrl = req.session.redirectUrl;
+                                    delete req.session.redirectUrl;
+                                    res.redirect(redirectUrl);
+                                } else {
+                                    res.redirect('/dashboard?username=' + oneselfUsername);
+                                }
+                            }
+                        });
+                    }
+                });
             });
-        })
+        } else {
+            res.render('claimUsername', {
+                username: req.body.username,
+                githubUsername: req.body.githubUsername,
+                error: "Username invalid. Username can contain only alphabets, numbers and _"
+            });
+        }
     });
 
     app.get("/compare", sessionManager.requiresSession, function(req, res) {
