@@ -183,7 +183,7 @@ module.exports = function(app, express) {
             res.render('claimUsername', {
                 username: req.body.username,
                 githubUsername: req.body.githubUsername,
-                error: "Username invalid. Username can contain only alphabets, numbers and _"
+                error: "Username invalid. Username can contain only letters, numbers and _"
             });
         }
     });
