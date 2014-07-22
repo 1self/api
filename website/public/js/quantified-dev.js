@@ -13,7 +13,6 @@ var qd = function() {
     };
 
     var postAjax = function(urlParam, successCallback, failureCallback) {
-        console.log("Cookie is eun: ", $.cookie("_eun"))
         $.ajax({
             url: url(urlParam),
             headers: {

@@ -1,6 +1,7 @@
 exports.requiresSession = function (req, res, next) {
     // console.log("in requiresSession: req.session.username: " + req.session.username + " req.session.githubUsername : " + req.session.githubUsername);
-    if (req.session.username) {
+    if (req.session.encodedUsername) {
+        res.cookie('_eun', req.session.encodedUsername);
         next();
     } else if (req.session.githubUsername) {
         if (req.url.indexOf('claimUsername') > -1) {

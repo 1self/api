@@ -10,8 +10,8 @@ module.exports = function(app) {
 
 	var setSession = function(req, res, user) {
 		req.session.username = user.username;
-		req.session.githubUsername = user.githubUser.username;		
-		res.cookie('_eun', user.encodedUsername);
+		req.session.githubUsername = user.githubUser.username;
+        req.session.encodedUsername = user.encodedUsername;
 	}
 
 	var handleGithubCallback = function(req, res) {

@@ -141,9 +141,9 @@ module.exports = function(app, express) {
                         res.status(500).send("Database error");
                     } else {
                         req.session.username = oneselfUsername;
+                        req.session.encodedUsername = encodedUsername;
                         req.session.githubUsername = githubUsername;
-                        console.log("setting cookie with user : ", encodedUsername)
-                        res.cookie('_eun', encodedUsername);
+
                         if (req.session.redirectUrl) {
                             var redirectUrl = req.session.redirectUrl;
                             delete req.session.redirectUrl;
