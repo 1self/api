@@ -18,6 +18,10 @@ x.axis {
 .fixed-height {
 	height:460px;
 }
+.no-data-msg {
+	margin: 25% 30%;
+	text-align: center;
+}
 .top-buffer {
 	margin-top:5px;
 }

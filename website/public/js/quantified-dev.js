@@ -285,7 +285,9 @@ var qd = function() {
 
     result.getTheirBuildHistoryModel = function(encodedUsername, forUsername) {
         return $.ajax({
-            data: {forUsername: forUsername},
+            data: {
+                forUsername: forUsername
+            },
             url: url("mydev"),
             headers: {
                 "Accept": "application/json",
@@ -306,7 +308,9 @@ var qd = function() {
 
     result.getTheirActiveEventsModel = function(encodedUsername, forUsername) {
         return $.ajax({
-            data: {forUsername: forUsername},
+            data: {
+                forUsername: forUsername
+            },
             url: url("myActiveEvents"),
             headers: {
                 "Accept": "application/json",
@@ -314,16 +318,32 @@ var qd = function() {
             }
         });
     };
+    var eventsExist = function(events) {
+        return events.length > 0;
+    };
 
     result.compareBuildHistories = function(myBuildEvents, theirBuildEvents) {
-        result.plotBuildHistoryFor(myBuildEvents[0], "#my-build-history");
-        result.plotBuildHistoryFor(theirBuildEvents[0], "#their-build-history");
-        result.plotComparison("#compare-build-history", myBuildEvents[0], theirBuildEvents[0])
+        if (eventsExist(myBuildEvents[0])) {
+            result.plotBuildHistoryFor(myBuildEvents[0], "#my-build-history");
+        }
+        if (eventsExist(theirBuildEvents[0])) {
+            result.plotBuildHistoryFor(theirBuildEvents[0], "#their-build-history");
+        }
+        if (eventsExist(myBuildEvents[0]) || eventsExist(theirBuildEvents[0])) {
+            result.plotComparison("#compare-build-history", myBuildEvents[0], theirBuildEvents[0])
+        }
     };
     result.compareActiveEvents = function(myActiveEvents, theirActiveEvents) {
-        result.plotActiveEventsFor(myActiveEvents[0], "#my-active-events");
-        result.plotActiveEventsFor(theirActiveEvents[0], "#their-active-events");
-        result.plotComparisonForActiveEvents("#compare-active-events", myActiveEvents[0], theirActiveEvents[0])
+        if (eventsExist(myActiveEvents[0])) {
+            result.plotActiveEventsFor(myActiveEvents[0], "#my-active-events");
+        }
+        if (eventsExist(theirActiveEvents[0])) {
+            result.plotActiveEventsFor(theirActiveEvents[0], "#their-active-events");
+        }
+        if (eventsExist(myActiveEvents[0]) || eventsExist(theirActiveEvents[0])) {
+            result.plotComparisonForActiveEvents("#compare-active-events", myActiveEvents[0], theirActiveEvents[0])
+        }
+
     };
 
     var handlePlotComparisonGraphsSuccess = function(myBuildEvents, theirBuildEvents) {
