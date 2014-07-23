@@ -1,4 +1,4 @@
-window.qd.plotBuildHistory = function(buildHistory, divId) {
+window.qd.plotBuildHistoryFor = function(buildHistory, divId) {
     var s = $(divId).empty();
     s = d3.select(divId);
 

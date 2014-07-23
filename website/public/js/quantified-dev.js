@@ -316,8 +316,8 @@ var qd = function() {
     };
 
     result.compareBuildHistories = function(myBuildEvents, theirBuildEvents) {
-        result.plotBuildHistory(myBuildEvents[0], "#my-build-history");
-        result.plotBuildHistory(theirBuildEvents[0], "#their-build-history");
+        result.plotBuildHistoryFor(myBuildEvents[0], "#my-build-history");
+        result.plotBuildHistoryFor(theirBuildEvents[0], "#their-build-history");
         result.plotComparison("#compare-build-history", myBuildEvents[0], theirBuildEvents[0])
     };
     result.compareActiveEvents = function(myActiveEvents, theirActiveEvents) {
