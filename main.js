@@ -318,7 +318,7 @@ var getBuildEventsFromPlatform = function(streams) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
             if (_.isEmpty(result)) {
-                deferred.resolve(result);
+                deferred.resolve([]);
             } else {
                 var defaultBuildValues = [{
                     key: "passed",
@@ -393,7 +393,7 @@ var getMyWTFsFromPlatform = function(streams) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body)[0];
             if (_.isEmpty(result)) {
-                deferred.resolve(result);
+                deferred.resolve([]);
             } else {
                 var defaultWTFValues = [{
                     key: "wtfCount",
@@ -464,7 +464,7 @@ var getMyHydrationEventsFromPlatform = function(streams) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body)[0];
             if (_.isEmpty(result)) {
-                deferred.resolve(result);
+                deferred.resolve([]);
             } else {
                 var defaultHydrationValues = [{
                     key: "hydrationCount",
@@ -535,7 +535,7 @@ var getMyCaffeineEventsFromPlatform = function(streams) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body)[0];
             if (_.isEmpty(result)) {
-                deferred.resolve(result);
+                deferred.resolve([]);
             } else {
                 var defaultCaffeineValues = [{
                     key: "caffeineCount",
@@ -622,7 +622,7 @@ var getAvgBuildDurationFromPlatform = function(streams) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
             if (_.isEmpty(result)) {
-                deferred.resolve(result);
+                deferred.resolve([]);
             } else {
                 var defaultBuildValues = [{
                     key: "avgBuildDuration",
@@ -730,7 +730,7 @@ var getHourlyBuildCountFromPlatform = function(streams) {
             var result = result[0];
             // console.log("No of hourly builds is : " + JSON.stringify(result));
             if (_.isEmpty(result)) {
-                deferred.resolve(result);
+                deferred.resolve([]);
             } else {
                 var hourlyBuilds = generateHoursForWeek(defaultEventValues);
                 for (date in result) {
@@ -800,7 +800,7 @@ var getHourlyWtfCount = function(streams) {
             var result = JSON.parse(body);
             var result = result[0];
             if (_.isEmpty(result)) {
-                deferred.resolve(result);
+                deferred.resolve([]);
             } else {
                 var hourlyWtfs = generateHoursForWeek(defaultEventValues);
                 for (date in result) {
@@ -868,7 +868,7 @@ var getHourlyHydrationCount = function(streams) {
             var result = JSON.parse(body);
             var result = result[0];
             if (_.isEmpty(result)) {
-                deferred.resolve(result);
+                deferred.resolve([]);
             } else {
                 var hourlyHydration = generateHoursForWeek(defaultEventValues);
                 for (date in result) {
@@ -936,7 +936,7 @@ var getHourlyCaffeineCount = function(streams) {
             var result = JSON.parse(body);
             var result = result[0];
             if (_.isEmpty(result)) {
-                deferred.resolve(result);
+                deferred.resolve([]);
             } else {
                 var hourlyCaffeine = generateHoursForWeek(defaultEventValues);
                 for (date in result) {
@@ -1021,7 +1021,7 @@ var getMyActiveDuration = function(streams) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
             if (_.isEmpty(result)) {
-                deferred.resolve(result);
+                deferred.resolve([]);
             } else {
                 var defaulActiveDurationValues = [{
                     key: "totalActiveDuration",
