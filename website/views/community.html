@@ -19,7 +19,7 @@
     <script src="js/respond.min.js"></script>
     <![endif]-->
   </head>
-  <body class="animated fadeInDown">
+  <body class="animated fadeInDown" ng-app>
     <div class="top-bar">
       <a href="/dashboard" class="logo"><img src="/img/quantified-dev-logo.png" alt="EarthSquare"></a>
       <ul id="mini-nav" class="hidden-xs">
@@ -38,54 +38,13 @@
           </li>
         </ul>
       </div>
-      <aside id="sidebar">
-        <div class="custom-Menu">
-          <h3  class="menu-side">Menu</h3>
+     <aside id="sidebar">
+        <div  ng-include=" 'templates/_menu.html' ">
         </div>
-        <div id='menu'>
-          <ul>
-            <li class="highlight">
-              <a href='dashboard'>
-                <i class="icon-dashboard"></i>
-                <span>Dashboard</span>
-              </a>
-            </li>
-            <li class="highlight">
-              <a href='compare'>
-                <i class="glyphicon glyphicon-stats"></i>
-                <span>Comparison</span>
-              </a>
-            </li>
-            <li class="highlight">
-              <a href='community'>
-                <i class="glyphicon glyphicon-globe"></i>
-                <span>Community</span>
-                <em class="arrow-active"></em>
-              </a>
-            </li>
-            <li class="highlight">
-              <a href='http://quantifieddev.org/#download' target="_blank">
-                <i class="glyphicon glyphicon-save"></i>
-                <span>Get Plugins</span>
-              </a>
-            </li>
-            <li class="highlight">
-              <a href='http://blog.quantifieddev.org' target="_blank">
-                <i class="glyphicon glyphicon-edit"></i>
-                <span>Blog</span>
-              </a>
-            </li>
-            <li class="highlight">
-              <a href='http://blog.quantifieddev.org/ask' target="_blank">
-                <i class="glyphicon glyphicon-comment"></i>
-                <span>Ask Us Anything</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </aside>
+     </aside>
       <div class="dashboard-wrapper">
         <div class="container">
+          <div ng-include=" '/templates/_link_datasource.html' "></div>
           <div class="row page-title">
             <div class="col-lg-9 col-md-8 col-sm-9 col-xs-12">
               <h2>Community</h2>
@@ -203,6 +162,8 @@
       </div>
       <script src="/js/jquery.js"></script>
       <script src="/js/bootstrap.min.js"></script>
+      <script src="/js/bootstrap-modal.js"></script>
+      <script src="/js/bootstrap-modalmanager.js"></script>
       <script src="/js/jquery-ui-v1.10.3.js"></script>
       <script src="/js/sparkline.js"></script>
       <script src="/js/jquery.datatables.js"></script>
@@ -218,7 +179,10 @@
       <script src="http://d3js.org/topojson.v1.min.js"></script>
       <script src="http://d3js.org/queue.v1.min.js"></script>
       <script src="/js/underscore-min.js"></script>
+      <script src="/js/angular.min.js"></script>
       <script src="/js/live-world.js"></script>
       <script src="/js/live-country.js"></script>
+      <script src="/js/link-datasource.js"></script>
+
     </body>
   </html>
