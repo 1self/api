@@ -116,13 +116,20 @@ window.qd.plotComparisonForActiveEvents = function(divId, myActiveEvents, theirA
 	};
 	var myActiveEvents = _groupActiveEvents(myActiveEvents);
 	myActiveEvents = myActiveEvents[0];
-	x.domain(myActiveEvents.map(function(d) {
-		return d.x;
-	}));
-	xLinear.domain([0, myActiveEvents.length]);
+	if (myActiveEvents.length > 0) {
+		x.domain(myActiveEvents.map(function(d) {
+			return d.x;
+		}));
+		xLinear.domain([0, myActiveEvents.length]);
+	}
 	var theirActiveEvents = _groupActiveEvents(theirActiveEvents);
 	theirActiveEvents = theirActiveEvents[0];
-
+	if (theirActiveEvents.length > 0) {
+		x.domain(theirActiveEvents.map(function(d) {
+			return d.x;
+		}));
+		xLinear.domain([0, theirActiveEvents.length]);
+	}
 	y.domain([0, _yMax([myActiveEvents, theirActiveEvents])]);
 
 	var _createLegends = function(legendConfig) {
@@ -167,11 +174,13 @@ window.qd.plotComparisonForActiveEvents = function(divId, myActiveEvents, theirA
 	_createAxesAndLabels();
 
 	//My Active Events:
-	_plotLineGraph("#2e4174", false, myActiveEvents);
-
+	if (myActiveEvents.length > 0) {
+		_plotLineGraph("#2e4174", false, myActiveEvents);
+	}
 	//Their Active Events:
-	_plotLineGraph("#F2555C", true, theirActiveEvents);
-
+	if (theirActiveEvents.length > 0) {
+		_plotLineGraph("#F2555C", true, theirActiveEvents);
+	}
 	_createLegends([
 		["My Active", "#2e4174"],
 		["Their Active", "#F2555C"]

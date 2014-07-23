@@ -117,15 +117,23 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 	};
 	var myBuildEventsGroupByStatus = _groupByStatus(myBuildEvents);
 	var myFailedBuildEvents = myBuildEventsGroupByStatus[0];
-
-	x.domain(myFailedBuildEvents.map(function(d) {
-		return d.x;
-	}));
-	xLinear.domain([0, myFailedBuildEvents.length]);
+	if (myFailedBuildEvents.length > 0) {
+		x.domain(myFailedBuildEvents.map(function(d) {
+			return d.x;
+		}));
+		xLinear.domain([0, myFailedBuildEvents.length]);
+	}
 	var myPassedBuildEvents = myBuildEventsGroupByStatus[1];
 	var withBuildEventsGroupByStatus = _groupByStatus(withBuildEvents);
 	var withFailedBuildEvents = withBuildEventsGroupByStatus[0];
 	var withPassedBuildEvents = withBuildEventsGroupByStatus[1];
+	if (withFailedBuildEvents.length > 0) {
+		x.domain(withFailedBuildEvents.map(function(d) {
+			return d.x;
+		}));
+		xLinear.domain([0, withFailedBuildEvents.length]);
+	}
+
 	y.domain([0, _yMax([myPassedBuildEvents, myFailedBuildEvents, withPassedBuildEvents, withFailedBuildEvents])]);
 
 	var _createLegends = function(legendConfig) {
@@ -169,18 +177,22 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 
 	_createAxesAndLabels();
 
-	//My Successful Builds:
-	_plotLineGraph("#2e4174", false, myPassedBuildEvents);
-
-	//My Failed Builds:
-	_plotLineGraph("#ED1C25", false, myFailedBuildEvents);
-
-	//With Successful Builds:
-	_plotLineGraph("#73b9e6", true, withPassedBuildEvents);
-
-	//With Failed Builds:
-	_plotLineGraph("#F2555C", true, withFailedBuildEvents);
-
+	if (myPassedBuildEvents.length > 0) {
+		//My Successful Builds:
+		_plotLineGraph("#2e4174", false, myPassedBuildEvents);
+	}
+	if (myFailedBuildEvents.length > 0) {
+		//My Failed Builds:
+		_plotLineGraph("#ED1C25", false, myFailedBuildEvents);
+	}
+	if (withPassedBuildEvents.length > 0) {
+		//With Successful Builds:
+		_plotLineGraph("#73b9e6", true, withPassedBuildEvents);
+	}
+	if (withFailedBuildEvents.length > 0) {
+		//With Failed Builds:
+		_plotLineGraph("#F2555C", true, withFailedBuildEvents);
+	}
 	_createLegends([
 		["My Passed", "#2e4174"],
 		["My Failed", "#ED1C25"],
