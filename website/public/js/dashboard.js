@@ -21,6 +21,9 @@ $("#builds-x").ready(function() {
     });
 });
 
+$(window).resize(function() {
+    window.qd.plotGraphs(dashboardGraphs);
+});
 
 $(window).load(function() {
     //does not work in document.ready()
@@ -29,9 +32,4 @@ $(window).load(function() {
     } else {
         window.qd.plotGraphs(dashboardGraphs);
     }
-
-});
-$(window).resize(function() {
-    window.qd.plotGraphs(dashboardGraphs);
-
 });
