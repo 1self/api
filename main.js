@@ -283,6 +283,7 @@ var getBuildEventsFromPlatform = function(streams) {
     var noId = {
         _id: 0
     };
+    var lastMonth = moment().subtract('months', 1);
     var groupQuery = {
         "$groupBy": {
             "fields": [{
@@ -290,7 +291,18 @@ var getBuildEventsFromPlatform = function(streams) {
                 "format": "MM/dd/yyyy"
             }],
             "filterSpec": {
-                "payload.streamid": streamids,
+                "payload.streamid": {
+                    "$operator": {
+                        "in": streamids
+                    }
+                },
+                "payload.serverDateTime": {
+                    "$operator": {
+                        ">": {
+                            "$date": moment(lastMonth).format()
+                        }
+                    }
+                },
                 "payload.actionTags": "Finish"
             },
             "projectionSpec": {
