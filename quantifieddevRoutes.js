@@ -119,10 +119,17 @@ module.exports = function(app, express) {
     });
 
     app.get("/claimUsername", sessionManager.requiresSession, function(req, res) {
-        res.render('claimUsername', {
-            username: req.query.username,
-            githubUsername: req.query.username
-        });
+        if (req.query.username) {
+            res.render('claimUsername', {
+                username: req.query.username,
+                githubUsername: req.query.username
+            });
+        } else {
+            res.render('claimUsername', {
+                username: req.session.username,
+                githubUsername: req.session.githubUsername
+            });
+        }
     });
 
     var isUsernameValid = function(username) {
@@ -172,7 +179,7 @@ module.exports = function(app, express) {
                                     delete req.session.redirectUrl;
                                     res.redirect(redirectUrl);
                                 } else {
-                                    res.redirect('/dashboard?username=' + oneselfUsername);
+                                    res.redirect('/dashboard');
                                 }
                             }
                         });

@@ -102,11 +102,13 @@ var validEncodedUsername = function(encodedUsername, forUsername) {
     var encodedUsernameExists = {
         "encodedUsername": encodedUsername
     };
+
     qdDb.collection('users').findOne(encodedUsernameExists, function(err, user) {
         if (err) {
             deferred.reject(err);
         } else {
             if (user) {
+                console.log("in validEncodedUsername : user " + JSON.stringify(user));
                 var usernames = [encodedUsername, forUsername];
                 deferred.resolve(usernames);
             } else {
@@ -137,6 +139,7 @@ var getStreamIdForUsername = function(usernames) {
         if (err) {
             deferred.reject(err);
         } else {
+            console.log("getStreamIdForUsername user : ", user);
             if (user && user.streams) {
                 deferred.resolve(user.streams);
             } else {
@@ -279,6 +282,7 @@ var getBuildEventsFromPlatform = function(streams) {
     var streamids = _.map(streams, function(stream) {
         return stream.streamid;
     });
+    console.log("getBuildEventsFromPlatform streams: " + streamids);
     var deferred = q.defer();
     var noId = {
         _id: 0
