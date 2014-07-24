@@ -35,6 +35,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 			.domain([0, maximumEventValue])
 			.range(colors);
 		var createSvg = function(width, height) {
+			d3.select(divId).selectAll("svg").remove();
 			return d3.select(divId).append("svg")
 				.attr("width", width)
 				.attr("height", height)
@@ -102,8 +103,9 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 				.enter().append("g")
 				.attr("class", "legend");
 		};
-		
-		if ($(window).width() < 500) {
+
+		if ($(window).width() < 480) {
+			alert("Window less than 500")
 			var svgWidth = 320;
 			var svgHeight = 450;
 			gridDaySize = Math.floor(190 / 7);
@@ -143,7 +145,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 					return legendElementWidth * i;
 				})
 				.attr("x", legendTextXaxis);
-		} else {
+		} else  {
 			var svg = createSvg(width + 50, height + 50);
 			var dayLabels = createDayLabels(svg, "x", "y", 0, gridSize, "translate(-6," + gridSize / 1.5 + ")");
 			var timeLabels = createTimeLabels(svg, "y", "x", 0, gridSize, "translate(" + gridSize / 2.5 + ", -6)");
@@ -205,8 +207,3 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 	_generateHeatMap(buildEventData);
 
 };
-$(window).resize(function() {
-	//if (($(window).width() < 500 && $(window).width() > 499) || ($(window).width() > 500 && $(window).width() < 501) ) {
-	location.reload();
-	//}
-});
