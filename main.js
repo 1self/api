@@ -777,7 +777,11 @@ var getHourlyBuildCountFromPlatform = function(streams) {
                 "format": "e HH"
             }],
             "filterSpec": {
-                "payload.streamid": streamids,
+                "payload.streamid": {
+                    "$operator": {
+                        "in": streamids
+                    }
+                },
                 "payload.actionTags": "Finish"
             },
             "projectionSpec": {
@@ -849,7 +853,11 @@ var getHourlyWtfCount = function(streams) {
                 "format": "e HH"
             }],
             "filterSpec": {
-                "payload.streamid": streamids,
+                "payload.streamid": {
+                    "$operator": {
+                        "in": streamids
+                    }
+                },
                 "payload.actionTags": "wtf"
             },
             "projectionSpec": {
@@ -916,7 +924,11 @@ var getHourlyHydrationCount = function(streams) {
                 "format": "e HH"
             }],
             "filterSpec": {
-                "payload.streamid": streamids,
+                "payload.streamid": {
+                    "$operator": {
+                        "in": streamids
+                    }
+                },
                 "payload.actionTags": "drink",
                 "payload.objectTags": "Water"
             },
@@ -984,7 +996,11 @@ var getHourlyCaffeineCount = function(streams) {
                 "format": "e HH"
             }],
             "filterSpec": {
-                "payload.streamid": streamids,
+                "payload.streamid": {
+                    "$operator": {
+                        "in": streamids
+                    }
+                },
                 "payload.actionTags": "drink",
                 "payload.objectTags": "Coffee"
             },
@@ -1046,7 +1062,7 @@ var getMyActiveDuration = function(streams) {
     });
     var deferred = q.defer();
     var lastMonth = moment().subtract('months', 1);
-    
+
     var groupQuery = {
         "$groupBy": {
             "fields": [{
@@ -1054,7 +1070,7 @@ var getMyActiveDuration = function(streams) {
                 "format": "MM/dd/yyyy"
             }],
             "filterSpec": {
-                 "payload.streamid": {
+                "payload.streamid": {
                     "$operator": {
                         "in": streamids
                     }
