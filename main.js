@@ -383,6 +383,8 @@ var getMyWTFsFromPlatform = function(streams) {
         return stream.streamid;
     });
     var deferred = q.defer();
+    var lastMonth = moment().subtract('months', 1);
+
     var groupQuery = {
         "$groupBy": {
             "fields": [{
@@ -390,7 +392,18 @@ var getMyWTFsFromPlatform = function(streams) {
                 "format": "MM/dd/yyyy"
             }],
             "filterSpec": {
-                "payload.streamid": streamids,
+                "payload.streamid": {
+                    "$operator": {
+                        "in": streamids
+                    }
+                },
+                "payload.serverDateTime": {
+                    "$operator": {
+                        ">": {
+                            "$date": moment(lastMonth).format()
+                        }
+                    }
+                },
                 "payload.actionTags": "wtf"
             },
             "projectionSpec": {
@@ -453,6 +466,8 @@ var getMyHydrationEventsFromPlatform = function(streams) {
         return stream.streamid;
     });
     var deferred = q.defer();
+    var lastMonth = moment().subtract('months', 1);
+
     var groupQuery = {
         "$groupBy": {
             "fields": [{
@@ -460,7 +475,18 @@ var getMyHydrationEventsFromPlatform = function(streams) {
                 "format": "MM/dd/yyyy"
             }],
             "filterSpec": {
-                "payload.streamid": streamids,
+                "payload.streamid": {
+                    "$operator": {
+                        "in": streamids
+                    }
+                },
+                "payload.serverDateTime": {
+                    "$operator": {
+                        ">": {
+                            "$date": moment(lastMonth).format()
+                        }
+                    }
+                },
                 "payload.actionTags": "drink",
                 "payload.objectTags": "Water"
             },
@@ -524,6 +550,8 @@ var getMyCaffeineEventsFromPlatform = function(streams) {
         return stream.streamid;
     });
     var deferred = q.defer();
+    var lastMonth = moment().subtract('months', 1);
+
     var groupQuery = {
         "$groupBy": {
             "fields": [{
@@ -531,7 +559,18 @@ var getMyCaffeineEventsFromPlatform = function(streams) {
                 "format": "MM/dd/yyyy"
             }],
             "filterSpec": {
-                "payload.streamid": streamids,
+                "payload.streamid": {
+                    "$operator": {
+                        "in": streamids
+                    }
+                },
+                "payload.serverDateTime": {
+                    "$operator": {
+                        ">": {
+                            "$date": moment(lastMonth).format()
+                        }
+                    }
+                },
                 "payload.actionTags": "drink",
                 "payload.objectTags": "Coffee"
             },
@@ -595,6 +634,8 @@ var getAvgBuildDurationFromPlatform = function(streams) {
         return stream.streamid;
     });
     var deferred = q.defer();
+    var lastMonth = moment().subtract('months', 1);
+
     var groupQuery = {
         "$groupBy": {
             "fields": [{
@@ -602,7 +643,18 @@ var getAvgBuildDurationFromPlatform = function(streams) {
                 "format": "MM/dd/yyyy"
             }],
             "filterSpec": {
-                "payload.streamid": streamids,
+                "payload.streamid": {
+                    "$operator": {
+                        "in": streamids
+                    }
+                },
+                "payload.serverDateTime": {
+                    "$operator": {
+                        ">": {
+                            "$date": moment(lastMonth).format()
+                        }
+                    }
+                },
                 "payload.actionTags": "Finish"
             },
             "projectionSpec": {
@@ -993,6 +1045,8 @@ var getMyActiveDuration = function(streams) {
         return stream.streamid;
     });
     var deferred = q.defer();
+    var lastMonth = moment().subtract('months', 1);
+    
     var groupQuery = {
         "$groupBy": {
             "fields": [{
@@ -1000,7 +1054,18 @@ var getMyActiveDuration = function(streams) {
                 "format": "MM/dd/yyyy"
             }],
             "filterSpec": {
-                "payload.streamid": streamids,
+                 "payload.streamid": {
+                    "$operator": {
+                        "in": streamids
+                    }
+                },
+                "payload.serverDateTime": {
+                    "$operator": {
+                        ">": {
+                            "$date": moment(lastMonth).format()
+                        }
+                    }
+                },
                 "payload.actionTags": "Develop",
                 "payload.properties.isUserActive": true
             },
