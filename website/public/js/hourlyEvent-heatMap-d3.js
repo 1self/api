@@ -105,7 +105,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
         };
 
         if ($(window).width() < 480) {
-            var svgWidth = 320;
+            var svgWidth = 300;
             var svgHeight = 450;
             gridDaySize = Math.floor(190 / 7);
             gridTimeSize = Math.floor(400 / 24);
