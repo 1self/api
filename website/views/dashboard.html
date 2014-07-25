@@ -73,14 +73,15 @@
         <!-- Top Bar End -->
         <!-- Left sidebar start -->
         <aside id="sidebar">
-            <div  ng-include=" 'templates/_menu.html' ">
+            <div>
+                {% include "./_menu.html" %}
             </div>
         </aside>
         <!-- Left sidebar end -->
         <div class="dashboard-wrapper">
             <div class="container">
                 <div id="showOverlayFlag" showOverlay="{{showOverlay}}"></div>
-                <div ng-include=" '/templates/_link_datasource.html' "></div>
+                <div>{% include "./_link_datasource.html" %}</div>
                 <div class="row page-title">
                     <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
                         <h2>Dashboard</h2>
