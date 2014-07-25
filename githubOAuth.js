@@ -8,10 +8,11 @@ var CONTEXT_URI = process.env.CONTEXT_URI;
 
 module.exports = function(app) {
 
-	var setSession = function(req, res, user) {
+	var setSession = function(req, user) {
 		req.session.username = user.username;
-		req.session.githubUsername = user.githubUser.username;
         req.session.encodedUsername = user.encodedUsername;
+		req.session.githubUsername = user.githubUser.username;    
+        req.session.avatarUrl = user.githubUser._json.avatar_url;	
 	}
 
 	var handleGithubCallback = function(req, res) {
@@ -49,6 +50,7 @@ module.exports = function(app) {
 							res.status(500).send("Database error");
 						} else {
 							req.session.githubUsername = githubUser.username;
+							req.session.avatarUrl = githubUser._json.avatar_url;
 							console.log("github login done, redirecting to claimUsername " + req.session.githubUsername);
 							redirect(githubUser, "/claimUsername");
 						}
@@ -66,7 +68,7 @@ module.exports = function(app) {
 			if (isNewUser(user)) {
 				insertGithubProfileInDb();
 			} else if (isUserRegisteredWithOneself(user)) {
-				setSession(req, res, user);
+				setSession(req, user);
 				if (req.session.redirectUrl) {
 					var redirectUrl = req.session.redirectUrl;
 					delete req.session.redirectUrl;
@@ -76,6 +78,7 @@ module.exports = function(app) {
 				}
 			} else {
 				req.session.githubUsername = user.githubUser.username;
+				req.session.avatarUrl = user.githubUser._json.avatar_url;
 				redirect(githubUser, "/claimUsername");
 			}
 		});

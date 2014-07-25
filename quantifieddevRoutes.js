@@ -98,20 +98,32 @@ module.exports = function(app, express) {
                 .then(decideWhatToDoWithStream)
                 .then(function() {
                     res.render('dashboard', {
-                        streamLinked: "yes"
+                        streamLinked: "yes",
+                        username: req.session.username,
+                        avatarUrl: req.session.avatarUrl
                     });
                 }).catch(function(error) {
                     res.render('dashboard', {
-                        streamLinked: "no"
+                        streamLinked: "no",
+                        username: req.session.username,
+                        avatarUrl: req.session.avatarUrl                        
                     });
                 });
         } else {
+
+            console.log("avatarUrl : " + req.session.avatarUrl);
+
             getStreamsForUser().then(function(user) {
                 if (user.streams) {
-                    res.render('dashboard');
+                    res.render('dashboard', {
+                        username: req.session.username,
+                        avatarUrl: req.session.avatarUrl
+                    });
                 } else {
                     res.render('dashboard', {
-                        showOverlay: true
+                        showOverlay: true,
+                        username: req.session.username,
+                        avatarUrl: req.session.avatarUrl                        
                     });
                 }
             })
@@ -173,6 +185,8 @@ module.exports = function(app, express) {
                                 req.session.username = oneselfUsername;
                                 req.session.encodedUsername = encUserObj.encodedUsername;
                                 req.session.githubUsername = githubUsername;
+                                req.session.githubAvatar = user._json.avatar_url;    
+
 
                                 if (req.session.redirectUrl) {
                                     var redirectUrl = req.session.redirectUrl;
@@ -196,7 +210,10 @@ module.exports = function(app, express) {
     });
 
     app.get("/compare", sessionManager.requiresSession, function(req, res) {
-        res.render('compare');
+        res.render('compare', {
+            username: req.session.username,                   
+            avatarUrl: req.session.avatarUrl
+        });
     });
 
     var getFilterValuesFrom = function(req) {
@@ -205,6 +222,8 @@ module.exports = function(app, express) {
         var selectedEvent = req.query.event ? req.query.event : "all";
         var selectedDuration = req.query.duration ? req.query.duration : lastHour;
         var filterValues = {
+            username: req.session.username,                   
+            avatarUrl: req.session.avatarUrl,
             globe: {
                 lang: selectedLanguage,
                 duration: selectedDuration,

@@ -50,38 +50,20 @@
         </script>
     </head>
     <body class="animated fadeInDown" ng-app>
-        <div class="top-bar">
-            <a href="/dashboard" class="logo"><img src="/img/quantified-dev-logo.png" alt="QuantifiedDev"></a>
-            <ul id="mini-nav" class="hidden-xs">
-                <li class="arrow-box list-box">
-                    <a href="#">
-                        <i class="icon-reorder text-warning"></i>
-                    </a>
-                </li>
-            </ul>
-            <!-- Mini Nav Left End -->
-            <ul id="mini-nav-right">
-                <li class="list-box hidden-lg hidden-md hidden-sm" id="mob-nav">
-                    <a href="#">
-                        <span>Menu</span>
-                        <i class="icon-reorder"></i>
-                    </a>
-                </li>
-            </ul>
-            <!-- Mini Nav Right End -->
-        </div>
+        {% include "./templates/_qd_header.html" %}
+
         <!-- Top Bar End -->
         <!-- Left sidebar start -->
         <aside id="sidebar">
             <div>
-                {% include "./_menu.html" %}
+                {% include "./templates/_menu.html" %}
             </div>
         </aside>
         <!-- Left sidebar end -->
         <div class="dashboard-wrapper">
             <div class="container">
                 <div id="showOverlayFlag" showOverlay="{{showOverlay}}"></div>
-                <div>{% include "./_link_datasource.html" %}</div>
+                <div>{% include "./templates/_link_datasource.html" %}</div>
                 <div class="row page-title">
                     <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
                         <h2>Dashboard</h2>
