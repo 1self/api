@@ -177,7 +177,7 @@ module.exports = function(app, express) {
                                 encodedUsername: encUserObj.encodedUsername,
                                 salt: encUserObj.salt
                             }
-                        }, function(err, user) {
+                        }, function(err, documentsUpdated) {
                             if (err) {
                                 res.status(500).send("Database error");
 
@@ -185,8 +185,7 @@ module.exports = function(app, express) {
                                 req.session.username = oneselfUsername;
                                 req.session.encodedUsername = encUserObj.encodedUsername;
                                 req.session.githubUsername = githubUsername;
-                                req.session.githubAvatar = user._json.avatar_url;    
-
+                                req.session.githubAvatar = req.user.profile._json.avatar_url;    
 
                                 if (req.session.redirectUrl) {
                                     var redirectUrl = req.session.redirectUrl;
