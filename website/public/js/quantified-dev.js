@@ -269,9 +269,10 @@ var qd = function() {
         totalActiveDuration = totalActiveDuration.slice(totalActiveDuration.length - sparkbarDataForDays, totalActiveDuration.length);
         console.log("sparking totalActiveDuration:", totalActiveDuration)
         var sparkBar = window.oneSelf.toSparkBars(totalActiveDuration);
-        var tweetText = sparkBar + " my programming activity over the last 2 weeks. See yours at quantifieddev.org";
-        var hashTags = ['IntelliJ', 'coding'].join(',');
-        $('#tweetMyActiveDuration').attr('href', "https://twitter.com/share?url=''&hashtags=" + hashTags + "&text=" + tweetText);
+        var tweetText = sparkBar + " my+%23programming+activity+over+the+last+2+weeks.+See+yours+at+quantifieddev.org";
+        var hashTags = 'coding';
+        var url = "https://twitter.com/intent/tweet?text=" + tweetText + "&hashtags=" + hashTags;
+        $('#tweetMyActiveDuration').attr('href', url);
     };
     result.getBuildHistoryModelFor = function(encodedUsername) {
         return $.ajax({
