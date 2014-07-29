@@ -9,6 +9,10 @@ module.exports = function(app, express) {
         res.render('signup');
     });
 
+    app.get("/community/globe", function(req, res) {
+        res.render('embeddableGlobe');
+    });
+
     app.get("/dashboard", sessionManager.requiresSession, function(req, res) {
         var streamid = req.query.streamId ? req.query.streamId : "";
         var readToken = req.query.readToken ? req.query.readToken : "";
@@ -106,7 +110,7 @@ module.exports = function(app, express) {
                     res.render('dashboard', {
                         streamLinked: "no",
                         username: req.session.username,
-                        avatarUrl: req.session.avatarUrl                        
+                        avatarUrl: req.session.avatarUrl
                     });
                 });
         } else {
@@ -123,7 +127,7 @@ module.exports = function(app, express) {
                     res.render('dashboard', {
                         showOverlay: true,
                         username: req.session.username,
-                        avatarUrl: req.session.avatarUrl                        
+                        avatarUrl: req.session.avatarUrl
                     });
                 }
             })
@@ -185,7 +189,7 @@ module.exports = function(app, express) {
                                 req.session.username = oneselfUsername;
                                 req.session.encodedUsername = encUserObj.encodedUsername;
                                 req.session.githubUsername = githubUsername;
-                                req.session.githubAvatar = req.user.profile._json.avatar_url;    
+                                req.session.githubAvatar = req.user.profile._json.avatar_url;
 
                                 if (req.session.redirectUrl) {
                                     var redirectUrl = req.session.redirectUrl;
@@ -210,7 +214,7 @@ module.exports = function(app, express) {
 
     app.get("/compare", sessionManager.requiresSession, function(req, res) {
         res.render('compare', {
-            username: req.session.username,                   
+            username: req.session.username,
             avatarUrl: req.session.avatarUrl
         });
     });
@@ -221,7 +225,7 @@ module.exports = function(app, express) {
         var selectedEvent = req.query.event ? req.query.event : "all";
         var selectedDuration = req.query.duration ? req.query.duration : lastHour;
         var filterValues = {
-            username: req.session.username,                   
+            username: req.session.username,
             avatarUrl: req.session.avatarUrl,
             globe: {
                 lang: selectedLanguage,

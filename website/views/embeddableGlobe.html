@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Quantified Dev Community Globe</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1">
+    <meta name="description" content="Quantified Dev Community View" />
+    <meta name="keywords" content="Admin, Dashboard, Bootstrap3, Sass, transform, CSS3, HTML5, Web design, UI Design, Responsive Dashboard, Responsive Admin, Admin Theme, Best Admin UI, Bootstrap Theme, Wrapbootstrap, Bootstrap" />
+    <meta name="author" content="Bootstrap Gallery" />
+    <link rel="shortcut icon" href="/img/quantified-dev-favicon.ico">
+    <link href="/css/import.css" rel="stylesheet" media="screen">
+    <link href="/fonts/font-awesome.css" rel="stylesheet">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="fonts/font-awesome.css">
+    <![endif]-->
+    <!-- HTML5 shiv and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+    <script src="js/respond.min.js"></script>
+    <![endif]-->
+    
+  </head>
+  <body>
+    <div class="row">
+      <div class="col-lg-6 col-md-6 col-sm-6 info-tiles tiles-secondary">
+        <div class="tiles-heading">
+          <div style="margin-bottom: 10px;">Worldwide Events</div>
+          <div class="row" style="margin-bottom: 10px;">
+            <div class="col-lg-offset-3 col-lg-2 col-md-2 col-sm-4">
+              Event:
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-8">
+              <select id="world-event-select" class="form-control">
+                <option value='all'{% if globe.event == "all" %}selected="true"{% endif %}>All</option>
+                <option value='Build' {% if globe.event == "Build" %}selected="true"{% endif %}>Builds</option>
+                <option value='wtf' {% if globe.event == "wtf" %}selected="true"{% endif %}>WTFs</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-2 col-md-2 col-sm-4">
+              Since:
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-8">
+              <select id="world-time-select" class="form-control">
+                <option value='1'{% if globe.duration == 1 %}selected="true"{% endif %}>Last Minute</option>
+                <option value='60'{% if globe.duration == 60 %}selected="true"{% endif %}>Last Hour</option>
+                <option value='1440'{% if globe.duration == 1440 %}selected="true"{% endif %}>Last Day</option>
+                <option value='10080' {% if globe.duration == 10080 %}selected="true"{% endif %}>Last Week</option>
+              </select>
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-2">
+              For:
+            </div>
+            <div class="col-lg-5 col-md-5 col-sm-10">
+              <select id="world-language-select" class="form-control">
+                <option value="all" {% if globe.lang == "all" %}selected="true"{% endif %}>All Languages</option>
+                <option value="java" {% if globe.lang == "java" %}selected="true"{% endif %} >Java</option>
+                <option value="groovy" {% if globe.lang == "groovy" %}selected="true"{% endif %}>Groovy</option>
+                <option value="scala" {% if globe.lang == "scala" %}selected="true"{% endif %}>Scala</option>
+                <option value="c#" {% if globe.lang == "c#" %}selected="true"{% endif %}>C#</option>
+                <option value="javascript" {% if globe.lang == "javascript" %}selected="true"{% endif %}>Javascript</option>
+                <option value="python" {% if globe.lang == "python" %}selected="true"{% endif %}>Python</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="tiles-body">
+          <div class="pull-right number"><div id='live-world'></div></div>
+        </div>
+        <div class="tiles-footer">
+          <span class="inline-sparkline pull-right" id="visits"></span>
+        </div>
+      </div>
+    </div>
+    <script src="/js/jquery.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="http://d3js.org/d3.geo.projection.v0.min.js"></script>
+    <script src="http://d3js.org/topojson.v1.min.js"></script>
+    <script src="/js/underscore-min.js"></script>
+    <script src="/js/live-world.js"></script>
+  </body>
+</html>

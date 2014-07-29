@@ -20,128 +20,80 @@
     <![endif]-->
   </head>
   <body class="animated fadeInDown" ng-app>
-     {% include "./templates/_qd_header.html" %}
-     <aside id="sidebar">
-        <div>
+    {% include "./templates/_qd_header.html" %}
+    <aside id="sidebar">
+      <div>
         {% include "./templates/_menu.html" %}
+      </div>
+    </aside>
+    <div class="dashboard-wrapper">
+      <div class="container">
+        <div>
+          {% include "./templates/_link_datasource.html" %}
         </div>
-     </aside>
-      <div class="dashboard-wrapper">
-        <div class="container">
-          <div>
-            {% include "./templates/_link_datasource.html" %}
+        <div class="row page-title">
+          <div class="col-lg-9 col-md-8 col-sm-9 col-xs-12">
+            <h2>Community</h2>
+            <ul class="breadcrumb">
+              <li>Home</li>
+              <li>Community</li>
+            </ul>
           </div>
-          <div class="row page-title">
-            <div class="col-lg-9 col-md-8 col-sm-9 col-xs-12">
-              <h2>Community</h2>
-              <ul class="breadcrumb">
-                <li>Home</li>
-                <li>Community</li>
-              </ul>
-            </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-6 col-md-6 col-sm-12 info-tiles tiles-secondary">
+            <embed src="http://localhost:5000/community/globe" style="height:400px; width:98% "></embed>
           </div>
-          <div class="row">
-            <div class="col-lg-6 col-md-6 col-sm-12 info-tiles tiles-secondary">
-              <div class="tiles-heading">
-                <div style="margin-bottom: 10px;">Worldwide Events</div>
-                <div class="row" style="margin-bottom: 10px;">
-                  <div class="col-lg-offset-3 col-lg-2 col-md-2 col-sm-4">
-                    Event:
-                  </div>
-                  <div class="col-lg-3 col-md-3 col-sm-8">
-                    <select id="world-event-select" class="form-control">
-                      <option value='all'{% if globe.event == "all" %}selected="true"{% endif %}>All</option>
-                      <option value='Build' {% if globe.event == "Build" %}selected="true"{% endif %}>Builds</option>
-                      <option value='wtf' {% if globe.event == "wtf" %}selected="true"{% endif %}>WTFs</option>
-                    </select>
-                  </div>
+          <div class="col-lg-6 col-md-6 col-sm-12 info-tiles tiles-secondary">
+            <div class="tiles-heading">
+              <div id="country" style="margin-bottom: 10px;">Your Country's Events</div>
+              <div class="row" style="margin-bottom: 10px;">
+                <div class="col-lg-offset-3 col-lg-2 col-md-2 col-sm-4">
+                  Event:
                 </div>
-                <div class="row">
-                  <div class="col-lg-2 col-md-2 col-sm-4">
-                    Since:
-                  </div>
-                  <div class="col-lg-4 col-md-4 col-sm-8">
-                    <select id="world-time-select" class="form-control">
-                      <option value='1'{% if globe.duration == 1 %}selected="true"{% endif %}>Last Minute</option>
-                      <option value='60'{% if globe.duration == 60 %}selected="true"{% endif %}>Last Hour</option>
-                      <option value='1440'{% if globe.duration == 1440 %}selected="true"{% endif %}>Last Day</option>
-                      <option value='10080' {% if globe.duration == 10080 %}selected="true"{% endif %}>Last Week</option>
-                    </select>
-                  </div>
-                  <div class="col-lg-1 col-md-1 col-sm-2">
-                    For:
-                  </div>
-                  <div class="col-lg-5 col-md-5 col-sm-10">
-                    <select id="world-language-select" class="form-control">
-                      <option value="all" {% if globe.lang == "all" %}selected="true"{% endif %}>All Languages</option>
-                      <option value="java" {% if globe.lang == "java" %}selected="true"{% endif %} >Java</option>
-                      <option value="groovy" {% if globe.lang == "groovy" %}selected="true"{% endif %}>Groovy</option>
-                      <option value="scala" {% if globe.lang == "scala" %}selected="true"{% endif %}>Scala</option>
-                      <option value="c#" {% if globe.lang == "c#" %}selected="true"{% endif %}>C#</option>
-                      <option value="javascript" {% if globe.lang == "javascript" %}selected="true"{% endif %}>Javascript</option>
-                      <option value="python" {% if globe.lang == "python" %}selected="true"{% endif %}>Python</option>
-                    </select>
-                  </div>
+                <div class="col-lg-3 col-md-3 col-sm-8">
+                  <select id="country-event-select" class="form-control">
+                    <option value='all'{% if country.event == "all" %}selected="true"{% endif %}>All</option>
+                    <option value='Build' {% if country.event == "Build" %}selected="true"{% endif %}>Builds</option>
+                    <option value='wtf' {% if country.event == "wtf" %}selected="true"{% endif %}>WTFs</option>
+                  </select>
                 </div>
               </div>
-              <div class="tiles-body">
-                <div class="pull-right number"><div id='live-world'></div></div>
-              </div>
-              <div class="tiles-footer">
-                <span class="inline-sparkline pull-right" id="visits"></span>
+              <div class="row">
+                <div class="col-lg-2 col-md-2 col-sm-4">
+                  Since:
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-8">
+                  <select id="country-time-select" class="form-control">
+                    <option value='1'{% if country.duration == 1 %}selected="true"{% endif %}>Last Minute</option>
+                    <option value='60'{% if country.duration == 60 %}selected="true"{% endif %}>Last Hour</option>
+                    <option value='1440'{% if country.duration == 1440 %}selected="true"{% endif %}>Last Day</option>
+                    <option value='10080' {% if country.duration == 10080 %}selected="true"{% endif %}>Last Week</option>
+                  </select>
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-2">
+                  For:
+                </div>
+                <div class="col-lg-5 col-md-5 col-sm-10">
+                  <select id="country-language-select" class="form-control">
+                    <option value="all" {% if country.lang == "all" %}selected="true"{% endif %}>All Languages</option>
+                    <option value="java" {% if country.lang == "java" %}selected="true"{% endif %} >Java</option>
+                    <option value="groovy" {% if country.lang == "groovy" %}selected="true"{% endif %}>Groovy</option>
+                    <option value="scala" {% if country.lang == "scala" %}selected="true"{% endif %}>Scala</option>
+                    <option value="c#" {% if country.lang == "c#" %}selected="true"{% endif %}>C#</option>
+                    <option value="javascript" {% if country.lang == "javascript" %}selected="true"{% endif %}>Javascript</option>
+                    <option value="python" {% if country.lang == "python" %}selected="true"{% endif %}>Python</option>
+                  </select>
+                </div>
               </div>
             </div>
-            <div class="col-lg-6 col-md-6 col-sm-12 info-tiles tiles-secondary">
-              <div class="tiles-heading">
-                <div id="country" style="margin-bottom: 10px;">Your Country's Events</div>
-                <div class="row" style="margin-bottom: 10px;">
-                  <div class="col-lg-offset-3 col-lg-2 col-md-2 col-sm-4">
-                    Event:
-                  </div>
-                  <div class="col-lg-3 col-md-3 col-sm-8">
-                    <select id="country-event-select" class="form-control">
-                      <option value='all'{% if country.event == "all" %}selected="true"{% endif %}>All</option>
-                      <option value='Build' {% if country.event == "Build" %}selected="true"{% endif %}>Builds</option>
-                      <option value='wtf' {% if country.event == "wtf" %}selected="true"{% endif %}>WTFs</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-lg-2 col-md-2 col-sm-4">
-                    Since:
-                  </div>
-                  <div class="col-lg-4 col-md-4 col-sm-8">
-                    <select id="country-time-select" class="form-control">
-                      <option value='1'{% if country.duration == 1 %}selected="true"{% endif %}>Last Minute</option>
-                      <option value='60'{% if country.duration == 60 %}selected="true"{% endif %}>Last Hour</option>
-                      <option value='1440'{% if country.duration == 1440 %}selected="true"{% endif %}>Last Day</option>
-                      <option value='10080' {% if country.duration == 10080 %}selected="true"{% endif %}>Last Week</option>
-                    </select>
-                  </div>
-                  <div class="col-lg-1 col-md-1 col-sm-2">
-                    For:
-                  </div>
-                  <div class="col-lg-5 col-md-5 col-sm-10">
-                    <select id="country-language-select" class="form-control">
-                      <option value="all" {% if country.lang == "all" %}selected="true"{% endif %}>All Languages</option>
-                      <option value="java" {% if country.lang == "java" %}selected="true"{% endif %} >Java</option>
-                      <option value="groovy" {% if country.lang == "groovy" %}selected="true"{% endif %}>Groovy</option>
-                      <option value="scala" {% if country.lang == "scala" %}selected="true"{% endif %}>Scala</option>
-                      <option value="c#" {% if country.lang == "c#" %}selected="true"{% endif %}>C#</option>
-                      <option value="javascript" {% if country.lang == "javascript" %}selected="true"{% endif %}>Javascript</option>
-                      <option value="python" {% if country.lang == "python" %}selected="true"{% endif %}>Python</option>
-                    </select>
-                  </div>
-                </div>
+            <div class="tiles-body">
+              <div class="pull-left animated bounceIn">
               </div>
-              <div class="tiles-body">
-                <div class="pull-left animated bounceIn">
-                </div>
-                <div class="pull-right number"><div id='live-country'></div></div>
-              </div>
-              <div class="tiles-footer">
-                <span class="inline-sparkline pull-right" id="visits"></span>
-              </div>
+              <div class="pull-right number"><div id='live-country'></div></div>
+            </div>
+            <div class="tiles-footer">
+              <span class="inline-sparkline pull-right" id="visits"></span>
             </div>
           </div>
         </div>
@@ -165,9 +117,7 @@
       <script src="http://d3js.org/topojson.v1.min.js"></script>
       <script src="http://d3js.org/queue.v1.min.js"></script>
       <script src="/js/underscore-min.js"></script>
-      <script src="/js/live-world.js"></script>
       <script src="/js/live-country.js"></script>
       <script src="/js/link-datasource.js"></script>
-
     </body>
   </html>
