@@ -2,6 +2,7 @@ var sessionManager = require("./sessionManagement");
 var _ = require("underscore");
 var Q = require('q');
 var encoder = require("./encoder")
+var githubEvents = require("./githubEvents");
 
 module.exports = function(app, express) {
 
@@ -213,6 +214,14 @@ module.exports = function(app, express) {
             username: req.session.username,                   
             avatarUrl: req.session.avatarUrl
         });
+    });
+
+
+    app.get("/connect_to_github", function(req, res){
+        githubEvents.fetchGitEvents(req.session.username).then(function(qdEvents){
+            console.log(qdEvents);
+            res.send(qdEvents);
+        })
     });
 
     var getFilterValuesFrom = function(req) {
