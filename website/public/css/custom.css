@@ -35,18 +35,3 @@ x.axis {
         font-size: 13px;
     }
 }
-.embed-container {
-	position: relative;
-	padding-bottom: 75.25%;
-	height: 723px;
-	overflow: hidden;
-	max-width: 100%;
-}
-.embed-container iframe, .embed-container object, .embed-container embed {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	border:0;
-	height:inherit!important 
-}

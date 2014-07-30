@@ -20,7 +20,7 @@ var liveCountry = function() {
     });
 
     // Bit hacky to ge the width and height
-    var width = $("#live-world").parent().parent().width();
+    var width = $("#live-country").parent().parent().width();
     var height = width;
     var graticule = d3.geo.graticule();
     var canvas = d3.select("#live-country").append("canvas")
