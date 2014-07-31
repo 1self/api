@@ -158,7 +158,7 @@ var saveEvent_driver = function(myEvent, stream, serverDateTime, res, rm) {
     myEvent.streamid = stream.streamid;
     myEvent.serverDateTime = {
         "$date": serverDateTime
-    }
+    };
     var options = {
         url: platformUri + '/rest/events/',
         auth: {
@@ -176,7 +176,7 @@ var saveEvent_driver = function(myEvent, stream, serverDateTime, res, rm) {
                            } else {
                                res.status(500).send("Database error");
                            }
-                       })
+                       });
 }
 
 var authenticateWriteToken = function(token, id, error, success) {
@@ -191,10 +191,10 @@ var authenticateWriteToken = function(token, id, error, success) {
                 } else {
                     var stream = {
                         streamid: stream.streamid
-                    }
+                    };
                     success(stream);
                 }
-            })
+            });
         });
     });
 };
@@ -1139,7 +1139,7 @@ var getMyActiveDuration = function(streams) {
     };
     var convertMillisToMinutes = function(milliseconds) {
         return Math.round(milliseconds / (1000 * 60) * 100) / 100;
-    }
+    };
 
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
@@ -1155,7 +1155,7 @@ var getMyActiveDuration = function(streams) {
                     value: 0
                 }];
                 var activeDurationByDay = generateDatesFor(defaulActiveDurationValues);
-                for (date in result) {
+                for (var date in result) {
                     if (activeDurationByDay[date] !== undefined) {
                         activeDurationByDay[date].totalActiveDuration = convertMillisToMinutes(result[date].totalActiveDuration);
                         activeDurationByDay[date].inActiveCount = result[date].activeCount - 1;
@@ -1235,7 +1235,7 @@ app.post('/stream', function(req, res) {
                 } else {
                     res.send(insertedRecords[0]);
                 }
-            })
+            });
         });
     });
 });
@@ -1260,8 +1260,8 @@ app.get('/stream/:id', function(req, res) {
                     }
                     res.send(JSON.stringify(response));
                 }
-            })
-        })
+            });
+        });
     });
 });
 
@@ -1282,7 +1282,7 @@ app.get('/:ip', function(req, res) {
         if (!error && response.statusCode == 200) {
             res.send(body)
         }
-    })
+    });
 });
 
 app.post('/stream/:id/event', postEvent);
@@ -1290,7 +1290,7 @@ app.post('/stream/:id/event', postEvent);
 app.get('/live/devbuild/:durationMins', function(req, res) {
     var fields = {
         _id: 0,
-        streamid: 0,
+        streamid: 0
     };
 
     var durationMins = req.params.durationMins;
@@ -1329,7 +1329,7 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
             var info = JSON.parse(body);
-            res.send(info)
+            res.send(info);
         } else {
             res.status(500).send("Something went wrong!");
         }
@@ -1345,7 +1345,7 @@ app.get('/quantifieddev/mydev', function(req, res) {
         .then(getStreamIdForUsername)
         .then(getBuildEventsFromPlatform)
         .then(function(response) {
-            res.send(response)
+            res.send(response);
         }).catch(function(error) {
             res.status(404).send("stream not found");
         })
@@ -1381,7 +1381,7 @@ app.get('/quantifieddev/mycaffeine', function(req, res) {
         .then(getStreamIdForUsername)
         .then(getMyCaffeineEventsFromPlatform)
         .then(function(response) {
-            res.send(response)
+            res.send(response);
         }).catch(function(error) {
             res.status(404).send("stream not found");
         });
@@ -1393,7 +1393,7 @@ app.get('/quantifieddev/buildDuration', function(req, res) {
         .then(getStreamIdForUsername)
         .then(getAvgBuildDurationFromPlatform)
         .then(function(response) {
-            res.send(response)
+            res.send(response);
         }).catch(function(error) {
             res.status(404).send("stream not found");
         });
@@ -1417,7 +1417,7 @@ app.get('/quantifieddev/hourlyWtfCount', function(req, res) {
         .then(getStreamIdForUsername)
         .then(getHourlyWtfCount)
         .then(function(response) {
-            res.send(response)
+            res.send(response);
         }).catch(function(error) {
             res.status(404).send("stream not found");
         });
@@ -1429,7 +1429,7 @@ app.get('/quantifieddev/hourlyHydrationCount', function(req, res) {
         .then(getStreamIdForUsername)
         .then(getHourlyHydrationCount)
         .then(function(response) {
-            res.send(response)
+            res.send(response);
         }).catch(function(error) {
             res.status(404).send("stream not found");
         });

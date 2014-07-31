@@ -1,14 +1,10 @@
 var _ = require("underscore");
 var github = require('octonode');
 var q = require('q');
-var requestModule = require('request');
+var request = require('request');
 var crypto = require('crypto');
-var commitUrlsToFetchArray = [];
-var promiseArray = []
 var platformUri = process.env.PLATFORM_BASE_URI;
-// github support only 10 pages with 30 events per page.
 var sharedSecret = process.env.SHARED_SECRET;
-
 var mongoDbConnection = require('./lib/connection.js');
 
 var encryptPassword = function() {
@@ -72,7 +68,7 @@ var transformToQdEvents = function(allEvents) {
         var qdEvent = clone(singleEventTemplate);
         qdEvent.dateTime = event.created_at;
         qdEvents.push(qdEvent);
-    })
+    });
         return qdEvents;
 }
 
@@ -92,7 +88,7 @@ var storeLastEventDate = function(latestDateEvent, username) {
                                   }
                               });
         }
-                       ) 
+                       );
     });
 }
 
@@ -101,24 +97,25 @@ var filterEvents = function(allEvents, lastEventDate) {
     return _.filter(allEvents, function(event) {
         return true; // event.created_at > lastEventDate
     });
-}
+
+};
 
 var getLatestDateEvent = function(events) {
     var sortedEvents = _.chain(events).sortBy(function(event){
         return  event.dateTime;
     }).reverse().value();
 
-    return sortedEvents[0]    
-}
+    return sortedEvents[0];
+};
 var sendEventsToPlatform = function(myEvents) {
     var deferred = q.defer();
     var encryptedPassword = encryptPassword();
-    var myEventsWithPayload = []
+    var myEventsWithPayload = [];
     _.each(myEvents, function(myEvent) {
         myEventsWithPayload.push({
             'payload': myEvent
-        })
-    })
+        });
+    });
         var options = {
             url: platformUri + '/rest/events/batch',
             auth: {
@@ -127,16 +124,16 @@ var sendEventsToPlatform = function(myEvents) {
             },
             json: myEventsWithPayload
         };
-    requestModule.post(options,
+    request.post(options,
                        function(error, response, body) {
                            if (!error && response.statusCode == 200) {
                                deferred.resolve(myEvents);
                            } else {
                                // res.status(500).send("Database error");
                            }
-                       })
+                       });
     return deferred.promise;
-}
+};
 
 // fetch github events
 
@@ -153,7 +150,7 @@ exports.fetchGitEvents = function(githubUsername, username) {
     var promiseArray = [];
 
     _.each(pages, function(page) {
-        promiseArray.push(getPushEventsForUserForPage(page, githubUsername))
+        promiseArray.push(getPushEventsForUserForPage(page, githubUsername));
     });
     // get lastEventDate from db
     var lastEventDate = "";
@@ -161,15 +158,15 @@ exports.fetchGitEvents = function(githubUsername, username) {
     return q.all(promiseArray)
         .then(_.flatten)
         .then(function(allEvents) {
-            return filterEvents(allEvents, lastEventDate)
+            return filterEvents(allEvents, lastEventDate);
         })
         .then(transformToQdEvents)
         .then(sendEventsToPlatform)
         .then(getLatestDateEvent)
         .then(function(latestDateEvent) {
-            return storeLastEventDate(latestDateEvent, username) }
+            return storeLastEventDate(latestDateEvent, username); }
              )
         .catch(function(error) {
-            console.log("Error is", error.stack)
+            console.log("Error is", error.stack);
         });
-}
+};

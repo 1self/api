@@ -3,14 +3,14 @@ var crypto = require('crypto');
 exports.encodeUsername = function(username, callback) {
     var opts = {
         plaintext: username
-    }
+    };
     hashPassword(opts, function(err, data) {
         var encObect = {
             encodedUsername: data.key,
             salt: data.salt
-        }
+        };
         callback(null, encObect);
-    })
+    });
 };
 
 var hashPassword = function(opts, callback) {
@@ -19,7 +19,7 @@ var hashPassword = function(opts, callback) {
             if (err) return callback(err);
             opts.salt = buf.toString('base64');
             return hashPassword(opts, callback);
-        })
+        });
     }
 
     opts.iterations = opts.iterations || 10000;
@@ -30,5 +30,5 @@ var hashPassword = function(opts, callback) {
         opts.key = new Buffer(key).toString('base64');
 
         return callback(null, opts);
-    })
+    });
 };
