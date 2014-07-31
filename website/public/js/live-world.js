@@ -1,4 +1,9 @@
 var liveworld = function() {
+    $(function() {
+        $("#embed-globe").popover({
+            container: "body"
+        });
+    });
     var liveDurationMins = parseInt($('#world-time-select').find(":selected").val());
     var selectedLanguage = $('#world-language-select').find(":selected").val();
     var selectedEventType = $('#world-event-select').find(":selected").val();
