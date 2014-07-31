@@ -6,12 +6,10 @@ var crypto = require('crypto');
 var commitUrlsToFetchArray = [];
 var promiseArray = []
 var platformUri = process.env.PLATFORM_BASE_URI;
-    // github support only 10 pages with 30 events per page.
+// github support only 10 pages with 30 events per page.
 var sharedSecret = process.env.SHARED_SECRET;
 
-var mongoClient = require('mongodb').MongoClient;
-var Db = require('mongodb').Db,
-
+var mongoDbConnection = require('./lib/connection.js');
 
 var encryptPassword = function() {
     if (sharedSecret) {
@@ -30,7 +28,7 @@ var encryptPassword = function() {
 var getPushEventsForUserForPage = function(page, username) {
 
     var user_api_url = "/users/" + username;
-    var client = github.client("47ee81f239affd2a82f553328c014cc0dda37aea");
+    var client = github.client("ee4765589a75677839333a08deb224a61fcd1a8c");
     //var client = github.client();    
     client.get(user_api_url, {}, function(err, status, body, headers) {
         // console.log("got clilent : " + JSON.stringify(body));
@@ -52,7 +50,6 @@ var getPushEventsForUserForPage = function(page, username) {
 function clone(a) {
     return JSON.parse(JSON.stringify(a));
 }
-
 
 var singleEventTemplate = {
     "actionTags": [
@@ -76,29 +73,29 @@ var transformToQdEvents = function(allEvents) {
         qdEvent.dateTime = event.created_at;
         qdEvents.push(qdEvent);
     })
-    return qdEvents;
+        return qdEvents;
 }
 
 var storeLastEventDate = function(latestDateEvent, username) {
+    console.log("latestDateEvent is", JSON.stringify(latestDateEvent));
+    console.log("username is", username);
 
-    var db = new Db('1self', new Server('localhost', 27017));
-
-    db.open(function(err, db) {
-
-        db.collection("user", function(err, collection) {
-
-            mongoClient.collection("username").update({"username" : username},
-             { $set: { "lastGitHubEventDate":  latestDateEvent.dateTime }},
-             { upsert: true }, function(error, data) {
-                if(error) { 
-                    console.log(error);
-                } else {
-                    console.log(data);
-                }
-            });
+    mongoDbConnection(function(qdDb) {
+        qdDb.collection("users", function(err, collection) {
+            collection.update({"username" : username},
+                              { $set: { "lastGitHubEventDate":  latestDateEvent.dateTime }},
+                              { upsert: true }, function(error, data) {
+                                  if(error) { 
+                                      console.log(error);
+                                  } else {
+                                      console.log("Update success", data);
+                                  }
+                              });
         }
-    }
+                       ) 
+    });
 }
+
 
 var filterEvents = function(allEvents, lastEventDate) {
     return _.filter(allEvents, function(event) {
@@ -107,13 +104,14 @@ var filterEvents = function(allEvents, lastEventDate) {
 }
 
 var getLatestDateEvent = function(events) {
-  var sortedEvents = _.chain(events).sortBy(function(event){
-                    return  event.dateTime;
-                }).reverse().value();
+    var sortedEvents = _.chain(events).sortBy(function(event){
+        return  event.dateTime;
+    }).reverse().value();
 
-  return sortedEvents[0]    
+    return sortedEvents[0]    
 }
 var sendEventsToPlatform = function(myEvents) {
+    var deferred = q.defer();
     var encryptedPassword = encryptPassword();
     var myEventsWithPayload = []
     _.each(myEvents, function(myEvent) {
@@ -121,25 +119,26 @@ var sendEventsToPlatform = function(myEvents) {
             'payload': myEvent
         })
     })
-    var options = {
-        url: platformUri + '/rest/events/batch',
-        auth: {
-            user: "",
-            password: encryptedPassword
-        },
-        json: myEventsWithPayload
-    };
+        var options = {
+            url: platformUri + '/rest/events/batch',
+            auth: {
+                user: "",
+                password: encryptedPassword
+            },
+            json: myEventsWithPayload
+        };
     requestModule.post(options,
-        function(error, response, body) {
-            if (!error && response.statusCode == 200) {
-               return myEvents; 
-            } else {
-               // res.status(500).send("Database error");
-            }
-        })
+                       function(error, response, body) {
+                           if (!error && response.statusCode == 200) {
+                               deferred.resolve(myEvents);
+                           } else {
+                               // res.status(500).send("Database error");
+                           }
+                       })
+    return deferred.promise;
 }
 
-    // fetch github events
+// fetch github events
 
 // filter github events(check if events already present in platform)
 
@@ -169,7 +168,7 @@ exports.fetchGitEvents = function(githubUsername, username) {
         .then(getLatestDateEvent)
         .then(function(latestDateEvent) {
             return storeLastEventDate(latestDateEvent, username) }
-         )
+             )
         .catch(function(error) {
             console.log("Error is", error.stack)
         });

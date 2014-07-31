@@ -3,6 +3,7 @@ var _ = require("underscore");
 var Q = require('q');
 var encoder = require("./encoder")
 var githubEvents = require("./githubEvents");
+var mongoDbConnection = require('./lib/connection.js');
 
 module.exports = function(app, express) {
 
@@ -25,18 +26,18 @@ module.exports = function(app, express) {
                 "streamid": streamid
             };
             console.log("streamId to link : " + streamid);
-            qdDb = app.getQdDb();
             var deferred = Q.defer();
 
-            qdDb.collection('stream').findOne(byStreamId, function(err, stream) {
-                if (!err && stream) {
-                    console.log("streamId found + " + JSON.stringify(stream));
-                    deferred.resolve();
-                } else {
-                    console.log("streamId not found or error");
-                    deferred.reject(err);
-                }
-            });
+            mongoDbConnection(function(qdDb) {
+                qdDb.collection('stream').findOne(byStreamId, function(err, stream) {
+                    if (!err && stream) {
+                        console.log("streamId found + " + JSON.stringify(stream));
+                        deferred.resolve();
+                    } else {
+                        console.log("streamId not found or error");
+                        deferred.reject(err);
+                    }
+                }) });;
             return deferred.promise;
         };
 
@@ -45,17 +46,18 @@ module.exports = function(app, express) {
             var streamidUsernameMapping = {
                 "username": oneselfUsername
             };
-            qdDb = app.getQdDb();
             var deferred = Q.defer();
 
-            qdDb.collection('users').findOne(streamidUsernameMapping, {
-                "streams": 1
-            }, function(err, user) {
-                if (err) {
-                    deferred.reject(err);
-                } else {
-                    deferred.resolve(user);
-                }
+            mongoDbConnection(function(qdDb) {
+                qdDb.collection('users').findOne(streamidUsernameMapping, {
+                    "streams": 1
+                }, function(err, user) {
+                    if (err) {
+                        deferred.reject(err);
+                    } else {
+                        deferred.resolve(user);
+                    }
+                })
             });
             return deferred.promise;
         };
@@ -155,51 +157,51 @@ module.exports = function(app, express) {
             encoder.encodeUsername(oneselfUsername, function(error, encUserObj) {
 
                 var githubUsername = req.body.githubUsername;
-
                 var byOneselfUsername = {
                     "username": oneselfUsername
                 };
-                qdDb = app.getQdDb();
-                qdDb.collection('users').findOne(byOneselfUsername, function(err, user) {
-                    if (user) {
-                        res.render('claimUsername', {
-                            username: req.body.username,
-                            githubUsername: githubUsername,
-                            error: "Username already taken. Please choose another one."
-                        });
-                    } else {
-                        var byGithubUsername = {
-                            "githubUser.username": githubUsername
-                        };
+                mongoDbConnection(function(qdDb) {
 
-                        qdDb.collection('users').update(byGithubUsername, {
-                            $set: {
-                                username: oneselfUsername,
-                                encodedUsername: encUserObj.encodedUsername,
-                                salt: encUserObj.salt
-                            }
-                        }, function(err, documentsUpdated) {
-                            if (err) {
-                                res.status(500).send("Database error");
+                    qdDb.collection('users').findOne(byOneselfUsername, function(err, user) {
+                        if (user) {
+                            res.render('claimUsername', {
+                                username: req.body.username,
+                                githubUsername: githubUsername,
+                                error: "Username already taken. Please choose another one."
+                            });
+                        } else {
+                            var byGithubUsername = {
+                                "githubUser.username": githubUsername
+                            };
 
-                            } else {
-                                req.session.username = oneselfUsername;
-                                req.session.encodedUsername = encUserObj.encodedUsername;
-                                req.session.githubUsername = githubUsername;
-                                req.session.githubAvatar = req.user.profile._json.avatar_url;    
-
-                                if (req.session.redirectUrl) {
-                                    var redirectUrl = req.session.redirectUrl;
-                                    delete req.session.redirectUrl;
-                                    res.redirect(redirectUrl);
-                                } else {
-                                    res.redirect('/dashboard');
+                            qdDb.collection('users').update(byGithubUsername, {
+                                $set: {
+                                    username: oneselfUsername,
+                                    encodedUsername: encUserObj.encodedUsername,
+                                    salt: encUserObj.salt
                                 }
-                            }
-                        });
-                    }
-                });
-            });
+                            }, function(err, documentsUpdated) {
+                                if (err) {
+                                    res.status(500).send("Database error");
+
+                                } else {
+                                    req.session.username = oneselfUsername;
+                                    req.session.encodedUsername = encUserObj.encodedUsername;
+                                    req.session.githubUsername = githubUsername;
+                                    req.session.githubAvatar = req.user.profile._json.avatar_url;    
+
+                                    if (req.session.redirectUrl) {
+                                        var redirectUrl = req.session.redirectUrl;
+                                        delete req.session.redirectUrl;
+                                        res.redirect(redirectUrl);
+                                    } else {
+                                        res.redirect('/dashboard');
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }) });
         } else {
             res.render('claimUsername', {
                 username: req.body.username,
@@ -216,7 +218,7 @@ module.exports = function(app, express) {
         });
     });
 
-    app.get("/connect_to_github", function(req, res){
+    app.get("/connect_to_github",  sessionManager.requiresSession, function(req, res){
         githubEvents.fetchGitEvents(req.session.githubUsername, req.session.username).then(function(qdEvents){
             console.log(qdEvents);
             res.send(qdEvents);

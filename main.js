@@ -10,14 +10,13 @@ var path = require('path');
 var _ = require("underscore");
 var session = require("express-session");
 var q = require('q');
-var mongoClient = require('mongodb').MongoClient;
+
+var mongoDbConnection = require('./lib/connection.js');
+
 var app = express();
 app.use(express.logger());
 app.use(express.bodyParser());
 
-var mongoAppKey = process.env.DBKEY;
-var mongoUri = process.env.DBURI;
-var qdDb;
 
 app.engine('html', swig.renderFile);
 app.use(express.static(path.join(__dirname, 'website/public')));
@@ -44,14 +43,14 @@ var platformUri = process.env.PLATFORM_BASE_URI;
 var sharedSecret = process.env.SHARED_SECRET;
 console.log("sharedSecret : " + sharedSecret);
 
-mongoClient.connect(mongoUri, function(err, db) {
-    if (err) {
-        console.log(err);
-    } else {
-        qdDb = db;
-        console.log('database connected : ' + qdDb);
-    }
-});
+// mongoClient.connect(mongoUri, function(err, db) {
+//     if (err) {
+//         console.log(err);
+//     } else {
+//         qdDb = db;
+//         console.log('database connected : ' + qdDb);
+//     }
+// });
 
 console.log('Connecting to PLATFORM_BASE_URI : ' + platformUri);
 require('./githubOAuth')(app);
@@ -93,12 +92,7 @@ var getFilterValuesFrom = function(req) {
     return filterValues;
 }
 
-app.getQdDb = function() {
-    return qdDb;
-}
 
-
-var db = new Db('test', new Server('localhost', 27017));
 
 var validEncodedUsername = function(encodedUsername, forUsername) {
     var deferred = q.defer();
@@ -106,19 +100,22 @@ var validEncodedUsername = function(encodedUsername, forUsername) {
         "encodedUsername": encodedUsername
     };
 
-    qdDb.collection('users').findOne(encodedUsernameExists, function(err, user) {
-        if (err) {
-            deferred.reject(err);
-        } else {
-            if (user) {
-                console.log("in validEncodedUsername : user " + JSON.stringify(user));
-                var usernames = [encodedUsername, forUsername];
-                deferred.resolve(usernames);
+    mongoDbConnection(function(qdDb) {
+        qdDb.collection('users').findOne(encodedUsernameExists, function(err, user) {
+            if (err) {
+                deferred.reject(err);
             } else {
-                deferred.reject();
+                if (user) {
+                    console.log("in validEncodedUsername : user " + JSON.stringify(user));
+                    var usernames = [encodedUsername, forUsername];
+                    deferred.resolve(usernames);
+                } else {
+                    deferred.reject();
+                }
             }
-        }
+        });
     });
+
     return deferred.promise;
 }
 
@@ -136,20 +133,24 @@ var getStreamIdForUsername = function(usernames) {
             "encodedUsername": encodedUsername
         };
     }
-    qdDb.collection('users').findOne(query, {
-        "streams": 1
-    }, function(err, user) {
-        if (err) {
-            deferred.reject(err);
-        } else {
-            console.log("getStreamIdForUsername user : ", user);
-            if (user && user.streams) {
-                deferred.resolve(user.streams);
+
+    mongoDbConnection(function(qdDb) {
+        qdDb.collection('users').findOne(query, {
+            "streams": 1
+        }, function(err, user) {
+            if (err) {
+                deferred.reject(err);
             } else {
-                deferred.reject();
+                console.log("getStreamIdForUsername user : ", user);
+                if (user && user.streams) {
+                    deferred.resolve(user.streams);
+                } else {
+                    deferred.reject();
+                }
             }
-        }
+        });
     });
+
     return deferred.promise;
 };
 
@@ -169,30 +170,32 @@ var saveEvent_driver = function(myEvent, stream, serverDateTime, res, rm) {
         }
     };
     requestModule.post(options,
-        function(error, response, body) {
-            if (!error && response.statusCode == 200) {
-                res.send(body)
-            } else {
-                res.status(500).send("Database error");
-            }
-        })
+                       function(error, response, body) {
+                           if (!error && response.statusCode == 200) {
+                               res.send(body)
+                           } else {
+                               res.status(500).send("Database error");
+                           }
+                       })
 }
 
 var authenticateWriteToken = function(token, id, error, success) {
-    qdDb.collection('stream').find({
-        streamid: id
-    }, function(err, docs) {
-        docs.toArray(function(err, docsArray) {
-            var stream = docsArray[0] || {};
-            if (stream.writeToken != token) {
-                error();
-            } else {
-                var stream = {
-                    streamid: stream.streamid
+    mongoDbConnection(function(qdDb) {
+        qdDb.collection('stream').find({
+            streamid: id
+        }, function(err, docs) {
+            docs.toArray(function(err, docsArray) {
+                var stream = docsArray[0] || {};
+                if (stream.writeToken != token) {
+                    error();
+                } else {
+                    var stream = {
+                        streamid: stream.streamid
+                    }
+                    success(stream);
                 }
-                success(stream);
-            }
-        })
+            })
+        });
     });
 };
 
@@ -700,8 +703,8 @@ var getAvgBuildDurationFromPlatform = function(streams) {
         },
         qs: {
             spec: JSON.stringify([sumOfBuildDurationForBuildFinishEvents,
-                countBuildFinishEventsQuery
-            ]),
+                                  countBuildFinishEventsQuery
+                                 ]),
             merge: true
         },
         method: 'GET'
@@ -1128,8 +1131,8 @@ var getMyActiveDuration = function(streams) {
         },
         qs: {
             spec: JSON.stringify([sumOfActiveEvents,
-                countOfActiveEvents
-            ]),
+                                  countOfActiveEvents
+                                 ]),
             merge: true
         },
         method: 'GET'
@@ -1223,12 +1226,16 @@ app.post('/stream', function(req, res) {
             writeToken: writeToken,
             readToken: readToken
         };
-        qdDb.collection('stream').insert(stream, function(err, insertedRecords) {
-            if (err) {
-                res.status(500).send("Database error");
-            } else {
-                res.send(insertedRecords[0]);
-            }
+
+        mongoDbConnection(function(qdDb) {
+
+            qdDb.collection('stream').insert(stream, function(err, insertedRecords) {
+                if (err) {
+                    res.status(500).send("Database error");
+                } else {
+                    res.send(insertedRecords[0]);
+                }
+            })
         });
     });
 });
@@ -1240,17 +1247,20 @@ app.get('/stream/:id', function(req, res) {
         streamid: req.params.id
     };
 
-    qdDb.collection('stream').find(spec, function(err, docs) {
-        docs.toArray(function(err, streamArray) {
-            var stream = streamArray[0] || {};
-            if (stream.readToken != readToken) {
-                res.status(404).send("stream not found");
-            } else {
-                var response = {
-                    streamid: stream.streamid
+    mongoDbConnection(function(qdDb) {
+
+        qdDb.collection('stream').find(spec, function(err, docs) {
+            docs.toArray(function(err, streamArray) {
+                var stream = streamArray[0] || {};
+                if (stream.readToken != readToken) {
+                    res.status(404).send("stream not found");
+                } else {
+                    var response = {
+                        streamid: stream.streamid
+                    }
+                    res.send(JSON.stringify(response));
                 }
-                res.send(JSON.stringify(response));
-            }
+            })
         })
     });
 });
@@ -1339,7 +1349,7 @@ app.get('/quantifieddev/mydev', function(req, res) {
         }).catch(function(error) {
             res.status(404).send("stream not found");
         })
-});
+            });
 
 app.get('/quantifieddev/mywtf', function(req, res) {
     var encodedUsername = req.headers.authorization;
