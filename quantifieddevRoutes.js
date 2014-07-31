@@ -216,9 +216,8 @@ module.exports = function(app, express) {
         });
     });
 
-
     app.get("/connect_to_github", function(req, res){
-        githubEvents.fetchGitEvents(req.session.username).then(function(qdEvents){
+        githubEvents.fetchGitEvents(req.session.githubUsername, req.session.username).then(function(qdEvents){
             console.log(qdEvents);
             res.send(qdEvents);
         })

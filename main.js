@@ -97,6 +97,9 @@ app.getQdDb = function() {
     return qdDb;
 }
 
+
+var db = new Db('test', new Server('localhost', 27017));
+
 var validEncodedUsername = function(encodedUsername, forUsername) {
     var deferred = q.defer();
     var encodedUsernameExists = {
