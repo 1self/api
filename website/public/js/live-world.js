@@ -4,9 +4,6 @@ var liveworld = function() {
             container: "body"
         });
     });
-    $("#live-world").click(function(){
-        window.open('http://quantifieddev.org');
-    });
     var liveDurationMins = parseInt($('#world-time-select').find(":selected").val());
     var selectedLanguage = $('#world-language-select').find(":selected").val();
     var selectedEventType = $('#world-event-select').find(":selected").val();
