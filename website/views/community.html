@@ -54,7 +54,9 @@
         </div>
         <div class="row" style="height: 750px">
           <div class='col-lg-6 col-md-6 col-sm-12 info-tiles info-secondary'>
-            <iframe id="qd-globe" src='http://localhost:5000/community/globe' width="100%" scrolling="no" frameborder="0" onload='iFrameResize();'>
+            <iframe id="qd-globe" src='http://localhost:5000/community/globe' width="100%" scrolling="no" frameborder="0" onload='iFrameResize({resizedCallback: function(data){
+              data.iframe.style.height = data.height - 25 + "px";
+            }});'>
             </iframe>
           </div>
           <div class="col-lg-6 col-md-6 col-sm-12 info-tiles tiles-secondary">

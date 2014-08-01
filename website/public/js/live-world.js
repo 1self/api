@@ -49,7 +49,7 @@ var liveworld = function() {
         .projection(projection)
         .context(context);
 
-    d3.select(self.frameElement).style("height", height + "px");
+    //d3.select(self.frameElement).style("height", height + "px");
 
     var getEventType = function(eventFromServer) {
         return _.contains(eventFromServer.actionTags, "Build") ? "Build" : "wtf";
