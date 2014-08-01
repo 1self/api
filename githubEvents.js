@@ -6,7 +6,8 @@ var crypto = require('crypto');
 var platformUri = process.env.PLATFORM_BASE_URI;
 var sharedSecret = process.env.SHARED_SECRET;
 var mongoDbConnection = require('./lib/connection.js');
-
+var lastEventDate;
+var promiseArray = [];
 var encryptPassword = function() {
     if (sharedSecret) {
         var tokens = sharedSecret.split(":");
@@ -69,7 +70,7 @@ var transformToQdEvents = function(allEvents) {
         qdEvent.dateTime = event.created_at;
         qdEvents.push(qdEvent);
     });
-    console.log("4. Transformed to QD Events", qdEvents.length);            
+    console.log("4. Transformed to QD Events", qdEvents.length);
 
     return qdEvents;
 }
@@ -106,19 +107,15 @@ var storeLastEventDate = function(latestGitHubEvent, username) {
 
 var filterEvents = function(allEvents, lastEventDate) {
     // console.log("All events before filtering : ", allEvents);
-    console.log("3a. filterEvents", lastEventDate);            
+    console.log("3a. filterEvents", lastEventDate);
 
     var filteredEvents = _.filter(allEvents, function(event) {
-        console.log("lastEvent Date in filter", lastEventDate )
-        if (lastEventDate !== undefined){
-          
-            console.log("3b. filterEvents last event date should not be undefined", lastEventDate);                        
+        console.log("lastEvent Date in filter", lastEventDate)
+        if (lastEventDate !== undefined) {
+            console.log("3b. filterEvents last event date should not be undefined", lastEventDate);
             return event.created_at > lastEventDate
-        }
-        else{
-            
-            console.log("3b. filterEvents last event date should be undefined", lastEventDate);            
-
+        } else {
+            console.log("3b. filterEvents last event date should be undefined", lastEventDate);
             return true
         }
     });
@@ -126,13 +123,13 @@ var filterEvents = function(allEvents, lastEventDate) {
     // console.log("Filtered events : ", filteredEvents);
 };
 
-var getLatestGitHubEvent = function(events) {
-    console.log("6a. getLatestGitHubEvent is", events.length);
+var getLatestGithubEvent = function(events) {
+    console.log("6a. getLatestGithubEvent is", events.length);
     var sortedEvents = _.chain(events).sortBy(function(event) {
         return event.dateTime;
     }).reverse().value();
 
-    console.log("6b. getLatestGitHubEvent is", events.length);
+    console.log("6b. getLatestGithubEvent is", events.length);
 
     console.log("SORTED EVENT is ", JSON.stringify(sortedEvents[0]))
     return sortedEvents[0];
@@ -147,7 +144,7 @@ var sendEventsToPlatform = function(myEvents) {
             'payload': myEvent
         });
     });
-    console.log("5. a myEventsWithPayload size is ", myEventsWithPayload.length);    
+    console.log("5. a myEventsWithPayload size is ", myEventsWithPayload.length);
     var options = {
         url: platformUri + '/rest/events/batch',
         auth: {
@@ -178,16 +175,18 @@ var sendEventsToPlatform = function(myEvents) {
 
 // get events from pt
 
-exports.fetchGitEvents = function(githubUsername, username) {
-    var pages = _.range(1, 11);
-    var promiseArray = [];
+var getGithubPushEventsFromService = function(lastEvtDate) {
+    console.log("2. Assigning lastEvent Date", lastEvtDate);
+    lastEventDate = lastEvtDate;
+    return q.all(promiseArray)
+}
 
-    _.each(pages, function(page) {
-        promiseArray.push(getPushEventsForUserForPage(page, githubUsername));
-    });
-    // get lastEventDate from db
-    var lastEventDate;
+var getFilteredEvents = function(allEvents) {
+    console.log("3. lastEvent Date", lastEventDate);
+    return filterEvents(allEvents, lastEventDate);
+}
 
+var getLatestGithubEventDate = function(username) {
     var deferred = q.defer();
     var usernameQuery = {
         "username": username
@@ -209,23 +208,24 @@ exports.fetchGitEvents = function(githubUsername, username) {
             )
         })
     });
+    return deferred.promise;
+}
+exports.getGithubPushEvents = function(githubUsername, username) {
+    var pages = _.range(1, 11);
 
 
-    return deferred.promise.then(function(lastEvtDate) {
-            console.log("2. Assigning lastEvent Date", lastEvtDate);
-            lastEventDate = lastEvtDate;
-            return q.all(promiseArray)
-        })
+    _.each(pages, function(page) {
+        promiseArray.push(getPushEventsForUserForPage(page, githubUsername));
+    });
+    // get lastEventDate from db
+
+    return getLatestGithubEventDate(username)
+        .then(getGithubPushEventsFromService)
         .then(_.flatten)
-        .then(function(allEvents) {
-            console.log("ALl events is", allEvents.length);
-            console.log("LAST EVENT DATE IS", lastEventDate);
-            console.log("3. lastEvent Date", lastEventDate);            
-            return filterEvents(allEvents, lastEventDate);
-        })
+        .then(getFilteredEvents)
         .then(transformToQdEvents)
         .then(sendEventsToPlatform)
-        .then(getLatestGitHubEvent)
+        .then(getLatestGithubEvent)
         .then(function(latestGitHubEvent) {
             return storeLastEventDate(latestGitHubEvent, username);
         })
