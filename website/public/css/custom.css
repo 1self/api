@@ -35,3 +35,7 @@ x.axis {
         font-size: 13px;
     }
 }
+.col-centered {
+	float: none;
+	margin: 0 auto;
+}

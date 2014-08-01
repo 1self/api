@@ -55,18 +55,23 @@
         <div class="row" style="height: 750px">
           <div class='col-lg-6 col-md-6 col-sm-12 info-tiles info-secondary'>
             <iframe id="qd-globe" src='http://localhost:5000/community/globe' width="100%" scrolling="no" frameborder="0" onload='iFrameResize({resizedCallback: function(data){
-              data.iframe.style.height = data.height - 25 + "px";
+            data.iframe.style.height = data.height - 25 + "px";
             }});'>
             </iframe>
           </div>
           <div class="col-lg-6 col-md-6 col-sm-12 info-tiles tiles-secondary">
             <div class="tiles-heading">
               <div id="country" style="margin-bottom: 10px;">Your Country's Events</div>
-              <div class="row" style="margin-bottom: 10px;">
-                <div class="col-lg-offset-3 col-lg-2 col-md-2 col-sm-4">
-                  Event:
+            </div>
+            <div class="tiles-body">
+              <div class="pull-left animated bounceIn">
+              </div>
+              <div class="pull-right number">
+                <div id='live-country'>
                 </div>
-                <div class="col-lg-3 col-md-3 col-sm-8">
+              </div>
+              <div class="row" style="margin-bottom: 10px;">
+                <div class="col-xs-8 col-centered">
                   <select id="country-event-select" class="form-control">
                     <option value='all'{% if country.event == "all" %}selected="true"{% endif %}>All</option>
                     <option value='Build' {% if country.event == "Build" %}selected="true"{% endif %}>Builds</option>
@@ -74,11 +79,8 @@
                   </select>
                 </div>
               </div>
-              <div class="row">
-                <div class="col-lg-2 col-md-2 col-sm-4">
-                  Since:
-                </div>
-                <div class="col-lg-4 col-md-4 col-sm-8">
+              <div class="row" style="margin-bottom: 10px;">
+                <div class="col-xs-8 col-centered">
                   <select id="country-time-select" class="form-control">
                     <option value='1'{% if country.duration == 1 %}selected="true"{% endif %}>Last Minute</option>
                     <option value='60'{% if country.duration == 60 %}selected="true"{% endif %}>Last Hour</option>
@@ -86,10 +88,9 @@
                     <option value='10080' {% if country.duration == 10080 %}selected="true"{% endif %}>Last Week</option>
                   </select>
                 </div>
-                <div class="col-lg-1 col-md-1 col-sm-2">
-                  For:
-                </div>
-                <div class="col-lg-5 col-md-5 col-sm-10">
+              </div>
+              <div class="row" style="margin-bottom: 10px;">
+                <div class="col-xs-8 col-centered">
                   <select id="country-language-select" class="form-control">
                     <option value="all" {% if country.lang == "all" %}selected="true"{% endif %}>All Languages</option>
                     <option value="java" {% if country.lang == "java" %}selected="true"{% endif %} >Java</option>
@@ -101,11 +102,6 @@
                   </select>
                 </div>
               </div>
-            </div>
-            <div class="tiles-body">
-              <div class="pull-left animated bounceIn">
-              </div>
-              <div class="pull-right number"><div id='live-country'></div></div>
             </div>
             <div class="tiles-footer">
               <span class="inline-sparkline pull-right" id="visits"></span>

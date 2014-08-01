@@ -25,51 +25,49 @@
       <div class="col-lg-12 col-md-12 col-sm-12 info-tiles tiles-secondary">
         <div class="tiles-heading">
           <div style="margin-bottom: 10px;">Worldwide Events</div>
-          <div class="row" style="margin-bottom: 10px;">
-            <div class="col-lg-offset-3 col-lg-2 col-md-2 col-sm-4">
-              Event:
-            </div>
-            <div class="col-lg-3 col-md-3 col-sm-8">
-              <select id="world-event-select" class="form-control">
-                <option value='all'{% if globe.event == "all" %}selected="true"{% endif %}>All</option>
-                <option value='Build' {% if globe.event == "Build" %}selected="true"{% endif %}>Builds</option>
-                <option value='wtf' {% if globe.event == "wtf" %}selected="true"{% endif %}>WTFs</option>
-              </select>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-lg-2 col-md-2 col-sm-4">
-              Since:
-            </div>
-            <div class="col-lg-4 col-md-4 col-sm-8">
-              <select id="world-time-select" class="form-control">
-                <option value='1'{% if globe.duration == 1 %}selected="true"{% endif %}>Last Minute</option>
-                <option value='60'{% if globe.duration == 60 %}selected="true"{% endif %}>Last Hour</option>
-                <option value='1440'{% if globe.duration == 1440 %}selected="true"{% endif %}>Last Day</option>
-                <option value='10080' {% if globe.duration == 10080 %}selected="true"{% endif %}>Last Week</option>
-              </select>
-            </div>
-            <div class="col-lg-1 col-md-1 col-sm-2">
-              For:
-            </div>
-            <div class="col-lg-5 col-md-5 col-sm-10">
-              <select id="world-language-select" class="form-control">
-                <option value="all" {% if globe.lang == "all" %}selected="true"{% endif %}>All Languages</option>
-                <option value="java" {% if globe.lang == "java" %}selected="true"{% endif %} >Java</option>
-                <option value="groovy" {% if globe.lang == "groovy" %}selected="true"{% endif %}>Groovy</option>
-                <option value="scala" {% if globe.lang == "scala" %}selected="true"{% endif %}>Scala</option>
-                <option value="c#" {% if globe.lang == "c#" %}selected="true"{% endif %}>C#</option>
-                <option value="javascript" {% if globe.lang == "javascript" %}selected="true"{% endif %}>Javascript</option>
-                <option value="python" {% if globe.lang == "python" %}selected="true"{% endif %}>Python</option>
-              </select>
-            </div>
-          </div>
         </div>
         <div class="tiles-body">
-          <div class="pull-right number"><div id='live-world'></div></div>
+          <div class="pull-right">
+            <div id='live-world'>
+            </div>
+          </div>
+          <div>
+            <div class="row" style="margin-bottom: 10px;">
+              <div class="col-xs-8 col-centered">
+                <select id="world-event-select" class="form-control">
+                  <option value='all'{% if globe.event == "all" %}selected="true"{% endif %}>All</option>
+                  <option value='Build' {% if globe.event == "Build" %}selected="true"{% endif %}>Builds</option>
+                  <option value='wtf' {% if globe.event == "wtf" %}selected="true"{% endif %}>WTFs</option>
+                </select>
+              </div>
+            </div>
+            <div class="row" style="margin-bottom: 10px;">
+              <div class="col-xs-8 col-centered">
+                <select id="world-time-select" class="form-control">
+                  <option value='1'{% if globe.duration == 1 %}selected="true"{% endif %}>Last Minute</option>
+                  <option value='60'{% if globe.duration == 60 %}selected="true"{% endif %}>Last Hour</option>
+                  <option value='1440'{% if globe.duration == 1440 %}selected="true"{% endif %}>Last Day</option>
+                  <option value='10080' {% if globe.duration == 10080 %}selected="true"{% endif %}>Last Week</option>
+                </select>
+              </div>
+            </div>
+            <div class="row" style="margin-bottom: 10px;">
+              <div class="col-xs-8 col-centered">
+                <select id="world-language-select" class="form-control">
+                  <option value="all" {% if globe.lang == "all" %}selected="true"{% endif %}>All Languages</option>
+                  <option value="java" {% if globe.lang == "java" %}selected="true"{% endif %} >Java</option>
+                  <option value="groovy" {% if globe.lang == "groovy" %}selected="true"{% endif %}>Groovy</option>
+                  <option value="scala" {% if globe.lang == "scala" %}selected="true"{% endif %}>Scala</option>
+                  <option value="c#" {% if globe.lang == "c#" %}selected="true"{% endif %}>C#</option>
+                  <option value="javascript" {% if globe.lang == "javascript" %}selected="true"{% endif %}>Javascript</option>
+                  <option value="python" {% if globe.lang == "python" %}selected="true"{% endif %}>Python</option>
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="tiles-footer">
-          <button id="embed-globe" class="btn btn-default btn-small" type="button" style="color: white; background-color: #3E9FD3; border: 1px solid white"class="btn btn-success" title="Copy this code" data-container="body" data-toggle="popover" data-placement="top" data-content='<iframe id="qd-globe" src="http://localhost:5000/community/globe" 
+          <button id="embed-globe" class="btn btn-default btn-small" type="button" style="color: white; background-color: #3E9FD3; border: 1px solid white"class="btn btn-success" title="Copy this code" data-container="body" data-toggle="popover" data-placement="top" data-content='<iframe id="qd-globe" src="http://localhost:5000/community/globe"
           scrolling="no" frameborder="0" onload="iFrameResize();">
           </iframe>'>&lt;embed&gt;</button>
           <span class="pull-right"><a href="http://quantifieddev.org" target="_blank" style="color:inherit; text-decoration: none;">Powered by QuantifiedDev.org</a></span>
