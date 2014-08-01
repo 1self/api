@@ -39,3 +39,7 @@ x.axis {
 	float: none;
 	margin: 0 auto;
 }
+.popover {
+	max-width: none;
+	width: 100%;
+}
