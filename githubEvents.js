@@ -186,40 +186,40 @@ var getFilteredEvents = function(allEvents) {
     return filterEvents(allEvents, lastEventDate);
 }
 
-var getLatestGithubEventDate = function(username) {
+var getLatestGithubEventDate = function(user) {
     var deferred = q.defer();
-    var usernameQuery = {
-        "username": username
-    };
-    var projectionField = {
-        "latestGitHubEventDate": 1
+    deferred.resolve(user.latestGitHubEventDate)
+    return deferred.promise;
+}
+var getUserInfoFromStreamId = function(streamid) {
+    var deferred = q.defer();
+    var streamIdQuery = {
+        "streams": {
+            "streamid": streamid
+        }
     };
     mongoDbConnection(function(qdDb) {
         qdDb.collection("users", function(err, collection) {
-            collection.findOne(usernameQuery, projectionField,
-                function(error, user) {
-                    if (error) {
-                        deferred.reject(error);
-                    } else {
-                        console.log("1. Latest GitHub Event Date", user.latestGitHubEvent);
-                        deferred.resolve(user.latestGitHubEventDate);
-                    }
+            collection.findOne(streamIdQuery, function(err, user) {
+                if (err) {
+                    deferred.reject(error);
+                } else {
+                    deferred.resolve(user);
                 }
-            )
-        })
+            })
+        });
     });
     return deferred.promise;
 }
-exports.getGithubPushEvents = function(githubUsername, username) {
+exports.getGithubPushEvents = function(streamid) {
     var pages = _.range(1, 11);
-
-
     _.each(pages, function(page) {
         promiseArray.push(getPushEventsForUserForPage(page, githubUsername));
     });
     // get lastEventDate from db
 
-    return getLatestGithubEventDate(username)
+    return getUserInfoFromStreamId(streamid)
+        .then(getLatestGithubEventDate)
         .then(getGithubPushEventsFromService)
         .then(_.flatten)
         .then(getFilteredEvents)

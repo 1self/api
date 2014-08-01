@@ -219,7 +219,8 @@ module.exports = function(app, express) {
     });
 
     app.get("/connect_to_github",  sessionManager.requiresSession, function(req, res){
-        githubEvents.getGithubPushEvents(req.session.githubUsername, req.session.username).then(function(qdEvents){
+        var streamId = "XQDJAEPUDIRCTFKG";
+        githubEvents.getGithubPushEvents(streamId).then(function(qdEvents){
             console.log(qdEvents);
             res.send(qdEvents);
         })
