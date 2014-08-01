@@ -220,10 +220,10 @@ module.exports = function(app, express) {
     });
 
     var getFilterValuesFrom = function(req) {
-        var lastHour = 60;
+        var lastWeek = 60 * 24 * 7; // 60 minutes * 24 hours * 7 days 
         var selectedLanguage = req.query.language ? req.query.language : "all";
         var selectedEvent = req.query.event ? req.query.event : "all";
-        var selectedDuration = req.query.duration ? req.query.duration : lastHour;
+        var selectedDuration = req.query.duration ? req.query.duration : lastWeek;
         var filterValues = {
             username: req.session.username,
             avatarUrl: req.session.avatarUrl,
