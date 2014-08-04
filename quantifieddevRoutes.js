@@ -2,7 +2,7 @@ var sessionManager = require("./sessionManagement");
 var _ = require("underscore");
 var Q = require('q');
 var encoder = require("./encoder")
-var githubEvents = require("./githubEvents");
+
 var mongoDbConnection = require('./lib/connection.js');
 
 module.exports = function(app, express) {
@@ -219,11 +219,10 @@ module.exports = function(app, express) {
     });
 
     app.get("/connect_to_github",  sessionManager.requiresSession, function(req, res){
-        var streamId = "XBLUEQRHFBMKAORS";
-        githubEvents.getGithubPushEvents(streamId).then(function(qdEvents){
-            console.log(qdEvents);
-            res.send(qdEvents);
-        })
+        res.render('github', {
+            username: req.session.username,
+            avatarUrl: req.session.avatarUrl
+        });
     });
 
     var getFilterValuesFrom = function(req) {

@@ -6,6 +6,7 @@ var crypto = require('crypto');
 var platformUri = process.env.PLATFORM_BASE_URI;
 var sharedSecret = process.env.SHARED_SECRET;
 var mongoDbConnection = require('./lib/connection.js');
+var moment = require("moment");
 var user;
 
 var encryptPassword = function() {
@@ -53,7 +54,9 @@ var singleEventTemplate = {
         "Develop",
         "PushEvent"
     ],
-    "dateTime": "",
+    "dateTime": {
+        "$date": ""
+    },
     "source": "GitHub",
     "objectTags": [
         "Computer",
@@ -67,7 +70,7 @@ var transformToQdEvents = function(allEvents) {
     var qdEvents = [];
     _.each(allEvents, function(event) {
         var qdEvent = clone(singleEventTemplate);
-        qdEvent.dateTime = event.created_at;
+        qdEvent.dateTime["$date"] = event.created_at;
         qdEvents.push(qdEvent);
     });
     console.log("4. Transformed to QD Events", qdEvents.length);
@@ -75,19 +78,20 @@ var transformToQdEvents = function(allEvents) {
     return qdEvents;
 }
 
-var storeLatestEventDate = function(latestGitHubEvent, username) {
+var storeLastEventDate = function(latestGitHubEvent, username) {
     console.log("latestGitHubEvent is", JSON.stringify(latestGitHubEvent));
     console.log("username is", username);
-    console.log("7a. storeLatestEventDate", JSON.stringify(latestGitHubEvent))
-
+    console.log("7a. storeLastEventDate", JSON.stringify(latestGitHubEvent))
+    
     if (latestGitHubEvent !== undefined) {
+        var latestGitHubEventDb = new Date(latestGitHubEvent.dateTime["$date"])
         mongoDbConnection(function(qdDb) {
             qdDb.collection("users", function(err, collection) {
                 collection.update({
                     "username": username
                 }, {
                     $set: {
-                        "latestGitHubEventDate": latestGitHubEvent.dateTime
+                        "latestGitHubEventDate": latestGitHubEventDb
                     }
                 }, {
                     upsert: true
@@ -95,7 +99,7 @@ var storeLatestEventDate = function(latestGitHubEvent, username) {
                     if (error) {
                         console.log(error);
                     } else {
-                        console.log("7b. storeLatestEventDate")
+                        console.log("7b. storeLastEventDate")
                         console.log("Update success", data);
                     }
                 });
@@ -110,7 +114,6 @@ var filterEvents = function(allEvents, latestGitHubEventDate) {
     console.log("3a. filterEvents", latestGitHubEventDate);
 
     var filteredEvents = _.filter(allEvents, function(event) {
-        console.log("lastEvent Date in filter", latestGitHubEventDate)
         if (latestGitHubEventDate !== undefined) {
             console.log("3b. filterEvents last event date should not be undefined", latestGitHubEventDate);
             return event.created_at > latestGitHubEventDate
@@ -131,7 +134,6 @@ var getLatestGithubEvent = function(events) {
 
     console.log("6b. getLatestGithubEvent is", events.length);
 
-    console.log("SORTED EVENT is ", JSON.stringify(sortedEvents[0]))
     return sortedEvents[0];
 };
 
@@ -159,21 +161,12 @@ var sendEventsToPlatform = function(myEvents) {
                 console.log("5. b Events logged is ");
                 deferred.resolve(myEvents);
             } else {
-                // res.status(500).send("Database error");
+                console.log(error);
+                deferred.reject("DB error");
             }
         });
     return deferred.promise;
 };
-
-// fetch github events
-
-// filter github events(check if events already present in platform)
-
-// transform to oneself events
-
-// send events to pt in loop 
-
-// get events from pt
 
 var getGithubPushEventsFromService = function(promiseArray) {
     console.log("2. returning q.all promiseArray");
@@ -184,12 +177,10 @@ var getFilteredEvents = function(allEvents) {
     return filterEvents(allEvents, user.latestGitHubEventDate);
 }
 
-// var getLatestGithubEventDate = function(user) {
-//     var deferred = q.defer();
-//     deferred.resolve(user.latestGitHubEventDate)
-//     return deferred.promise;
-// }
 var getUserInfoFromStreamId = function(streamid) {
+
+    streamid = "AJLIEHWVOGTYZTWO";
+
     var deferred = q.defer();
     var streamIdQuery = {
         "streams": {
@@ -205,7 +196,6 @@ var getUserInfoFromStreamId = function(streamid) {
                     deferred.reject(error);
                 } else {
                     user = data;
-                    console.log("User is getting set here ", user);
                     deferred.resolve(data);
                 }
             })
@@ -214,11 +204,10 @@ var getUserInfoFromStreamId = function(streamid) {
     return deferred.promise;
 }
 
-var createPromiseArray = function(user) {
+var createPromiseArray = function() {
     var promiseArray = [];
     var deferred = q.defer();
     var pages = _.range(1, 11);
-    console.log("User here is : ",user);
     _.each(pages, function(page) {
         promiseArray.push(getPushEventsForUserForPage(page, user.githubUser.username));
     });
@@ -227,8 +216,8 @@ var createPromiseArray = function(user) {
 };
 
 exports.getGithubPushEvents = function(streamid) {
-
-    return getUserInfoFromStreamId(streamid)
+    deferred = q.defer();
+    getUserInfoFromStreamId(streamid)
         .then(createPromiseArray)
         .then(getGithubPushEventsFromService)
         .then(_.flatten)
@@ -237,9 +226,12 @@ exports.getGithubPushEvents = function(streamid) {
         .then(sendEventsToPlatform)
         .then(getLatestGithubEvent)
         .then(function(latestGitHubEvent) {
-            return storeLatestEventDate(latestGitHubEvent, user.username);
+            storeLastEventDate(latestGitHubEvent, user.username);
+            deferred.resolve();
         })
         .catch(function(error) {
             console.log("Error is", error.stack);
+            deferred.reject();
         });
+    return deferred.promise;
 };

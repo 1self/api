@@ -13,10 +13,11 @@ var q = require('q');
 
 var mongoDbConnection = require('./lib/connection.js');
 
+var githubEvents = require("./githubEvents");
+
 var app = express();
 app.use(express.logger());
 app.use(express.bodyParser());
-
 
 app.engine('html', swig.renderFile);
 app.use(express.static(path.join(__dirname, 'website/public')));
@@ -170,13 +171,13 @@ var saveEvent_driver = function(myEvent, stream, serverDateTime, res, rm) {
         }
     };
     requestModule.post(options,
-                       function(error, response, body) {
-                           if (!error && response.statusCode == 200) {
-                               res.send(body)
-                           } else {
-                               res.status(500).send("Database error");
-                           }
-                       });
+        function(error, response, body) {
+            if (!error && response.statusCode == 200) {
+                res.send(body)
+            } else {
+                res.status(500).send("Database error");
+            }
+        });
 }
 
 var authenticateWriteToken = function(token, id, error, success) {
@@ -703,8 +704,8 @@ var getAvgBuildDurationFromPlatform = function(streams) {
         },
         qs: {
             spec: JSON.stringify([sumOfBuildDurationForBuildFinishEvents,
-                                  countBuildFinishEventsQuery
-                                 ]),
+                countBuildFinishEventsQuery
+            ]),
             merge: true
         },
         method: 'GET'
@@ -751,8 +752,6 @@ var orderDateAsPerWeek = function(date) {
 var generateHoursForWeek = function(defaultValues) {
     var result = {};
     var numberOfDaysToReportBuildsOn = 7;
-    var currentDate = new Date();
-    var startDate = new Date(currentDate - (7 * aDay));
     for (var i = 1; i <= numberOfDaysToReportBuildsOn; i++) {
         for (var j = 1; j <= 24; j++) {
             if (j < 10) {
@@ -1065,7 +1064,83 @@ var getHourlyCaffeineCount = function(streams) {
 
     return deferred.promise;
 };
+var getHourlyGithubPushEventsCount = function(streams) {
+    var streamids = _.map(streams, function(stream) {
+        return stream.streamid;
+    });
+    var deferred = q.defer();
+    groupQuery = {
+        "$groupBy": {
+            "fields": [{
+                "name": "payload.dateTime",
+                "format": "e HH"
+            }],
+            "filterSpec": {
+                "payload.streamid": {
+                    "$operator": {
+                        "in": ["AJLIEHWVOGTYZTWO"]
+                    }
+                },
+                "payload.actionTags": "PushEvent"
+            },
+            "projectionSpec": {
+                "payload.dateTime": "date",
+                "payload.properties": "properties"
+            },
+            "orderSpec": {}
+        }
+    };
+    hourlyGithubPushEventCount = {
+        "$count": {
+            "data": groupQuery,
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "githubPushEventCount"
+            }
+        }
+    };
+    console.log("Spec is : ", JSON.stringify(hourlyGithubPushEventCount))
+    var options = {
+        url: platformUri + '/rest/analytics/aggregate',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: {
+            spec: JSON.stringify(hourlyGithubPushEventCount)
+        },
+        method: 'GET'
+    };
 
+    function callback(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var result = JSON.parse(body);
+            result = result[0];
+            console.log("result is : ", result);
+            if (_.isEmpty(result)) {
+                deferred.resolve([]);
+            } else {
+                var hourlyGithubPushEvents = generateHoursForWeek(defaultEventValues);
+                console.log("hourlyGithubPushEvents is ", hourlyGithubPushEvents)
+                for (var date in result) {
+
+                    console.log("Date  is", JSON.stringify(date));
+                    if (hourlyGithubPushEvents[date] !== undefined) {
+                        console.log("CAME HERE IN LOOP");
+                        hourlyGithubPushEvents[date].hourlyEventCount = result[date].githubPushEventCount;
+                    }
+                }
+                console.log("Transofrmed result is", hourlyGithubPushEvents);
+                deferred.resolve(rollupToArray(hourlyGithubPushEvents));
+            }
+        } else {
+            deferred.reject(error);
+        }
+    }
+    requestModule(options, callback);
+
+    return deferred.promise;
+};
 var getMyActiveDuration = function(streams) {
     var streamids = _.map(streams, function(stream) {
         return stream.streamid;
@@ -1131,8 +1206,8 @@ var getMyActiveDuration = function(streams) {
         },
         qs: {
             spec: JSON.stringify([sumOfActiveEvents,
-                                  countOfActiveEvents
-                                 ]),
+                countOfActiveEvents
+            ]),
             merge: true
         },
         method: 'GET'
@@ -1367,6 +1442,7 @@ app.get('/quantifieddev/myhydration', function(req, res) {
     var encodedUsername = req.headers.authorization;
     validEncodedUsername(encodedUsername, req.query.forUsername)
         .then(getStreamIdForUsername)
+        .then(getGithubEventFromServiec)
         .then(getMyHydrationEventsFromPlatform)
         .then(function(response) {
             res.send(response);
@@ -1455,6 +1531,24 @@ app.get('/quantifieddev/myActiveEvents', function(req, res) {
         .then(function(response) {
             res.send(response);
         }).catch(function(error) {
+            res.status(404).send("stream not found");
+        });
+});
+
+app.get('/quantifieddev/hourlyGithubPushEvents', function(req, res) {
+    var encodedUsername = req.headers.authorization;
+    console.log("came here in githubPushEvents");
+
+
+    validEncodedUsername(encodedUsername, req.query.forUsername)
+        .then(getStreamIdForUsername)
+        .then(githubEvents.getGithubPushEvents)
+        .then(getHourlyGithubPushEventsCount)
+        .then(function(response) {
+            console.log("The response is : ", response);
+            res.send(response);
+        }).catch(function(error) {
+            console.log("Error is", error);
             res.status(404).send("stream not found");
         });
 });
