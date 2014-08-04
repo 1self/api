@@ -5,7 +5,7 @@ var encoder = require("./encoder")
 
 module.exports = function(app, express) {
 
-    var getFilterValuesFrom = function(req) {
+    var getFilterValuesForCountry = function(req) {
         var lastWeek = 60 * 24 * 7; // 60 minutes * 24 hours * 7 days 
         var selectedLanguage = req.query.language ? req.query.language : "all";
         var selectedEvent = req.query.event ? req.query.event : "all";
@@ -13,11 +13,6 @@ module.exports = function(app, express) {
         var filterValues = {
             username: req.session.username,
             avatarUrl: req.session.avatarUrl,
-            globe: {
-                lang: selectedLanguage,
-                duration: selectedDuration,
-                event: selectedEvent
-            },
             country: {
                 lang: selectedLanguage,
                 duration: selectedDuration,
@@ -32,7 +27,7 @@ module.exports = function(app, express) {
     });
 
     app.get("/community/globe", function(req, res) {
-        res.render('embeddableGlobe', getFilterValuesFrom(req));
+        res.render('embeddableGlobe');
     });
 
     app.get("/dashboard", sessionManager.requiresSession, function(req, res) {
@@ -244,6 +239,6 @@ module.exports = function(app, express) {
 
 
     app.get("/community", function(req, res) {
-        res.render('community', getFilterValuesFrom(req));
+        res.render('community', getFilterValuesForCountry(req));
     });
 }

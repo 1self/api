@@ -35,32 +35,32 @@
             <div class="row" style="margin-bottom: 10px;">
               <div class="col-xs-8 col-centered">
                 <select id="world-event-select" class="form-control">
-                  <option value='all'{% if globe.event == "all" %}selected="true"{% endif %}>All</option>
-                  <option value='Build' {% if globe.event == "Build" %}selected="true"{% endif %}>Builds</option>
-                  <option value='wtf' {% if globe.event == "wtf" %}selected="true"{% endif %}>WTFs</option>
+                  <option value='all' selected="true">All</option>
+                  <option value='Build'>Builds</option>
+                  <option value='wtf'>WTFs</option>
                 </select>
               </div>
             </div>
             <div class="row" style="margin-bottom: 10px;">
               <div class="col-xs-8 col-centered">
                 <select id="world-time-select" class="form-control">
-                  <option value='1'{% if globe.duration == 1 %}selected="true"{% endif %}>Last Minute</option>
-                  <option value='60'{% if globe.duration == 60 %}selected="true"{% endif %}>Last Hour</option>
-                  <option value='1440'{% if globe.duration == 1440 %}selected="true"{% endif %}>Last Day</option>
-                  <option value='10080' {% if globe.duration == 10080 %}selected="true"{% endif %}>Last Week</option>
+                  <option value='1'>Last Minute</option>
+                  <option value='60'>Last Hour</option>
+                  <option value='1440'>Last Day</option>
+                  <option value='10080' selected="true">Last Week</option>
                 </select>
               </div>
             </div>
             <div class="row" style="margin-bottom: 10px;">
               <div class="col-xs-8 col-centered">
                 <select id="world-language-select" class="form-control">
-                  <option value="all" {% if globe.lang == "all" %}selected="true"{% endif %}>All Languages</option>
-                  <option value="java" {% if globe.lang == "java" %}selected="true"{% endif %} >Java</option>
-                  <option value="groovy" {% if globe.lang == "groovy" %}selected="true"{% endif %}>Groovy</option>
-                  <option value="scala" {% if globe.lang == "scala" %}selected="true"{% endif %}>Scala</option>
-                  <option value="c#" {% if globe.lang == "c#" %}selected="true"{% endif %}>C#</option>
-                  <option value="javascript" {% if globe.lang == "javascript" %}selected="true"{% endif %}>Javascript</option>
-                  <option value="python" {% if globe.lang == "python" %}selected="true"{% endif %}>Python</option>
+                  <option value="all" selected="true">All Languages</option>
+                  <option value="java">Java</option>
+                  <option value="groovy">Groovy</option>
+                  <option value="scala">Scala</option>
+                  <option value="c#">C#</option>
+                  <option value="javascript">Javascript</option>
+                  <option value="python">Python</option>
                 </select>
               </div>
             </div>
