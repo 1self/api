@@ -10,9 +10,8 @@ var liveworld = function() {
     };
 
     var handleIFrameReferrer = function(event) {
-        // event.data contains url of the referrer. send it to GA.
         if (isUrl(event.data)) {
-            console.info("send to google analytics : " + event.data);
+            ga('send', 'event', 'embedded_globe', event.data);
         }
     };
 
