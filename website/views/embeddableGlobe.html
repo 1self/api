@@ -68,13 +68,24 @@
         </div>
         <div class="tiles-footer">
           <button id="embed-globe" class="btn btn-default btn-small" type="button" style="color: white; background-color: #3E9FD3; border: 1px solid white"class="btn btn-success" title="Copy this code" data-container="body" data-toggle="popover" data-placement="top"
-          data-content='<iframe id="qd-globe" src="http://app.quantifieddev.org/community/globe"
-          width="100%" scrolling="no" frameborder="0"
-          onload="iFrameResize({resizedCallback: function(data){
-          data.iframe.style.height = data.height - 25 + &#39;px&#39;
-          }});">
+          data-content='<iframe id="qd-globe" src="http://app.quantifieddev.org/community/globe" width="100%" scrolling="no" frameborder="0">
           </iframe>
-          <script src="http://www.quantifieddev.org/js/iframeResizer.min.js"></script>'>&lt;embed&gt;</button>
+          <script src="http://www.quantifieddev.org/js/iframeResizer.min.js"></script>
+          <script>
+            var win = document.getElementById("qd-globe").contentWindow;
+             document.getElementById("qd-globe").onload = function() {
+              iFrameResize({
+                resizedCallback: function(data) {
+                  data.iframe.style.height = data.height - 25 + "px";
+                }
+              });
+              win.postMessage(
+                window.location.toString(),
+                "http://app.quantifieddev.org/community/globe"
+              );
+              return false;
+            }
+            </script>'>&lt;embed&gt;</button>
           <span class="pull-right"><a href="http://quantifieddev.org" target="_blank" style="color:inherit; text-decoration: none;">Powered by QuantifiedDev.org</a></span>
         </div>
       </div>

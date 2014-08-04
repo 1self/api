@@ -4,6 +4,24 @@ var liveworld = function() {
             container: "body"
         });
     });
+
+    var isUrl = function(str) {
+        return str.match("^http");
+    };
+
+    var handleIFrameReferrer = function(event) {
+        // event.data contains url of the referrer. send it to GA.
+        if (isUrl(event.data)) {
+            console.info("send to google analytics : " + event.data);
+        }
+    };
+
+    if (window.addEventListener) { // hack for IE to attach event handler
+        addEventListener("message", handleIFrameReferrer, false);
+    } else {
+        attachEvent("onmessage", handleIFrameReferrer);
+    }
+
     var liveDurationMins = parseInt($('#world-time-select').find(":selected").val());
     var selectedLanguage = $('#world-language-select').find(":selected").val();
     var selectedEventType = $('#world-event-select').find(":selected").val();
