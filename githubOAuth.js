@@ -47,7 +47,7 @@ module.exports = function(app) {
                     var githubUserRecord = {
                         githubUser: githubUser
                     }
-                    mongoDbConnection(function(databaseConnection) {
+                    mongoDbConnection(function(qdDb) {
                         qdDb.collection('users').insert(githubUserRecord, function(err, insertedRecords) {
                             if (err) {
                                 res.status(500).send("Database error");

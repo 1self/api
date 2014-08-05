@@ -52,7 +52,7 @@ function clone(a) {
 var singleEventTemplate = {
     "actionTags": [
         "Develop",
-        "PushEvent"
+        "Push"
     ],
     "dateTime": {
         "$date": ""
@@ -60,7 +60,8 @@ var singleEventTemplate = {
     "source": "GitHub",
     "objectTags": [
         "Computer",
-        "Software"
+        "Software",
+        "Source Control"
     ],
     "streamid": "AJLIEHWVOGTYZTWO",
     "properties": {}
@@ -178,9 +179,7 @@ var getFilteredEvents = function(allEvents) {
 }
 
 var getUserInfoFromStreamId = function(streamid) {
-
-    streamid = "AJLIEHWVOGTYZTWO";
-
+    
     var deferred = q.defer();
     var streamIdQuery = {
         "streams": {

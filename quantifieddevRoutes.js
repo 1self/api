@@ -3,6 +3,8 @@ var _ = require("underscore");
 var Q = require('q');
 var encoder = require("./encoder")
 
+var util = require("./util");
+
 var mongoDbConnection = require('./lib/connection.js');
 
 module.exports = function(app, express) {
@@ -37,7 +39,8 @@ module.exports = function(app, express) {
                         console.log("streamId not found or error");
                         deferred.reject(err);
                     }
-                }) });;
+                })
+            });;
             return deferred.promise;
         };
 
@@ -109,7 +112,7 @@ module.exports = function(app, express) {
                     res.render('dashboard', {
                         streamLinked: "no",
                         username: req.session.username,
-                        avatarUrl: req.session.avatarUrl                        
+                        avatarUrl: req.session.avatarUrl
                     });
                 });
         } else {
@@ -126,7 +129,7 @@ module.exports = function(app, express) {
                     res.render('dashboard', {
                         showOverlay: true,
                         username: req.session.username,
-                        avatarUrl: req.session.avatarUrl                        
+                        avatarUrl: req.session.avatarUrl
                     });
                 }
             })
@@ -188,7 +191,7 @@ module.exports = function(app, express) {
                                     req.session.username = oneselfUsername;
                                     req.session.encodedUsername = encUserObj.encodedUsername;
                                     req.session.githubUsername = githubUsername;
-                                    req.session.githubAvatar = req.user.profile._json.avatar_url;    
+                                    req.session.githubAvatar = req.user.profile._json.avatar_url;
 
                                     if (req.session.redirectUrl) {
                                         var redirectUrl = req.session.redirectUrl;
@@ -201,7 +204,8 @@ module.exports = function(app, express) {
                             });
                         }
                     });
-                }) });
+                })
+            });
         } else {
             res.render('claimUsername', {
                 username: req.body.username,
@@ -213,16 +217,96 @@ module.exports = function(app, express) {
 
     app.get("/compare", sessionManager.requiresSession, function(req, res) {
         res.render('compare', {
-            username: req.session.username,                   
+            username: req.session.username,
             avatarUrl: req.session.avatarUrl
         });
     });
 
-    app.get("/connect_to_github",  sessionManager.requiresSession, function(req, res){
-        res.render('github', {
-            username: req.session.username,
-            avatarUrl: req.session.avatarUrl
+
+    var doesGitHubStreamIdExist = function(username) {
+        var deferred = Q.defer();
+        usernameQuery = {
+            "username": username
+        }
+        mongoDbConnection(function(qdDb) {
+            qdDb.collection('users').findOne(usernameQuery, function(err, user) {
+                if (err) {
+                    console.log("err : ", err);
+                    deferred.reject("DB error");
+                } else {
+                    if (user.githubUser.githubStreamId !== undefined) {
+                        deferred.resolve(true);
+                    } else {
+                        deferred.resolve(false);
+                    }
+
+                }
+            });
         });
+        return deferred.promise;
+    }
+    var linkGithubStreamToUser = function(username, stream) {
+        var deferred = Q.defer();
+        var query = {
+            "username": username
+        };
+
+        var updateQuery = {
+            $set: {
+                "githubUser.githubStreamId": stream.streamid
+            },
+            $push: {
+                "streams": {
+                    "streamid": stream.streamid,
+                    "readToken": stream.readToken
+                }
+            }
+        };
+
+        mongoDbConnection(function(qdDb) {
+            qdDb.collection('users').update(query, updateQuery, {
+                    upsert: true
+                },
+                function(err, user) {
+                    if (err) {
+                        console.log("Error", err);
+                        deferred.reject();
+                    } else {
+                        deferred.resolve();
+                    }
+                });
+
+        })
+        return deferred.promise;
+    }
+
+    app.get("/connect_to_github", sessionManager.requiresSession, function(req, res) {
+
+        doesGitHubStreamIdExist(req.session.username).then(function(githubStreamIdExists) {
+            if (githubStreamIdExists) {
+                res.render('github', {
+                    username: req.session.username,
+                    avatarUrl: req.session.avatarUrl
+                })
+
+            } else {
+                util.createStream(function(err, stream) {
+                    if (err) {
+                        console.log(err);
+                        res.status(500).send("Database error");
+                    } else {
+                        console.log("Result of create stream : ", stream);
+                        linkGithubStreamToUser(req.session.username, stream).then(function() {
+                            res.render('github', {
+                                username: req.session.username,
+                                avatarUrl: req.session.avatarUrl
+                            });
+                        });
+                    }
+                })
+            }
+        })
+
     });
 
     var getFilterValuesFrom = function(req) {
@@ -231,7 +315,7 @@ module.exports = function(app, express) {
         var selectedEvent = req.query.event ? req.query.event : "all";
         var selectedDuration = req.query.duration ? req.query.duration : lastHour;
         var filterValues = {
-            username: req.session.username,                   
+            username: req.session.username,
             avatarUrl: req.session.avatarUrl,
             globe: {
                 lang: selectedLanguage,

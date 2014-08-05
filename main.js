@@ -12,6 +12,8 @@ var session = require("express-session");
 var q = require('q');
 
 var mongoDbConnection = require('./lib/connection.js');
+var util = require('./util');
+
 
 var githubEvents = require("./githubEvents");
 
@@ -145,6 +147,43 @@ var getStreamIdForUsername = function(usernames) {
                 console.log("getStreamIdForUsername user : ", user);
                 if (user && user.streams) {
                     deferred.resolve(user.streams);
+                } else {
+                    deferred.reject();
+                }
+            }
+        });
+    });
+
+    return deferred.promise;
+};
+
+
+var getGithubStreamIdForUsername = function(usernames) {
+    var deferred = q.defer();
+    var query = null;
+    var encodedUsername = usernames[0];
+    var forUsername = usernames[1];
+    if (forUsername !== undefined) {
+        query = {
+            "username": forUsername
+        };
+    } else {
+        query = {
+            "encodedUsername": encodedUsername
+        };
+    }
+
+    mongoDbConnection(function(qdDb) {
+        qdDb.collection('users').findOne(query, {
+            "githubUser.githubStreamId": 1
+        }, function(err, user) {
+            if (err) {
+                console.log(err);
+                deferred.reject(err);
+            } else {
+                console.log("getStreamIdForUsername user : ", user);
+                if (user && user.githubUser.githubStreamId) {
+                    deferred.resolve(user.githubUser.githubStreamId);
                 } else {
                     deferred.reject();
                 }
@@ -1284,36 +1323,15 @@ app.get('/demo', function(request, response) {
 });
 
 app.post('/stream', function(req, res) {
-    crypto.randomBytes(16, function(ex, buf) {
-        if (ex) throw ex;
-
-        var streamid = [];
-        for (var i = 0; i < buf.length; i++) {
-            var charCode = String.fromCharCode((buf[i] % 26) + 65);
-            streamid.push(charCode);
-        };
-
-        var writeToken = crypto.randomBytes(22).toString('hex');
-        var readToken = crypto.randomBytes(22).toString('hex');
-
-        var stream = {
-            streamid: streamid.join(''),
-            writeToken: writeToken,
-            readToken: readToken
-        };
-
-        mongoDbConnection(function(qdDb) {
-
-            qdDb.collection('stream').insert(stream, function(err, insertedRecords) {
-                if (err) {
-                    res.status(500).send("Database error");
-                } else {
-                    res.send(insertedRecords[0]);
-                }
-            });
-        });
-    });
+    util.createStream(function(err, data){
+        if(err){
+            res.status(500).send("Database error");
+        } else {
+            res.send(data)
+        }
+    })
 });
+
 
 app.get('/stream/:id', function(req, res) {
     var readToken = req.headers.authorization;
@@ -1541,7 +1559,7 @@ app.get('/quantifieddev/hourlyGithubPushEvents', function(req, res) {
 
 
     validEncodedUsername(encodedUsername, req.query.forUsername)
-        .then(getStreamIdForUsername)
+        .then(getGithubStreamIdForUsername)
         .then(githubEvents.getGithubPushEvents)
         .then(getHourlyGithubPushEventsCount)
         .then(function(response) {
