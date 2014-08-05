@@ -1120,7 +1120,7 @@ var getHourlyGithubPushEventsCount = function(streams) {
                         "in": ["AJLIEHWVOGTYZTWO"]
                     }
                 },
-                "payload.actionTags": "PushEvent"
+                "payload.actionTags": "Push"
             },
             "projectionSpec": {
                 "payload.dateTime": "date",
@@ -1460,7 +1460,6 @@ app.get('/quantifieddev/myhydration', function(req, res) {
     var encodedUsername = req.headers.authorization;
     validEncodedUsername(encodedUsername, req.query.forUsername)
         .then(getStreamIdForUsername)
-        .then(getGithubEventFromServiec)
         .then(getMyHydrationEventsFromPlatform)
         .then(function(response) {
             res.send(response);

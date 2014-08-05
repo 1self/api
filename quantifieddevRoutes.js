@@ -284,10 +284,7 @@ module.exports = function(app, express) {
 
         doesGitHubStreamIdExist(req.session.username).then(function(githubStreamIdExists) {
             if (githubStreamIdExists) {
-                res.render('github', {
-                    username: req.session.username,
-                    avatarUrl: req.session.avatarUrl
-                })
+                res.redirect('dashboard')
 
             } else {
                 util.createStream(function(err, stream) {
@@ -297,10 +294,7 @@ module.exports = function(app, express) {
                     } else {
                         console.log("Result of create stream : ", stream);
                         linkGithubStreamToUser(req.session.username, stream).then(function() {
-                            res.render('github', {
-                                username: req.session.username,
-                                avatarUrl: req.session.avatarUrl
-                            });
+                            res.redirect('dashboard');
                         });
                     }
                 })

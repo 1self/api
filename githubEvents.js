@@ -34,7 +34,7 @@ var getPushEventsForUserForPage = function(page, username) {
     var ghuser = client.user(username);
 
     var deferred = q.defer();
-    ghuser.events(page, ['PushEvent'], function(err, pushEvents) {
+    ghuser.events(page, ['Push'], function(err, pushEvents) {
         if (err) {
             console.log("err " + err);
             deferred.reject(err);
