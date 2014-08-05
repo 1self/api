@@ -10,6 +10,7 @@ var moment = require("moment");
 var user;
 
 var encryptPassword = function() {
+    var encryptedPassword;
     if (sharedSecret) {
         var tokens = sharedSecret.split(":");
         var encryptionKey = tokens[0];
@@ -17,10 +18,10 @@ var encryptPassword = function() {
         var iv = new Buffer('');
         var key = new Buffer(encryptionKey, 'hex'); //secret key for encryption
         var cipher = crypto.createCipheriv('aes-128-ecb', key, iv);
-        var encryptedPassword = cipher.update(password, 'utf-8', 'hex');
+        encryptedPassword = cipher.update(password, 'utf-8', 'hex');
         encryptedPassword += cipher.final('hex');
-        return encryptedPassword;
     }
+    return encryptedPassword;    
 };
 
 var getPushEventsForUserForPage = function(page, username) {
@@ -43,7 +44,7 @@ var getPushEventsForUserForPage = function(page, username) {
         }
     });
     return deferred.promise;
-}
+};
 
 function clone(a) {
     return JSON.parse(JSON.stringify(a));
@@ -65,7 +66,7 @@ var singleEventTemplate = {
     ],
     "streamid": "AJLIEHWVOGTYZTWO",
     "properties": {}
-}
+};
 
 var transformToQdEvents = function(allEvents) {
     var qdEvents = [];
@@ -77,15 +78,15 @@ var transformToQdEvents = function(allEvents) {
     console.log("4. Transformed to QD Events", qdEvents.length);
 
     return qdEvents;
-}
+};
 
 var storeLastEventDate = function(latestGitHubEvent, username) {
     console.log("latestGitHubEvent is", JSON.stringify(latestGitHubEvent));
     console.log("username is", username);
-    console.log("7a. storeLastEventDate", JSON.stringify(latestGitHubEvent))
+    console.log("7a. storeLastEventDate", JSON.stringify(latestGitHubEvent));
     
     if (latestGitHubEvent !== undefined) {
-        var latestGitHubEventDb = new Date(latestGitHubEvent.dateTime["$date"])
+        var latestGitHubEventDb = new Date(latestGitHubEvent.dateTime["$date"]);
         mongoDbConnection(function(qdDb) {
             qdDb.collection("users", function(err, collection) {
                 collection.update({
@@ -100,14 +101,14 @@ var storeLastEventDate = function(latestGitHubEvent, username) {
                     if (error) {
                         console.log(error);
                     } else {
-                        console.log("7b. storeLastEventDate")
+                        console.log("7b. storeLastEventDate");
                         console.log("Update success", data);
                     }
                 });
             });
         });
     }
-}
+};
 
 
 var filterEvents = function(allEvents, latestGitHubEventDate) {
@@ -117,10 +118,10 @@ var filterEvents = function(allEvents, latestGitHubEventDate) {
     var filteredEvents = _.filter(allEvents, function(event) {
         if (latestGitHubEventDate !== undefined) {
             console.log("3b. filterEvents last event date should not be undefined", latestGitHubEventDate);
-            return event.created_at > latestGitHubEventDate
+            return event.created_at > latestGitHubEventDate;
         } else {
             console.log("3b. filterEvents last event date should be undefined", latestGitHubEventDate);
-            return true
+            return true;
         }
     });
     return filteredEvents;
@@ -157,26 +158,27 @@ var sendEventsToPlatform = function(myEvents) {
         json: myEventsWithPayload
     };
     request.post(options,
-        function(error, response, body) {
-            if (!error && response.statusCode == 200) {
-                console.log("5. b Events logged is ");
-                deferred.resolve(myEvents);
-            } else {
-                console.log(error);
-                deferred.reject("DB error");
-            }
-        });
+                 function(error, response, body) {
+                     if (!error && response.statusCode == 200) {
+                         console.log("5. b Events logged is ");
+                         deferred.resolve(myEvents);
+                     } else {
+                         console.log(error);
+                         deferred.reject("DB error");
+                     }
+                 });
     return deferred.promise;
 };
 
 var getGithubPushEventsFromService = function(promiseArray) {
     console.log("2. returning q.all promiseArray");
-    return q.all(promiseArray)
-}
+    return q.all(promiseArray);
+};
 
 var getFilteredEvents = function(allEvents) {
+    console.log("All events length is ", allEvents.length);
     return filterEvents(allEvents, user.latestGitHubEventDate);
-}
+};
 
 var getUserInfoFromStreamId = function(streamid) {
     
@@ -197,11 +199,11 @@ var getUserInfoFromStreamId = function(streamid) {
                     user = data;
                     deferred.resolve(data);
                 }
-            })
+            });
         });
     });
     return deferred.promise;
-}
+};
 
 var createPromiseArray = function() {
     var promiseArray = [];
