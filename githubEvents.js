@@ -76,6 +76,9 @@ var transformToQdEvents = function(events, streamid) {
         var qdEvent = clone(singleEventTemplate);
         qdEvent.dateTime["$date"] = event.created_at;
         qdEvent.streamid = streamid;
+        qdEvent.serverDateTime =  {
+            "$date": moment(new Date()).format()
+        };   
         qdEvents.push(qdEvent);
     });
     console.log("4. Transformed to QD Events", qdEvents.length);
@@ -237,7 +240,7 @@ exports.getGithubPushEvents = function(streamid, accessToken) {
         })
         .then(sendEventsToPlatform)
         .then(getLatestGithubEvent)
-        .then(function(latestGitHubEvent) {˜
+        .then(function(latestGitHubEvent) {
             storeLastEventDate(latestGitHubEvent, user);
             deferred.resolve();
         })
