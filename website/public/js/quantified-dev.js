@@ -20,7 +20,8 @@ var qd = function() {
                 "Authorization": $.cookie("_eun")
             },
             success: successCallback,
-            error: function(error) {
+            error: function(xhr, error) {
+                console.log("Error occurred for ", urlParam)
                 if (failureCallback)
                     failureCallback(error);
             }
@@ -151,12 +152,16 @@ var qd = function() {
     result.updateActiveEvents = function() {
         postAjax("myActiveEvents", activitySuccessCallback)
     };
+
+    var hourlyGithubErrorCallback = function() {
+        $("#connect_to_github_btn").show();
+    };
     var hourlyGithubSuccessCallback = function(hourlyGithubPushEvents) {
         result.hourlyGithubPushEvents = hourlyGithubPushEvents;
         plotHeatmapWith('#hourlyGithubPush-heat-map-parent', '#hourlyGithubPush-heat-map', hourlyGithubPushEvents);
     };
     result.updateHourlyGithubPushHeatMap = function() {
-        postAjax("hourlyGithubPushEvents", hourlyGithubSuccessCallback)
+        postAjax("hourlyGithubPushEvents", hourlyGithubSuccessCallback, hourlyGithubErrorCallback);
     };
     result.plotGraphs = function(graphs) {
         graphs.forEach(function(graph) {
