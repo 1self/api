@@ -28,11 +28,8 @@ var getPushEventsForUserForPage = function(page, user) {
     var githubUsername = user.githubUser.username;
 
     var user_api_url = "/users/" + githubUsername;
-    console.log("GitHub user access token is #### ", githubAccessToken)
     var client = github.client(githubAccessToken);
-    //var client = github.client();    
     client.get(user_api_url, {}, function(err, status, body, headers) {
-        // console.log("got clilent : " + JSON.stringify(body));
     });
     var ghuser = client.user(githubUsername);
 
@@ -88,8 +85,6 @@ var transformToQdEvents = function(events, streamid) {
 
 var storeLastEventDate = function(latestGitHubEvent, user) {
     var username = user.username;
-    console.log("latestGitHubEvent is", JSON.stringify(latestGitHubEvent));
-    console.log("username is", username);
     console.log("7a. storeLastEventDate", JSON.stringify(latestGitHubEvent));
 
     if (latestGitHubEvent !== undefined) {
@@ -182,7 +177,6 @@ var getGithubPushEventsFromService = function(promiseArray) {
 };
 
 var getFilteredEvents = function(allEvents) {
-    console.log("All events length is ", allEvents.length);
     return filterEvents(allEvents, user.latestGitHubEventDate);
 };
 
@@ -212,7 +206,6 @@ var getUserInfoFromStreamId = function(streamid) {
 };
 
 var createPromiseArray = function() {
-    console.log("USer im receiving : %%%% ", user);
     var promiseArray = [];
     var deferred = q.defer();
     var pages = _.range(1, 11);
@@ -226,10 +219,8 @@ var createPromiseArray = function() {
 exports.getGithubPushEvents = function(streamid, accessToken) {
     deferred = q.defer();
 
-    console.log("$$$$ access token in exports.get .. ", accessToken);
     githubAccessToken = accessToken;
 
-    console.log("Stream id Im receiving %%% ", streamid)
     getUserInfoFromStreamId(streamid)
         .then(createPromiseArray)
         .then(getGithubPushEventsFromService)

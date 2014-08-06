@@ -28,13 +28,11 @@ module.exports = function(app, express) {
             var byStreamId = {
                 "streamid": streamid
             };
-            console.log("streamId to link : " + streamid);
             var deferred = Q.defer();
 
             mongoDbConnection(function(qdDb) {
                 qdDb.collection('stream').findOne(byStreamId, function(err, stream) {
                     if (!err && stream) {
-                        console.log("streamId found + " + JSON.stringify(stream));
                         deferred.resolve();
                     } else {
                         console.log("streamId not found or error");
@@ -117,9 +115,6 @@ module.exports = function(app, express) {
                     });
                 });
         } else {
-
-            console.log("avatarUrl : " + req.session.avatarUrl);
-
             getStreamsForUser().then(function(user) {
                 if (user.streams) {
                     res.render('dashboard', {
@@ -283,7 +278,6 @@ module.exports = function(app, express) {
 
     app.get("/connect_to_github", sessionManager.requiresSession, function(req, res) {
 
-        console.log("Access token from session is $$$$ ", req.session.githubAccessToken);
         var githubAccessToken = req.session.githubAccessToken;
 
         doesGitHubStreamIdExist(req.session.username).then(function(githubStreamId) {
@@ -298,7 +292,6 @@ module.exports = function(app, express) {
                         console.log(err);
                         res.status(500).send("Database error");
                     } else {
-                        console.log("Result of create stream 123: ", stream);
                         linkGithubStreamToUser(req.session.username, stream)
                             .then(function(streamid){
                                 return githubEvents.getGithubPushEvents(streamid, githubAccessToken);

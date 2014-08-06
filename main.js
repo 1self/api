@@ -46,14 +46,6 @@ var platformUri = process.env.PLATFORM_BASE_URI;
 var sharedSecret = process.env.SHARED_SECRET;
 console.log("sharedSecret : " + sharedSecret);
 
-// mongoClient.connect(mongoUri, function(err, db) {
-//     if (err) {
-//         console.log(err);
-//     } else {
-//         qdDb = db;
-//         console.log('database connected : ' + qdDb);
-//     }
-// });
 
 console.log('Connecting to PLATFORM_BASE_URI : ' + platformUri);
 require('./githubOAuth')(app);
@@ -109,7 +101,6 @@ var validEncodedUsername = function(encodedUsername, forUsername) {
                 deferred.reject(err);
             } else {
                 if (user) {
-                    console.log("in validEncodedUsername : user " + JSON.stringify(user));
                     var usernames = [encodedUsername, forUsername];
                     deferred.resolve(usernames);
                 } else {
@@ -144,7 +135,6 @@ var getStreamIdForUsername = function(usernames) {
             if (err) {
                 deferred.reject(err);
             } else {
-                console.log("getStreamIdForUsername user : ", user);
                 if (user && user.streams) {
                     deferred.resolve(user.streams);
                 } else {
@@ -181,7 +171,6 @@ var getGithubStreamIdForUsername = function(usernames) {
                 console.log(err);
                 deferred.reject(err);
             } else {
-                console.log("getStreamIdForUsername user : ", user);
                 if (user && user.githubUser.githubStreamId) {
                     deferred.resolve(user.githubUser.githubStreamId);
                 } else {
@@ -328,7 +317,6 @@ var getBuildEventsFromPlatform = function(streams) {
     var streamids = _.map(streams, function(stream) {
         return stream.streamid;
     });
-    console.log("getBuildEventsFromPlatform streams: " + streamids);
     var deferred = q.defer();
     var noId = {
         _id: 0
@@ -861,11 +849,9 @@ var getHourlyBuildCountFromPlatform = function(streams) {
     };
 
     function callback(error, response, body) {
-        //console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
             result = result[0];
-            // console.log("No of hourly builds is : " + JSON.stringify(result));
             if (_.isEmpty(result)) {
                 deferred.resolve([]);
             } else {
@@ -878,7 +864,6 @@ var getHourlyBuildCountFromPlatform = function(streams) {
                 deferred.resolve(rollupToArray(hourlyBuilds));
             }
         } else {
-            //console.log("error during call to platform: " + error);
             deferred.reject(error);
 
         }
@@ -1135,7 +1120,6 @@ var getHourlyGithubPushEventsCount = function(streamid) {
             }
         }
     };
-    console.log("Spec is : ", JSON.stringify(hourlyGithubPushEventCount))
     var options = {
         url: platformUri + '/rest/analytics/aggregate',
         auth: {
@@ -1152,21 +1136,15 @@ var getHourlyGithubPushEventsCount = function(streamid) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
             result = result[0];
-            console.log("result is : ", result);
             if (_.isEmpty(result)) {
                 deferred.resolve([]);
             } else {
                 var hourlyGithubPushEvents = generateHoursForWeek(defaultEventValues);
-                console.log("hourlyGithubPushEvents is ", hourlyGithubPushEvents)
                 for (var date in result) {
-
-                    console.log("Date  is", JSON.stringify(date));
                     if (hourlyGithubPushEvents[date] !== undefined) {
-                        console.log("CAME HERE IN LOOP");
                         hourlyGithubPushEvents[date].hourlyEventCount = result[date].githubPushEventCount;
                     }
                 }
-                console.log("Transofrmed result is", hourlyGithubPushEvents);
                 deferred.resolve(rollupToArray(hourlyGithubPushEvents));
             }
         } else {
@@ -1292,9 +1270,7 @@ app.all('*', function(req, res, next) {
     res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,accept,x-requested-with,x-withio-delay');
     if (req.headers["x-withio-delay"]) {
         var delay = req.headers["x-withio-delay"];
-        //console.log("request is being delayed by " + delay + " ms")
         setTimeout(function() {
-            //console.log("proceeding with request");
             next();
         }, delay);
     } else {
@@ -1551,14 +1527,12 @@ app.get('/quantifieddev/myActiveEvents', function(req, res) {
 
 app.get('/quantifieddev/hourlyGithubPushEvents', function(req, res) {
     var encodedUsername = req.headers.authorization;
-    console.log("came here in githubPushEvents");
 
 
     validEncodedUsername(encodedUsername, req.query.forUsername)
         .then(getGithubStreamIdForUsername)
         .then(getHourlyGithubPushEventsCount)
         .then(function(response) {
-            console.log("The response is : ", response);
             res.send(response);
         }).catch(function(error) {
             console.log("Error is", error);

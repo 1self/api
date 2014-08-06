@@ -21,7 +21,6 @@ module.exports = function(app) {
     var handleGithubCallback = function(req, res) {
         var githubUser = req.user.profile;
         req.session.githubAccessToken = req.user.accessToken;
-        console.log("gitHub access token is", req.session.githubAccessToken);
 
         var isNewUser = function(user) {
             return !user;
@@ -55,7 +54,6 @@ module.exports = function(app) {
                             } else {
                                 req.session.githubUsername = githubUser.username;
                                 req.session.avatarUrl = githubUser._json.avatar_url;
-                                console.log("github login done, redirecting to claimUsername " + req.session.githubUsername);
                                 redirect(githubUser, "/claimUsername");
                             }
                         });
