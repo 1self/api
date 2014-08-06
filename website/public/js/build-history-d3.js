@@ -155,7 +155,7 @@ window.qd.plotBuildHistory = function() {
                 }
             })
             var curval = d3.mean(filteredData, function(d) {
-                return d.failed;
+                return +d.failed;
             });
 
             // When we're starting from the beginning of the range, the rolling average doesn't work.
@@ -197,7 +197,7 @@ window.qd.plotBuildHistory = function() {
             });
 
             var curval = d3.mean(filteredData, function(d) {
-                return +d.passed + +d.failed;
+                return +d.passed;
             });
             return -y(curval); // going up in height so need to go negative
         })
