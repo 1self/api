@@ -8,7 +8,7 @@ var sharedSecret = process.env.SHARED_SECRET;
 var mongoDbConnection = require('./lib/connection.js');
 var moment = require("moment");
 var user;
-
+var githubAccessToken;
 var encryptPassword = function() {
     var encryptedPassword;
     if (sharedSecret) {
@@ -28,7 +28,8 @@ var getPushEventsForUserForPage = function(page, user) {
     var githubUsername = user.githubUser.username;
 
     var user_api_url = "/users/" + githubUsername;
-    var client = github.client("ee4765589a75677839333a08deb224a61fcd1a8c");
+    console.log("GitHub user access token is #### ", githubAccessToken)
+    var client = github.client(githubAccessToken);
     //var client = github.client();    
     client.get(user_api_url, {}, function(err, status, body, headers) {
         // console.log("got clilent : " + JSON.stringify(body));
@@ -219,8 +220,12 @@ var createPromiseArray = function() {
     return deferred.promise;
 };
 
-exports.getGithubPushEvents = function(streamid) {
+exports.getGithubPushEvents = function(streamid, accessToken) {
     deferred = q.defer();
+
+    console.log("$$$$ access token in exports.get .. ", accessToken);
+    githubAccessToken = accessToken;
+
     console.log("Stream id Im receiving %%% ", streamid)
     getUserInfoFromStreamId(streamid)
         .then(createPromiseArray)
@@ -232,7 +237,7 @@ exports.getGithubPushEvents = function(streamid) {
         })
         .then(sendEventsToPlatform)
         .then(getLatestGithubEvent)
-        .then(function(latestGitHubEvent) {
+        .then(function(latestGitHubEvent) {˜
             storeLastEventDate(latestGitHubEvent, user);
             deferred.resolve();
         })

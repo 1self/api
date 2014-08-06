@@ -15,12 +15,13 @@ module.exports = function(app) {
         req.session.encodedUsername = user.encodedUsername;
         req.session.githubUsername = user.githubUser.username;    
         req.session.avatarUrl = user.githubUser._json.avatar_url; 
+
     }
 
     var handleGithubCallback = function(req, res) {
         var githubUser = req.user.profile;
-        var githubUserAccessToken = req.user.accessToken;
-        console.log("gitHub access token is", githubUserAccessToken);
+        req.session.githubAccessToken = req.user.accessToken;
+        console.log("gitHub access token is", req.session.githubAccessToken);
 
         var isNewUser = function(user) {
             return !user;
@@ -33,7 +34,7 @@ module.exports = function(app) {
         };
         var insertGithubProfileInDb = function() {
             var options = {
-                url: "https://api.github.com/user/emails?access_token=" + githubUserAccessToken,
+                url: "https://api.github.com/user/emails?access_token=" + req.user.accessToken,
                 headers: {
                     "User-Agent": "Quantified Dev Localhost"
                 },

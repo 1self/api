@@ -283,9 +283,12 @@ module.exports = function(app, express) {
 
     app.get("/connect_to_github", sessionManager.requiresSession, function(req, res) {
 
+        console.log("Access token from session is $$$$ ", req.session.githubAccessToken);
+        var githubAccessToken = req.session.githubAccessToken;
+
         doesGitHubStreamIdExist(req.session.username).then(function(githubStreamId) {
             if (githubStreamId) {
-                githubEvents.getGithubPushEvents(githubStreamId)
+                githubEvents.getGithubPushEvents(githubStreamId, githubAccessToken)
                     .then(function() {
                         res.redirect('dashboard');
                     });
@@ -297,14 +300,16 @@ module.exports = function(app, express) {
                     } else {
                         console.log("Result of create stream 123: ", stream);
                         linkGithubStreamToUser(req.session.username, stream)
-                            .then(githubEvents.getGithubPushEvents)
+                            .then(function(streamid){
+                                return githubEvents.getGithubPushEvents(streamid, githubAccessToken);
+                            })
                             .then(function() {
                                 res.redirect('dashboard');
                             });
                     }
-                })
+                });
             }
-        })
+        });
 
     });
 
