@@ -50,6 +50,7 @@ body {
 
 .center-align-text {
   text-align: center!important; }
+  .
 
 .right-align-text {
   text-align: right!important; }
@@ -2532,6 +2533,25 @@ iframe.wysihtml5-sandbox {
 .hourlyHeatMapContainer{
   width: 90%;
 }
+.grid{
+  display: table;
+  width: 100%;
+
+}
+.grid-row{
+  display: table-row;
+}
+.grid-cell{
+  display: table-cell;vertical-align: middle;
+}
+
+.githubPushEvents.grid{
+  padding-left: 10%;
+}
+.githubPushEvents .grid-row{
+  height: 300px;
+}
+
 
 @media screen and (max-width: 500px) {
     .hourlyHeatMapContainer {

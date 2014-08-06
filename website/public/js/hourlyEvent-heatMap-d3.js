@@ -1,4 +1,5 @@
 window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
+    $(divId).html("");
     var margin = {
             top: 50,
             right: 0,

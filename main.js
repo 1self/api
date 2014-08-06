@@ -10,14 +10,16 @@ var path = require('path');
 var _ = require("underscore");
 var session = require("express-session");
 var q = require('q');
-var mongoClient = require('mongodb').MongoClient;
+
+var mongoDbConnection = require('./lib/connection.js');
+var util = require('./util');
+
+
+var githubEvents = require("./githubEvents");
+
 var app = express();
 app.use(express.logger());
 app.use(express.bodyParser());
-
-var mongoAppKey = process.env.DBKEY;
-var mongoUri = process.env.DBURI;
-var qdDb;
 
 app.engine('html', swig.renderFile);
 app.use(express.static(path.join(__dirname, 'website/public')));
@@ -44,14 +46,6 @@ var platformUri = process.env.PLATFORM_BASE_URI;
 var sharedSecret = process.env.SHARED_SECRET;
 console.log("sharedSecret : " + sharedSecret);
 
-mongoClient.connect(mongoUri, function(err, db) {
-    if (err) {
-        console.log(err);
-    } else {
-        qdDb = db;
-        console.log('database connected : ' + qdDb);
-    }
-});
 
 console.log('Connecting to PLATFORM_BASE_URI : ' + platformUri);
 require('./githubOAuth')(app);
@@ -93,9 +87,7 @@ var getFilterValuesFrom = function(req) {
     return filterValues;
 }
 
-app.getQdDb = function() {
-    return qdDb;
-}
+
 
 var validEncodedUsername = function(encodedUsername, forUsername) {
     var deferred = q.defer();
@@ -103,19 +95,21 @@ var validEncodedUsername = function(encodedUsername, forUsername) {
         "encodedUsername": encodedUsername
     };
 
-    qdDb.collection('users').findOne(encodedUsernameExists, function(err, user) {
-        if (err) {
-            deferred.reject(err);
-        } else {
-            if (user) {
-                console.log("in validEncodedUsername : user " + JSON.stringify(user));
-                var usernames = [encodedUsername, forUsername];
-                deferred.resolve(usernames);
+    mongoDbConnection(function(qdDb) {
+        qdDb.collection('users').findOne(encodedUsernameExists, function(err, user) {
+            if (err) {
+                deferred.reject(err);
             } else {
-                deferred.reject();
+                if (user) {
+                    var usernames = [encodedUsername, forUsername];
+                    deferred.resolve(usernames);
+                } else {
+                    deferred.reject();
+                }
             }
-        }
+        });
     });
+
     return deferred.promise;
 }
 
@@ -133,20 +127,59 @@ var getStreamIdForUsername = function(usernames) {
             "encodedUsername": encodedUsername
         };
     }
-    qdDb.collection('users').findOne(query, {
-        "streams": 1
-    }, function(err, user) {
-        if (err) {
-            deferred.reject(err);
-        } else {
-            console.log("getStreamIdForUsername user : ", user);
-            if (user && user.streams) {
-                deferred.resolve(user.streams);
+
+    mongoDbConnection(function(qdDb) {
+        qdDb.collection('users').findOne(query, {
+            "streams": 1
+        }, function(err, user) {
+            if (err) {
+                deferred.reject(err);
             } else {
-                deferred.reject();
+                if (user && user.streams) {
+                    deferred.resolve(user.streams);
+                } else {
+                    deferred.reject();
+                }
             }
-        }
+        });
     });
+
+    return deferred.promise;
+};
+
+
+var getGithubStreamIdForUsername = function(usernames) {
+    var deferred = q.defer();
+    var query = null;
+    var encodedUsername = usernames[0];
+    var forUsername = usernames[1];
+    if (forUsername !== undefined) {
+        query = {
+            "username": forUsername
+        };
+    } else {
+        query = {
+            "encodedUsername": encodedUsername
+        };
+    }
+
+    mongoDbConnection(function(qdDb) {
+        qdDb.collection('users').findOne(query, {
+            "githubUser.githubStreamId": 1
+        }, function(err, user) {
+            if (err) {
+                console.log(err);
+                deferred.reject(err);
+            } else {
+                if (user && user.githubUser.githubStreamId) {
+                    deferred.resolve(user.githubUser.githubStreamId);
+                } else {
+                    deferred.reject();
+                }
+            }
+        });
+    });
+
     return deferred.promise;
 };
 
@@ -154,7 +187,7 @@ var saveEvent_driver = function(myEvent, stream, serverDateTime, res, rm) {
     myEvent.streamid = stream.streamid;
     myEvent.serverDateTime = {
         "$date": serverDateTime
-    }
+    };
     var options = {
         url: platformUri + '/rest/events/',
         auth: {
@@ -172,24 +205,26 @@ var saveEvent_driver = function(myEvent, stream, serverDateTime, res, rm) {
             } else {
                 res.status(500).send("Database error");
             }
-        })
+        });
 }
 
 var authenticateWriteToken = function(token, id, error, success) {
-    qdDb.collection('stream').find({
-        streamid: id
-    }, function(err, docs) {
-        docs.toArray(function(err, docsArray) {
-            var stream = docsArray[0] || {};
-            if (stream.writeToken != token) {
-                error();
-            } else {
-                var stream = {
-                    streamid: stream.streamid
+    mongoDbConnection(function(qdDb) {
+        qdDb.collection('stream').find({
+            streamid: id
+        }, function(err, docs) {
+            docs.toArray(function(err, docsArray) {
+                var stream = docsArray[0] || {};
+                if (stream.writeToken != token) {
+                    error();
+                } else {
+                    var stream = {
+                        streamid: stream.streamid
+                    };
+                    success(stream);
                 }
-                success(stream);
-            }
-        })
+            });
+        });
     });
 };
 
@@ -217,7 +252,7 @@ var getEventsForStreams = function(streams) {
     };
     var filterSpec = {
         'payload.streamid': streamids
-    }
+    };
     var options = {
         url: platformUri + '/rest/events/filter',
         auth: {
@@ -252,9 +287,9 @@ var generateDatesFor = function(defaultValues) {
         eachDay = new Date(eachDay);
         var month = eachDay.getMonth() + 1;
         if (month < 10) {
-            month = '0' + month
+            month = '0' + month;
         }
-        var day = eachDay.getDate()
+        var day = eachDay.getDate();
         if (day < 10) {
             day = '0' + day
         }
@@ -282,7 +317,6 @@ var getBuildEventsFromPlatform = function(streams) {
     var streamids = _.map(streams, function(stream) {
         return stream.streamid;
     });
-    console.log("getBuildEventsFromPlatform streams: " + streamids);
     var deferred = q.defer();
     var noId = {
         _id: 0
@@ -337,7 +371,7 @@ var getBuildEventsFromPlatform = function(streams) {
                 "resultField": "failed"
             }
         }
-    }
+    };
     var options = {
         url: platformUri + '/rest/analytics/aggregate',
         auth: {
@@ -367,11 +401,11 @@ var getBuildEventsFromPlatform = function(streams) {
                 var buildsByDay = generateDatesFor(defaultBuildValues);
                 for (date in result) {
                     if (buildsByDay[date] !== undefined) {
-                        buildsByDay[date].passed = result[date].passed
-                        buildsByDay[date].failed = result[date].failed
+                        buildsByDay[date].passed = result[date].passed;
+                        buildsByDay[date].failed = result[date].failed;
                     }
                 }
-                deferred.resolve(rollupToArray(buildsByDay))
+                deferred.resolve(rollupToArray(buildsByDay));
             }
         } else {
             deferred.reject(error);
@@ -455,7 +489,7 @@ var getMyWTFsFromPlatform = function(streams) {
                         wtfsByDay[date].wtfCount = result[date].wtfCount;
                     }
                 }
-                deferred.resolve(rollupToArray(wtfsByDay))
+                deferred.resolve(rollupToArray(wtfsByDay));
             }
         } else {
             deferred.reject(error);
@@ -539,7 +573,7 @@ var getMyHydrationEventsFromPlatform = function(streams) {
                         hydrationsByDay[date].hydrationCount = result[date].hydrationCount;
                     }
                 }
-                deferred.resolve(rollupToArray(hydrationsByDay))
+                deferred.resolve(rollupToArray(hydrationsByDay));
             }
         } else {
             deferred.reject(error);
@@ -623,7 +657,7 @@ var getMyCaffeineEventsFromPlatform = function(streams) {
                         caffeineIntakeByDay[date].caffeineCount = result[date].caffeineCount;
                     }
                 }
-                deferred.resolve(rollupToArray(caffeineIntakeByDay))
+                deferred.resolve(rollupToArray(caffeineIntakeByDay));
             }
         } else {
             deferred.reject(error);
@@ -705,7 +739,7 @@ var getAvgBuildDurationFromPlatform = function(streams) {
     };
     var convertMillisToSeconds = function(milliseconds) {
         return Math.round(milliseconds / 1000 * 100) / 100;
-    }
+    };
 
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
@@ -745,8 +779,6 @@ var orderDateAsPerWeek = function(date) {
 var generateHoursForWeek = function(defaultValues) {
     var result = {};
     var numberOfDaysToReportBuildsOn = 7;
-    var currentDate = new Date();
-    var startDate = new Date(currentDate - (7 * aDay));
     for (var i = 1; i <= numberOfDaysToReportBuildsOn; i++) {
         for (var j = 1; j <= 24; j++) {
             if (j < 10) {
@@ -817,24 +849,21 @@ var getHourlyBuildCountFromPlatform = function(streams) {
     };
 
     function callback(error, response, body) {
-        //console.log("error: " + JSON.stringify(error) + " response : " + JSON.stringify(response) + " body :" + JSON.stringify(body));
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
-            var result = result[0];
-            // console.log("No of hourly builds is : " + JSON.stringify(result));
+            result = result[0];
             if (_.isEmpty(result)) {
                 deferred.resolve([]);
             } else {
                 var hourlyBuilds = generateHoursForWeek(defaultEventValues);
-                for (date in result) {
+                for (var date in result) {
                     if (hourlyBuilds[date] !== undefined) {
-                        hourlyBuilds[date].hourlyEventCount = result[date].buildCount
+                        hourlyBuilds[date].hourlyEventCount = result[date].buildCount;
                     }
                 }
                 deferred.resolve(rollupToArray(hourlyBuilds));
             }
         } else {
-            //console.log("error during call to platform: " + error);
             deferred.reject(error);
 
         }
@@ -895,14 +924,14 @@ var getHourlyWtfCount = function(streams) {
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
-            var result = result[0];
+            result = result[0];
             if (_.isEmpty(result)) {
                 deferred.resolve([]);
             } else {
                 var hourlyWtfs = generateHoursForWeek(defaultEventValues);
-                for (date in result) {
+                for (var date in result) {
                     if (hourlyWtfs[date] !== undefined) {
-                        hourlyWtfs[date].hourlyEventCount = result[date].wtfCount
+                        hourlyWtfs[date].hourlyEventCount = result[date].wtfCount;
                     }
                 }
                 deferred.resolve(rollupToArray(hourlyWtfs));
@@ -967,14 +996,14 @@ var getHourlyHydrationCount = function(streams) {
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
-            var result = result[0];
+            result = result[0];
             if (_.isEmpty(result)) {
                 deferred.resolve([]);
             } else {
                 var hourlyHydration = generateHoursForWeek(defaultEventValues);
-                for (date in result) {
+                for (var date in result) {
                     if (hourlyHydration[date] !== undefined) {
-                        hourlyHydration[date].hourlyEventCount = result[date].hydrationCount
+                        hourlyHydration[date].hourlyEventCount = result[date].hydrationCount;
                     }
                 }
                 deferred.resolve(rollupToArray(hourlyHydration));
@@ -1039,14 +1068,14 @@ var getHourlyCaffeineCount = function(streams) {
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
-            var result = result[0];
+            result = result[0];
             if (_.isEmpty(result)) {
                 deferred.resolve([]);
             } else {
                 var hourlyCaffeine = generateHoursForWeek(defaultEventValues);
-                for (date in result) {
+                for (var date in result) {
                     if (hourlyCaffeine[date] !== undefined) {
-                        hourlyCaffeine[date].hourlyEventCount = result[date].caffeineCount
+                        hourlyCaffeine[date].hourlyEventCount = result[date].caffeineCount;
                     }
                 }
                 deferred.resolve(rollupToArray(hourlyCaffeine));
@@ -1059,7 +1088,73 @@ var getHourlyCaffeineCount = function(streams) {
 
     return deferred.promise;
 };
+var getHourlyGithubPushEventsCount = function(streamid) {
+    var deferred = q.defer();
+    groupQuery = {
+        "$groupBy": {
+            "fields": [{
+                "name": "payload.dateTime",
+                "format": "e HH"
+            }],
+            "filterSpec": {
+                "payload.streamid": {
+                    "$operator": {
+                        "in": [streamid]
+                    }
+                },
+                "payload.actionTags": "Push"
+            },
+            "projectionSpec": {
+                "payload.dateTime": "date",
+                "payload.properties": "properties"
+            },
+            "orderSpec": {}
+        }
+    };
+    hourlyGithubPushEventCount = {
+        "$count": {
+            "data": groupQuery,
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "githubPushEventCount"
+            }
+        }
+    };
+    var options = {
+        url: platformUri + '/rest/analytics/aggregate',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: {
+            spec: JSON.stringify(hourlyGithubPushEventCount)
+        },
+        method: 'GET'
+    };
 
+    function callback(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var result = JSON.parse(body);
+            result = result[0];
+            if (_.isEmpty(result)) {
+                deferred.resolve([]);
+            } else {
+                var hourlyGithubPushEvents = generateHoursForWeek(defaultEventValues);
+                for (var date in result) {
+                    if (hourlyGithubPushEvents[date] !== undefined) {
+                        hourlyGithubPushEvents[date].hourlyEventCount = result[date].githubPushEventCount;
+                    }
+                }
+                deferred.resolve(rollupToArray(hourlyGithubPushEvents));
+            }
+        } else {
+            deferred.reject(error);
+        }
+    }
+    requestModule(options, callback);
+
+    return deferred.promise;
+};
 var getMyActiveDuration = function(streams) {
     var streamids = _.map(streams, function(stream) {
         return stream.streamid;
@@ -1133,7 +1228,7 @@ var getMyActiveDuration = function(streams) {
     };
     var convertMillisToMinutes = function(milliseconds) {
         return Math.round(milliseconds / (1000 * 60) * 100) / 100;
-    }
+    };
 
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
@@ -1149,14 +1244,14 @@ var getMyActiveDuration = function(streams) {
                     value: 0
                 }];
                 var activeDurationByDay = generateDatesFor(defaulActiveDurationValues);
-                for (date in result) {
+                for (var date in result) {
                     if (activeDurationByDay[date] !== undefined) {
                         activeDurationByDay[date].totalActiveDuration = convertMillisToMinutes(result[date].totalActiveDuration);
                         activeDurationByDay[date].inActiveCount = result[date].activeCount - 1;
                     }
 
                 }
-                deferred.resolve(rollupToArray(activeDurationByDay))
+                deferred.resolve(rollupToArray(activeDurationByDay));
             }
         } else {
             deferred.reject(error);
@@ -1175,9 +1270,7 @@ app.all('*', function(req, res, next) {
     res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,accept,x-requested-with,x-withio-delay');
     if (req.headers["x-withio-delay"]) {
         var delay = req.headers["x-withio-delay"];
-        //console.log("request is being delayed by " + delay + " ms")
         setTimeout(function() {
-            //console.log("proceeding with request");
             next();
         }, delay);
     } else {
@@ -1203,32 +1296,15 @@ app.get('/demo', function(request, response) {
 });
 
 app.post('/stream', function(req, res) {
-    crypto.randomBytes(16, function(ex, buf) {
-        if (ex) throw ex;
-
-        var streamid = [];
-        for (var i = 0; i < buf.length; i++) {
-            var charCode = String.fromCharCode((buf[i] % 26) + 65);
-            streamid.push(charCode);
-        };
-
-        writeToken = crypto.randomBytes(22).toString('hex');
-        readToken = crypto.randomBytes(22).toString('hex');
-
-        var stream = {
-            streamid: streamid.join(''),
-            writeToken: writeToken,
-            readToken: readToken
-        };
-        qdDb.collection('stream').insert(stream, function(err, insertedRecords) {
-            if (err) {
-                res.status(500).send("Database error");
-            } else {
-                res.send(insertedRecords[0]);
-            }
-        });
-    });
+    util.createStream(function(err, data){
+        if(err){
+            res.status(500).send("Database error");
+        } else {
+            res.send(data)
+        }
+    })
 });
+
 
 app.get('/stream/:id', function(req, res) {
     var readToken = req.headers.authorization;
@@ -1237,18 +1313,21 @@ app.get('/stream/:id', function(req, res) {
         streamid: req.params.id
     };
 
-    qdDb.collection('stream').find(spec, function(err, docs) {
-        docs.toArray(function(err, streamArray) {
-            var stream = streamArray[0] || {};
-            if (stream.readToken != readToken) {
-                res.status(404).send("stream not found");
-            } else {
-                var response = {
-                    streamid: stream.streamid
+    mongoDbConnection(function(qdDb) {
+
+        qdDb.collection('stream').find(spec, function(err, docs) {
+            docs.toArray(function(err, streamArray) {
+                var stream = streamArray[0] || {};
+                if (stream.readToken != readToken) {
+                    res.status(404).send("stream not found");
+                } else {
+                    var response = {
+                        streamid: stream.streamid
+                    };
+                    res.send(JSON.stringify(response));
                 }
-                res.send(JSON.stringify(response));
-            }
-        })
+            });
+        });
     });
 });
 
@@ -1258,7 +1337,7 @@ app.get('/event', function(req, res) {
         .then(getStreamIdForUsername)
         .then(getEventsForStreams)
         .then(function(response) {
-            res.send(response)
+            res.send(response);
         }).catch(function(error) {
             res.status(404).send("No stream associated with user.");
         });
@@ -1267,9 +1346,9 @@ app.get('/event', function(req, res) {
 app.get('/:ip', function(req, res) {
     requestModule('http://freegeoip.net/json/' + req.params.ip, function(error, response, body) {
         if (!error && response.statusCode == 200) {
-            res.send(body)
+            res.send(body);
         }
-    })
+    });
 });
 
 app.post('/stream/:id/event', postEvent);
@@ -1277,7 +1356,7 @@ app.post('/stream/:id/event', postEvent);
 app.get('/live/devbuild/:durationMins', function(req, res) {
     var fields = {
         _id: 0,
-        streamid: 0,
+        streamid: 0
     };
 
     var durationMins = req.params.durationMins;
@@ -1316,7 +1395,7 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
             var info = JSON.parse(body);
-            res.send(info)
+            res.send(info);
         } else {
             res.status(500).send("Something went wrong!");
         }
@@ -1332,10 +1411,10 @@ app.get('/quantifieddev/mydev', function(req, res) {
         .then(getStreamIdForUsername)
         .then(getBuildEventsFromPlatform)
         .then(function(response) {
-            res.send(response)
+            res.send(response);
         }).catch(function(error) {
             res.status(404).send("stream not found");
-        })
+        });
 });
 
 app.get('/quantifieddev/mywtf', function(req, res) {
@@ -1344,7 +1423,7 @@ app.get('/quantifieddev/mywtf', function(req, res) {
         .then(getStreamIdForUsername)
         .then(getMyWTFsFromPlatform)
         .then(function(response) {
-            res.send(response)
+            res.send(response);
         }).catch(function(error) {
             res.status(404).send("stream not found");
         });
@@ -1356,7 +1435,7 @@ app.get('/quantifieddev/myhydration', function(req, res) {
         .then(getStreamIdForUsername)
         .then(getMyHydrationEventsFromPlatform)
         .then(function(response) {
-            res.send(response)
+            res.send(response);
         }).catch(function(error) {
             res.status(404).send("stream not found");
         });
@@ -1368,7 +1447,7 @@ app.get('/quantifieddev/mycaffeine', function(req, res) {
         .then(getStreamIdForUsername)
         .then(getMyCaffeineEventsFromPlatform)
         .then(function(response) {
-            res.send(response)
+            res.send(response);
         }).catch(function(error) {
             res.status(404).send("stream not found");
         });
@@ -1380,7 +1459,7 @@ app.get('/quantifieddev/buildDuration', function(req, res) {
         .then(getStreamIdForUsername)
         .then(getAvgBuildDurationFromPlatform)
         .then(function(response) {
-            res.send(response)
+            res.send(response);
         }).catch(function(error) {
             res.status(404).send("stream not found");
         });
@@ -1392,7 +1471,7 @@ app.get('/quantifieddev/hourlyBuildCount', function(req, res) {
         .then(getStreamIdForUsername)
         .then(getHourlyBuildCountFromPlatform)
         .then(function(response) {
-            res.send(response)
+            res.send(response);
         }).catch(function(error) {
             res.status(404).send("stream not found");
         });
@@ -1404,7 +1483,7 @@ app.get('/quantifieddev/hourlyWtfCount', function(req, res) {
         .then(getStreamIdForUsername)
         .then(getHourlyWtfCount)
         .then(function(response) {
-            res.send(response)
+            res.send(response);
         }).catch(function(error) {
             res.status(404).send("stream not found");
         });
@@ -1416,7 +1495,7 @@ app.get('/quantifieddev/hourlyHydrationCount', function(req, res) {
         .then(getStreamIdForUsername)
         .then(getHourlyHydrationCount)
         .then(function(response) {
-            res.send(response)
+            res.send(response);
         }).catch(function(error) {
             res.status(404).send("stream not found");
         });
@@ -1428,7 +1507,7 @@ app.get('/quantifieddev/hourlyCaffeineCount', function(req, res) {
         .then(getStreamIdForUsername)
         .then(getHourlyCaffeineCount)
         .then(function(response) {
-            res.send(response)
+            res.send(response);
         }).catch(function(error) {
             res.status(404).send("stream not found");
         });
@@ -1440,8 +1519,23 @@ app.get('/quantifieddev/myActiveEvents', function(req, res) {
         .then(getStreamIdForUsername)
         .then(getMyActiveDuration)
         .then(function(response) {
-            res.send(response)
+            res.send(response);
         }).catch(function(error) {
+            res.status(404).send("stream not found");
+        });
+});
+
+app.get('/quantifieddev/hourlyGithubPushEvents', function(req, res) {
+    var encodedUsername = req.headers.authorization;
+
+
+    validEncodedUsername(encodedUsername, req.query.forUsername)
+        .then(getGithubStreamIdForUsername)
+        .then(getHourlyGithubPushEventsCount)
+        .then(function(response) {
+            res.send(response);
+        }).catch(function(error) {
+            console.log("Error is", error);
             res.status(404).send("stream not found");
         });
 });

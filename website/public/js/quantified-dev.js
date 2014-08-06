@@ -151,6 +151,13 @@ var qd = function() {
     result.updateActiveEvents = function() {
         postAjax("myActiveEvents", activitySuccessCallback)
     };
+    var hourlyGithubSuccessCallback = function(hourlyGithubPushEvents) {
+        result.hourlyGithubPushEvents = hourlyGithubPushEvents;
+        plotHeatmapWith('#hourlyGithubPush-heat-map-parent', '#hourlyGithubPush-heat-map', hourlyGithubPushEvents);
+    };
+    result.updateHourlyGithubPushHeatMap = function() {
+        postAjax("hourlyGithubPushEvents", hourlyGithubSuccessCallback)
+    };
     result.plotGraphs = function(graphs) {
         graphs.forEach(function(graph) {
             result[graph]();
