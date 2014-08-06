@@ -1,7 +1,7 @@
 var liveCountry = function() {
-    var liveDurationMins = 60; // default duration of 1 hour
-    var selectedLanguage = "all"; // default to all languages
-    var selectedEventType = "all"; // default to all events (Build + wtf)
+    var liveDurationMins = parseInt($('#country-time-select').find(":selected").val());
+    var selectedLanguage = $('#country-language-select').find(":selected").val();
+    var selectedEventType = $('#country-event-select').find(":selected").val();
     var transformedEvents = [];
 
     $("#country-time-select").change(function() {
