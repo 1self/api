@@ -4,7 +4,7 @@ var cheerio = require('cheerio');
 var express = require("express");
 var moment = require("moment");
 var url = require('url');
-var crypto = require('crypto');
+
 var swig = require('swig');
 var path = require('path');
 var _ = require("underscore");
@@ -13,7 +13,7 @@ var q = require('q');
 
 var mongoDbConnection = require('./lib/connection.js');
 var util = require('./util');
-
+var PasswordEncrypt = require('./lib/PasswordEncrypt');
 
 var githubEvents = require("./githubEvents");
 
@@ -46,26 +46,11 @@ var platformUri = process.env.PLATFORM_BASE_URI;
 var sharedSecret = process.env.SHARED_SECRET;
 console.log("sharedSecret : " + sharedSecret);
 
-
 console.log('Connecting to PLATFORM_BASE_URI : ' + platformUri);
 require('./githubOAuth')(app);
-require('./quantifieddevRoutes')(app, express);
+require('./quantifieddevRoutes')(app);
 
-var encryptPassword = function() {
-    if (sharedSecret) {
-        var tokens = sharedSecret.split(":");
-        var encryptionKey = tokens[0];
-        var password = tokens[1];
-        var iv = new Buffer('');
-        var key = new Buffer(encryptionKey, 'hex'); //secret key for encryption
-        var cipher = crypto.createCipheriv('aes-128-ecb', key, iv);
-        var encryptedPassword = cipher.update(password, 'utf-8', 'hex');
-        encryptedPassword += cipher.final('hex');
-        return encryptedPassword;
-    }
-};
-
-var encryptedPassword = encryptPassword();
+var encryptedPassword = PasswordEncrypt.encryptPassword(sharedSecret);
 
 var getFilterValuesFrom = function(req) {
     var lastHour = 60;
@@ -85,8 +70,7 @@ var getFilterValuesFrom = function(req) {
         }
     };
     return filterValues;
-}
-
+};
 
 
 var validEncodedUsername = function(encodedUsername, forUsername) {

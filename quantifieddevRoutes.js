@@ -8,7 +8,7 @@ var util = require("./util");
 
 var mongoDbConnection = require('./lib/connection.js');
 
-module.exports = function(app, express) {
+module.exports = function(app) {
 
     var getFilterValuesForCountry = function(req) {
         var lastWeek = 60 * 24 * 7; // 60 minutes * 24 hours * 7 days 
