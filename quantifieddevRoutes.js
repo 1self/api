@@ -1,7 +1,8 @@
 var sessionManager = require("./sessionManagement");
 var _ = require("underscore");
 var Q = require('q');
-var encoder = require("./encoder")
+var encoder = require("./encoder");
+var githubEvents = require("./githubEvents");
 
 var util = require("./util");
 
@@ -235,7 +236,7 @@ module.exports = function(app, express) {
                     deferred.reject("DB error");
                 } else {
                     if (user.githubUser.githubStreamId !== undefined) {
-                        deferred.resolve(true);
+                        deferred.resolve(user.githubUser.githubStreamId);
                     } else {
                         deferred.resolve(false);
                     }
@@ -272,7 +273,7 @@ module.exports = function(app, express) {
                         console.log("Error", err);
                         deferred.reject();
                     } else {
-                        deferred.resolve();
+                        deferred.resolve(stream.streamid);
                     }
                 });
 
@@ -282,20 +283,24 @@ module.exports = function(app, express) {
 
     app.get("/connect_to_github", sessionManager.requiresSession, function(req, res) {
 
-        doesGitHubStreamIdExist(req.session.username).then(function(githubStreamIdExists) {
-            if (githubStreamIdExists) {
-                res.redirect('dashboard')
-
+        doesGitHubStreamIdExist(req.session.username).then(function(githubStreamId) {
+            if (githubStreamId) {
+                githubEvents.getGithubPushEvents(githubStreamId)
+                    .then(function() {
+                        res.redirect('dashboard');
+                    });
             } else {
                 util.createStream(function(err, stream) {
                     if (err) {
                         console.log(err);
                         res.status(500).send("Database error");
                     } else {
-                        console.log("Result of create stream : ", stream);
-                        linkGithubStreamToUser(req.session.username, stream).then(function() {
-                            res.redirect('dashboard');
-                        });
+                        console.log("Result of create stream 123: ", stream);
+                        linkGithubStreamToUser(req.session.username, stream)
+                            .then(githubEvents.getGithubPushEvents)
+                            .then(function() {
+                                res.redirect('dashboard');
+                            });
                     }
                 })
             }

@@ -21,21 +21,22 @@ var encryptPassword = function() {
         encryptedPassword = cipher.update(password, 'utf-8', 'hex');
         encryptedPassword += cipher.final('hex');
     }
-    return encryptedPassword;    
+    return encryptedPassword;
 };
 
-var getPushEventsForUserForPage = function(page, username) {
+var getPushEventsForUserForPage = function(page, user) {
+    var githubUsername = user.githubUser.username;
 
-    var user_api_url = "/users/" + username;
-    var client = github.client("47ee81f239affd2a82f553328c014cc0dda37aea");
+    var user_api_url = "/users/" + githubUsername;
+    var client = github.client("ee4765589a75677839333a08deb224a61fcd1a8c");
     //var client = github.client();    
     client.get(user_api_url, {}, function(err, status, body, headers) {
         // console.log("got clilent : " + JSON.stringify(body));
     });
-    var ghuser = client.user(username);
+    var ghuser = client.user(githubUsername);
 
     var deferred = q.defer();
-    ghuser.events(page, ['Push'], function(err, pushEvents) {
+    ghuser.events(page, ['PushEvent'], function(err, pushEvents) {
         if (err) {
             console.log("err " + err);
             deferred.reject(err);
@@ -64,15 +65,16 @@ var singleEventTemplate = {
         "Software",
         "Source Control"
     ],
-    "streamid": "AJLIEHWVOGTYZTWO",
+    "streamid": "",
     "properties": {}
 };
 
-var transformToQdEvents = function(allEvents) {
+var transformToQdEvents = function(events, streamid) {
     var qdEvents = [];
-    _.each(allEvents, function(event) {
+    _.each(events, function(event) {
         var qdEvent = clone(singleEventTemplate);
         qdEvent.dateTime["$date"] = event.created_at;
+        qdEvent.streamid = streamid;
         qdEvents.push(qdEvent);
     });
     console.log("4. Transformed to QD Events", qdEvents.length);
@@ -80,11 +82,12 @@ var transformToQdEvents = function(allEvents) {
     return qdEvents;
 };
 
-var storeLastEventDate = function(latestGitHubEvent, username) {
+var storeLastEventDate = function(latestGitHubEvent, user) {
+    var username = user.username;
     console.log("latestGitHubEvent is", JSON.stringify(latestGitHubEvent));
     console.log("username is", username);
     console.log("7a. storeLastEventDate", JSON.stringify(latestGitHubEvent));
-    
+
     if (latestGitHubEvent !== undefined) {
         var latestGitHubEventDb = new Date(latestGitHubEvent.dateTime["$date"]);
         mongoDbConnection(function(qdDb) {
@@ -112,8 +115,7 @@ var storeLastEventDate = function(latestGitHubEvent, username) {
 
 
 var filterEvents = function(allEvents, latestGitHubEventDate) {
-    // console.log("All events before filtering : ", allEvents);
-    console.log("3a. filterEvents", latestGitHubEventDate);
+    console.log("3a. filterEvents latestGitHubEventDate", latestGitHubEventDate);
 
     var filteredEvents = _.filter(allEvents, function(event) {
         if (latestGitHubEventDate !== undefined) {
@@ -158,15 +160,15 @@ var sendEventsToPlatform = function(myEvents) {
         json: myEventsWithPayload
     };
     request.post(options,
-                 function(error, response, body) {
-                     if (!error && response.statusCode == 200) {
-                         console.log("5. b Events logged is ");
-                         deferred.resolve(myEvents);
-                     } else {
-                         console.log(error);
-                         deferred.reject("DB error");
-                     }
-                 });
+        function(error, response, body) {
+            if (!error && response.statusCode == 200) {
+                console.log("5. b Events logged is ");
+                deferred.resolve(myEvents);
+            } else {
+                console.log(error);
+                deferred.reject("DB error");
+            }
+        });
     return deferred.promise;
 };
 
@@ -181,7 +183,7 @@ var getFilteredEvents = function(allEvents) {
 };
 
 var getUserInfoFromStreamId = function(streamid) {
-    
+
     var deferred = q.defer();
     var streamIdQuery = {
         "streams": {
@@ -206,11 +208,12 @@ var getUserInfoFromStreamId = function(streamid) {
 };
 
 var createPromiseArray = function() {
+    console.log("USer im receiving : %%%% ", user);
     var promiseArray = [];
     var deferred = q.defer();
     var pages = _.range(1, 11);
     _.each(pages, function(page) {
-        promiseArray.push(getPushEventsForUserForPage(page, user.githubUser.username));
+        promiseArray.push(getPushEventsForUserForPage(page, user));
     });
     deferred.resolve(promiseArray);
     return deferred.promise;
@@ -218,16 +221,19 @@ var createPromiseArray = function() {
 
 exports.getGithubPushEvents = function(streamid) {
     deferred = q.defer();
+    console.log("Stream id Im receiving %%% ", streamid)
     getUserInfoFromStreamId(streamid)
         .then(createPromiseArray)
         .then(getGithubPushEventsFromService)
         .then(_.flatten)
         .then(getFilteredEvents)
-        .then(transformToQdEvents)
+        .then(function(filteredEvents) {
+            return transformToQdEvents(filteredEvents, streamid)
+        })
         .then(sendEventsToPlatform)
         .then(getLatestGithubEvent)
         .then(function(latestGitHubEvent) {
-            storeLastEventDate(latestGitHubEvent, user.username);
+            storeLastEventDate(latestGitHubEvent, user);
             deferred.resolve();
         })
         .catch(function(error) {

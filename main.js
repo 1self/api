@@ -413,11 +413,11 @@ var getBuildEventsFromPlatform = function(streams) {
                 var buildsByDay = generateDatesFor(defaultBuildValues);
                 for (date in result) {
                     if (buildsByDay[date] !== undefined) {
-                        buildsByDay[date].passed = result[date].passed
-                        buildsByDay[date].failed = result[date].failed
+                        buildsByDay[date].passed = result[date].passed;
+                        buildsByDay[date].failed = result[date].failed;
                     }
                 }
-                deferred.resolve(rollupToArray(buildsByDay))
+                deferred.resolve(rollupToArray(buildsByDay));
             }
         } else {
             deferred.reject(error);
@@ -501,7 +501,7 @@ var getMyWTFsFromPlatform = function(streams) {
                         wtfsByDay[date].wtfCount = result[date].wtfCount;
                     }
                 }
-                deferred.resolve(rollupToArray(wtfsByDay))
+                deferred.resolve(rollupToArray(wtfsByDay));
             }
         } else {
             deferred.reject(error);
@@ -585,7 +585,7 @@ var getMyHydrationEventsFromPlatform = function(streams) {
                         hydrationsByDay[date].hydrationCount = result[date].hydrationCount;
                     }
                 }
-                deferred.resolve(rollupToArray(hydrationsByDay))
+                deferred.resolve(rollupToArray(hydrationsByDay));
             }
         } else {
             deferred.reject(error);
@@ -669,7 +669,7 @@ var getMyCaffeineEventsFromPlatform = function(streams) {
                         caffeineIntakeByDay[date].caffeineCount = result[date].caffeineCount;
                     }
                 }
-                deferred.resolve(rollupToArray(caffeineIntakeByDay))
+                deferred.resolve(rollupToArray(caffeineIntakeByDay));
             }
         } else {
             deferred.reject(error);
@@ -751,7 +751,7 @@ var getAvgBuildDurationFromPlatform = function(streams) {
     };
     var convertMillisToSeconds = function(milliseconds) {
         return Math.round(milliseconds / 1000 * 100) / 100;
-    }
+    };
 
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
@@ -1103,10 +1103,7 @@ var getHourlyCaffeineCount = function(streams) {
 
     return deferred.promise;
 };
-var getHourlyGithubPushEventsCount = function(streams) {
-    var streamids = _.map(streams, function(stream) {
-        return stream.streamid;
-    });
+var getHourlyGithubPushEventsCount = function(streamid) {
     var deferred = q.defer();
     groupQuery = {
         "$groupBy": {
@@ -1117,7 +1114,7 @@ var getHourlyGithubPushEventsCount = function(streams) {
             "filterSpec": {
                 "payload.streamid": {
                     "$operator": {
-                        "in": ["AJLIEHWVOGTYZTWO"]
+                        "in": [streamid]
                     }
                 },
                 "payload.actionTags": "Push"
@@ -1559,7 +1556,6 @@ app.get('/quantifieddev/hourlyGithubPushEvents', function(req, res) {
 
     validEncodedUsername(encodedUsername, req.query.forUsername)
         .then(getGithubStreamIdForUsername)
-        .then(githubEvents.getGithubPushEvents)
         .then(getHourlyGithubPushEventsCount)
         .then(function(response) {
             console.log("The response is : ", response);
