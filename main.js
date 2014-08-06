@@ -1186,7 +1186,7 @@ app.all('*', function(req, res, next) {
 });
 
 app.get('/', function(request, response) {
-    response.send('quantified dev service');
+    response.redirect('/dashboard');
 });
 
 app.post('/echo', function(request, response) {
