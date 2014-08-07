@@ -262,7 +262,7 @@ var qd = function() {
     };
     result.getBuildHistoryModelFor = function(encodedUsername) {
         return $.ajax({
-            url: url("mydev"),
+            url: url("quantifieddev", "mydev"),
             headers: {
                 "Accept": "application/json",
                 "Authorization": encodedUsername
@@ -275,7 +275,7 @@ var qd = function() {
             data: {
                 forUsername: forUsername
             },
-            url: url("mydev"),
+            url: url("quantifieddev","mydev"),
             headers: {
                 "Accept": "application/json",
                 "Authorization": encodedUsername
@@ -285,7 +285,7 @@ var qd = function() {
 
     result.getActiveEventsModelFor = function(encodedUsername) {
         return $.ajax({
-            url: url("myActiveEvents"),
+            url: url("quantifieddev","myActiveEvents"),
             headers: {
                 "Accept": "application/json",
                 "Authorization": encodedUsername
@@ -298,7 +298,7 @@ var qd = function() {
             data: {
                 forUsername: forUsername
             },
-            url: url("myActiveEvents"),
+            url: url("quantifieddev","myActiveEvents"),
             headers: {
                 "Accept": "application/json",
                 "Authorization": encodedUsername

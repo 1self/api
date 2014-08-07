@@ -3,8 +3,8 @@
     var url = function(base, resource) {
         var result = "";
         if (location.hostname == "localhost") {
-            if(base.length > 0){
-                result = "http://" + location.hostname + ":5000/"+base+"/" + resource;                
+            if (base.length > 0) {
+                result = "http://" + location.hostname + ":5000/" + base + "/" + resource;
             } else {
                 result = "http://" + location.hostname + ":5000/" + resource;
             }
@@ -52,5 +52,5 @@
 
     window.postAjax = postAjax;
     window.postQDRouteAjax = postQDRouteAjax;
-
+    window.url = url;
 })(jQuery);
