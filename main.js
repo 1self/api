@@ -17,6 +17,8 @@ var PasswordEncrypt = require('./lib/PasswordEncrypt');
 
 var githubEvents = require("./githubEvents");
 
+var MongoStore = require("express-session-mongo");
+
 var app = express();
 app.use(express.logger());
 app.use(express.bodyParser());
@@ -31,6 +33,13 @@ swig.setDefaults({
 });
 var sessionSecret = process.env.SESSION_SECRET;
 app.use(session({
+    store: new MongoStore({
+        db: "quantifieddev",
+        ip: "localhost",
+        port: "27017",
+        username: "",
+        password: ""
+    }),
     secret: sessionSecret,
     resave: true,
     saveUninitialized: true,
@@ -1280,8 +1289,8 @@ app.get('/demo', function(request, response) {
 });
 
 app.post('/stream', function(req, res) {
-    util.createStream(function(err, data){
-        if(err){
+    util.createStream(function(err, data) {
+        if (err) {
             res.status(500).send("Database error");
         } else {
             res.send(data)
