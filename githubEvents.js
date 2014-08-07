@@ -119,8 +119,7 @@ var filterEvents = function(allEvents, latestGitHubEventDate) {
     var filteredEvents = _.filter(allEvents, function(event) {
         if (latestGitHubEventDate !== undefined) {
             console.log("3b. filterEvents last event date should not be undefined", latestGitHubEventDate);
-           
-            return moment(event.created_at) > moment(latestGitHubEventDate)
+            return moment(event.created_at) > moment(latestGitHubEventDate.toISOString())
         } else {
             console.log("3b. filterEvents last event date should be undefined", latestGitHubEventDate);
             return true;
@@ -133,7 +132,7 @@ var filterEvents = function(allEvents, latestGitHubEventDate) {
 var getLatestGithubEvent = function(events) {
     console.log("6a. getLatestGithubEvent is", events.length);
     var sortedEvents = _.chain(events).sortBy(function(event) {
-        return event.dateTime;
+        return event.dateTime["$date"];
     }).reverse().value();
 
     console.log("6b. getLatestGithubEvent is", events.length);
