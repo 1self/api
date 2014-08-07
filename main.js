@@ -33,7 +33,6 @@ swig.setDefaults({
     cache: false
 });
 var sessionSecret = process.env.SESSION_SECRET;
-app.use(express.favicon());
 app.use(session({
     store: new MongoStore({
         db: "quantifieddev",
