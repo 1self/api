@@ -22,6 +22,7 @@ var MongoStore = require("express-session-mongo");
 var app = express();
 app.use(express.logger());
 app.use(express.bodyParser());
+app.use(express.cookieParser());
 
 app.engine('html', swig.renderFile);
 app.use(express.static(path.join(__dirname, 'website/public')));
@@ -32,14 +33,17 @@ swig.setDefaults({
     cache: false
 });
 var sessionSecret = process.env.SESSION_SECRET;
-app.use(session({
+app.use(express.session({
+    "secret": sessionSecret,
     store: new MongoStore({
         db: "quantifieddev",
         ip: "localhost",
         port: "27017",
         username: "",
         password: ""
-    }),
+    })
+}));
+app.use(session({
     secret: sessionSecret,
     resave: true,
     saveUninitialized: true,
@@ -48,7 +52,6 @@ app.use(session({
         secure: false // change to true when using https
     }
 }));
-app.use(express.cookieParser());
 // Constants
 var aDay = 24 * 60 * 60 * 1000;
 var platformUri = process.env.PLATFORM_BASE_URI;
