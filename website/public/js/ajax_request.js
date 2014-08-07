@@ -11,9 +11,9 @@
 
         } else {
             if(base.length > 0){
-                result = "http://quantifieddev.herokuapp.com/"+base+"/" + resource;
+                result = "http://app.quantifieddev.org/"+base+"/" + resource;
             }else {
-                result = "http://quantifieddev.herokuapp.com/"+ resource;
+                result = "http://app.quantifieddev.org/"+ resource;
             }
         }
         return result;
