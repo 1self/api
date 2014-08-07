@@ -1,4 +1,4 @@
-var dashboardGraphs = ['updateBuildModel', 'updateWTFModel', 'updateHydrationModel', 'updateCaffeineModel', 'updateBuildDurationModel', 'updateHourlyBuildHeatMap', 'updateHourlyWtfHeatMap', 'updateHourlyHydrationHeatMap', 'updateHourlyCaffeineHeatMap', 'updateActiveEvents','updateHourlyGithubPushHeatMap'];
+var dashboardGraphs = ['updateBuildModel', 'updateWTFModel', 'updateHydrationModel', 'updateCaffeineModel', 'updateBuildDurationModel', 'updateHourlyBuildHeatMap', 'updateHourlyWtfHeatMap', 'updateHourlyHydrationHeatMap', 'updateHourlyCaffeineHeatMap', 'updateActiveEvents', 'updateHourlyGithubPushHeatMap'];
 
 $("#builds-x").ready(function() {
     window.qd.registerForBuildModelUpdates(function() {
@@ -33,3 +33,34 @@ $(window).load(function() {
         window.qd.plotGraphs(dashboardGraphs);
     }
 });
+
+
+var handleConnectToGithub = function() {
+    var button = $("#github-push-events-sync");
+    $('#noDataSourceMessage').modal('hide');
+
+    var showGitHubEvents = function(data) {
+        var hourlyGithubErrorCallback = function() {
+            alert("Github events error");
+        };
+        var hourlyGithubSuccessCallback = function(hourlyGithubPushEvents) {
+            button.prop("disabled", false );
+            window.qd.hourlyGithubPushEvents = hourlyGithubPushEvents;
+            window.qd.plotHeatmapWith('#hourlyGithubPush-heat-map-parent', '#hourlyGithubPush-heat-map', hourlyGithubPushEvents);
+        };
+        postAjax("hourlyGithubPushEvents", hourlyGithubSuccessCallback, hourlyGithubErrorCallback);
+    }
+
+    button.prop("disabled", true);
+    $("#hourlyGithubPush-heat-map").html("");
+    var html_data =  '<div class="githubPushEvents text-center grid" ><div  class="grid-row"><div  class="grid-cell" ><img src="/img/loading.gif"></div></div></div>'
+    $("#hourlyGithubPush-heat-map").html(html_data);
+
+    postQDRouteAjax("connect_to_github", showGitHubEvents, function(error) {
+        console.log(error);
+    })
+}
+
+$("#connect_to_github_btn").click(handleConnectToGithub);
+$("#github-push-events-sync").click(handleConnectToGithub);
+$("#connect_to_github_link_popup_btn").click(handleConnectToGithub);

@@ -305,7 +305,7 @@ module.exports = function(app) {
             if (githubStreamId) {
                 githubEvents.getGithubPushEvents(githubStreamId, githubAccessToken)
                     .then(function() {
-                        res.redirect('dashboard');
+                        res.send({status: "ok"})
                     });
             } else {
                 util.createStream(function(err, stream) {
@@ -318,13 +318,12 @@ module.exports = function(app) {
                                 return githubEvents.getGithubPushEvents(streamid, githubAccessToken);
                             })
                             .then(function() {
-                                res.redirect('dashboard');
+                                res.send({status: "ok"})
                             });
                     }
                 });
             }
         });
-
     });
 
     var getFilterValuesFrom = function(req) {

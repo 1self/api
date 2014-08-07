@@ -2,39 +2,13 @@ var qd = function() {
     var result = {};
     var modelUpdateCallbacks = [];
 
-    var url = function(resource) {
-        var result = "";
-        if (location.hostname == "localhost") {
-            result = "http://" + location.hostname + ":5000/quantifieddev/" + resource;
-        } else {
-            result = "http://quantifieddev.herokuapp.com/quantifieddev/" + resource;
-        }
-        return result;
-    };
-
-    var postAjax = function(urlParam, successCallback, failureCallback) {
-        $.ajax({
-            url: url(urlParam),
-            headers: {
-                "Accept": "application/json",
-                "Authorization": $.cookie("_eun")
-            },
-            success: successCallback,
-            error: function(xhr, error) {
-                console.log("Error occurred for ", urlParam)
-                if (failureCallback)
-                    failureCallback(error);
-            }
-        });
-
-    }
     var compare = function(todaysEvents, yesterdayEvents) {
         var difference = todaysEvents - yesterdayEvents;
         var percentChange = (difference / yesterdayEvents) * 100;
         return Math.ceil(percentChange);
     }
     var myDevSuccessCallback = function(buildEvents) {
-        plotGraphWith('buildEvents', buildEvents, "#build-history-parent");
+        result.plotGraphWith('buildEvents', buildEvents, "#build-history-parent");
         populateBuildTilesData(buildEvents);
         modelUpdateCallbacks.forEach(function(c) {
             c();
@@ -80,60 +54,60 @@ var qd = function() {
             result.plotActiveEvents();
         }
     };
-    var plotGraphWith = function(eventType, graphData, graphParentTileId) {
+    result.plotGraphWith = function(eventType, graphData, graphParentTileId) {
         result[eventType] = graphData;
         if (graphData.length > 0) {
             $(graphParentTileId).show();
             charts[eventType]();
         }
     };
-    var plotHeatmapWith = function(graphParentTileId, graphTileId, graphData) {
+    result.plotHeatmapWith = function(graphParentTileId, graphTileId, graphData) {
         if (graphData.length > 0) {
             $(graphParentTileId).show();
             result.plotHourlyEventMap(graphTileId, graphData);
         }
     };
     var myWtfSuccessCallback = function(wtfEvents) {
-        plotGraphWith('wtfEvents', wtfEvents, "#wtf-history-parent")
+        result.plotGraphWith('wtfEvents', wtfEvents, "#wtf-history-parent")
     }
     result.updateWTFModel = function() {
         postAjax("mywtf", myWtfSuccessCallback)
     };
     var myHydrationSuccessCallback = function(hydrationEvents) {
-        plotGraphWith('hydrationEvents', hydrationEvents, "#hydration-history-parent");
+        result.plotGraphWith('hydrationEvents', hydrationEvents, "#hydration-history-parent");
     }
     result.updateHydrationModel = function() {
         postAjax("myhydration", myHydrationSuccessCallback)
     };
     var myCaffeineSuccessCallback = function(caffeineEvents) {
-        plotGraphWith('caffeineEvents', caffeineEvents, "#caffeine-history-parent");
+        result.plotGraphWith('caffeineEvents', caffeineEvents, "#caffeine-history-parent");
     };
     result.updateCaffeineModel = function() {
         postAjax("mycaffeine", myCaffeineSuccessCallback)
     };
     var buildDurationSuccessCallback = function(buildDurationEvents) {
-        plotGraphWith('buildDurationEvents', buildDurationEvents, "#buildDuration-history-parent");
+        result.plotGraphWith('buildDurationEvents', buildDurationEvents, "#buildDuration-history-parent");
     };
     result.updateBuildDurationModel = function() {
         postAjax("buildDuration", buildDurationSuccessCallback)
     };
     var hourlyBuildSuccessCallback = function(hourlyBuildEvents) {
         setTimezoneDifferenceInHours();
-        plotHeatmapWith("#hourlyBuild-heat-map-parent", '#hourlyBuild-heat-map', hourlyBuildEvents);
+        result.plotHeatmapWith("#hourlyBuild-heat-map-parent", '#hourlyBuild-heat-map', hourlyBuildEvents);
     }
     result.updateHourlyBuildHeatMap = function() {
         postAjax("hourlyBuildCount", hourlyBuildSuccessCallback)
     };
     var hourlyWtfSuccessCallback = function(hourlyWtfEvents) {
         setTimezoneDifferenceInHours();
-        plotHeatmapWith("#hourlyWtf-heat-map-parent", '#hourlyWtf-heat-map', hourlyWtfEvents);
+        result.plotHeatmapWith("#hourlyWtf-heat-map-parent", '#hourlyWtf-heat-map', hourlyWtfEvents);
     }
     result.updateHourlyWtfHeatMap = function() {
         postAjax("hourlyWtfCount", hourlyWtfSuccessCallback)
     };
     var hourlyHydrationSuccessCallback = function(hourlyHydrationEvents) {
         setTimezoneDifferenceInHours();
-        plotHeatmapWith("#hourlyHydration-heat-map-parent", '#hourlyHydration-heat-map', hourlyHydrationEvents);
+        result.plotHeatmapWith("#hourlyHydration-heat-map-parent", '#hourlyHydration-heat-map', hourlyHydrationEvents);
     };
     result.updateHourlyHydrationHeatMap = function() {
         postAjax("hourlyHydrationCount", hourlyHydrationSuccessCallback)
@@ -141,13 +115,13 @@ var qd = function() {
     var hourlyCaffeineSuccessCallback = function(hourlyCaffeineEvents) {
         setTimezoneDifferenceInHours();
         result.hourlyCaffeineEvents = hourlyCaffeineEvents;
-        plotHeatmapWith('#hourlyCaffeine-heat-map-parent', '#hourlyCaffeine-heat-map', hourlyCaffeineEvents);
+        result.plotHeatmapWith('#hourlyCaffeine-heat-map-parent', '#hourlyCaffeine-heat-map', hourlyCaffeineEvents);
     };
     result.updateHourlyCaffeineHeatMap = function() {
         postAjax("hourlyCaffeineCount", hourlyCaffeineSuccessCallback)
     };
     var activitySuccessCallback = function(activeEvents) {
-        plotGraphWith('activeEvents', activeEvents, "#active-event-history-parent");
+        result.plotGraphWith('activeEvents', activeEvents, "#active-event-history-parent");
     }
     result.updateActiveEvents = function() {
         postAjax("myActiveEvents", activitySuccessCallback)
@@ -158,7 +132,7 @@ var qd = function() {
     };
     var hourlyGithubSuccessCallback = function(hourlyGithubPushEvents) {
         result.hourlyGithubPushEvents = hourlyGithubPushEvents;
-        plotHeatmapWith('#hourlyGithubPush-heat-map-parent', '#hourlyGithubPush-heat-map', hourlyGithubPushEvents);
+        result.plotHeatmapWith('#hourlyGithubPush-heat-map-parent', '#hourlyGithubPush-heat-map', hourlyGithubPushEvents);
     };
     result.updateHourlyGithubPushHeatMap = function() {
         postAjax("hourlyGithubPushEvents", hourlyGithubSuccessCallback, hourlyGithubErrorCallback);
