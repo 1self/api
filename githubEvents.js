@@ -119,7 +119,8 @@ var filterEvents = function(allEvents, latestGitHubEventDate) {
     var filteredEvents = _.filter(allEvents, function(event) {
         if (latestGitHubEventDate !== undefined) {
             console.log("3b. filterEvents last event date should not be undefined", latestGitHubEventDate);
-            return event.created_at > latestGitHubEventDate;
+           
+            return moment(event.created_at) > moment(latestGitHubEventDate)
         } else {
             console.log("3b. filterEvents last event date should be undefined", latestGitHubEventDate);
             return true;
