@@ -36,10 +36,10 @@ var sessionSecret = process.env.SESSION_SECRET;
 app.use(session({
     store: new MongoStore({
         db: "quantifieddev",
-        ip: "ds035897.mongolab.com",
-        port: "35897",
-        username: "qdapi",
-        password: "qdapiMtWt0tW78"
+        ip: process.env.DB_HOST,
+        port: process.env.DB_PORT,
+        username: process.env.DB_USERNAME,
+        password: process.env.DB_PASSWORD
     }),
     secret: sessionSecret,
     resave: true,
