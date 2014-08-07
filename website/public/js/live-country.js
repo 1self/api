@@ -36,7 +36,7 @@ var liveCountry = function() {
     var url = function() {
         return (location.hostname == "localhost") ?
             "http://localhost:5000/" :
-            "http://quantifieddev.herokuapp.com/";
+            "http://app.quantifieddev.org/";
     }
 
     var plotGraph = function() {
