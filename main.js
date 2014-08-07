@@ -33,17 +33,15 @@ swig.setDefaults({
     cache: false
 });
 var sessionSecret = process.env.SESSION_SECRET;
-app.use(express.session({
-    "secret": sessionSecret,
+app.use(express.favicon());
+app.use(session({
     store: new MongoStore({
         db: "quantifieddev",
         ip: "ds035897.mongolab.com",
         port: "35897",
         username: "qdapi",
         password: "qdapiMtWt0tW78"
-    })
-}));
-app.use(session({
+    }),
     secret: sessionSecret,
     resave: true,
     saveUninitialized: true,
