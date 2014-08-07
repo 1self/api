@@ -37,10 +37,10 @@ app.use(express.session({
     "secret": sessionSecret,
     store: new MongoStore({
         db: "quantifieddev",
-        ip: "localhost",
-        port: "27017",
-        username: "",
-        password: ""
+        ip: "ds035897.mongolab.com",
+        port: "35897",
+        username: "qdapi",
+        password: "qdapiMtWt0tW78"
     })
 }));
 app.use(session({
