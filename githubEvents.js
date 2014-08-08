@@ -51,7 +51,7 @@ function clone(a) {
 
 var singleEventTemplate = {
     "actionTags": [
-        "Develop",
+        "Github",
         "Push"
     ],
     "dateTime": {

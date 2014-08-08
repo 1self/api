@@ -1171,8 +1171,7 @@ var getMyActiveDuration = function(streams) {
                         }
                     }
                 },
-                "payload.actionTags": "Develop",
-                "payload.properties.isUserActive": true
+                "payload.actionTags": "Develop"
             },
             "projectionSpec": {
                 "payload.serverDateTime": "date",
@@ -1285,8 +1284,7 @@ var correlateGithubPushesAndIDEActivity = function(streams) {
                                 }
                             }
                         },
-                        "payload.actionTags": "Develop",
-                        "payload.properties.isUserActive": true
+                        "payload.actionTags": "Develop"
                     },
                     "projectionSpec": {
                         "payload.serverDateTime": "date",
