@@ -59,7 +59,7 @@ module.exports = function(app) {
                         console.log("streamId not found or error");
                         deferred.reject(err);
                     }
-                })
+                });
             });;
             return deferred.promise;
         };
@@ -80,33 +80,34 @@ module.exports = function(app) {
                     } else {
                         deferred.resolve(user);
                     }
-                })
+                });
             });
             return deferred.promise;
         };
 
         if (streamid && readToken) {
             var insertStreamForUser = function(user, streamid) {
-                qdDb = app.getQdDb();
-                var deferred = Q.defer();
-                var mappingToInsert = {
-                    "$push": {
-                        "streams": {
-                            "streamid": streamid,
-                            "readToken": readToken
+                mongoDbConnection(function(qdDb) {
+                    var deferred = Q.defer();
+                    var mappingToInsert = {
+                        "$push": {
+                            "streams": {
+                                "streamid": streamid,
+                                "readToken": readToken
+                            }
                         }
-                    }
-                };
-                qdDb.collection('users').update({
-                    "username": req.session.username
-                }, mappingToInsert, function(err, user) {
-                    if (user) {
-                        deferred.resolve();
-                    } else {
-                        deferred.reject(err);
-                    }
+                    };
+                    qdDb.collection('users').update({
+                        "username": req.session.username
+                    }, mappingToInsert, function(err, user) {
+                        if (user) {
+                            deferred.resolve();
+                        } else {
+                            deferred.reject(err);
+                        }
+                    });
+                    return deferred.promise;
                 });
-                return deferred.promise;
             };
 
             var decideWhatToDoWithStream = function(user) {
@@ -149,7 +150,7 @@ module.exports = function(app) {
                         avatarUrl: req.session.avatarUrl
                     });
                 }
-            })
+            });
         }
     });
 
@@ -242,9 +243,9 @@ module.exports = function(app) {
 
     var doesGitHubStreamIdExist = function(username) {
         var deferred = Q.defer();
-        usernameQuery = {
+        var usernameQuery = {
             "username": username
-        }
+        };
         mongoDbConnection(function(qdDb) {
             qdDb.collection('users').findOne(usernameQuery, function(err, user) {
                 if (err) {
@@ -293,9 +294,9 @@ module.exports = function(app) {
                     }
                 });
 
-        })
+        });
         return deferred.promise;
-    }
+    };
 
     app.get("/connect_to_github", sessionManager.requiresSession, function(req, res) {
 
