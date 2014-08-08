@@ -20,16 +20,18 @@ var qd = function() {
         }
     }
     var populateBuildTilesData = function(buildEvents) {
-        var todaysBuild = buildEvents[buildEvents.length - 1]; // last record
-        var yesterdaysBuild = buildEvents[buildEvents.length - 2];
-        var totalBuildsForToday = todaysBuild.passed + todaysBuild.failed;
-        var totalBuildsForYesterday = yesterdaysBuild.passed + yesterdaysBuild.failed;
-        result.todaysPassedBuildCount = todaysBuild.passed;
-        result.todaysFailedBuildCount = todaysBuild.failed;
-        result.todaysTotalBuildCount = totalBuildsForToday;
-        result.totalBuildComparison = compare(totalBuildsForToday, totalBuildsForYesterday);
-        result.passedBuildComparison = compare(todaysBuild.passed, yesterdaysBuild.passed);
-        result.failedBuildComparison = compare(todaysBuild.failed, yesterdaysBuild.failed);
+        if (buildEvents.length > 0) {
+            var todaysBuild = buildEvents[buildEvents.length - 1]; // last record
+            var yesterdaysBuild = buildEvents[buildEvents.length - 2];
+            var totalBuildsForToday = todaysBuild.passed + todaysBuild.failed;
+            var totalBuildsForYesterday = yesterdaysBuild.passed + yesterdaysBuild.failed;
+            result.todaysPassedBuildCount = todaysBuild.passed;
+            result.todaysFailedBuildCount = todaysBuild.failed;
+            result.todaysTotalBuildCount = totalBuildsForToday;
+            result.totalBuildComparison = compare(totalBuildsForToday, totalBuildsForYesterday);
+            result.passedBuildComparison = compare(todaysBuild.passed, yesterdaysBuild.passed);
+            result.failedBuildComparison = compare(todaysBuild.failed, yesterdaysBuild.failed);
+        }
     }
     result.updateBuildModel = function() {
         postAjax("mydev", myDevSuccessCallback)
@@ -275,7 +277,7 @@ var qd = function() {
             data: {
                 forUsername: forUsername
             },
-            url: url("quantifieddev","mydev"),
+            url: url("quantifieddev", "mydev"),
             headers: {
                 "Accept": "application/json",
                 "Authorization": encodedUsername
@@ -285,7 +287,7 @@ var qd = function() {
 
     result.getActiveEventsModelFor = function(encodedUsername) {
         return $.ajax({
-            url: url("quantifieddev","myActiveEvents"),
+            url: url("quantifieddev", "myActiveEvents"),
             headers: {
                 "Accept": "application/json",
                 "Authorization": encodedUsername
@@ -298,7 +300,7 @@ var qd = function() {
             data: {
                 forUsername: forUsername
             },
-            url: url("quantifieddev","myActiveEvents"),
+            url: url("quantifieddev", "myActiveEvents"),
             headers: {
                 "Accept": "application/json",
                 "Authorization": encodedUsername
