@@ -1129,17 +1129,14 @@ var getHourlyGithubPushEventsCount = function(streamid) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
             result = result[0];
-            if (_.isEmpty(result)) {
-                deferred.resolve([]);
-            } else {
-                var hourlyGithubPushEvents = generateHoursForWeek(defaultEventValues);
-                for (var date in result) {
-                    if (hourlyGithubPushEvents[date] !== undefined) {
-                        hourlyGithubPushEvents[date].hourlyEventCount = result[date].githubPushEventCount;
-                    }
+            var hourlyGithubPushEvents = generateHoursForWeek(defaultEventValues);
+            for (var date in result) {
+                if (hourlyGithubPushEvents[date] !== undefined) {
+                    hourlyGithubPushEvents[date].hourlyEventCount = result[date].githubPushEventCount;
                 }
-                deferred.resolve(rollupToArray(hourlyGithubPushEvents));
             }
+            deferred.resolve(rollupToArray(hourlyGithubPushEvents));
+
         } else {
             deferred.reject(error);
         }
