@@ -12,11 +12,13 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
         gridSize = Math.floor(width / 24),
         legendElementWidth = gridSize * 2,
         buckets = 9,
-        colors = ["#ffffd9", "#edf8b1", "#c7e9b4", "#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#253494", "#081d58"], // alternatively colorbrewer.YlGnBu[9]
+        colors = ["#EEEEEE", "#C2E0FF", "#8FC7FF", "#75BAFF", "#5CADFF", 
+        "#42A1FF", "#2994FF", "#007AF5", "#0054A8"], // alternatively colorbrewer.YlGnBu[9]
         days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
         times = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"];
 
     var segmentData = [];
+
     for (var hour = 0; hour < 24 * 7; hour++) {
         var buildCountForAnHour = hourlyEvents[hour].hourlyEventCount;
         segmentData[hour] = buildCountForAnHour;
@@ -97,7 +99,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                 .attr(dayAxis, function(d) {
                     return ((d.day) * gridDaySize) - dayAxisAdjustment;
                 })
-                .attr("stroke", "lightgrey")
+                .attr("stroke", "white")
                 .attr("rx", 4)
                 .attr("ry", 4)
                 .attr("class", "hour bordered")
