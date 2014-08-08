@@ -54,9 +54,6 @@ var singleEventTemplate = {
         "Github",
         "Push"
     ],
-    "dateTime": {
-        "$date": ""
-    },
     "source": "GitHub",
     "objectTags": [
         "Computer",
@@ -71,10 +68,9 @@ var transformToQdEvents = function(events, streamid) {
     var qdEvents = [];
     _.each(events, function(event) {
         var qdEvent = clone(singleEventTemplate);
-        qdEvent.dateTime["$date"] = event.created_at;
         qdEvent.streamid = streamid;
-        qdEvent.serverDateTime =  {
-            "$date": moment(new Date()).format()
+        qdEvent.eventDateTime =  {
+            "$date": moment(event.created_at).format()
         };   
         qdEvents.push(qdEvent);
     });
@@ -88,7 +84,7 @@ var storeLastEventDate = function(latestGitHubEvent, user) {
     console.log("7a. storeLastEventDate", JSON.stringify(latestGitHubEvent));
 
     if (latestGitHubEvent !== undefined) {
-        var latestGitHubEventDb = new Date(latestGitHubEvent.dateTime["$date"]);
+        var latestGitHubEventDb = new Date(latestGitHubEvent.eventDateTime["$date"]);
         mongoDbConnection(function(qdDb) {
             qdDb.collection("users", function(err, collection) {
                 collection.update({
@@ -132,7 +128,7 @@ var filterEvents = function(allEvents, latestGitHubEventDate) {
 var getLatestGithubEvent = function(events) {
     console.log("6a. getLatestGithubEvent is", events.length);
     var sortedEvents = _.chain(events).sortBy(function(event) {
-        return event.dateTime["$date"];
+        return event.eventDateTime["$date"];
     }).reverse().value();
 
     console.log("6b. getLatestGithubEvent is", events.length);

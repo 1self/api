@@ -176,10 +176,10 @@ var getGithubStreamIdForUsername = function(usernames) {
     return deferred.promise;
 };
 
-var saveEvent_driver = function(myEvent, stream, serverDateTime, res, rm) {
+var saveEvent_driver = function(myEvent, stream, eventDateTime, res, rm) {
     myEvent.streamid = stream.streamid;
-    myEvent.serverDateTime = {
-        "$date": serverDateTime
+    myEvent.eventDateTime = {
+        "$date": eventDateTime
     };
     var options = {
         url: platformUri + '/rest/events/',
@@ -318,7 +318,7 @@ var getBuildEventsFromPlatform = function(streams) {
     var groupQuery = {
         "$groupBy": {
             "fields": [{
-                "name": "payload.serverDateTime",
+                "name": "payload.eventDateTime",
                 "format": "MM/dd/yyyy"
             }],
             "filterSpec": {
@@ -327,7 +327,7 @@ var getBuildEventsFromPlatform = function(streams) {
                         "in": streamids
                     }
                 },
-                "payload.serverDateTime": {
+                "payload.eventDateTime": {
                     "$operator": {
                         ">": {
                             "$date": moment(lastMonth).format()
@@ -337,7 +337,7 @@ var getBuildEventsFromPlatform = function(streams) {
                 "payload.actionTags": "Finish"
             },
             "projectionSpec": {
-                "payload.serverDateTime": "date",
+                "payload.eventDateTime": "date",
                 "payload.properties": "properties"
             },
             "orderSpec": {}
@@ -419,7 +419,7 @@ var getMyWTFsFromPlatform = function(streams) {
     var groupQuery = {
         "$groupBy": {
             "fields": [{
-                "name": "payload.serverDateTime",
+                "name": "payload.eventDateTime",
                 "format": "MM/dd/yyyy"
             }],
             "filterSpec": {
@@ -428,7 +428,7 @@ var getMyWTFsFromPlatform = function(streams) {
                         "in": streamids
                     }
                 },
-                "payload.serverDateTime": {
+                "payload.eventDateTime": {
                     "$operator": {
                         ">": {
                             "$date": moment(lastMonth).format()
@@ -438,7 +438,7 @@ var getMyWTFsFromPlatform = function(streams) {
                 "payload.actionTags": "wtf"
             },
             "projectionSpec": {
-                "payload.serverDateTime": "date",
+                "payload.eventDateTime": "date",
                 "payload.properties": "properties"
             },
             "orderSpec": {}
@@ -502,7 +502,7 @@ var getMyHydrationEventsFromPlatform = function(streams) {
     var groupQuery = {
         "$groupBy": {
             "fields": [{
-                "name": "payload.serverDateTime",
+                "name": "payload.eventDateTime",
                 "format": "MM/dd/yyyy"
             }],
             "filterSpec": {
@@ -511,7 +511,7 @@ var getMyHydrationEventsFromPlatform = function(streams) {
                         "in": streamids
                     }
                 },
-                "payload.serverDateTime": {
+                "payload.eventDateTime": {
                     "$operator": {
                         ">": {
                             "$date": moment(lastMonth).format()
@@ -522,7 +522,7 @@ var getMyHydrationEventsFromPlatform = function(streams) {
                 "payload.objectTags": "Water"
             },
             "projectionSpec": {
-                "payload.serverDateTime": "date",
+                "payload.eventDateTime": "date",
                 "payload.properties": "properties"
             },
             "orderSpec": {}
@@ -586,7 +586,7 @@ var getMyCaffeineEventsFromPlatform = function(streams) {
     var groupQuery = {
         "$groupBy": {
             "fields": [{
-                "name": "payload.serverDateTime",
+                "name": "payload.eventDateTime",
                 "format": "MM/dd/yyyy"
             }],
             "filterSpec": {
@@ -595,7 +595,7 @@ var getMyCaffeineEventsFromPlatform = function(streams) {
                         "in": streamids
                     }
                 },
-                "payload.serverDateTime": {
+                "payload.eventDateTime": {
                     "$operator": {
                         ">": {
                             "$date": moment(lastMonth).format()
@@ -606,7 +606,7 @@ var getMyCaffeineEventsFromPlatform = function(streams) {
                 "payload.objectTags": "Coffee"
             },
             "projectionSpec": {
-                "payload.serverDateTime": "date",
+                "payload.eventDateTime": "date",
                 "payload.properties": "properties"
             },
             "orderSpec": {}
@@ -670,7 +670,7 @@ var getAvgBuildDurationFromPlatform = function(streams) {
     var groupQuery = {
         "$groupBy": {
             "fields": [{
-                "name": "payload.serverDateTime",
+                "name": "payload.eventDateTime",
                 "format": "MM/dd/yyyy"
             }],
             "filterSpec": {
@@ -679,7 +679,7 @@ var getAvgBuildDurationFromPlatform = function(streams) {
                         "in": streamids
                     }
                 },
-                "payload.serverDateTime": {
+                "payload.eventDateTime": {
                     "$operator": {
                         ">": {
                             "$date": moment(lastMonth).format()
@@ -689,7 +689,7 @@ var getAvgBuildDurationFromPlatform = function(streams) {
                 "payload.actionTags": "Finish"
             },
             "projectionSpec": {
-                "payload.serverDateTime": "date",
+                "payload.eventDateTime": "date",
                 "payload.properties": "properties"
             },
             "orderSpec": {}
@@ -802,7 +802,7 @@ var getHourlyBuildCountFromPlatform = function(streams) {
     var groupQuery = {
         "$groupBy": {
             "fields": [{
-                "name": "payload.serverDateTime",
+                "name": "payload.eventDateTime",
                 "format": "e HH"
             }],
             "filterSpec": {
@@ -814,7 +814,7 @@ var getHourlyBuildCountFromPlatform = function(streams) {
                 "payload.actionTags": "Finish"
             },
             "projectionSpec": {
-                "payload.serverDateTime": "date",
+                "payload.eventDateTime": "date",
                 "payload.properties": "properties"
             },
             "orderSpec": {}
@@ -875,7 +875,7 @@ var getHourlyWtfCount = function(streams) {
     var groupQuery = {
         "$groupBy": {
             "fields": [{
-                "name": "payload.serverDateTime",
+                "name": "payload.eventDateTime",
                 "format": "e HH"
             }],
             "filterSpec": {
@@ -887,7 +887,7 @@ var getHourlyWtfCount = function(streams) {
                 "payload.actionTags": "wtf"
             },
             "projectionSpec": {
-                "payload.serverDateTime": "date",
+                "payload.eventDateTime": "date",
                 "payload.properties": "properties"
             },
             "orderSpec": {}
@@ -946,7 +946,7 @@ var getHourlyHydrationCount = function(streams) {
     var groupQuery = {
         "$groupBy": {
             "fields": [{
-                "name": "payload.serverDateTime",
+                "name": "payload.eventDateTime",
                 "format": "e HH"
             }],
             "filterSpec": {
@@ -959,7 +959,7 @@ var getHourlyHydrationCount = function(streams) {
                 "payload.objectTags": "Water"
             },
             "projectionSpec": {
-                "payload.serverDateTime": "date",
+                "payload.eventDateTime": "date",
                 "payload.properties": "properties"
             },
             "orderSpec": {}
@@ -1018,7 +1018,7 @@ var getHourlyCaffeineCount = function(streams) {
     var groupQuery = {
         "$groupBy": {
             "fields": [{
-                "name": "payload.serverDateTime",
+                "name": "payload.eventDateTime",
                 "format": "e HH"
             }],
             "filterSpec": {
@@ -1031,7 +1031,7 @@ var getHourlyCaffeineCount = function(streams) {
                 "payload.objectTags": "Coffee"
             },
             "projectionSpec": {
-                "payload.serverDateTime": "date",
+                "payload.eventDateTime": "date",
                 "payload.properties": "properties"
             },
             "orderSpec": {}
@@ -1086,7 +1086,7 @@ var getHourlyGithubPushEventsCount = function(streamid) {
     groupQuery = {
         "$groupBy": {
             "fields": [{
-                "name": "payload.dateTime",
+                "name": "payload.eventDateTime",
                 "format": "e HH"
             }],
             "filterSpec": {
@@ -1098,7 +1098,7 @@ var getHourlyGithubPushEventsCount = function(streamid) {
                 "payload.actionTags": "Push"
             },
             "projectionSpec": {
-                "payload.dateTime": "date",
+                "payload.eventDateTime": "date",
                 "payload.properties": "properties"
             },
             "orderSpec": {}
@@ -1155,7 +1155,7 @@ var getMyActiveDuration = function(streams) {
     var groupQuery = {
         "$groupBy": {
             "fields": [{
-                "name": "payload.serverDateTime",
+                "name": "payload.eventDateTime",
                 "format": "MM/dd/yyyy"
             }],
             "filterSpec": {
@@ -1164,7 +1164,7 @@ var getMyActiveDuration = function(streams) {
                         "in": streamids
                     }
                 },
-                "payload.serverDateTime": {
+                "payload.eventDateTime": {
                     "$operator": {
                         ">": {
                             "$date": moment(lastMonth).format()
@@ -1174,7 +1174,7 @@ var getMyActiveDuration = function(streams) {
                 "payload.actionTags": "Develop"
             },
             "projectionSpec": {
-                "payload.serverDateTime": "date",
+                "payload.eventDateTime": "date",
                 "payload.properties": "properties"
             },
             "orderSpec": {}
@@ -1268,7 +1268,7 @@ var correlateGithubPushesAndIDEActivity = function(streams) {
             "data": {
                 "$groupBy": {
                     "fields": [{
-                        "name": "payload.serverDateTime",
+                        "name": "payload.eventDateTime",
                         "format": "MM/dd/yyyy"
                     }],
                     "filterSpec": {
@@ -1277,7 +1277,7 @@ var correlateGithubPushesAndIDEActivity = function(streams) {
                                 "in": streamids
                             }
                         },
-                        "payload.serverDateTime": {
+                        "payload.eventDateTime": {
                             "$operator": {
                                 ">": {
                                     "$date": "2014-07-07T17:30:37+05:30"
@@ -1287,7 +1287,7 @@ var correlateGithubPushesAndIDEActivity = function(streams) {
                         "payload.actionTags": "Develop"
                     },
                     "projectionSpec": {
-                        "payload.serverDateTime": "date",
+                        "payload.eventDateTime": "date",
                         "payload.properties": "properties"
                     },
                     "orderSpec": {}
@@ -1305,7 +1305,7 @@ var correlateGithubPushesAndIDEActivity = function(streams) {
             "data": {
                 "$groupBy": {
                     "fields": [{
-                        "name": "payload.dateTime",
+                        "name": "payload.eventDateTime",
                         "format": "MM/dd/yyyy"
                     }],
                     "filterSpec": {
@@ -1314,7 +1314,7 @@ var correlateGithubPushesAndIDEActivity = function(streams) {
                                 "in": streamids
                             }
                         },
-                        "payload.dateTime": {
+                        "payload.eventDateTime": {
                             "$operator": {
                                 ">": {
                                     "$date": "2014-07-07T17:30:37+05:30"
@@ -1324,7 +1324,7 @@ var correlateGithubPushesAndIDEActivity = function(streams) {
                         "payload.actionTags": "Push"
                     },
                     "projectionSpec": {
-                        "payload.dateTime": "date",
+                        "payload.eventDateTime": "date",
                         "payload.properties": "properties"
                     },
                     "orderSpec": {}
@@ -1476,7 +1476,7 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
     var cutoff = new Date(dateNow - (durationMins * 1000 * 60));
 
     var filterSpec = {
-        "payload.serverDateTime": {
+        "payload.eventDateTime": {
             "$gte": {
                 "$date": moment(cutoff).format()
             }
