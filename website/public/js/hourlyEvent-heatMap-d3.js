@@ -12,7 +12,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
         gridSize = Math.floor(width / 24),
         legendElementWidth = gridSize * 2,
         buckets = 9,
-        colors = ["#EEEEEE", "#C2E0FF", "#8FC7FF", "#75BAFF", "#5CADFF", 
+        colors = ["#DBEDFF", "#A8D4FF", "#8FC7FF", "#75BAFF", "#5CADFF", 
         "#42A1FF", "#2994FF", "#007AF5", "#0054A8"], // alternatively colorbrewer.YlGnBu[9]
         days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
         times = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"];
@@ -44,7 +44,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
             return d.value;
         })]);
         var colorScale = d3.scale.quantile()
-            .domain([0, maximumEventValue])
+            .domain([1, maximumEventValue])
             .range(colors);
         var createSvg = function(width, height) {
             d3.select(divId).selectAll("svg").remove();
@@ -109,7 +109,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
         };
         var createLegend = function() {
             return svg.selectAll(".legend")
-                .data([0].concat(colorScale.quantiles()), function(d) {
+                .data([1].concat(colorScale.quantiles()), function(d) {
                     return d;
                 })
                 .enter().append("g")
@@ -127,7 +127,11 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
             var heatMap = createHeatMap(svg, "y", "x", 2.5, 10, gridDaySize, gridTimeSize);
             heatMap.transition().duration(1000)
                 .style("fill", function(d) {
-                    return colorScale(d.value);
+                    if (d.value === 0){
+                        return "#EEEEEE";
+                    } else {
+                        return colorScale(d.value);
+                    }
                 });
             heatMap.append("title").text(function(d) {
                 return d.value;
@@ -164,7 +168,11 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 
             heatMap.transition().duration(1000)
                 .style("fill", function(d) {
-                    return colorScale(d.value);
+                    if (d.value === 0){
+                        return "#EEEEEE";
+                    } else {
+                        return colorScale(d.value);
+                    }
                 });
 
             heatMap.append("title").text(function(d) {
