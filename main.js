@@ -1254,6 +1254,128 @@ var getMyActiveDuration = function(streams) {
     return deferred.promise;
 };
 
+var correlateGithubPushesAndIDEActivity = function(streams) {
+    var streamids = _.map(streams, function(stream) {
+        return stream.streamid;
+    });
+    var deferred = q.defer();
+    var lastMonth = moment().subtract('months', 1);
+
+    var sumQuery = {
+        "$sum": {
+            "field": {
+                "name": "properties.duration"
+            },
+            "data": {
+                "$groupBy": {
+                    "fields": [{
+                        "name": "payload.serverDateTime",
+                        "format": "MM/dd/yyyy"
+                    }],
+                    "filterSpec": {
+                        "payload.streamid": {
+                            "$operator": {
+                                "in": streamids
+                            }
+                        },
+                        "payload.serverDateTime": {
+                            "$operator": {
+                                ">": {
+                                    "$date": "2014-07-07T17:30:37+05:30"
+                                }
+                            }
+                        },
+                        "payload.actionTags": "Develop",
+                        "payload.properties.isUserActive": true
+                    },
+                    "projectionSpec": {
+                        "payload.serverDateTime": "date",
+                        "payload.properties": "properties"
+                    },
+                    "orderSpec": {}
+                }
+            },
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "activeTimeInMillis"
+            }
+        }
+    };
+
+    var countQuery = {
+        "$count": {
+            "data": {
+                "$groupBy": {
+                    "fields": [{
+                        "name": "payload.dateTime",
+                        "format": "MM/dd/yyyy"
+                    }],
+                    "filterSpec": {
+                        "payload.streamid": {
+                            "$operator": {
+                                "in": streamids
+                            }
+                        },
+                        "payload.dateTime": {
+                            "$operator": {
+                                ">": {
+                                    "$date": "2014-07-07T17:30:37+05:30"
+                                }
+                            }
+                        },
+                        "payload.actionTags": "Push"
+                    },
+                    "projectionSpec": {
+                        "payload.dateTime": "date",
+                        "payload.properties": "properties"
+                    },
+                    "orderSpec": {}
+                }
+            },
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "githubPushEventCount"
+            }
+        }
+    };
+
+    var query = [sumQuery, countQuery];
+
+    var options = {
+        url: platformUri + '/rest/analytics/aggregate',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: {
+            spec: JSON.stringify(query),
+            merge: true
+        },
+        method: 'GET'
+    };
+
+    var convertMillisToSeconds = function(milliseconds) {
+        return Math.round(milliseconds / 1000 * 100) / 100;
+    };
+
+    function callback(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var result = JSON.parse(body);
+            if (_.isEmpty(result)) {
+                deferred.resolve([]);
+            } else {
+                deferred.resolve(result);
+            }
+        } else {
+            deferred.reject(error);
+        }
+    }
+
+    requestModule(options, callback);
+
+    return deferred.promise;
+};
+
 app.all('*', function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
@@ -1526,6 +1648,18 @@ app.get('/quantifieddev/hourlyGithubPushEvents', function(req, res) {
             res.send(response);
         }).catch(function(error) {
             console.log("Error is", error);
+            res.status(404).send("stream not found");
+        });
+});
+
+app.get('/quantifieddev/correlate/githubPushesAndIDEActivity', function(req, res) {
+    var encodedUsername = req.headers.authorization;
+    validEncodedUsername(encodedUsername, req.query.forUsername)
+        .then(getStreamIdForUsername)
+        .then(correlateGithubPushesAndIDEActivity)
+        .then(function(response) {
+            res.send(response);
+        }).catch(function(error) {
             res.status(404).send("stream not found");
         });
 });
