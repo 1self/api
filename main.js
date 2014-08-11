@@ -1253,83 +1253,50 @@ var getMyActiveDuration = function(streams) {
     return deferred.promise;
 };
 
-var correlateGithubPushesAndIDEActivity = function(streams) {
+var correlateGithubPushesAndIDEActivity = function(streams, firstEvent, secondEvent) {
     var streamids = _.map(streams, function(stream) {
         return stream.streamid;
     });
     var deferred = q.defer();
     var lastMonth = moment().subtract('months', 1);
-
+    var groupBy = function(event) {
+        return {
+            "$groupBy": {
+                "fields": [{
+                    "name": "payload.eventDateTime",
+                    "format": "MM/dd/yyyy"
+                }],
+                "filterSpec": {
+                    "payload.streamid": {
+                        "$operator": {
+                            "in": streamids
+                        }
+                    },
+                    "payload.actionTags": event
+                },
+                "projectionSpec": {
+                    "payload.eventDateTime": "date",
+                    "payload.properties": "properties"
+                },
+                "orderSpec": {}
+            }
+        }
+    };
     var sumQuery = {
         "$sum": {
             "field": {
                 "name": "properties.duration"
             },
-            "data": {
-                "$groupBy": {
-                    "fields": [{
-                        "name": "payload.eventDateTime",
-                        "format": "MM/dd/yyyy"
-                    }],
-                    "filterSpec": {
-                        "payload.streamid": {
-                            "$operator": {
-                                "in": streamids
-                            }
-                        },
-                        "payload.eventDateTime": {
-                            "$operator": {
-                                ">": {
-                                    "$date": "2014-07-07T17:30:37+05:30"
-                                }
-                            }
-                        },
-                        "payload.actionTags": "Develop"
-                    },
-                    "projectionSpec": {
-                        "payload.eventDateTime": "date",
-                        "payload.properties": "properties"
-                    },
-                    "orderSpec": {}
-                }
-            },
+            "data": groupBy(firstEvent),
             "filterSpec": {},
             "projectionSpec": {
                 "resultField": "activeTimeInMillis"
             }
         }
     };
-
     var countQuery = {
         "$count": {
-            "data": {
-                "$groupBy": {
-                    "fields": [{
-                        "name": "payload.eventDateTime",
-                        "format": "MM/dd/yyyy"
-                    }],
-                    "filterSpec": {
-                        "payload.streamid": {
-                            "$operator": {
-                                "in": streamids
-                            }
-                        },
-                        "payload.eventDateTime": {
-                            "$operator": {
-                                ">": {
-                                    "$date": "2014-07-07T17:30:37+05:30"
-                                }
-                            }
-                        },
-                        "payload.actionTags": "Push"
-                    },
-                    "projectionSpec": {
-                        "payload.eventDateTime": "date",
-                        "payload.properties": "properties"
-                    },
-                    "orderSpec": {}
-                }
-            },
+            "data": groupBy(secondEvent),
             "filterSpec": {},
             "projectionSpec": {
                 "resultField": "githubPushEventCount"
@@ -1368,7 +1335,6 @@ var correlateGithubPushesAndIDEActivity = function(streams) {
             deferred.reject(error);
         }
     }
-
     requestModule(options, callback);
 
     return deferred.promise;
@@ -1650,9 +1616,12 @@ app.get('/quantifieddev/hourlyGithubPushEvents', function(req, res) {
         });
 });
 
-app.get('/quantifieddev/correlate/githubPushesAndIDEActivity', function(req, res) {
+app.get('/quantifieddev/correlate', function(req, res) {
+    var firstEvent = req.query.firstEvent;
+    var secondEvent = req.query.secondEvent;
+    console.log("Events to correlate are: " + firstEvent + secondEvent);
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername, req.query.forUsername)
+    validEncodedUsername(encodedUsername, req.query.forUsername, firstEvent, secondEvent)
         .then(getStreamIdForUsername)
         .then(correlateGithubPushesAndIDEActivity)
         .then(function(response) {
