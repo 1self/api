@@ -1,5 +1,6 @@
 window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
     $(divId).html("");
+    var baseColor = "#EEEEEE"
     var margin = {
             top: 50,
             right: 0,
@@ -105,7 +106,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                 .attr("class", "hour bordered")
                 .attr("width", gridDaySize)
                 .attr("height", gridTimeSize)
-                .style("fill", colors[0]);
+                .style("fill", baseColor);
         };
         var createLegend = function() {
             return svg.selectAll(".legend")
@@ -128,7 +129,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
             heatMap.transition().duration(1000)
                 .style("fill", function(d) {
                     if (d.value === 0){
-                        return "#EEEEEE";
+                        return baseColor;
                     } else {
                         return colorScale(d.value);
                     }
@@ -169,7 +170,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
             heatMap.transition().duration(1000)
                 .style("fill", function(d) {
                     if (d.value === 0){
-                        return "#EEEEEE";
+                        return baseColor;
                     } else {
                         return colorScale(d.value);
                     }
