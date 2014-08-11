@@ -6,14 +6,8 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 			left: 40
 		},
 		width = $(divId).width() - margin.left - margin.right,
-		height = (width/ 1.61) - margin.top - margin.bottom;
+		height = (width / 1.61) - margin.top - margin.bottom;
 
-	/* 
-	 * value accessor - returns the value to encode for a given data object.
-	 * scale - maps value to a visual display encoding, such as a pixel position.
-	 * map function - maps from data value to display value
-	 * axis - sets up axis
-	 */
 	var _groupCorrelateEvents = function(events) {
 		return _.map(events, function(event) {
 			return {
@@ -23,45 +17,39 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 		});
 	};
 
-	// setup x 
 	var xValue = function(d) {
 			return d.x;
-		}, // data -> value
-		xScale = d3.scale.linear().range([0, width]), // value -> display
+		},
+		xScale = d3.scale.linear().range([0, width]),
 		xMap = function(d) {
 			return xScale(xValue(d));
-		}, // data -> display
+		},
 		xAxis = d3.svg.axis().scale(xScale).orient("bottom");
 
-	// setup y
 	var yValue = function(d) {
 			return d.y;
-		}, // data -> value
-		yScale = d3.scale.linear().range([height, 0]), // value -> display
+		},
+		yScale = d3.scale.linear().range([height, 0]),
 		yMap = function(d) {
 			return yScale(yValue(d));
-		}, // data -> display
+		},
 		yAxis = d3.svg.axis().scale(yScale).orient("left");
 
-	// setup fill color
-	var cValue = function(d) {
+	/*var cValue = function(d) {
 			return d.x;
 		},
-		color = d3.scale.category10();
+		color = d3.scale.category10();*/
 
-	// add the graph canvas to the body of the webpage
 	var svg = d3.select(divId).append("svg")
 		.attr("width", width + margin.left + margin.right)
 		.attr("height", height + margin.top + margin.bottom)
 		.append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-	// add the tooltip area to the webpage
 	var tooltip = d3.select("body").append("div")
 		.attr("class", "tooltip")
 		.style("opacity", 0);
 
-	// load data
 	var _plotGraph = function() {
 		var data = _groupCorrelateEvents(correlateEvents);
 		// don't want dots overlapping axis, so add in buffer to data domain
@@ -78,7 +66,7 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 			.attr("x", width)
 			.attr("y", -6)
 			.style("text-anchor", "end")
-			.text("IDE ACtivity In Minutes");
+			.text("IDE Activity In Minutes");
 
 		// y-axis
 		svg.append("g")
@@ -100,24 +88,25 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 			.attr("r", 3.5)
 			.attr("cx", xMap)
 			.attr("cy", yMap)
-			.style("fill", function(d) {
+			.style("fill", "blue")
+		/*.style("fill", function(d) {
 				return color(cValue(d));
-			})
-			.on("mouseover", function(d) {
-				tooltip.transition()
-					.duration(200)
-					.style("opacity", .9);
-				tooltip.html("<br/> (" + xValue(d) + ", " + yValue(d) + ")")
-					.style("left", (d3.event.pageX + 5) + "px")
-					.style("top", (d3.event.pageY - 28) + "px");
-			})
+			})*/
+		.on("mouseover", function(d) {
+			tooltip.transition()
+				.duration(200)
+				.style("opacity", .9);
+			tooltip.html("<br/> (" + xValue(d) + ", " + yValue(d) + ")")
+				.style("left", (d3.event.pageX + 5) + "px")
+				.style("top", (d3.event.pageY - 28) + "px");
+		})
 			.on("mouseout", function(d) {
 				tooltip.transition()
 					.duration(500)
 					.style("opacity", 0);
 			});
 
-		// draw legend
+		/*// draw legend
 		var legend = svg.selectAll(".legend")
 			.data(color.domain())
 			.enter().append("g")
@@ -141,7 +130,7 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 			.style("text-anchor", "end")
 			.text(function(d) {
 				return d;
-			})
+			})*/
 	};
 	_plotGraph();
 };
