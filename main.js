@@ -1318,17 +1318,18 @@ var correlateGithubPushesAndIDEActivity = function(streams, firstEvent, secondEv
         },
         method: 'GET'
     };
-
-    var convertMillisToSeconds = function(milliseconds) {
-        return Math.round(milliseconds / 1000 * 100) / 100;
+     var convertMillisToMinutes = function(milliseconds) {
+        return Math.round(milliseconds / (1000 * 60) * 100) / 100;
     };
-
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
             if (_.isEmpty(result)) {
                 deferred.resolve([]);
             } else {
+                for (var date in result) {
+                        result[date].activeTimeInMinutes = convertMillisToMinutes(result[date].activeTimeInMillis);
+                    }
                 deferred.resolve(result);
             }
         } else {
@@ -1336,7 +1337,6 @@ var correlateGithubPushesAndIDEActivity = function(streams, firstEvent, secondEv
         }
     }
     requestModule(options, callback);
-
     return deferred.promise;
 };
 

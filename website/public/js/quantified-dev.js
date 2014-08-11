@@ -139,6 +139,12 @@ var qd = function() {
     result.updateHourlyGithubPushHeatMap = function() {
         postAjax("hourlyGithubPushEvents", hourlyGithubSuccessCallback, hourlyGithubErrorCallback);
     };
+    var correlateSuccess = function(correlationData) {
+        result.plotScatterPlot('#correlate-events', correlationData);
+    }
+    result.updateCorrelationData = function() {
+        postAjax("correlate?firstEvent=Develop&secondEvent=Push", correlateSuccess);
+    };
     result.plotGraphs = function(graphs) {
         graphs.forEach(function(graph) {
             result[graph]();

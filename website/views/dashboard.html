@@ -1,31 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Quantified Dev {ALPHA} {{showOverlay}}</title>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1">
-    <meta name="description" content="Quantified Dev Dashboard"/>
-    <meta name="keywords" content="Quantified Dev Development QuantifiedSelf Quantified Self"/>
-    <meta name="author" content="Quantified Dev"/>
-    <link rel="shortcut icon" href="/img/quantified-dev-favicon.ico">
-    <link href="/css/twitter.css" rel="stylesheet">
-    <link href="/css/import.css" rel="stylesheet" media="screen">
-    <link href="/fonts/font-awesome.css" rel="stylesheet">
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="/js/jquery.js"></script>
-
-    <script src="/js/jquery.cookie.js"></script>
-    <script>
+    <head>
+        <title>Quantified Dev {ALPHA} {{showOverlay}}</title>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1">
+        <meta name="description" content="Quantified Dev Dashboard"/>
+        <meta name="keywords" content="Quantified Dev Development QuantifiedSelf Quantified Self"/>
+        <meta name="author" content="Quantified Dev"/>
+        <link rel="shortcut icon" href="/img/quantified-dev-favicon.ico">
+        <link href="/css/twitter.css" rel="stylesheet">
+        <link href="/css/import.css" rel="stylesheet" media="screen">
+        <link href="/fonts/font-awesome.css" rel="stylesheet">
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="/js/jquery.js"></script>
+        <script src="/js/jquery.cookie.js"></script>
+        <script>
         (function (i, s, o, g, r, a, m) {
-            i['GoogleAnalyticsObject'] = r;
-            i[r] = i[r] || function () {
-                (i[r].q = i[r].q || []).push(arguments)
-            }, i[r].l = 1 * new Date();
-            a = s.createElement(o),
-            m = s.getElementsByTagName(o)[0];
-            a.async = 1;
-            a.src = g;
-            m.parentNode.insertBefore(a, m)
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
         })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
         ga('create', 'UA-49828181-1', 'quantifieddev.org');
         ga('send', 'pageview');
@@ -34,7 +33,7 @@
         addListener(mc_embedded_subscribe_click, 'click', function() {
         alert('sup click');
         ga('send', 'event', 'signup_button', 'click', 'mc-embedded-subscribe');
-    });*/
+        });*/
         /**
         * Utility to wrap the different behaviors between W3C-compliant browsers
         * and IE when adding event handlers.
@@ -46,65 +45,64 @@
         function addListener(element, type, callback) {
         if (element.addEventListener) element.addEventListener(type, callback);
         else if (element.attachEvent) element.attachEvent('on' + type, callback);
-    }*/
-</script>
-</head>
-<body class="animated fadeInDown" ng-app>
-    {% include "./templates/_qd_header.html" %}
-
-    <!-- Top Bar End -->
-    <!-- Left sidebar start -->
-    <aside id="sidebar">
-        <div>
-            {% include "./templates/_menu.html" %}
-        </div>
-    </aside>
-    <!-- Left sidebar end -->
-    <div class="dashboard-wrapper">
-        <div class="container">
-            <div id="showOverlayFlag" showOverlay="{{showOverlay}}"></div>
-            <div>{% include "./templates/_link_datasource.html" %}</div>
-            <div class="row page-title">
-                <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-                    <h2>Dashboard</h2>
-                    <ul class="breadcrumb">
-                        <li>Home</li>
-                        <li>Dashboard</li>
-                    </ul>
-                </div>
-                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                    <a href="#" data-toggle="modal" data-target=".security-info"><h5>About our use of http</h5></a>
-                </div>
-                {% if streamLinked == "yes" %}
-                <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12 alert alert-success alert-dismissible" role="alert">
-                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>Stream Id linked successfully!
-                </div>
-                {% elseif streamLinked == "no" %}
-                <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12 alert alert-danger alert-dismissible" role="alert">
-                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>The Stream Id that you tried to link is incorrect. So it is not linked!
-                </div>
-                {% endif %}
-                <div>
-                    <div class="modal fade security-info" tabindex="-1" role="dialog">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-                                    <h3 class="modal-title">About our use of http</h3>
-                                </div>
-                                <div class="modal-body"><p>
-                                    Here at quantified dev we care deeply about keeping your data safe. While we're in beta, in lean
-                                    startup style, we've deferred building https support so that we can prioritise figuring out the
-                                    features you're interested in. We realise sending our tokens over http means they can be
-                                    intercepted by baddies. At the moment no personally identifyable information is sent to
-                                    quantified dev. Those baddies can't tell whose data they are looking at. We would rather focus
-                                    on building great features for you - learning what you want - and build https support before we
-                                    exit beta.
-                                </p>
-                                <p>
-                                    If you are concerned about our approach and your data, please discontinue using quantified
-                                    dev. Better yet, tell us we're wrong by emailing us at team@quantifieddev.org</p>
-                                    <p>
+        }*/
+        </script>
+    </head>
+    <body class="animated fadeInDown" ng-app>
+        {% include "./templates/_qd_header.html" %}
+        <!-- Top Bar End -->
+        <!-- Left sidebar start -->
+        <aside id="sidebar">
+            <div>
+                {% include "./templates/_menu.html" %}
+            </div>
+        </aside>
+        <!-- Left sidebar end -->
+        <div class="dashboard-wrapper">
+            <div class="container">
+                <div id="showOverlayFlag" showOverlay="{{showOverlay}}"></div>
+                <div>{% include "./templates/_link_datasource.html" %}</div>
+                <div class="row page-title">
+                    <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+                        <h2>Dashboard</h2>
+                        <ul class="breadcrumb">
+                            <li>Home</li>
+                            <li>Dashboard</li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                        <a href="#" data-toggle="modal" data-target=".security-info"><h5>About our use of http</h5></a>
+                    </div>
+                    {% if streamLinked == "yes" %}
+                        <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12 alert alert-success alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>Stream Id linked successfully!
+                        </div>
+                    {% elseif streamLinked == "no" %}
+                        <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12 alert alert-danger alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>The Stream Id that you tried to link is incorrect. So it is not linked!
+                        </div>
+                    {% endif %}
+                    <div>
+                        <div class="modal fade security-info" tabindex="-1" role="dialog">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                        <h3 class="modal-title">About our use of http</h3>
+                                    </div>
+                                    <div class="modal-body"><p>
+                                        Here at quantified dev we care deeply about keeping your data safe. While we're in beta, in lean
+                                        startup style, we've deferred building https support so that we can prioritise figuring out the
+                                        features you're interested in. We realise sending our tokens over http means they can be
+                                        intercepted by baddies. At the moment no personally identifyable information is sent to
+                                        quantified dev. Those baddies can't tell whose data they are looking at. We would rather focus
+                                        on building great features for you - learning what you want - and build https support before we
+                                        exit beta.
+                                        </p>
+                                        <p>
+                                        If you are concerned about our approach and your data, please discontinue using quantified
+                                        dev. Better yet, tell us we're wrong by emailing us at team@quantifieddev.org</p>
+                                        <p>
                                         <p>-- Qd Team</p>
                                         <ul>
                                             <li>Ed Sykes</li>
@@ -210,27 +208,25 @@
                         </div>
                     </div>
                 </div>
-                <div class="row"> 
-<div id="hourlyGithubPush-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:block;">
-                      <div class="panel panel-secondary fixed-height">
-                        <div class="panel-heading cursor-move">
-                            <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly GitHub Push Events </h3> <button id="github-push-events-sync" class="pull-right glyphicon glyphicon-refresh"></button>
-                        </div>
-                        <div class="panel-body">
-                          <div id="hourlyGithubPush-heat-map" class="hourlyHeatMapContainer">
-
-                            <div class="githubPushEvents text-center grid" >
-                                <div  class="grid-row">
-                                    <div  class="grid-cell" >
-                                    <button id="connect_to_github_btn" style="display:none" type="button" class="btn btn-success" data-original-title="">Connect to GitHub</button>
-                                    </div>
-                                </div>                    
+                <div class="row">
+                    <div id="hourlyGithubPush-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:block;">
+                        <div class="panel panel-secondary fixed-height">
+                            <div class="panel-heading cursor-move">
+                                <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly GitHub Push Events </h3> <button id="github-push-events-sync" class="pull-right glyphicon glyphicon-refresh"></button>
                             </div>
-
+                            <div class="panel-body">
+                                <div id="hourlyGithubPush-heat-map" class="hourlyHeatMapContainer">
+                                    <div class="githubPushEvents text-center grid" >
+                                        <div  class="grid-row">
+                                            <div  class="grid-cell" >
+                                                <button id="connect_to_github_btn" style="display:none" type="button" class="btn btn-success" data-original-title="">Connect to GitHub</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
                     <div id="hourlyBuild-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
                         <div class="panel panel-secondary fixed-height">
                             <div class="panel-heading">
@@ -342,53 +338,61 @@
                                 <div id="active-event-history"></div>
                             </div>
                         </div>
-                    </div>                  
+                    </div>
+                    <div id="correlate-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+                        <div class="panel panel-secondary fixed-height">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><i class="icon-bar-chart"></i>Correlate IDE Activity with Github Pushes</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div id="correlate-events"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Bootstrap Container End -->
         </div>
-    </div>
-</div>
-<!-- Bootstrap Container End -->
-</div>
-</div>
-<!-- Main Container End -->
-<!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="/js/bootstrap.min.js"></script>
-<script src="/js/bootstrap-modal.js"></script>
-<script src="/js/bootstrap-modalmanager.js"></script>
-<script src="/js/underscore-min.js"></script>
-<!-- jQuery UI JS -->
-<script src="/js/jquery-ui-v1.10.3.js"></script>
-<!-- Sparkline graphs -- >
-    <script src="/js/sparkline.js"></script>
-    <!-- Data tables -->
-    <script src="/js/jquery.datatables.js"></script>
-    <!-- Date Range -->
-    <script src="/js/daterange/moment.js"></script>
-    <script src="/js/daterange/daterangepicker.js"></script>
-    <!-- Animated Right Sidebar -->
-    <script src="/js/slidebars.js"></script>
-    <!-- JVector Map -->
-    <script src="/js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
-    <script src="/js/jvectormap/jquery-jvectormap-usa.js"></script>
-    <!-- Custom JS -->
-    <script src="/js/custom.js"></script>
-    <script src="/js/custom-index.js"></script>
-    <script src="/packages/d3/d3.js"></script>
-    <script src="/packages/d3/d3.geo.projection.v0.min.js"></script>
-    <script src="/packages/d3/topojson.v1.min.js"></script>
-    <script src="/packages/d3/queue.v1.min.js"></script>
-    <script src="/packages/regressionjs/regression.js"></script>
-    <script src="/js/1self.js"></script>
-    <script src="/js/ajax_request.js"></script>    
-    <script src="/js/quantified-dev.js"></script>
-    <script src="/js/build-history-d3.js"></script>
-    <script src="/js/wtf-history-d3.js"></script>
-    <script src="/js/hydration-history-d3.js"></script>
-    <script src="/js/caffeine-history-d3.js"></script>
-    <script src="/js/buildDuration-history-d3.js"></script>
-    <script src="/js/active-events-d3.js"></script>
-    <script src="/js/hourlyEvent-heatMap-d3.js"></script>
-    <script src="/js/dashboard.js"></script>
-    <script src="/js/link-datasource.js"></script>
-
-</body>
+        <!-- Main Container End -->
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="/js/bootstrap.min.js"></script>
+        <script src="/js/bootstrap-modal.js"></script>
+        <script src="/js/bootstrap-modalmanager.js"></script>
+        <script src="/js/underscore-min.js"></script>
+        <!-- jQuery UI JS -->
+        <script src="/js/jquery-ui-v1.10.3.js"></script>
+        <!-- Sparkline graphs -- >
+        <script src="/js/sparkline.js"></script>
+        <!-- Data tables -->
+        <script src="/js/jquery.datatables.js"></script>
+        <!-- Date Range -->
+        <script src="/js/daterange/moment.js"></script>
+        <script src="/js/daterange/daterangepicker.js"></script>
+        <!-- Animated Right Sidebar -->
+        <script src="/js/slidebars.js"></script>
+        <!-- JVector Map -->
+        <script src="/js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
+        <script src="/js/jvectormap/jquery-jvectormap-usa.js"></script>
+        <!-- Custom JS -->
+        <script src="/js/custom.js"></script>
+        <script src="/js/custom-index.js"></script>
+        <script src="/packages/d3/d3.js"></script>
+        <script src="/packages/d3/d3.geo.projection.v0.min.js"></script>
+        <script src="/packages/d3/topojson.v1.min.js"></script>
+        <script src="/packages/d3/queue.v1.min.js"></script>
+        <script src="/packages/regressionjs/regression.js"></script>
+        <script src="/js/1self.js"></script>
+        <script src="/js/ajax_request.js"></script>
+        <script src="/js/quantified-dev.js"></script>
+        <script src="/js/build-history-d3.js"></script>
+        <script src="/js/wtf-history-d3.js"></script>
+        <script src="/js/hydration-history-d3.js"></script>
+        <script src="/js/caffeine-history-d3.js"></script>
+        <script src="/js/buildDuration-history-d3.js"></script>
+        <script src="/js/active-events-d3.js"></script>
+        <script src="/js/hourlyEvent-heatMap-d3.js"></script>
+        <script src="/js/correlation-scatterplot-d3.js"></script>
+        <script src="/js/dashboard.js"></script>
+        <script src="/js/link-datasource.js"></script>
+    </body>
 </html>
