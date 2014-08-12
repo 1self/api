@@ -1395,6 +1395,18 @@ app.get('/demo', function(request, response) {
     response.send("This is a demo");
 });
 
+app.get('/users_count', function(req, res) {
+    mongoDbConnection(function(qdDb) {
+        qdDb.collection('users').count(function(err, count){
+            if(err) {
+                console.log("Err", err);
+            } else {
+                res.send({count: count});
+            }
+        });
+    });
+});
+
 app.post('/stream', function(req, res) {
     util.createStream(function(err, data) {
         if (err) {
