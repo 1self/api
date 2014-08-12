@@ -94,7 +94,6 @@ var validEncodedUsername = function(encodedUsername, forUsername, params) {
                 deferred.reject(err);
             } else {
                 if (user) {
-                    console.log("Valid user");
                     var usernames = [encodedUsername, forUsername];
                     var paramsToPassOn = [usernames, params];
                     deferred.resolve(paramsToPassOn);
@@ -112,8 +111,6 @@ var getStreamIdForUsername = function(params) {
     var deferred = q.defer();
     var query = null;
     usernames = params[0];
-    console.log("Usernames: " + usernames);
-    console.log("Params: " + params[1]);
     var encodedUsername = usernames[0];
     var forUsername = usernames[1];
     if (forUsername !== undefined) {
@@ -1274,15 +1271,12 @@ var getMyActiveDuration = function(params) {
 var correlateGithubPushesAndIDEActivity = function(params) {
     var streams = params[0];
     var events = params[1];
-    console.log("Events: " + events);
-    console.log("Streams: " + JSON.stringify(streams));
     var streamids = _.map(streams, function(stream) {
         return stream.streamid;
     });
     var deferred = q.defer();
     var lastMonth = moment().subtract('months', 1);
     var groupBy = function(event) {
-        console.log("Event: " + event);
         return {
             "$groupBy": {
                 "fields": [{
@@ -1305,8 +1299,6 @@ var correlateGithubPushesAndIDEActivity = function(params) {
             }
         }
     };
-    console.log("GroupBy1: " + JSON.stringify(groupBy(events[0])));
-    console.log("GroupBy2: " + JSON.stringify(groupBy(events[1])));
     var sumQuery = {
         "$sum": {
             "field": {
@@ -1362,11 +1354,9 @@ var correlateGithubPushesAndIDEActivity = function(params) {
                     }
                     result[date].activeTimeInMinutes = convertMillisToMinutes(result[date].activeTimeInMillis);
                 }
-                console.log("Result: " + result);
                 deferred.resolve(result);
             }
         } else {
-            console.log("Error: " + error);
             deferred.reject(error);
         }
     }
@@ -1653,7 +1643,6 @@ app.get('/quantifieddev/hourlyGithubPushEvents', function(req, res) {
 app.get('/quantifieddev/correlate', function(req, res) {
     var firstEvent = req.query.firstEvent;
     var secondEvent = req.query.secondEvent;
-    console.log("Events to correlate are: " + firstEvent + secondEvent);
     var encodedUsername = req.headers.authorization;
     validEncodedUsername(encodedUsername, req.query.forUsername, [firstEvent, secondEvent])
         .then(getStreamIdForUsername)
