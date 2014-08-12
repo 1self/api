@@ -1,4 +1,6 @@
 window.qd.plotScatterPlot = function(divId, correlateEvents) {
+	var s = $(divId).empty();
+	s = d3.select(divId);
 	var margin = {
 			top: 20,
 			right: 20,

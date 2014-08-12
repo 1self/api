@@ -169,8 +169,7 @@ var getGithubStreamIdForUsername = function(params) {
                 deferred.reject(err);
             } else {
                 if (user && user.githubUser.githubStreamId) {
-                    var paramsToPassOn = [user.githubUser.githubStreamId, params[1]]
-                    deferred.resolve(paramsToPassOn);
+                    deferred.resolve(user.githubUser.githubStreamId);
                 } else {
                     deferred.reject();
                 }
