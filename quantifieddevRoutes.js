@@ -3,6 +3,7 @@ var _ = require("underscore");
 var Q = require('q');
 var encoder = require("./encoder");
 var githubEvents = require("./githubEvents");
+var CONTEXT_URI = process.env.CONTEXT_URI;
 
 var util = require("./util");
 
@@ -214,9 +215,9 @@ module.exports = function(app) {
                                     if (req.session.redirectUrl) {
                                         var redirectUrl = req.session.redirectUrl;
                                         delete req.session.redirectUrl;
-                                        res.redirect(redirectUrl);
+                                        res.redirect(CONTEXT_URI + redirectUrl);
                                     } else {
-                                        res.redirect('/dashboard');
+                                        res.redirect(CONTEXT_URI + '/dashboard');
                                     }
                                 }
                             });

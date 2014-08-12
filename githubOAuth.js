@@ -15,7 +15,6 @@ module.exports = function(app) {
         req.session.encodedUsername = user.encodedUsername;
         req.session.githubUsername = user.githubUser.username;    
         req.session.avatarUrl = user.githubUser._json.avatar_url; 
-
     }
 
     var handleGithubCallback = function(req, res) {
@@ -29,7 +28,7 @@ module.exports = function(app) {
             return user && user.username;
         };
         var redirect = function(user, url) {
-            res.redirect(url + "?username=" + user.username);
+            res.redirect(CONTEXT_URI + url + "?username=" + user.username);
         };
         var insertGithubProfileInDb = function() {
             var options = {
@@ -118,6 +117,6 @@ module.exports = function(app) {
     }));
 
     app.get('/auth/github/callback', passport.authenticate('github', {
-        failureRedirect: '/signup'
+        failureRedirect: CONTEXT_URI +'/signup'
     }), handleGithubCallback);
 };
