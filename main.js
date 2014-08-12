@@ -1507,7 +1507,8 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
 app.get('/quantifieddev/mydev', function(req, res) {
     var encodedUsername = req.headers.authorization;
     var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername, forUsername), [].then(getStreamIdForUsername)
+    validEncodedUsername(encodedUsername, forUsername, [])
+        .then(getStreamIdForUsername)
         .then(getBuildEventsFromPlatform)
         .then(function(response) {
             res.send(response);
