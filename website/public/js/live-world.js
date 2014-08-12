@@ -75,7 +75,7 @@ var liveworld = function() {
     var url = function() {
         return (location.hostname == "localhost") ?
             "http://localhost:5000/live/devbuild/" :
-            "http://app.quantifieddev.org/live/devbuild/";
+            "https://app.quantifieddev.org/live/devbuild/";
     }
 
     var getLiveEventsUrl = function() {
