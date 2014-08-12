@@ -11,9 +11,9 @@
 
         } else {
             if(base.length > 0){
-                result = "http://app.quantifieddev.org/"+base+"/" + resource;
+                result = "https://app.quantifieddev.org/"+base+"/" + resource;
             }else {
-                result = "http://app.quantifieddev.org/"+ resource;
+                result = "https://app.quantifieddev.org/"+ resource;
             }
         }
         return result;
