@@ -1271,6 +1271,8 @@ var getMyActiveDuration = function(params) {
 var correlateGithubPushesAndIDEActivity = function(params) {
     var streams = params[0];
     var events = params[1];
+    console.log("Events: " + events);
+    console.log("Streams: " + JSON.stringify(streams));
     var streamids = _.map(streams, function(stream) {
         return stream.streamid;
     });
