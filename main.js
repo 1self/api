@@ -94,6 +94,7 @@ var validEncodedUsername = function(encodedUsername, forUsername, params) {
                 deferred.reject(err);
             } else {
                 if (user) {
+                    console.log("Valid user");
                     var usernames = [encodedUsername, forUsername];
                     var paramsToPassOn = [usernames, params];
                     deferred.resolve(paramsToPassOn);
@@ -111,6 +112,8 @@ var getStreamIdForUsername = function(params) {
     var deferred = q.defer();
     var query = null;
     usernames = params[0];
+    console.log("Usernames: " + usernames);
+    console.log("Params: " + params[1]);
     var encodedUsername = usernames[0];
     var forUsername = usernames[1];
     if (forUsername !== undefined) {
