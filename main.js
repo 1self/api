@@ -1282,7 +1282,7 @@ var correlateGithubPushesAndIDEActivity = function(params) {
     var deferred = q.defer();
     var lastMonth = moment().subtract('months', 1);
     var groupBy = function(event) {
-        console.log("Event: "+ event);
+        console.log("Event: " + event);
         return {
             "$groupBy": {
                 "fields": [{
@@ -1305,8 +1305,8 @@ var correlateGithubPushesAndIDEActivity = function(params) {
             }
         }
     };
-    console.log("GroupBy1: "+ JSON.stringify(groupBy(events[0])));
-    console.log("GroupBy2: "+ JSON.stringify(groupBy(events[1])));
+    console.log("GroupBy1: " + JSON.stringify(groupBy(events[0])));
+    console.log("GroupBy2: " + JSON.stringify(groupBy(events[1])));
     var sumQuery = {
         "$sum": {
             "field": {
@@ -1362,9 +1362,11 @@ var correlateGithubPushesAndIDEActivity = function(params) {
                     }
                     result[date].activeTimeInMinutes = convertMillisToMinutes(result[date].activeTimeInMillis);
                 }
+                console.log("Result: " + result);
+                deferred.resolve(result);
             }
-            deferred.resolve(result);
         } else {
+            console.log("Error: " + error);
             deferred.reject(error);
         }
     }
