@@ -1,4 +1,4 @@
-var dashboardGraphs = ['updateBuildModel', 'updateWTFModel', 'updateHydrationModel', 'updateCaffeineModel', 'updateBuildDurationModel', 'updateHourlyBuildHeatMap', 'updateHourlyWtfHeatMap', 'updateHourlyHydrationHeatMap', 'updateHourlyCaffeineHeatMap', 'updateActiveEvents', 'updateHourlyGithubPushHeatMap','updateCorrelationData'];
+var dashboardGraphs = ['updateBuildModel', 'updateWTFModel', 'updateHydrationModel', 'updateCaffeineModel', 'updateBuildDurationModel', 'updateHourlyBuildHeatMap', 'updateHourlyWtfHeatMap', 'updateHourlyHydrationHeatMap', 'updateHourlyCaffeineHeatMap', 'updateActiveEvents', 'updateHourlyGithubPushHeatMap', 'updateCorrelationData'];
 
 $("#builds-x").ready(function() {
     window.qd.registerForBuildModelUpdates(function() {
@@ -37,7 +37,6 @@ $(window).load(function() {
 $('#last-updated-since').html("Last Updated: " + moment(window.localStorage.lastUpdatedOn).fromNow());
 
 var handleConnectToGithub = function() {
-    window.localStorage.lastUpdatedOn = new Date();
     var button = $("#github-push-events-sync");
     $('#noDataSourceMessage').modal('hide');
 
@@ -46,7 +45,10 @@ var handleConnectToGithub = function() {
             alert("Github events error");
         };
         var hourlyGithubSuccessCallback = function(hourlyGithubPushEvents) {
-            button.prop("disabled", false );
+            button.prop("disabled", false);
+            $('#last-updated-since').html("");
+            window.localStorage.lastUpdatedOn = new Date();
+            $('#last-updated-since').html("Last Updated: " + moment(window.localStorage.lastUpdatedOn).fromNow());
             window.qd.hourlyGithubPushEvents = hourlyGithubPushEvents;
             window.qd.plotHeatmapWith('#hourlyGithubPush-heat-map-parent', '#hourlyGithubPush-heat-map', hourlyGithubPushEvents);
         };
@@ -55,7 +57,7 @@ var handleConnectToGithub = function() {
 
     button.prop("disabled", true);
     $("#hourlyGithubPush-heat-map").html("");
-    var html_data =  '<div class="githubPushEvents text-center grid" ><div  class="grid-row"><div  class="grid-cell" ><img src="/img/loading.gif"></div></div></div>'
+    var html_data = '<div class="githubPushEvents text-center grid" ><div  class="grid-row"><div  class="grid-cell" ><img src="/img/loading.gif"></div></div></div>'
     $("#hourlyGithubPush-heat-map").html(html_data);
 
     postQDRouteAjax("connect_to_github?callback=?", showGitHubEvents, function(error) {
