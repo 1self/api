@@ -40,9 +40,9 @@ var liveCountry = function() {
     }
 
     var plotGraph = function() {
-        $.getJSON("https://jsonip.appspot.com?callback=?", function(ipDetails) {
+        $.getJSON("http://geo-ip.herokuapp.com/location.json?callback=?", function(ipDetails) {
             $.ajax({
-                url: url() + ipDetails.ip,
+                url: url() + ipDetails.ip_address,
                 success: function(locationInfo) {
                     locationInfo = $.parseJSON(locationInfo);
                     var centerLatitude = locationInfo.latitude;
