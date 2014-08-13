@@ -1114,9 +1114,27 @@ var getHourlyCaffeineCount = function(params) {
     return deferred.promise;
 };
 
-var getGithubPushEventCountForCompare = function(streamid) {
+var getTotalUsersOfQd = function(params) {
+    var deferred = q.defer();
+    mongoDbConnection(function(qdDb) {
+        qdDb.collection('users').count(function(err, count) {
+            if (err) {
+                deferred.reject(err);
+            } else {
+                deferred.resolve([count,params]);
+            }
+        });
+    });
+    return deferred.promise;
+};
+
+var getGithubPushEventCountForCompare = function(params) {
     var deferred = q.defer();
     var lastMonth = moment().subtract('months', 1);
+    var totalUsers = params[0];
+    var streamid = params[1];
+    console.log("totalUsers: "+ totalUsers);
+    console.log("streamid: "+ streamid);
     var groupBy = function(filterSpecValue) {
         return {
             "$groupBy": {
@@ -1213,7 +1231,7 @@ var getGithubPushEventCountForCompare = function(streamid) {
                         result[date].theirGithubPushEventCount = 0;
                     }
                     githubPushEventsForCompare[date].myGithubPushEventCount = result[date].myGithubPushEventCount;
-                    githubPushEventsForCompare[date].theirGithubPushEventCount = result[date].theirGithubPushEventCount;
+                    githubPushEventsForCompare[date].theirGithubPushEventCount = result[date].theirGithubPushEventCount/(totalUsers - 1);
                 }
             }
             deferred.resolve(rollupToArray(githubPushEventsForCompare));
@@ -1514,16 +1532,12 @@ app.get('/demo', function(request, response) {
 });
 
 app.get('/users_count', function(req, res) {
-    mongoDbConnection(function(qdDb) {
-        qdDb.collection('users').count(function(err, count) {
-            if (err) {
-                console.log("Err", err);
-            } else {
-                res.send({
-                    count: count
-                });
-            }
+    getTotalUsersOfQd().then(function(response) {
+        res.send({
+            count: response[0]
         });
+    }).catch(function(error) {
+        res.status(404).send("Number of users not fetched!");
     });
 });
 
@@ -1565,7 +1579,7 @@ app.get('/stream/:id', function(req, res) {
 
 app.get('/event', function(req, res) {
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername, req.query.forUsername)
+    validEncodedUsername(encodedUsername, req.query.forUsername, [])
         .then(getStreamIdForUsername)
         .then(getEventsForStreams)
         .then(function(response) {
@@ -1761,6 +1775,7 @@ app.get('/quantifieddev/githubPushEventForCompare', function(req, res) {
     var encodedUsername = req.headers.authorization;
     validEncodedUsername(encodedUsername, req.query.forUsername, [])
         .then(getGithubStreamIdForUsername)
+        .then(getTotalUsersOfQd)
         .then(getGithubPushEventCountForCompare)
         .then(function(response) {
             res.send(response);
