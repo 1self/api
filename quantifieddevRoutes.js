@@ -233,12 +233,45 @@ module.exports = function(app) {
             });
         }
     });
+    var addFriendTo = function(friendUsername, myUsername) {
+        var deferred = Q.defer();
+        var user = {
+            "username": myUsername
+        }
+        var friend = {
+            "friends": {
+                "username": friendUsername
+            }
+        }
 
+        mongoDbConnection(function(qdDb) {
+            qdDb.collection("users", function(err, collection) {
+                collection.update(user, {
+                    $push: friend
+                }, {
+                    upsert: true
+                }, function(error, data) {
+                    if (error) {
+                        console.log("DB error")
+                        deferred.reject(error)
+                    } else {
+                        console.log("friend inserted successfully")
+                        deferred.resolve();
+                    }
+                });
+            });
+        });
+        return deferred.promise;
+    }
     app.get("/compare", sessionManager.requiresSession, function(req, res) {
         res.render('compare', {
             username: req.session.username,
             avatarUrl: req.session.avatarUrl
         });
+        if (req.session.requesterUsername) {
+            addFriendTo(req.session.requesterUsername, req.session.username)
+            addFriendTo( req.session.username,req.session.requesterUsername)
+        }
     });
 
 
@@ -388,9 +421,9 @@ module.exports = function(app) {
     var filterPrimaryEmailId = function(githubEmails) {
         emails = githubEmails.githubUser.emails;
         var primaryEmail;
-        console.log("Email ids are : ",JSON.stringify(emails));
+        console.log("Email ids are : ", JSON.stringify(emails));
         var primaryEmailObject = _.find(emails, function(emailObj) {
-            console.log("Email objs are: ",emailObj);
+            console.log("Email objs are: ", emailObj);
             return emailObj.primary === true
         });
 
@@ -435,7 +468,7 @@ module.exports = function(app) {
             });
         return deferred.promise;
     }
-    var getEmailIds = function(myUsername, friendsUsername) {
+    var createEmailIdPromiseArray = function(myUsername, friendsUsername) {
         console.log("1.Inside extractEmailIds");
         var deferred = Q.defer();
         var promiseArray = []
@@ -445,7 +478,13 @@ module.exports = function(app) {
         return deferred.promise;
     }
 
-
+    app.get('/accept', function(req, res) {
+        //store req.query.requsterUsername
+        //take friend to compare page
+        //add entry into friend's User collection   
+        req.session.requesterUsername = req.query.reqUsername;
+        res.redirect(CONTEXT_URI + '/compare');
+    })
     app.get('/request_to_compare', function(req, res) {
         //1. extract user email id --done
         // 2. i) if friend's username--> extract friend's 
@@ -455,11 +494,10 @@ module.exports = function(app) {
         // 4. Send email
 
         var friendsUsername = req.query.friendsUsername;
-        
         // var friendsEmailId = func
         // var myEmailId = func
         console.log("req.session.username : ", req.session.username)
-        getEmailIds(req.session.username, friendsUsername)
+        createEmailIdPromiseArray(req.session.username, friendsUsername)
             .then(function(emailIds) {
                 return Q.all(emailIds)
             })
