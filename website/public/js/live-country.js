@@ -40,7 +40,7 @@ var liveCountry = function() {
     }
 
     var plotGraph = function() {
-        $.getJSON("http://geo-ip.herokuapp.com/location.json?callback=?", function(ipDetails) {
+        $.getJSON("https://geo-ip.herokuapp.com/location.json?callback=?", function(ipDetails) {
             $.ajax({
                 url: url() + ipDetails.ip_address,
                 success: function(locationInfo) {
