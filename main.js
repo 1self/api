@@ -57,6 +57,7 @@ console.log("sharedSecret : " + sharedSecret);
 
 console.log('Connecting to PLATFORM_BASE_URI : ' + platformUri);
 
+require('./githubOAuth')(app);
 
 app.all('*', function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -73,7 +74,7 @@ app.all('*', function(req, res, next) {
 });
 
 
-require('./githubOAuth')(app);
+
 require('./quantifieddevRoutes')(app);
 
 var encryptedPassword = PasswordEncrypt.encryptPassword(sharedSecret);
