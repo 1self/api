@@ -340,7 +340,12 @@ var qd = function() {
         }
 
     };
-
+    var compareGithubEventsSuccessCallback = function(githubPushEventForCompare) {
+        result.plotGithubComparison("#compare-github-events", githubPushEventForCompare);
+    };
+    result.updateCompareGithubEvents = function() {
+        postAjax("githubPushEventForCompare", compareGithubEventsSuccessCallback);
+    };
     var handlePlotComparisonGraphsSuccess = function(myBuildEvents, theirBuildEvents) {
         $("#compare-username-errors").text("");
         result.compareBuildHistories(myBuildEvents, theirBuildEvents)
@@ -360,6 +365,7 @@ var qd = function() {
         $.when(result.getActiveEventsModelFor(myUsername), result.getTheirActiveEventsModel(myUsername, theirUsername))
             .done(result.compareActiveEvents)
             .fail("Error getting active events!");
+        result.updateCompareGithubEvents();
     };
 
     return result;
