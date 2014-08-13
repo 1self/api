@@ -43,3 +43,6 @@ x.axis {
 	max-width: none;
 	width: 100%;
 }
+#last-updated-since {
+	margin-left: 5%;
+}

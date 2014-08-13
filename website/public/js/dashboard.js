@@ -34,8 +34,10 @@ $(window).load(function() {
     }
 });
 
+$('#last-updated-since').html("Last Updated: " + moment(window.localStorage.lastUpdatedOn).fromNow());
 
 var handleConnectToGithub = function() {
+    window.localStorage.lastUpdatedOn = new Date();
     var button = $("#github-push-events-sync");
     $('#noDataSourceMessage').modal('hide');
 
