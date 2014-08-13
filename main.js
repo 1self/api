@@ -56,6 +56,23 @@ var sharedSecret = process.env.SHARED_SECRET;
 console.log("sharedSecret : " + sharedSecret);
 
 console.log('Connecting to PLATFORM_BASE_URI : ' + platformUri);
+
+
+app.all('*', function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,accept,x-requested-with,x-withio-delay');
+    if (req.headers["x-withio-delay"]) {
+        var delay = req.headers["x-withio-delay"];
+        setTimeout(function() {
+            next();
+        }, delay);
+    } else {
+        next();
+    }
+});
+
+
 require('./githubOAuth')(app);
 require('./quantifieddevRoutes')(app);
 
@@ -1386,20 +1403,6 @@ var correlateGithubPushesAndIDEActivity = function(params) {
     requestModule(options, callback);
     return deferred.promise;
 };
-
-app.all('*', function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,accept,x-requested-with,x-withio-delay');
-    if (req.headers["x-withio-delay"]) {
-        var delay = req.headers["x-withio-delay"];
-        setTimeout(function() {
-            next();
-        }, delay);
-    } else {
-        next();
-    }
-});
 
 app.get('/', function(request, response) {
     response.redirect('/dashboard');
