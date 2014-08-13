@@ -56,7 +56,7 @@ var handleConnectToGithub = function() {
     var html_data =  '<div class="githubPushEvents text-center grid" ><div  class="grid-row"><div  class="grid-cell" ><img src="/img/loading.gif"></div></div></div>'
     $("#hourlyGithubPush-heat-map").html(html_data);
 
-    postQDRouteAjax("connect_to_github", showGitHubEvents, function(error) {
+    postQDRouteAjax("connect_to_github?callback=?", showGitHubEvents, function(error) {
         console.log(error);
     })
 }
