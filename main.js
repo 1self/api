@@ -1275,7 +1275,6 @@ var correlateGithubPushesAndIDEActivity = function(params) {
         return stream.streamid;
     });
     var deferred = q.defer();
-    var lastMonth = moment().subtract('months', 1);
     var groupBy = function(event) {
         return {
             "$groupBy": {
@@ -1353,6 +1352,7 @@ var correlateGithubPushesAndIDEActivity = function(params) {
                         result[date].githubPushEventCount = 0;
                     }
                     result[date].activeTimeInMinutes = convertMillisToMinutes(result[date].activeTimeInMillis);
+                    result[date].date = date;
                 }
                 deferred.resolve(result);
             }

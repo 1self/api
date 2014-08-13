@@ -14,7 +14,8 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 		return _.map(events, function(event) {
 			return {
 				x: event.activeTimeInMinutes,
-				y: event.githubPushEventCount
+				y: event.githubPushEventCount,
+				date: event.date
 			};
 		});
 	};
@@ -98,7 +99,7 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 			tooltip.transition()
 				.duration(200)
 				.style("opacity", .9);
-			tooltip.html("<br/> (" + xValue(d) + ", " + yValue(d) + ")")
+			tooltip.html("<br/> (Date: " + d.date+ ", IDE Activity: "+xValue(d) + " mins, PushCount: " + yValue(d) + ")")
 				.style("left", (d3.event.pageX + 5) + "px")
 				.style("top", (d3.event.pageY - 28) + "px");
 		})
