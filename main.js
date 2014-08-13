@@ -1725,6 +1725,8 @@ var extractMyEmailId = function(req) {
         });
     return deferred.promise;
 }
+
+
 var extractFriendsEmailId = function(req) {
     //handling case where friend's details= 1self username
     var deferred = q.defer();
@@ -1775,22 +1777,18 @@ var saveEmailToEmailMapping = function(emailIds) {
     });
     return deferred.promise;
 }
-app.get('/quantifieddev/emailToCompare', function(req, res) {
+app.get('/quantifieddev/request_to_compare', function(req, res) {
     //1. extract user email id --done
     // 2. i) if friend's username--> extract friend's 
     //      email id from oneself username
     //    ii) else get friends email from req  
     // 3.save myEmail - friendEmail entry in db
     // 4. Send email
-    console.log("Staring now")
     extractEmailIds(req)
         .then(function(promiseArray) {
             return q.all(promiseArray)
         })
-        .then(function(emailIds) {
-            return saveEmailToEmailMapping(emailIds);
-            console.log("The email ids are: ", JSON.stringify(emailIds[0]), JSON.stringify(emailIds[1]));
-        })
+        .then(saveEmailToEmailMapping)
         .then(function(emailMap){
             console.log("email map is : ",emailMap);
             //send email
