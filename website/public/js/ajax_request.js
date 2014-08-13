@@ -50,6 +50,22 @@
         });
     };
 
+    var postAjaxWithData = function(urlParam, data, successCallback, failureCallback) {
+        $.ajax({
+            url: url("", urlParam),
+            headers: {
+                "Accept": "application/json",
+            },
+            data: data,
+            success: successCallback,
+            error: function(xhr, error) {
+                console.log("Error occurred for ", urlParam);
+                if (failureCallback)
+                    failureCallback(error);
+            }
+        });
+    };
+    window.postAjaxWithData = postAjaxWithData;
     window.postAjax = postAjax;
     window.postQDRouteAjax = postQDRouteAjax;
     window.url = url;

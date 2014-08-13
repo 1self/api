@@ -307,7 +307,9 @@ module.exports = function(app) {
             if (githubStreamId) {
                 githubEvents.getGithubPushEvents(githubStreamId, githubAccessToken)
                     .then(function() {
-                        res.send({status: "ok"})
+                        res.send({
+                            status: "ok"
+                        })
                     });
             } else {
                 util.createStream(function(err, stream) {
@@ -316,11 +318,13 @@ module.exports = function(app) {
                         res.status(500).send("Database error");
                     } else {
                         linkGithubStreamToUser(req.session.username, stream)
-                            .then(function(streamid){
+                            .then(function(streamid) {
                                 return githubEvents.getGithubPushEvents(streamid, githubAccessToken);
                             })
                             .then(function() {
-                                res.send({status: "ok"})
+                                res.send({
+                                    status: "ok"
+                                })
                             });
                     }
                 });
@@ -354,5 +358,120 @@ module.exports = function(app) {
     app.get("/community", function(req, res) {
         res.render('community', getFilterValuesForCountry(req));
     });
+
+
+    var createUserInvitesEntry = function(emailIds) {
+        var deferred = Q.defer();
+        var emailMap = {
+            "from": emailIds[0],
+            "to": emailIds[1]
+        };
+        mongoDbConnection(function(qdDb) {
+            qdDb.collection("emailMap", function(err, collection) {
+                collection.update(emailMap, {
+                    $set: emailMap
+                }, {
+                    upsert: true
+                }, function(error, data) {
+                    if (error) {
+                        console.log("DB error")
+                        deferred.reject(error)
+                    } else {
+                        console.log("Mapping inserted successfully")
+                        deferred.resolve(emailMap);
+                    }
+                });
+            });
+        });
+        return deferred.promise;
+    }
+    var filterPrimaryEmailId = function(githubEmails) {
+        emails = githubEmails.githubUser.emails;
+        var primaryEmail;
+        console.log("Email ids are : ",JSON.stringify(emails));
+        var primaryEmailObject = _.find(emails, function(emailObj) {
+            console.log("Email objs are: ",emailObj);
+            return emailObj.primary === true
+        });
+
+        return primaryEmailObject.email;
+    }
+    var getEmailIdsForUsername = function(username) {
+        //Try using mongo aggregation 
+        var deferred = Q.defer();
+        var query = {
+            "username": username
+        };
+        mongoDbConnection(function(qdDb) {
+            qdDb.collection('users').findOne(query, {
+                "githubUser.emails": 1
+            }, function(err, emails) {
+                if (err) {
+                    console.log("Error while querying")
+                    deferred.reject(err);
+                } else {
+                    deferred.resolve(emails);
+                }
+            });
+        });
+
+        return deferred.promise;
+    };
+
+
+    var getEmailId = function(username) {
+        console.log("2.Inside exctract myEmailID");
+        var deferred = Q.defer();
+        getEmailIdsForUsername(username)
+            .then(function(emails) {
+                console.log("2.1 Emails are: ", emails);
+                var primaryEmail = filterPrimaryEmailId(emails);
+                console.log("2.2 My emailID: ", primaryEmail);
+                deferred.resolve(primaryEmail)
+            })
+            .catch(function(error) {
+                console.log("DB error");
+                deferred.reject("Error", error);
+            });
+        return deferred.promise;
+    }
+    var getEmailIds = function(myUsername, friendsUsername) {
+        console.log("1.Inside extractEmailIds");
+        var deferred = Q.defer();
+        var promiseArray = []
+        promiseArray.push(getEmailId(myUsername))
+        promiseArray.push(getEmailId(friendsUsername))
+        deferred.resolve(promiseArray);
+        return deferred.promise;
+    }
+
+
+    app.get('/request_to_compare', function(req, res) {
+        //1. extract user email id --done
+        // 2. i) if friend's username--> extract friend's 
+        //      email id from oneself username
+        //    ii) else get friends email from req  
+        // 3.save myEmail - friendEmail entry in db
+        // 4. Send email
+
+        var friendsUsername = req.query.friendsUsername;
+        
+        // var friendsEmailId = func
+        // var myEmailId = func
+        console.log("req.session.username : ", req.session.username)
+        getEmailIds(req.session.username, friendsUsername)
+            .then(function(emailIds) {
+                return Q.all(emailIds)
+            })
+            .then(createUserInvitesEntry)
+            .then(function(userInviteMap) {
+                console.log("email map is : ", userInviteMap);
+                //send email
+            })
+            .catch(function(error) {
+                res.status(404).send("stream not found");
+            });
+    });
+
 
 }
