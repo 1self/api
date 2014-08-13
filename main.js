@@ -293,6 +293,31 @@ var getEventsForStreams = function(params) {
     return deferred.promise;
 };
 
+
+var getEventsCount = function() {
+    var deferred = q.defer();
+
+    var options = {
+        url: platformUri + '/rest/events/eventsCount',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        method: 'GET'
+    };
+
+    var getEventsCountFromPlatform = function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var result = JSON.parse(body);
+            deferred.resolve(result);
+        } else {
+            deferred.reject(error);
+        }
+    }
+    requestModule(options, getEventsCountFromPlatform);
+    return deferred.promise;
+};
+
 var generateDatesFor = function(defaultValues) {
     var result = {};
     var numberOfDaysToReportBuildsOn = 30;
@@ -1595,6 +1620,16 @@ app.get('/event', function(req, res) {
             res.send(response);
         }).catch(function(error) {
             res.status(404).send("No stream associated with user.");
+        });
+});
+
+app.get('/eventsCount', function(req, res) {
+        getEventsCount()
+        .then(function(response) {
+            res.send(response);
+        }).catch(function(error) {
+            console.log("Err", error)
+            res.status(400).send("Invalid request");
         });
 });
 
