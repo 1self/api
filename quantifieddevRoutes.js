@@ -6,8 +6,14 @@ var githubEvents = require("./githubEvents");
 var CONTEXT_URI = process.env.CONTEXT_URI;
 var sendgrid = require('sendgrid')(process.env.SENDGRID_USERNAME, process.env.SENDGRID_PASSWORD);
 var util = require("./util");
+var emailTemplates = require('swig-email-templates');
+var path = require('path');
 
 var mongoDbConnection = require('./lib/connection.js');
+
+var emailConfigOptions = {
+  root: path.join(__dirname, "email_templates"),
+};
 
 module.exports = function(app) {
 
@@ -302,7 +308,6 @@ module.exports = function(app) {
         var query = {
             "username": username
         };
-
         var updateQuery = {
             $set: {
                 "githubUser.githubStreamId": stream.streamid
@@ -504,18 +509,28 @@ module.exports = function(app) {
             })
             .then(createUserInvitesEntry)
             .then(function(userInviteMap) {
-                console.log("email map is : ", userInviteMap);
-                sendgrid.send({
-                    to: userInviteMap.to,
-                    from: "QD@quantifieddev.com",
-                    subject: req.session.username + ' wants to compare with your data',
-                    html: '<div>Hi I would like to compare my dev data with yours.<br><a href=' + acceptUrl + '>accept</a></div>'
-                }, function(err, json) {
-                    if (err) {
-                        return console.error(err);
-                    }
-                    console.log(json);
+                console.log("email map 1111 is : ", userInviteMap);
+
+                emailTemplates(options, function(err, emailRender) {
+                  var context = {
+                    acceptUrl: acceptUrl,
+                  };
+                  console.log("Error is ", err);
+                  emailRender('invite.eml.html', context, function(err, html, text) {
+                        sendgrid.send({
+                            to: userInviteMap.to,
+                            from: "QD@quantifieddev.com",
+                            subject: req.session.username + ' wants to compare with your data',
+                            html: html
+                        }, function(err, json) {
+                            if (err) {
+                                return console.error(err);
+                            }
+                            console.log(json);
+                        });
+                  });
                 });
+
             })
             .catch(function(error) {
                 res.status(404).send("stream not found");
