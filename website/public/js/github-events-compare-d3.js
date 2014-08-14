@@ -1,4 +1,4 @@
-window.qd.plotGithubComparison = function(divId, githubPushEventsForCompare) {
+window.qd.plotComparisonAgainstAvgOfRestOfTheWorld = function(divId, events) {
 	var s = $(divId).empty();
 	s = d3.select(divId);
 
@@ -18,8 +18,8 @@ window.qd.plotGithubComparison = function(divId, githubPushEventsForCompare) {
 		.append("svg:g")
 		.attr("transform", "translate(" + p[3] + "," + (h - p[2]) + ")");
 
-	var _groupMyGithubEvents = function(eventsMap) {
-		return ["myGithubPushEventCount"].map(function(cause) {
+	var _groupMyEvents = function(eventsMap) {
+		return ["my"].map(function(cause) {
 			return eventsMap.map(function(d) {
 				return {
 					x: parse(d.date),
@@ -29,8 +29,8 @@ window.qd.plotGithubComparison = function(divId, githubPushEventsForCompare) {
 		});
 	};
 
-	var _groupTheirGithubEvents = function(eventsMap) {
-		return ["theirGithubPushEventCount"].map(function(cause) {
+	var _groupWorldAvgEvents = function(eventsMap) {
+		return ["avg"].map(function(cause) {
 			return eventsMap.map(function(d) {
 				return {
 					x: parse(d.date),
@@ -125,23 +125,23 @@ window.qd.plotGithubComparison = function(divId, githubPushEventsForCompare) {
 			.attr("dy", ".35em")
 			.text(d3.format(",d"));
 	};
-	var myGithubPushEvents = _groupMyGithubEvents(githubPushEventsForCompare);
-	myGithubPushEvents = myGithubPushEvents[0];
-	if (myGithubPushEvents.length > 0) {
-		x.domain(myGithubPushEvents.map(function(d) {
+	var myEvents = _groupMyEvents(events);
+	myEvents = myEvents[0];
+	if (myEvents.length > 0) {
+		x.domain(myEvents.map(function(d) {
 			return d.x;
 		}));
-		xLinear.domain([0, myGithubPushEvents.length]);
+		xLinear.domain([0, myEvents.length]);
 	}
-	var theirGithubPushEvents = _groupTheirGithubEvents(githubPushEventsForCompare);
-	theirGithubPushEvents = theirGithubPushEvents[0];
-	if (theirGithubPushEvents.length > 0) {
-		x.domain(theirGithubPushEvents.map(function(d) {
+	var worldAvgEvents = _groupWorldAvgEvents(events);
+	worldAvgEvents = worldAvgEvents[0];
+	if (worldAvgEvents.length > 0) {
+		x.domain(worldAvgEvents.map(function(d) {
 			return d.x;
 		}));
-		xLinear.domain([0, theirGithubPushEvents.length]);
+		xLinear.domain([0, worldAvgEvents.length]);
 	}
-	y.domain([0, _yMax([myGithubPushEvents, theirGithubPushEvents])]);
+	y.domain([0, _yMax([myEvents, worldAvgEvents])]);
 
 	var _createLegends = function(legendConfig) {
 		var legend = svg.append("g")
@@ -185,15 +185,15 @@ window.qd.plotGithubComparison = function(divId, githubPushEventsForCompare) {
 	_createAxesAndLabels();
 
 	//My Active Events:
-	if (myGithubPushEvents.length > 0) {
-		_plotLineGraph("#2e4174", false, myGithubPushEvents);
+	if (myEvents.length > 0) {
+		_plotLineGraph("#2e4174", false, myEvents);
 	}
 	//Their Active Events:
-	if (theirGithubPushEvents.length > 0) {
-		_plotLineGraph("#F2555C", true, theirGithubPushEvents);
+	if (worldAvgEvents.length > 0) {
+		_plotLineGraph("#F2555C", true, worldAvgEvents);
 	}
 	_createLegends([
-		["My Github Push Events", "#2e4174"],
-		["Rest Of The World Average Github Push Events", "#F2555C"]
+		["My Events", "#2e4174"],
+		["Rest Of The World Average Events", "#F2555C"]
 	]);
 };

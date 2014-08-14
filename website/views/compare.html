@@ -50,142 +50,150 @@
     {% include "./templates/_qd_header.html" %}
     
     <!-- Top Bar End -->
-          <!-- Left sidebar start -->
-        <aside id="sidebar">
-            <div>
-            {% include "./templates/_menu.html" %}
-            </div>
-        </aside>
-          <!-- Left sidebar end -->
-          <div class="dashboard-wrapper">
-            <div class="container">
-              <div>
-                {% include "./templates/_link_datasource.html" %}
+    <!-- Left sidebar start -->
+    <aside id="sidebar">
+      <div>
+        {% include "./templates/_menu.html" %}
+      </div>
+    </aside>
+    <!-- Left sidebar end -->
+    <div class="dashboard-wrapper">
+      <div class="container">
+        <div>
+          {% include "./templates/_link_datasource.html" %}
+        </div>
+        <div class="row page-title">
+          <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+            <h2>Comparison</h2>
+            <ul class="breadcrumb">
+              <li>Home</li>
+              <li>Comparison</li>
+            </ul>
+          </div>
+          <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+            <label>Username to compare with</label>
+          </div>
+          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <div class="row">
+              <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <span><input id="their-username" type="text" class="form-control input-sm" placeholder="Username"></span>
               </div>
-              <div class="row page-title">
-                <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-                  <h2>Comparison</h2>
-                  <ul class="breadcrumb">
-                    <li>Home</li>
-                    <li>Comparison</li>
-                  </ul>
-                </div>
-                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                  <label>Username to compare with</label>
-                </div>
-                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                  <div class="row">
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                      <span><input id="their-username" type="text" class="form-control input-sm" placeholder="Username"></span>
-                    </div>
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                      <span><button id="auth-save-compare" type="button" class="btn btn-default">Save</button></span>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                      <p id="compare-username-errors" class="text-danger text-bold" style="margin-top: 3%"></p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            
-            <div class="row sortable">
-              <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-                <div class="panel panel-secondary fixed-height">
-                  <div class="panel-heading cursor-move">
-                    <h3 class="panel-title"><i class="icon-bar-chart"></i>My Build History</h3>
-                    <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
-                  </div>
-                  <div class="panel-body">
-                    <div id="my-build-history"><div class="no-data-msg alert" role="alert">No data available</div></div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-                <div class="panel panel-secondary fixed-height">
-                  <div class="panel-heading cursor-move">
-                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Their Build History</h3>
-                    <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
-                  </div>
-                  <div class="panel-body">
-                    <div id="their-build-history"><div class="no-data-msg alert" role="alert">No data available</div></div>
-                  </div>
-                </div>
+              <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <span><button id="auth-save-compare" type="button" class="btn btn-default">Save</button></span>
               </div>
             </div>
-            <div class="row sortable">
-              <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-                <div class="panel panel-secondary fixed-height">
-                  <div class="panel-heading cursor-move">
-                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Combined Build History</h3>
-                  </div>
-                  <div class="panel-body">
-                    <div id="compare-build-history"><div class="no-data-msg alert" role="alert">No data available</div></div>
-                  </div>
-                </div>
-              </div>
-              
-            </div>
-            <div class="row sortable">
-              <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-                <div class="panel panel-secondary fixed-height">
-                  <div class="panel-heading cursor-move">
-                    <h3 class="panel-title"><i class="icon-bar-chart"></i>My IDE Active Work History</h3>
-                    <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
-                  </div>
-                  <div class="panel-body">
-                    <div id="my-active-events">
-                      <div class="no-data-msg alert" role="alert">No data available</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-                <div class="panel panel-secondary fixed-height">
-                  <div class="panel-heading cursor-move">
-                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Their IDE Active Work History</h3>
-                    <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
-                  </div>
-                  <div class="panel-body">
-                    <div id="their-active-events">
-                      <div class="no-data-msg alert" role="alert">No data available</div>
-                    </div>
-                  </div>
-                </div>
+            <div class="row">
+              <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <p id="compare-username-errors" class="text-danger text-bold" style="margin-top: 3%"></p>
               </div>
             </div>
-            <div class="row sortable">
-              <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-                <div class="panel panel-secondary fixed-height">
-                  <div class="panel-heading cursor-move">
-                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Combined IDE Active Work History</h3>
-                  </div>
-                  <div class="panel-body">
-                    <div id="compare-active-events">
-                      <div class="no-data-msg alert" role="alert">No data available</div>
-                    </div>
-                  </div>
+          </div>
+        </div>
+        
+        <div class="row sortable">
+          <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+            <div class="panel panel-secondary fixed-height">
+              <div class="panel-heading cursor-move">
+                <h3 class="panel-title"><i class="icon-bar-chart"></i>My Build History</h3>
+                <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
+              </div>
+              <div class="panel-body">
+                <div id="my-build-history"><div class="no-data-msg alert" role="alert">No data available</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+            <div class="panel panel-secondary fixed-height">
+              <div class="panel-heading cursor-move">
+                <h3 class="panel-title"><i class="icon-bar-chart"></i>Their Build History</h3>
+                <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
+              </div>
+              <div class="panel-body">
+                <div id="their-build-history"><div class="no-data-msg alert" role="alert">No data available</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row sortable">
+          <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+            <div class="panel panel-secondary fixed-height">
+              <div class="panel-heading cursor-move">
+                <h3 class="panel-title"><i class="icon-bar-chart"></i>Combined Build History</h3>
+              </div>
+              <div class="panel-body">
+                <div id="compare-build-history"><div class="no-data-msg alert" role="alert">No data available</div></div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        <div class="row sortable">
+          <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+            <div class="panel panel-secondary fixed-height">
+              <div class="panel-heading cursor-move">
+                <h3 class="panel-title"><i class="icon-bar-chart"></i>My IDE Active Work History</h3>
+                <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
+              </div>
+              <div class="panel-body">
+                <div id="my-active-events">
+                  <div class="no-data-msg alert" role="alert">No data available</div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="row sortable">
-              <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-                <div class="panel panel-secondary fixed-height">
-                  <div class="panel-heading cursor-move">
-                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Comparison Of My Github Push Events With Average Values Of Rest of the World</h3>
-                  </div>
-                  <div class="panel-body">
-                    <div id="compare-github-events">
-                      <div class="no-data-msg alert" role="alert">No data available</div>
-                    </div>
-                  </div>
+          <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+            <div class="panel panel-secondary fixed-height">
+              <div class="panel-heading cursor-move">
+                <h3 class="panel-title"><i class="icon-bar-chart"></i>Their IDE Active Work History</h3>
+                <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
+              </div>
+              <div class="panel-body">
+                <div id="their-active-events">
+                  <div class="no-data-msg alert" role="alert">No data available</div>
                 </div>
               </div>
             </div>
-          </div></div>
-          <!-- Bootstrap Container End -->
+          </div>
+        </div>
+        <div class="row sortable">
+          <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+            <div class="panel panel-secondary fixed-height">
+              <div class="panel-heading cursor-move">
+                <h3 class="panel-title"><i class="icon-bar-chart"></i>Combined IDE Active Work History</h3>
+              </div>
+              <div class="panel-body">
+                <div id="compare-active-events">
+                  <div class="no-data-msg alert" role="alert">No data available</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row sortable">
+        <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+          <div class="panel panel-secondary fixed-height">
+            <div class="panel-heading cursor-move">
+              <h3 class="panel-title"><i class="icon-bar-chart"></i>My Github Push Events vs Avg of the Rest of the World</h3>
+            </div>
+            <div class="panel-body">
+              <div id="compare-github-events">
+                <div class="no-data-msg alert" role="alert">No data available</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+          <div class="panel panel-secondary fixed-height">
+            <div class="panel-heading cursor-move">
+              <h3 class="panel-title"><i class="icon-bar-chart"></i>My IDE Activity vs Avg of the Rest of the World</h3>
+            </div>
+            <div class="panel-body">
+              <div id="compare-ide-activity">
+                <div class="no-data-msg alert" role="alert">No data available</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <!-- Main Container End -->
@@ -219,7 +227,7 @@
       <script src="/packages/d3/topojson.v1.min.js"></script>
       <script src="/packages/d3/queue.v1.min.js"></script>
       <script src="/packages/regressionjs/regression.js"></script>
-    <script src="/js/ajax_request.js"></script>    
+      <script src="/js/ajax_request.js"></script>
       <script src="/js/quantified-dev.js"></script>
       <script src="/js/wtf-history-d3.js"></script>
       <script src="/js/hydration-history-d3.js"></script>
@@ -234,6 +242,5 @@
       <script src="/js/active-events-compare-d3.js"></script>
       <script src="/js/github-events-compare-d3.js"></script>
       <script src="/js/link-datasource.js"></script>
-
     </body>
   </html>

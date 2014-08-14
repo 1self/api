@@ -99,6 +99,9 @@ var getFilterValuesFrom = function(req) {
     return filterValues;
 };
 
+var convertMillisToMinutes = function(milliseconds) {
+    return Math.round(milliseconds / (1000 * 60) * 100) / 100;
+};
 
 var validEncodedUsername = function(encodedUsername, forUsername, params) {
     var deferred = q.defer();
@@ -1398,8 +1401,9 @@ var getIdeActivityDurationForCompare = function(params) {
                     if (result[date].restOfTheWorldIdeActivityDuration == undefined) {
                         result[date].restOfTheWorldIdeActivityDuration = 0;
                     }
-                    ideActivityDurationForCompare[date].my = result[date].myIdeActivityDuration;
-                    ideActivityDurationForCompare[date].avg = result[date].restOfTheWorldIdeActivityDuration / (totalUsers - 1);
+                    ideActivityDurationForCompare[date].my = convertMillisToMinutes(result[date].myIdeActivityDuration);
+                    var durationInMins = convertMillisToMinutes(result[date].restOfTheWorldIdeActivityDuration);
+                    ideActivityDurationForCompare[date].avg = durationInMins / (totalUsers - 1);
                 }
             }
             deferred.resolve(rollupToArray(ideActivityDurationForCompare));
@@ -1548,9 +1552,6 @@ var getMyActiveDuration = function(params) {
         },
         method: 'GET'
     };
-    var convertMillisToMinutes = function(milliseconds) {
-        return Math.round(milliseconds / (1000 * 60) * 100) / 100;
-    };
 
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
@@ -1651,9 +1652,6 @@ var correlateGithubPushesAndIDEActivity = function(params) {
             merge: true
         },
         method: 'GET'
-    };
-    var convertMillisToMinutes = function(milliseconds) {
-        return Math.round(milliseconds / (1000 * 60) * 100) / 100;
     };
 
     function callback(error, response, body) {
