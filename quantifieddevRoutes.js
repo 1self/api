@@ -221,7 +221,7 @@ module.exports = function(app) {
                                     if (req.session.redirectUrl) {
                                         var redirectUrl = req.session.redirectUrl;
                                         delete req.session.redirectUrl;
-                                        res.redirect(CONTEXT_URI + redirectUrl);
+                                        res.redirect(redirectUrl);
                                     } else {
                                         res.redirect(CONTEXT_URI + '/dashboard');
                                     }
