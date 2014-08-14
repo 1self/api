@@ -1257,10 +1257,10 @@ var getGithubPushEventCountForCompare = function(params) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
             var defaultGithubPushEventsForCompare = [{
-                key: "myGithubPushEventCount",
+                key: "my",
                 value: 0
             }, {
-                key: "theirGithubPushEventCount",
+                key: "avg",
                 value: 0
             }];
             var githubPushEventsForCompare = generateDatesFor(defaultGithubPushEventsForCompare);
@@ -1272,8 +1272,8 @@ var getGithubPushEventCountForCompare = function(params) {
                     if (result[date].theirGithubPushEventCount == undefined) {
                         result[date].theirGithubPushEventCount = 0;
                     }
-                    githubPushEventsForCompare[date].myGithubPushEventCount = result[date].myGithubPushEventCount;
-                    githubPushEventsForCompare[date].theirGithubPushEventCount = result[date].theirGithubPushEventCount / (totalUsers - 1);
+                    githubPushEventsForCompare[date].my = result[date].myGithubPushEventCount;
+                    githubPushEventsForCompare[date].avg = result[date].theirGithubPushEventCount / (totalUsers - 1);
                 }
             }
             deferred.resolve(rollupToArray(githubPushEventsForCompare));
@@ -1383,10 +1383,10 @@ var getIdeActivityDurationForCompare = function(params) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
             var defaultIdeActivityDurationForCompare = [{
-                key: "myIdeActivityDuration",
+                key: "my",
                 value: 0
             }, {
-                key: "avgRestOfTheWorldIdeActivityDuration",
+                key: "avg",
                 value: 0
             }];
             var ideActivityDurationForCompare = generateDatesFor(defaultIdeActivityDurationForCompare);
@@ -1398,8 +1398,8 @@ var getIdeActivityDurationForCompare = function(params) {
                     if (result[date].restOfTheWorldIdeActivityDuration == undefined) {
                         result[date].restOfTheWorldIdeActivityDuration = 0;
                     }
-                    ideActivityDurationForCompare[date].myIdeActivityDuration = result[date].myIdeActivityDuration;
-                    ideActivityDurationForCompare[date].avgRestOfTheWorldIdeActivityDuration = result[date].restOfTheWorldIdeActivityDuration / (totalUsers - 1);
+                    ideActivityDurationForCompare[date].my = result[date].myIdeActivityDuration;
+                    ideActivityDurationForCompare[date].avg = result[date].restOfTheWorldIdeActivityDuration / (totalUsers - 1);
                 }
             }
             deferred.resolve(rollupToArray(ideActivityDurationForCompare));
