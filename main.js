@@ -1163,8 +1163,6 @@ var getGithubPushEventCountForCompare = function(params) {
     var lastMonth = moment().subtract('months', 1);
     var totalUsers = params[0];
     var streamid = params[1];
-    console.log("totalUsers: " + totalUsers);
-    console.log("streamid: " + streamid);
     var groupBy = function(filterSpecValue) {
         return {
             "$groupBy": {
@@ -1243,7 +1241,6 @@ var getGithubPushEventCountForCompare = function(params) {
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
-            console.log("Result for compare: ", JSON.stringify(result));
             var defaultGithubPushEventsForCompare = [{
                 key: "myGithubPushEventCount",
                 value: 0
