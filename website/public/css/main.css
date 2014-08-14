@@ -2563,13 +2563,25 @@ iframe.wysihtml5-sandbox {
   height: 300px;
 }
 
-ul#mini-nav li.list-box i,.menuLink:hover{
+ul#mini-nav li.list-box i,.menuLink:hover,ul#mini-nav-right li.list-box a,ul#mini-nav-right li.list-box i,ul#mini-nav-right li.list-box a:hover{
   color: #dddddd!important;
+  }
+.menuLink:hover,ul#mini-nav-right li.list-box a:hover{
   text-decoration: none;
 }
-ul#mini-nav li.list-box{
+ul#mini-nav li.list-box,ul#mini-nav-right li.list-box{
   box-shadow: 0 0 0.7px #AFAFAF;
 }
+ul#mini-nav-right li.list-box{
+    border: 1px solid #6a6a6a;
+}
+ul#mini-nav-right li.list-box,ul#mini-nav-right li.list-box a,ul#mini-nav-right li.list-box a:hover{
+  background: transparent!important;
+ }
+ .user-name{
+  color: #dddddd;
+  margin-left: 5px;
+ }
 @media screen and (max-width: 500px) {
     .hourlyHeatMapContainer {
         width: 100%;
