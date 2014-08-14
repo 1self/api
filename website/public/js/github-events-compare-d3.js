@@ -159,9 +159,9 @@ window.qd.plotGithubComparison = function(divId, githubPushEventsForCompare) {
 			.append("g")
 			.each(function(d, i) {
 				var g = d3.select(this);
-				if (i === 2) {
+				if (i === 1) {
+					yOffset = yOffset * 1.5;
 					xOffset = 0;
-					yOffset = yOffset * 2;
 				}
 				g.append("rect")
 					.attr("x", xOffset)
@@ -194,6 +194,6 @@ window.qd.plotGithubComparison = function(divId, githubPushEventsForCompare) {
 	}
 	_createLegends([
 		["My Github Push Events", "#2e4174"],
-		["Average Github Push Events", "#F2555C"]
+		["Rest Of The World Average Github Push Events", "#F2555C"]
 	]);
 };
