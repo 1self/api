@@ -1158,6 +1158,21 @@ var getTotalGithubUsersOfQd = function(params) {
     return deferred.promise;
 };
 
+var getTotalUsersOfQd = function(params) {
+    var deferred = q.defer();
+    mongoDbConnection(function(qdDb) {
+        qdDb.collection('users').count(function(err, count) {
+            if (err) {
+                deferred.reject(err);
+            } else {
+                var paramsToPassOn = params[0];
+                deferred.resolve([count, paramsToPassOn]);
+            }
+        });
+    });
+    return deferred.promise;
+};
+
 var getGithubPushEventCountForCompare = function(params) {
     var deferred = q.defer();
     var lastMonth = moment().subtract('months', 1);
@@ -1262,6 +1277,132 @@ var getGithubPushEventCountForCompare = function(params) {
                 }
             }
             deferred.resolve(rollupToArray(githubPushEventsForCompare));
+
+        } else {
+            deferred.reject(error);
+        }
+    }
+    requestModule(options, callback);
+
+    return deferred.promise;
+};
+
+var getIdeActivityDurationForCompare = function(params) {
+    var deferred = q.defer();
+    var lastMonth = moment().subtract('months', 1);
+    var totalUsers = params[0];
+    var streams = params[1];
+    var streamids = _.map(streams, function(stream) {
+        return stream.streamid;
+    });
+    var groupBy = function(filterSpecValue) {
+        return {
+            "$groupBy": {
+                "fields": [{
+                    "name": "payload.eventDateTime",
+                    "format": "MM/dd/yyyy"
+                }],
+                "filterSpec": filterSpecValue,
+                "projectionSpec": {
+                    "payload.eventDateTime": "date",
+                    "payload.properties": "properties"
+                },
+                "orderSpec": {}
+            }
+        }
+    };
+    var myIdeActivityDuration = {
+        "$sum": {
+            "field": {
+                "name": "properties.duration"
+            },
+            "data": groupBy({
+                "payload.streamid": {
+                    "$operator": {
+                        "in": streamids
+                    }
+                },
+                "payload.eventDateTime": {
+                    "$operator": {
+                        ">": {
+                            "$date": moment(lastMonth).format()
+                        }
+                    }
+                },
+                "payload.actionTags": "Develop"
+            }),
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "myIdeActivityDuration"
+            }
+        }
+    };
+
+    var restOfTheWorldIdeActivityDuration = {
+        "$sum": {
+            "field": {
+                "name": "properties.duration"
+            },
+            "data": groupBy({
+                "payload.streamid": {
+                    "$operator": {
+                        "nin": streamids
+                    }
+                },
+                "payload.eventDateTime": {
+                    "$operator": {
+                        ">": {
+                            "$date": moment(lastMonth).format()
+                        }
+                    }
+                },
+                "payload.actionTags": "Develop"
+            }),
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "restOfTheWorldIdeActivityDuration"
+            }
+        }
+    };
+
+    console.log("query : " + JSON.stringify([myIdeActivityDuration, restOfTheWorldIdeActivityDuration]));
+    var options = {
+        url: platformUri + '/rest/analytics/aggregate',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: {
+            spec: JSON.stringify([myIdeActivityDuration, restOfTheWorldIdeActivityDuration]),
+            merge: true
+        },
+        method: 'GET'
+    };
+
+    function callback(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var result = JSON.parse(body);
+            var defaultIdeActivityDurationForCompare = [{
+                key: "myIdeActivityDuration",
+                value: 0
+            }, {
+                key: "avgRestOfTheWorldIdeActivityDuration",
+                value: 0
+            }];
+            var ideActivityDurationForCompare = generateDatesFor(defaultIdeActivityDurationForCompare);
+            for (var date in result) {
+                if (ideActivityDurationForCompare[date] !== undefined) {
+                    if (result[date].myIdeActivityDuration == undefined) {
+                        result[date].myIdeActivityDuration = 0;
+                    }
+                    if (result[date].restOfTheWorldIdeActivityDuration == undefined) {
+                        result[date].restOfTheWorldIdeActivityDuration = 0;
+                    }
+                    ideActivityDurationForCompare[date].myIdeActivityDuration = result[date].myIdeActivityDuration;
+                    ideActivityDurationForCompare[date].avgRestOfTheWorldIdeActivityDuration = result[date].restOfTheWorldIdeActivityDuration / (totalUsers - 1);
+                }
+            }
+            deferred.resolve(rollupToArray(ideActivityDurationForCompare));
 
         } else {
             deferred.reject(error);
@@ -1621,7 +1762,7 @@ app.get('/event', function(req, res) {
 });
 
 app.get('/eventsCount', function(req, res) {
-        getEventsCount()
+    getEventsCount()
         .then(function(response) {
             res.send(response);
         }).catch(function(error) {
@@ -1818,6 +1959,19 @@ app.get('/quantifieddev/githubPushEventForCompare', function(req, res) {
         .then(getGithubStreamIdForUsername)
         .then(getTotalGithubUsersOfQd)
         .then(getGithubPushEventCountForCompare)
+        .then(function(response) {
+            res.send(response);
+        }).catch(function(error) {
+            res.status(404).send("stream not found");
+        });
+});
+
+app.get('/quantifieddev/compare/ideActivity', function(req, res) {
+    var encodedUsername = req.headers.authorization;
+    validEncodedUsername(encodedUsername, req.query.forUsername, [])
+        .then(getStreamIdForUsername)
+        .then(getTotalUsersOfQd)
+        .then(getIdeActivityDurationForCompare)
         .then(function(response) {
             res.send(response);
         }).catch(function(error) {
