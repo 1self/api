@@ -4,7 +4,7 @@ var Q = require('q');
 var encoder = require("./encoder");
 var githubEvents = require("./githubEvents");
 var CONTEXT_URI = process.env.CONTEXT_URI;
-
+var sendgrid = require('sendgrid')(process.env.SENDGRID_USERNAME, process.env.SENDGRID_PASSWORD);
 var util = require("./util");
 
 var mongoDbConnection = require('./lib/connection.js');
@@ -239,15 +239,13 @@ module.exports = function(app) {
             "username": myUsername
         }
         var friend = {
-            "friends": {
-                "username": friendUsername
-            }
+            "friends": friendUsername
         }
 
         mongoDbConnection(function(qdDb) {
             qdDb.collection("users", function(err, collection) {
                 collection.update(user, {
-                    $push: friend
+                    $addToSet: friend
                 }, {
                     upsert: true
                 }, function(error, data) {
@@ -264,16 +262,18 @@ module.exports = function(app) {
         return deferred.promise;
     }
     app.get("/compare", sessionManager.requiresSession, function(req, res) {
+        var requesterUsername = req.session.requesterUsername;
+        if (requesterUsername) {
+            addFriendTo(requesterUsername, req.session.username)
+            addFriendTo(req.session.username, requesterUsername)
+        }
         res.render('compare', {
             username: req.session.username,
-            avatarUrl: req.session.avatarUrl
+            avatarUrl: req.session.avatarUrl,
+            friendsUsername: requesterUsername
         });
-        if (req.session.requesterUsername) {
-            addFriendTo(req.session.requesterUsername, req.session.username)
-            addFriendTo( req.session.username,req.session.requesterUsername)
-        }
+        delete req.session.requesterUsername;
     });
-
 
     var doesGitHubStreamIdExist = function(username) {
         var deferred = Q.defer();
@@ -497,6 +497,7 @@ module.exports = function(app) {
         // var friendsEmailId = func
         // var myEmailId = func
         console.log("req.session.username : ", req.session.username)
+        var acceptUrl = CONTEXT_URI + "/accept?reqUsername=" + req.session.username;
         createEmailIdPromiseArray(req.session.username, friendsUsername)
             .then(function(emailIds) {
                 return Q.all(emailIds)
@@ -504,7 +505,17 @@ module.exports = function(app) {
             .then(createUserInvitesEntry)
             .then(function(userInviteMap) {
                 console.log("email map is : ", userInviteMap);
-                //send email
+                sendgrid.send({
+                    to: userInviteMap.to,
+                    from: "QD@quantifieddev.com",
+                    subject: req.session.username + ' wants to compare with your data',
+                    html: '<div>Hi I would like to compare my dev data with yours.<br><a href=' + acceptUrl + '>accept</a></div>'
+                }, function(err, json) {
+                    if (err) {
+                        return console.error(err);
+                    }
+                    console.log(json);
+                });
             })
             .catch(function(error) {
                 res.status(404).send("stream not found");

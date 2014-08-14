@@ -15,13 +15,13 @@ $(document).ready(function() {
 	var theirUsernameIsAvailable = function() {
 		return window.localStorage.theirUsername;
 	};
-	var populateTheirUsername = function() {
+	/*var populateTheirUsername = function() {
 		$('#their-username').val(window.localStorage.theirUsername);
 	};
-
-	if (theirUsernameIsAvailable()) {
+*/
+	/*if (theirUsernameIsAvailable()) {
 		populateTheirUsername();
-	}
+	}*/
 	window.qd.plotComparisonGraphs(window.localStorage.theirUsername);
 });
 var friendsDetails
