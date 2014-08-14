@@ -70,9 +70,7 @@
                             <li>Dashboard</li>
                         </ul>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                        <a href="#" data-toggle="modal" data-target=".security-info"><h5>About our use of http</h5></a>
-                    </div>
+
                     {% if streamLinked == "yes" %}
                         <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12 alert alert-success alert-dismissible" role="alert">
                             <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>Stream Id linked successfully!
@@ -82,42 +80,6 @@
                             <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>The Stream Id that you tried to link is incorrect. So it is not linked!
                         </div>
                     {% endif %}
-                    <div>
-                        <div class="modal fade security-info" tabindex="-1" role="dialog">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-                                        <h3 class="modal-title">About our use of http</h3>
-                                    </div>
-                                    <div class="modal-body"><p>
-                                        Here at quantified dev we care deeply about keeping your data safe. While we're in beta, in lean
-                                        startup style, we've deferred building https support so that we can prioritise figuring out the
-                                        features you're interested in. We realise sending our tokens over http means they can be
-                                        intercepted by baddies. At the moment no personally identifyable information is sent to
-                                        quantified dev. Those baddies can't tell whose data they are looking at. We would rather focus
-                                        on building great features for you - learning what you want - and build https support before we
-                                        exit beta.
-                                        </p>
-                                        <p>
-                                        If you are concerned about our approach and your data, please discontinue using quantified
-                                        dev. Better yet, tell us we're wrong by emailing us at team@quantifieddev.org</p>
-                                        <p>
-                                        <p>-- Qd Team</p>
-                                        <ul>
-                                            <li>Ed Sykes</li>
-                                            <li>Martin Strotton</li>
-                                            <li>Dhaval Dalal</li>
-                                            <li>Chinmay Naik</li>
-                                            <li>Vivek Dhapola</li>
-                                            <li>Radhika Desai</li>
-                                            <li>Devika Deshmukh</li>
-                                        </ul>
-                                    </p></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <!-- Page title end -->
                 <div class="row">
