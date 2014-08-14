@@ -74,6 +74,22 @@ body{
 .signup-stpe2-label{
 	font-size: 17px;
 }
+.top-bar .logo,.logo {
+     font-size: 23px;
+    color: #25a8fb;
+    padding: 0 20px;
+    height: 60px;
+	line-height: 60px;
+	width: 220px;
+  }
+.top-bar .logo:hover,.logo:hover{
+	text-decoration: none;
+}
+.top-bar{
+  box-shadow: 0 8px 6px -6px #000;
+  position: relative;
+  z-index: 100000;
+}
 @media (min-width: 600px){
 	.container {
 		width: 400px;
