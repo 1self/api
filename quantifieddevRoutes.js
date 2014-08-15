@@ -12,7 +12,7 @@ var path = require('path');
 var mongoDbConnection = require('./lib/connection.js');
 
 var emailConfigOptions = {
-  root: path.join(__dirname, "email_templates"),
+    root: path.join(__dirname, "email_templates"),
 };
 
 module.exports = function(app) {
@@ -490,7 +490,7 @@ module.exports = function(app) {
         req.session.requesterUsername = req.query.reqUsername;
         res.redirect(CONTEXT_URI + '/compare');
     })
-    app.get('/request_to_compare', function(req, res) {
+    app.get('/request_to_compare_with_username', function(req, res) {
         //1. extract user email id --done
         // 2. i) if friend's username--> extract friend's 
         //      email id from oneself username
@@ -511,12 +511,12 @@ module.exports = function(app) {
             .then(function(userInviteMap) {
                 console.log("email map 1111 is : ", userInviteMap);
 
-                emailTemplates(options, function(err, emailRender) {
-                  var context = {
-                    acceptUrl: acceptUrl,
-                  };
-                  console.log("Error is ", err);
-                  emailRender('invite.eml.html', context, function(err, html, text) {
+                emailTemplates(emailConfigOptions, function(err, emailRender) {
+                    var context = {
+                        acceptUrl: acceptUrl,
+                    };
+                    console.log("Error is ", err);
+                    emailRender('invite.eml.html', context, function(err, html, text) {
                         sendgrid.send({
                             to: userInviteMap.to,
                             from: "QD@quantifieddev.com",
@@ -525,10 +525,11 @@ module.exports = function(app) {
                         }, function(err, json) {
                             if (err) {
                                 return console.error(err);
+                            } else {
+                                return console.log("success");
                             }
-                            console.log(json);
                         });
-                  });
+                    });
                 });
 
             })
@@ -536,6 +537,50 @@ module.exports = function(app) {
                 res.status(404).send("stream not found");
             });
     });
+    app.get('/request_to_compare_with_email', function(req, res) {
+        //  1. extract email id from oneself username
+        //  2.  get friends email from req  
+        // 3.save myEmail - friendEmail entry in db
+        // 4. Send email
 
+        var friendsEmail = req.query.friendsEmail;
+        // var friendsEmailId = func
+        // var myEmailId = func.0
+        console.log("req.session.username : ", req.session.username)
+        var acceptUrl = CONTEXT_URI + "/accept?reqUsername=" + req.session.username;
+        getEmailId(req.session.username)
+            .then(function(myEmail) {
+                return [myEmail, friendsEmail]
+            })
+            .then(createUserInvitesEntry)
+            .then(function(userInviteMap) {
+                console.log("email map 1111 is : ", userInviteMap);
+
+                emailTemplates(emailConfigOptions, function(err, emailRender) {
+                    var context = {
+                        acceptUrl: acceptUrl,
+                    };
+                    console.log("Error is ", err);
+                    emailRender('invite.eml.html', context, function(err, html, text) {
+                        sendgrid.send({
+                            to: userInviteMap.to,
+                            from: "QD@quantifieddev.com",
+                            subject: req.session.username + ' wants to compare with your data',
+                            html: html
+                        }, function(err, json) {
+                            if (err) {
+                                return console.error(err);
+                            } else {
+                                return console.log("success");
+                            }
+                        });
+                    });
+                });
+
+            })
+            .catch(function(error) {
+                res.status(404).send("stream not found");
+            });
+    });
 
 }
