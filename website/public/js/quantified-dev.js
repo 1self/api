@@ -340,8 +340,16 @@ var qd = function() {
         }
 
     };
+
+    var compareIdeActivityEventsSuccessCallback = function(ideActivityEventForCompare) {
+        result.plotComparisonAgainstAvgOfRestOfTheWorld("#compare-ide-activity", ideActivityEventForCompare);
+    };
+    result.updateIdeActivityEventForCompare = function() {
+        postAjax("compare/ideActivity", compareIdeActivityEventsSuccessCallback);
+    };
+
     var compareGithubEventsSuccessCallback = function(githubPushEventForCompare) {
-        result.plotGithubComparison("#compare-github-events", githubPushEventForCompare);
+        result.plotComparisonAgainstAvgOfRestOfTheWorld("#compare-github-events", githubPushEventForCompare);
     };
     result.updateCompareGithubEvents = function() {
         postAjax("githubPushEventForCompare", compareGithubEventsSuccessCallback);
@@ -366,6 +374,7 @@ var qd = function() {
             .done(result.compareActiveEvents)
             .fail("Error getting active events!");
         result.updateCompareGithubEvents();
+        result.updateIdeActivityEventForCompare();
     };
 
     return result;
