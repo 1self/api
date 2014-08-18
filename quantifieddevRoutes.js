@@ -8,6 +8,7 @@ var sendgrid = require('sendgrid')(process.env.SENDGRID_USERNAME, process.env.SE
 var util = require("./util");
 var emailTemplates = require('swig-email-templates');
 var path = require('path');
+var QD_EMAIL = process.env.QD_EMAIL;
 
 var mongoDbConnection = require('./lib/connection.js');
 
@@ -436,7 +437,6 @@ module.exports = function(app) {
                         console.log("DB error")
                         deferred.reject(error)
                     } else {
-                        console.log("Mapping inserted successfully")
                         deferred.resolve(emailMap);
                     }
                 });
@@ -447,9 +447,7 @@ module.exports = function(app) {
     var filterPrimaryEmailId = function(githubEmails) {
         emails = githubEmails.githubUser.emails;
         var primaryEmail;
-        console.log("Email ids are : ", JSON.stringify(emails));
         var primaryEmailObject = _.find(emails, function(emailObj) {
-            console.log("Email objs are: ", emailObj);
             return emailObj.primary === true
         });
 
@@ -466,7 +464,7 @@ module.exports = function(app) {
                 "githubUser.emails": 1
             }, function(err, emails) {
                 if (err) {
-                    console.log("Error while querying")
+                    console.log("Error while querying", err);
                     deferred.reject(err);
                 } else {
                     deferred.resolve(emails);
@@ -563,9 +561,11 @@ module.exports = function(app) {
                             html: html
                         }, function(err, json) {
                             if (err) {
-                                return console.error(err);
+                                console.error(err);
+                                res.send(400, err);
                             } else {
-                                return console.log("success");
+                                console.log("success");
+                                res.send(200);
                             }
                         });
                     });
@@ -595,7 +595,6 @@ module.exports = function(app) {
             })
             .then(createUserInvitesEntry)
             .then(function(userInviteMap) {
-                console.log("email map 1111 is : ", userInviteMap);
 
                 emailTemplates(emailConfigOptions, function(err, emailRender) {
                     var context = {
@@ -606,14 +605,16 @@ module.exports = function(app) {
                     emailRender('invite.eml.html', context, function(err, html, text) {
                         sendgrid.send({
                             to: userInviteMap.to,
-                            from: "QD@quantifieddev.com",
+                            from: QD_EMAIL,
                             subject: req.session.username + ' wants to compare with your data',
                             html: html
                         }, function(err, json) {
                             if (err) {
                                 return console.error(err);
+                                res.send(400, err);
                             } else {
-                                return console.log("success");
+                                console.log("success");
+                                res.send(200);
                             }
                         });
                     });

@@ -15,7 +15,7 @@ module.exports = function(app) {
         req.session.encodedUsername = user.encodedUsername;
         req.session.githubUsername = user.githubUser.username;    
         req.session.avatarUrl = user.githubUser._json.avatar_url; 
-    }
+    };
 
     var handleGithubCallback = function(req, res) {
         var githubUser = req.user.profile;

@@ -2863,6 +2863,7 @@ ul#mini-nav-right li.list-box, ul#mini-nav-right li.list-box a, ul#mini-nav-righ
     height: 30px;
     border: none;
 }
+.top-buffer-20 { margin-top:20px; };
 @media screen and (max-width: 500px) {
     .hourlyHeatMapContainer {
         width: 100%;
