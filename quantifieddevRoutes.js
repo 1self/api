@@ -4,10 +4,16 @@ var Q = require('q');
 var encoder = require("./encoder");
 var githubEvents = require("./githubEvents");
 var CONTEXT_URI = process.env.CONTEXT_URI;
-
+var sendgrid = require('sendgrid')(process.env.SENDGRID_USERNAME, process.env.SENDGRID_PASSWORD);
 var util = require("./util");
+var emailTemplates = require('swig-email-templates');
+var path = require('path');
 
 var mongoDbConnection = require('./lib/connection.js');
+
+var emailConfigOptions = {
+    root: path.join(__dirname, "email_templates"),
+};
 
 module.exports = function(app) {
 
@@ -233,14 +239,68 @@ module.exports = function(app) {
             });
         }
     });
+    var addFriendTo = function(friendUsername, myUsername) {
+        var deferred = Q.defer();
+        var user = {
+            "username": myUsername
+        }
+        var friend = {
+            "friends": friendUsername
+        }
 
-    app.get("/compare", sessionManager.requiresSession, function(req, res) {
-        res.render('compare', {
-            username: req.session.username,
-            avatarUrl: req.session.avatarUrl
+        mongoDbConnection(function(qdDb) {
+            qdDb.collection("users", function(err, collection) {
+                collection.update(user, {
+                    $addToSet: friend
+                }, {
+                    upsert: true
+                }, function(error, data) {
+                    if (error) {
+                        console.log("DB error")
+                        deferred.reject(error)
+                    } else {
+                        console.log("friend inserted successfully")
+                        deferred.resolve();
+                    }
+                });
+            });
         });
+        return deferred.promise;
+    }
+    var fetchFriendList = function(username) {
+        var deferred = Q.defer();
+        var query = {
+            "username": username
+        }
+        mongoDbConnection(function(qdDb) {
+            qdDb.collection('users').findOne(query, function(err, user) {
+                if (err) {
+                    console.log("err : ", err);
+                    deferred.reject("DB error");
+                } else {
+                    deferred.resolve(user.friends);
+                }
+            });
+        });
+        return deferred.promise;
+    }
+    app.get("/compare", sessionManager.requiresSession, function(req, res) {
+        var requesterUsername = req.session.requesterUsername;
+        if (requesterUsername) {
+            addFriendTo(requesterUsername, req.session.username)
+            addFriendTo(req.session.username, requesterUsername)
+        }
+        fetchFriendList(req.session.username).then(function(friends) {
+                res.render('compare', {
+                    username: req.session.username,
+                    avatarUrl: req.session.avatarUrl,
+                    friendsUsername: requesterUsername,
+                    friends:friends
+                });
+            }
+        )
+        delete req.session.requesterUsername;
     });
-
 
     var doesGitHubStreamIdExist = function(username) {
         var deferred = Q.defer();
@@ -269,7 +329,6 @@ module.exports = function(app) {
         var query = {
             "username": username
         };
-
         var updateQuery = {
             $set: {
                 "githubUser.githubStreamId": stream.streamid
@@ -307,7 +366,9 @@ module.exports = function(app) {
             if (githubStreamId) {
                 githubEvents.getGithubPushEvents(githubStreamId, githubAccessToken)
                     .then(function() {
-                        res.send({status: "ok"})
+                        res.send({
+                            status: "ok"
+                        })
                     });
             } else {
                 util.createStream(function(err, stream) {
@@ -316,11 +377,13 @@ module.exports = function(app) {
                         res.status(500).send("Database error");
                     } else {
                         linkGithubStreamToUser(req.session.username, stream)
-                            .then(function(streamid){
+                            .then(function(streamid) {
                                 return githubEvents.getGithubPushEvents(streamid, githubAccessToken);
                             })
                             .then(function() {
-                                res.send({status: "ok"})
+                                res.send({
+                                    status: "ok"
+                                })
                             });
                     }
                 });
@@ -353,6 +416,213 @@ module.exports = function(app) {
 
     app.get("/community", function(req, res) {
         res.render('community', getFilterValuesForCountry(req));
+    });
+
+
+    var createUserInvitesEntry = function(emailIds) {
+        var deferred = Q.defer();
+        var emailMap = {
+            "from": emailIds[0],
+            "to": emailIds[1]
+        };
+        mongoDbConnection(function(qdDb) {
+            qdDb.collection("emailMap", function(err, collection) {
+                collection.update(emailMap, {
+                    $set: emailMap
+                }, {
+                    upsert: true
+                }, function(error, data) {
+                    if (error) {
+                        console.log("DB error")
+                        deferred.reject(error)
+                    } else {
+                        console.log("Mapping inserted successfully")
+                        deferred.resolve(emailMap);
+                    }
+                });
+            });
+        });
+        return deferred.promise;
+    }
+    var filterPrimaryEmailId = function(githubEmails) {
+        emails = githubEmails.githubUser.emails;
+        var primaryEmail;
+        console.log("Email ids are : ", JSON.stringify(emails));
+        var primaryEmailObject = _.find(emails, function(emailObj) {
+            console.log("Email objs are: ", emailObj);
+            return emailObj.primary === true
+        });
+
+        return primaryEmailObject.email;
+    }
+    var getEmailIdsForUsername = function(username) {
+        //Try using mongo aggregation 
+        var deferred = Q.defer();
+        var query = {
+            "username": username
+        };
+        mongoDbConnection(function(qdDb) {
+            qdDb.collection('users').findOne(query, {
+                "githubUser.emails": 1
+            }, function(err, emails) {
+                if (err) {
+                    console.log("Error while querying")
+                    deferred.reject(err);
+                } else {
+                    deferred.resolve(emails);
+                }
+            });
+        });
+
+        return deferred.promise;
+    };
+
+
+    var getEmailId = function(username) {
+        console.log("2.Inside exctract myEmailID");
+        var deferred = Q.defer();
+        getEmailIdsForUsername(username)
+            .then(function(emails) {
+                console.log("2.1 Emails are: ", emails);
+                var primaryEmail = filterPrimaryEmailId(emails);
+                console.log("2.2 My emailID: ", primaryEmail);
+                deferred.resolve(primaryEmail)
+            })
+            .catch(function(error) {
+                console.log("DB error");
+                deferred.reject("Error", error);
+            });
+        return deferred.promise;
+    }
+    var createEmailIdPromiseArray = function(myUsername, friendsUsername) {
+        console.log("1.Inside extractEmailIds");
+        var deferred = Q.defer();
+        var promiseArray = []
+        promiseArray.push(getEmailId(myUsername))
+        promiseArray.push(getEmailId(friendsUsername))
+        deferred.resolve(promiseArray);
+        return deferred.promise;
+    }
+    var deleteUserInvitesEntryFor = function(emailIds) {
+        var emailMap = {
+            "from": emailIds[0],
+            "to": emailIds[1]
+        };
+        mongoDbConnection(function(qdDb) {
+            qdDb.collection("emailMap", function(err, collection) {
+                collection.remove(emailMap, function(error, data) {
+                    if (error) {
+                        console.log("DB error");
+                    } else {
+                        console.log("Email mapping deleted! for ", emailMap);
+                    }
+                });
+            });
+        });
+    }
+    app.get('/accept', function(req, res) {
+        //store req.query.requsterUsername
+        //take friend to compare page
+        //add entry into friend's User collection   
+        req.session.requesterUsername = req.query.reqUsername;
+        res.redirect(CONTEXT_URI + '/compare');
+    })
+    app.get('/reject', function(req, res) {
+
+        req.session.requesterUsername = req.query.reqUsername;
+        createEmailIdPromiseArray(req.session.requesterUsername, req.query.reqUsername)
+            .then(function(emailIds) {
+                return Q.all(emailIds)
+            })
+            .then(deleteUserInvitesEntryFor)
+        res.render('rejectMessage');
+    })
+    app.get('/request_to_compare_with_username', function(req, res) {
+        var friendsUsername = req.query.friendsUsername;
+        var acceptUrl = CONTEXT_URI + "/accept?reqUsername=" + req.session.username;
+        var rejectUrl = CONTEXT_URI + "/reject?reqUsername=" + req.session.username;
+        createEmailIdPromiseArray(req.session.username, friendsUsername)
+            .then(function(emailIds) {
+                return Q.all(emailIds)
+            })
+            .then(createUserInvitesEntry)
+            .then(function(userInviteMap) {
+                console.log("email map 1111 is : ", userInviteMap);
+
+                emailTemplates(emailConfigOptions, function(err, emailRender) {
+                    var context = {
+                        acceptUrl: acceptUrl,
+                        rejectUrl: rejectUrl
+                    };
+                    console.log("Error is ", err);
+                    emailRender('invite.eml.html', context, function(err, html, text) {
+                        sendgrid.send({
+                            to: userInviteMap.to,
+                            from: "QD@quantifieddev.com",
+                            subject: req.session.username + ' wants to compare with your data',
+                            html: html
+                        }, function(err, json) {
+                            if (err) {
+                                return console.error(err);
+                            } else {
+                                return console.log("success");
+                            }
+                        });
+                    });
+                });
+
+            })
+            .catch(function(error) {
+                res.status(404).send("stream not found");
+            });
+    });
+    app.get('/request_to_compare_with_email', function(req, res) {
+        //  1. extract email id from oneself username
+        //  2.  get friends email from req  
+        // 3.save myEmail - friendEmail entry in db
+        // 4. Send email
+
+        var friendsEmail = req.query.friendsEmail;
+        // var friendsEmailId = func
+        // var myEmailId = func.0
+        console.log("req.session.username : ", req.session.username)
+        var acceptUrl = CONTEXT_URI + "/accept?reqUsername=" + req.session.username;
+        var rejectUrl = CONTEXT_URI + "/reject?reqUsername=" + req.session.username;
+
+        getEmailId(req.session.username)
+            .then(function(myEmail) {
+                return [myEmail, friendsEmail]
+            })
+            .then(createUserInvitesEntry)
+            .then(function(userInviteMap) {
+                console.log("email map 1111 is : ", userInviteMap);
+
+                emailTemplates(emailConfigOptions, function(err, emailRender) {
+                    var context = {
+                        acceptUrl: acceptUrl,
+                        rejectUrl: rejectUrl
+                    };
+                    console.log("Error is ", err);
+                    emailRender('invite.eml.html', context, function(err, html, text) {
+                        sendgrid.send({
+                            to: userInviteMap.to,
+                            from: "QD@quantifieddev.com",
+                            subject: req.session.username + ' wants to compare with your data',
+                            html: html
+                        }, function(err, json) {
+                            if (err) {
+                                return console.error(err);
+                            } else {
+                                return console.log("success");
+                            }
+                        });
+                    });
+                });
+
+            })
+            .catch(function(error) {
+                res.status(404).send("stream not found");
+            });
     });
 
 }
