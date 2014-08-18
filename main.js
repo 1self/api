@@ -99,6 +99,9 @@ var getFilterValuesFrom = function(req) {
     return filterValues;
 };
 
+var convertMillisToMinutes = function(milliseconds) {
+    return Math.round(milliseconds / (1000 * 60) * 100) / 100;
+};
 
 var validEncodedUsername = function(encodedUsername, forUsername, params) {
     var deferred = q.defer();
@@ -1158,6 +1161,21 @@ var getTotalGithubUsersOfQd = function(params) {
     return deferred.promise;
 };
 
+var getTotalUsersOfQd = function(params) {
+    var deferred = q.defer();
+    mongoDbConnection(function(qdDb) {
+        qdDb.collection('users').count(function(err, count) {
+            if (err) {
+                deferred.reject(err);
+            } else {
+                var paramsToPassOn = params[0];
+                deferred.resolve([count, paramsToPassOn]);
+            }
+        });
+    });
+    return deferred.promise;
+};
+
 var getGithubPushEventCountForCompare = function(params) {
     var deferred = q.defer();
     var lastMonth = moment().subtract('months', 1);
@@ -1242,10 +1260,10 @@ var getGithubPushEventCountForCompare = function(params) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
             var defaultGithubPushEventsForCompare = [{
-                key: "myGithubPushEventCount",
+                key: "my",
                 value: 0
             }, {
-                key: "theirGithubPushEventCount",
+                key: "avg",
                 value: 0
             }];
             var githubPushEventsForCompare = generateDatesFor(defaultGithubPushEventsForCompare);
@@ -1257,11 +1275,138 @@ var getGithubPushEventCountForCompare = function(params) {
                     if (result[date].theirGithubPushEventCount == undefined) {
                         result[date].theirGithubPushEventCount = 0;
                     }
-                    githubPushEventsForCompare[date].myGithubPushEventCount = result[date].myGithubPushEventCount;
-                    githubPushEventsForCompare[date].theirGithubPushEventCount = result[date].theirGithubPushEventCount / (totalUsers - 1);
+                    githubPushEventsForCompare[date].my = result[date].myGithubPushEventCount;
+                    githubPushEventsForCompare[date].avg = result[date].theirGithubPushEventCount / (totalUsers - 1);
                 }
             }
             deferred.resolve(rollupToArray(githubPushEventsForCompare));
+
+        } else {
+            deferred.reject(error);
+        }
+    }
+    requestModule(options, callback);
+
+    return deferred.promise;
+};
+
+var getIdeActivityDurationForCompare = function(params) {
+    var deferred = q.defer();
+    var lastMonth = moment().subtract('months', 1);
+    var totalUsers = params[0];
+    var streams = params[1];
+    var streamids = _.map(streams, function(stream) {
+        return stream.streamid;
+    });
+    var groupBy = function(filterSpecValue) {
+        return {
+            "$groupBy": {
+                "fields": [{
+                    "name": "payload.eventDateTime",
+                    "format": "MM/dd/yyyy"
+                }],
+                "filterSpec": filterSpecValue,
+                "projectionSpec": {
+                    "payload.eventDateTime": "date",
+                    "payload.properties": "properties"
+                },
+                "orderSpec": {}
+            }
+        }
+    };
+    var myIdeActivityDuration = {
+        "$sum": {
+            "field": {
+                "name": "properties.duration"
+            },
+            "data": groupBy({
+                "payload.streamid": {
+                    "$operator": {
+                        "in": streamids
+                    }
+                },
+                "payload.eventDateTime": {
+                    "$operator": {
+                        ">": {
+                            "$date": moment(lastMonth).format()
+                        }
+                    }
+                },
+                "payload.actionTags": "Develop"
+            }),
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "myIdeActivityDuration"
+            }
+        }
+    };
+
+    var restOfTheWorldIdeActivityDuration = {
+        "$sum": {
+            "field": {
+                "name": "properties.duration"
+            },
+            "data": groupBy({
+                "payload.streamid": {
+                    "$operator": {
+                        "nin": streamids
+                    }
+                },
+                "payload.eventDateTime": {
+                    "$operator": {
+                        ">": {
+                            "$date": moment(lastMonth).format()
+                        }
+                    }
+                },
+                "payload.actionTags": "Develop"
+            }),
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "restOfTheWorldIdeActivityDuration"
+            }
+        }
+    };
+
+    console.log("query : " + JSON.stringify([myIdeActivityDuration, restOfTheWorldIdeActivityDuration]));
+    var options = {
+        url: platformUri + '/rest/analytics/aggregate',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: {
+            spec: JSON.stringify([myIdeActivityDuration, restOfTheWorldIdeActivityDuration]),
+            merge: true
+        },
+        method: 'GET'
+    };
+
+    function callback(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var result = JSON.parse(body);
+            var defaultIdeActivityDurationForCompare = [{
+                key: "my",
+                value: 0
+            }, {
+                key: "avg",
+                value: 0
+            }];
+            var ideActivityDurationForCompare = generateDatesFor(defaultIdeActivityDurationForCompare);
+            for (var date in result) {
+                if (ideActivityDurationForCompare[date] !== undefined) {
+                    if (result[date].myIdeActivityDuration == undefined) {
+                        result[date].myIdeActivityDuration = 0;
+                    }
+                    if (result[date].restOfTheWorldIdeActivityDuration == undefined) {
+                        result[date].restOfTheWorldIdeActivityDuration = 0;
+                    }
+                    ideActivityDurationForCompare[date].my = convertMillisToMinutes(result[date].myIdeActivityDuration);
+                    var durationInMins = convertMillisToMinutes(result[date].restOfTheWorldIdeActivityDuration);
+                    ideActivityDurationForCompare[date].avg = durationInMins / (totalUsers - 1);
+                }
+            }
+            deferred.resolve(rollupToArray(ideActivityDurationForCompare));
 
         } else {
             deferred.reject(error);
@@ -1407,9 +1552,6 @@ var getMyActiveDuration = function(params) {
         },
         method: 'GET'
     };
-    var convertMillisToMinutes = function(milliseconds) {
-        return Math.round(milliseconds / (1000 * 60) * 100) / 100;
-    };
 
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
@@ -1511,9 +1653,6 @@ var correlateGithubPushesAndIDEActivity = function(params) {
         },
         method: 'GET'
     };
-    var convertMillisToMinutes = function(milliseconds) {
-        return Math.round(milliseconds / (1000 * 60) * 100) / 100;
-    };
 
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
@@ -1572,14 +1711,32 @@ app.get('/users_count', function(req, res) {
     });
 });
 
+app.get('/recent_signups', function(req, res) {
+    mongoDbConnection(function(qdDb) {
+        qdDb.collection('users').find( {}, {"githubUser.profileUrl": true}, {"sort": [["_id", -1]], "limit": "10"}, function(error, results) {
+            results.toArray(function(err, users) {
+                if (err) {
+                    console.log("Err", err);
+                } else {
+                    console.log("Data is", users);
+                    res.send(users);
+                }
+            });
+            if (error) {
+                console.log("Err", error);
+            }
+        });
+    });
+});
+
 app.post('/stream', function(req, res) {
     util.createStream(function(err, data) {
         if (err) {
             res.status(500).send("Database error");
         } else {
-            res.send(data)
+            res.send(data);
         }
-    })
+    });
 });
 
 
@@ -1621,7 +1778,7 @@ app.get('/event', function(req, res) {
 });
 
 app.get('/eventsCount', function(req, res) {
-        getEventsCount()
+    getEventsCount()
         .then(function(response) {
             res.send(response);
         }).catch(function(error) {
@@ -1818,6 +1975,19 @@ app.get('/quantifieddev/githubPushEventForCompare', function(req, res) {
         .then(getGithubStreamIdForUsername)
         .then(getTotalGithubUsersOfQd)
         .then(getGithubPushEventCountForCompare)
+        .then(function(response) {
+            res.send(response);
+        }).catch(function(error) {
+            res.status(404).send("stream not found");
+        });
+});
+
+app.get('/quantifieddev/compare/ideActivity', function(req, res) {
+    var encodedUsername = req.headers.authorization;
+    validEncodedUsername(encodedUsername, req.query.forUsername, [])
+        .then(getStreamIdForUsername)
+        .then(getTotalUsersOfQd)
+        .then(getIdeActivityDurationForCompare)
         .then(function(response) {
             res.send(response);
         }).catch(function(error) {
