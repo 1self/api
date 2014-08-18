@@ -1,7 +1,8 @@
 $(function() {
 
 	var updateLocalStorage = function() {
-		window.localStorage.theirUsername = $('#their-username').val();
+		if ($('#their-username').length > 0)
+			window.localStorage.theirUsername = $('#their-username').val();
 	};
 
 	$('#auth-save-compare').click(function() {
@@ -23,8 +24,8 @@ $(function() {
 		/*if (theirUsernameIsAvailable()) {
 		populateTheirUsername();
 	}*/
-	window.qd.plotComparisonGraphs(window.localStorage.theirUsername);
-});
+		window.qd.plotComparisonGraphs(window.localStorage.theirUsername);
+	});
 
 
 	$('#submit-compare-details').on('click', function(e) {
@@ -36,18 +37,18 @@ $(function() {
 		} else if ($("#friend-email").val() !== "") {
 			friendsEmail = $("#friend-email").val()
 		}
-		var yourUsername = $(".hidden-xs").text().trim();
-
+		var yourUsername = $(".hidden-xs").text().trim().split(' ')[0];
+		var emailMessage = $("#email-message").text();
 		$("#request-comparison").hide();
 		$("#comparison-email").show();
 		$("#your-name").val(yourUsername);
 		if (friendsUsername !== undefined) {
 			$("#friend-name2").val(friendsUsername);
+			emailMessage = emailMessage.replace("friend-name", friendsUsername);
 		} else {
 			$("#friend-name2").val(friendsEmail);
+			emailMessage = emailMessage.replace("friend-name", friendsEmail);
 		}
-		var emailMessage = $("#email-message").text();
-		emailMessage = emailMessage.replace("friend-name", friendsUsername);
 		emailMessage = emailMessage.replace("your-name", yourUsername);
 		$("#email-message").html(emailMessage)
 	});
@@ -57,15 +58,15 @@ $(function() {
 	}
 
 	$('#send-email').on('click', function(e) {
-		var friendsUsername=$("#friend-name1").val();
-		var friendsEmail=$("#friend-email").val();
-		var data ;
-		if ( friendsUsername!== "") {
+		var friendsUsername = $("#friend-name1").val();
+		var friendsEmail = $("#friend-email").val();
+		var data;
+		if (friendsUsername !== "") {
 			data = {
 				'friendsUsername': friendsUsername
 			}
 			postAjaxWithData("request_to_compare_with_username", data, emailSuccessCallback);
-		} else if( friendsEmail!== ""){
+		} else if (friendsEmail !== "") {
 			data = {
 				'friendsEmail': friendsEmail
 			}

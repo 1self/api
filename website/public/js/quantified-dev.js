@@ -16,7 +16,8 @@ var qd = function() {
     }
     var failureCallback = function(divId, msg) {
         return function() {
-            $(divId).text(msg);
+            if ($(divId).length > 0)
+                $(divId).text(msg);
         }
     }
     var populateBuildTilesData = function(buildEvents) {

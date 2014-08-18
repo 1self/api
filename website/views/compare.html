@@ -72,7 +72,7 @@
           </ul>
         </div>
         <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-          <button data-toggle="modal" data-target="compare-modal" class="btn btn-success" id="compare-btn">Send Comparioson Request</button>
+          <button data-toggle="modal" data-target="compare-modal" class="btn btn-info" id="compare-btn">Send Comparison Request</button>
           <div class="modal fade modal-overflow in" id="compare-modal" tabindex="-1" role="dialog" aria-hidden="false" style="display: none; margin-top: 0px;">
             <div class="modal-dialog">
               <div class="modal-content">
@@ -81,18 +81,23 @@
                   <h2 class="header-text">Request Comparison</h2>
                 </div>
                 <div class="modal-body">
-                  <div id="request-comparison" name="input">
+                  <div id="request-comparison" name="input" class="text-center">
                     Enter your friend’s QuantifiedDev username: <input type="text" id="friend-name1">
                     <br>
                     --OR--
                     <br>
                     Enter your friend’s email <input type="text" id="friend-email">
-                    <input type="button" id="submit-compare-details" class="btn btn-success" value="Next">
+                    <br>
+                    <br>
+                    <input type="button" id="submit-compare-details" class="btn btn-info" value="Next">
                   </div>
-                  <div id="comparison-email" name="input" style="display:none">
-                    Your name  <input type="text" id="your-name">
-                    Friend's name <input type="text" id="friend-name2" >
-                    <div id ="email-message">
+                  <div id="comparison-email" class="text-center" name="input" style="display:none">
+                    Your name  <input type="text" id="your-name" disabled="true">
+                    <br>
+
+                   Friend's name <input type="text" id="friend-name2" disabled="true">
+                   
+                    <p id ="email-message">
                       Hi friend-name,
 
                       I’d like to compare our build history and development environment activity on QuantifiedDev.org.
@@ -101,159 +106,183 @@
 
                       Thanks!
 
-                      your-name</div>
-                      <input type="button" id="send-email" class="btn btn-success" value="Send Comparison Request">
+                      your-name</p>
+                      <br>
+                      <input type="button" id="send-email" class="btn btn-info" value="Send Comparison Request">
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <div class="row">
+              <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+             <!--  <div class="btn-group">
+                <button class="btn btn-success">{{friendsUsername}}</button>
+                <button class="btn dropdown-toggle" data-toggle="dropdown">
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+
+                 
+                </ul>
+              </div> -->
+              {% if friendsUsername %}
+              <select name="friendList" class="btn btn-default" onChange="combo(this, 'theinput')" onMouseOut="comboInit(this, 'theinput')" >
+                <!-- <option>Select Friend</option> -->
+                <option>{{friendsUsername}}</option>
+                {% for friend in friends %}
+                <option>
+                  {{ friend }}
+                </option>
+                {% endfor %}
+              </select>
+              <span><button id="auth-save-compare" type="button" class="btn btn-info">Update</button></span>
+              <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                  <p id="compare-username-errors" class="text-danger text-bold" style="margin-top: 3%"></p>
+                </div>
+              </div>
+              {% endif %}
+            </div>
+
+
+
+          </div>
 
         </div>
-        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-          <div class="row">
-            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-              <span><input id="their-username" type="text" class="form-control input-sm" placeholder="Username" value="{{friendsUsername}}"></span>
-            </div>
-            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-              <span><button id="auth-save-compare" type="button" class="btn btn-default">Save</button></span>
-            </div>
+      </div>
+      
+    </div>
+
+    <div class="row sortable">
+      <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+        <div class="panel panel-secondary fixed-height">
+          <div class="panel-heading cursor-move">
+            <h3 class="panel-title"><i class="icon-bar-chart"></i>My Build History</h3>
+            <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
           </div>
-          <div class="row">
-            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-              <p id="compare-username-errors" class="text-danger text-bold" style="margin-top: 3%"></p>
-            </div>
+          <div class="panel-body">
+            <div id="my-build-history"><div class="no-data-msg alert" role="alert">No data available</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+        <div class="panel panel-secondary fixed-height">
+          <div class="panel-heading cursor-move">
+            <h3 class="panel-title"><i class="icon-bar-chart"></i>Their Build History</h3>
+            <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
+          </div>
+          <div class="panel-body">
+            <div id="their-build-history"><div class="no-data-msg alert" role="alert">No data available</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row sortable">
+      <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+        <div class="panel panel-secondary fixed-height">
+          <div class="panel-heading cursor-move">
+            <h3 class="panel-title"><i class="icon-bar-chart"></i>Combined Build History</h3>
+          </div>
+          <div class="panel-body">
+            <div id="compare-build-history"><div class="no-data-msg alert" role="alert">No data available</div></div>
           </div>
         </div>
       </div>
 
-        <div class="row sortable">
-          <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-            <div class="panel panel-secondary fixed-height">
-              <div class="panel-heading cursor-move">
-                <h3 class="panel-title"><i class="icon-bar-chart"></i>My Build History</h3>
-                <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
-              </div>
-              <div class="panel-body">
-                <div id="my-build-history"><div class="no-data-msg alert" role="alert">No data available</div></div>
-              </div>
+    </div>
+    <div class="row sortable">
+      <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+        <div class="panel panel-secondary fixed-height">
+          <div class="panel-heading cursor-move">
+            <h3 class="panel-title"><i class="icon-bar-chart"></i>My IDE Active Work History</h3>
+            <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
+          </div>
+          <div class="panel-body">
+            <div id="my-active-events">
+              <div class="no-data-msg alert" role="alert">No data available</div>
             </div>
           </div>
-          <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-            <div class="panel panel-secondary fixed-height">
-              <div class="panel-heading cursor-move">
-                <h3 class="panel-title"><i class="icon-bar-chart"></i>Their Build History</h3>
-                <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
-              </div>
-              <div class="panel-body">
-                <div id="their-build-history"><div class="no-data-msg alert" role="alert">No data available</div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row sortable">
-          <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-            <div class="panel panel-secondary fixed-height">
-              <div class="panel-heading cursor-move">
-                <h3 class="panel-title"><i class="icon-bar-chart"></i>Combined Build History</h3>
-              </div>
-              <div class="panel-body">
-                <div id="compare-build-history"><div class="no-data-msg alert" role="alert">No data available</div></div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-        <div class="row sortable">
-          <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-            <div class="panel panel-secondary fixed-height">
-              <div class="panel-heading cursor-move">
-                <h3 class="panel-title"><i class="icon-bar-chart"></i>My IDE Active Work History</h3>
-                <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
-              </div>
-              <div class="panel-body">
-                <div id="my-active-events">
-                  <div class="no-data-msg alert" role="alert">No data available</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-            <div class="panel panel-secondary fixed-height">
-              <div class="panel-heading cursor-move">
-                <h3 class="panel-title"><i class="icon-bar-chart"></i>Their IDE Active Work History</h3>
-                <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
-              </div>
-              <div class="panel-body">
-                <div id="their-active-events">
-                  <div class="no-data-msg alert" role="alert">No data available</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row sortable">
-          <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-            <div class="panel panel-secondary fixed-height">
-              <div class="panel-heading cursor-move">
-                <h3 class="panel-title"><i class="icon-bar-chart"></i>Combined IDE Active Work History</h3>
-              </div>
-              <div class="panel-body">
-                <div id="compare-active-events">
-                  <div class="no-data-msg alert" role="alert">No data available</div>
-                </div>
-              </div>
-            </div>
-          </div></div>
-          <!-- Bootstrap Container End -->
         </div>
       </div>
-      <!-- Main Container End -->
-      <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-      <script src="/js/jquery.js"></script>
-      <script src="/js/jquery.cookie.js"></script>
-      <!-- Include all compiled plugins (below), or include individual files as needed -->
-      <script src="/js/bootstrap.min.js"></script>
-      <script src="/js/bootstrap-modal.js"></script>
-      <script src="/js/bootstrap-modalmanager.js"></script>
-      <script src="/js/underscore-min.js"></script>
-      <!-- jQuery UI JS -->
-      <script src="/js/jquery-ui-v1.10.3.js"></script>
-      <!-- Sparkline graphs -- >
-      <script src="/js/sparkline.js"></script>
-      <!-- Data tables -->
-      <script src="/js/jquery.datatables.js"></script>
-      <!-- Date Range -->
-      <script src="/js/daterange/moment.js"></script>
-      <script src="/js/daterange/daterangepicker.js"></script>
-      <!-- Animated Right Sidebar -->
-      <script src="/js/slidebars.js"></script>
-      <!-- JVector Map -->
-      <script src="/js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
-      <script src="/js/jvectormap/jquery-jvectormap-usa.js"></script>
-      <!-- Custom JS -->
-      <script src="/js/custom.js"></script>
-      <script src="/js/custom-index.js"></script>
-      <script src="/packages/d3/d3.js"></script>
-      <script src="/packages/d3/d3.geo.projection.v0.min.js"></script>
-      <script src="/packages/d3/topojson.v1.min.js"></script>
-      <script src="/packages/d3/queue.v1.min.js"></script>
-      <script src="/packages/regressionjs/regression.js"></script>
-    <script src="/js/ajax_request.js"></script>    
-      <script src="/js/quantified-dev.js"></script>
-      <script src="/js/wtf-history-d3.js"></script>
-      <script src="/js/hydration-history-d3.js"></script>
-      <script src="/js/caffeine-history-d3.js"></script>
-      <script src="/js/buildDuration-history-d3.js"></script>
-      <script src="/js/active-events-d3.js"></script>
-      <script src="/js/compare.js"></script>
-      <script src="/js/build-history-d3-for.js"></script>
-      <script src="/js/active-events-d3-for.js"></script>
-      <script src="/js/build-history-d3.js"></script>
-      <script src="/js/build-compare-d3.js"></script>
-      <script src="/js/active-events-compare-d3.js"></script>
-      <script src="/js/link-datasource.js"></script>
+      <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+        <div class="panel panel-secondary fixed-height">
+          <div class="panel-heading cursor-move">
+            <h3 class="panel-title"><i class="icon-bar-chart"></i>Their IDE Active Work History</h3>
+            <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
+          </div>
+          <div class="panel-body">
+            <div id="their-active-events">
+              <div class="no-data-msg alert" role="alert">No data available</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row sortable">
+      <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+        <div class="panel panel-secondary fixed-height">
+          <div class="panel-heading cursor-move">
+            <h3 class="panel-title"><i class="icon-bar-chart"></i>Combined IDE Active Work History</h3>
+          </div>
+          <div class="panel-body">
+            <div id="compare-active-events">
+              <div class="no-data-msg alert" role="alert">No data available</div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <!-- Bootstrap Container End -->
+    </div>
+  </div>
+  <!-- Main Container End -->
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="/js/jquery.js"></script>
+  <script src="/js/jquery.cookie.js"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/bootstrap-modal.js"></script>
+  <script src="/js/bootstrap-modalmanager.js"></script>
+  <script src="/js/underscore-min.js"></script>
+  <!-- jQuery UI JS -->
+  <script src="/js/jquery-ui-v1.10.3.js"></script>
+  <!-- Sparkline graphs -- >
+  <script src="/js/sparkline.js"></script>
+  <!-- Data tables -->
+  <script src="/js/jquery.datatables.js"></script>
+  <!-- Date Range -->
+  <script src="/js/daterange/moment.js"></script>
+  <script src="/js/daterange/daterangepicker.js"></script>
+  <!-- Animated Right Sidebar -->
+  <script src="/js/slidebars.js"></script>
+  <!-- JVector Map -->
+  <script src="/js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
+  <script src="/js/jvectormap/jquery-jvectormap-usa.js"></script>
+  <!-- Custom JS -->
+  <script src="/js/custom.js"></script>
+  <script src="/js/custom-index.js"></script>
+  <script src="/packages/d3/d3.js"></script>
+  <script src="/packages/d3/d3.geo.projection.v0.min.js"></script>
+  <script src="/packages/d3/topojson.v1.min.js"></script>
+  <script src="/packages/d3/queue.v1.min.js"></script>
+  <script src="/packages/regressionjs/regression.js"></script>
+  <script src="/js/ajax_request.js"></script>    
+  <script src="/js/quantified-dev.js"></script>
+  <script src="/js/wtf-history-d3.js"></script>
+  <script src="/js/hydration-history-d3.js"></script>
+  <script src="/js/caffeine-history-d3.js"></script>
+  <script src="/js/buildDuration-history-d3.js"></script>
+  <script src="/js/active-events-d3.js"></script>
+  <script src="/js/compare.js"></script>
+  <script src="/js/build-history-d3-for.js"></script>
+  <script src="/js/active-events-d3-for.js"></script>
+  <script src="/js/build-history-d3.js"></script>
+  <script src="/js/build-compare-d3.js"></script>
+  <script src="/js/active-events-compare-d3.js"></script>
+  <script src="/js/link-datasource.js"></script>
 
 </body>
 </html>

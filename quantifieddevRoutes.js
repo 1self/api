@@ -267,17 +267,38 @@ module.exports = function(app) {
         });
         return deferred.promise;
     }
+    var fetchFriendList = function(username) {
+        var deferred = Q.defer();
+        var query = {
+            "username": username
+        }
+        mongoDbConnection(function(qdDb) {
+            qdDb.collection('users').findOne(query, function(err, user) {
+                if (err) {
+                    console.log("err : ", err);
+                    deferred.reject("DB error");
+                } else {
+                    deferred.resolve(user.friends);
+                }
+            });
+        });
+        return deferred.promise;
+    }
     app.get("/compare", sessionManager.requiresSession, function(req, res) {
         var requesterUsername = req.session.requesterUsername;
         if (requesterUsername) {
             addFriendTo(requesterUsername, req.session.username)
             addFriendTo(req.session.username, requesterUsername)
         }
-        res.render('compare', {
-            username: req.session.username,
-            avatarUrl: req.session.avatarUrl,
-            friendsUsername: requesterUsername
-        });
+        fetchFriendList(req.session.username).then(function(friends) {
+                res.render('compare', {
+                    username: req.session.username,
+                    avatarUrl: req.session.avatarUrl,
+                    friendsUsername: requesterUsername,
+                    friends:friends
+                });
+            }
+        )
         delete req.session.requesterUsername;
     });
 
@@ -482,13 +503,39 @@ module.exports = function(app) {
         deferred.resolve(promiseArray);
         return deferred.promise;
     }
-
+    var deleteUserInvitesEntryFor = function(emailIds) {
+        var emailMap = {
+            "from": emailIds[0],
+            "to": emailIds[1]
+        };
+        mongoDbConnection(function(qdDb) {
+            qdDb.collection("emailMap", function(err, collection) {
+                collection.remove(emailMap, function(error, data) {
+                    if (error) {
+                        console.log("DB error");
+                    } else {
+                        console.log("Email mapping deleted! for ", emailMap);
+                    }
+                });
+            });
+        });
+    }
     app.get('/accept', function(req, res) {
         //store req.query.requsterUsername
         //take friend to compare page
         //add entry into friend's User collection   
         req.session.requesterUsername = req.query.reqUsername;
         res.redirect(CONTEXT_URI + '/compare');
+    })
+    app.get('/reject', function(req, res) {
+
+        req.session.requesterUsername = req.query.reqUsername;
+        createEmailIdPromiseArray(req.session.requesterUsername, req.query.reqUsername)
+            .then(function(emailIds) {
+                return Q.all(emailIds)
+            })
+            .then(deleteUserInvitesEntryFor)
+        //deleteUserInvitesEntryFor(req.session.requesterUsername, req.session.username)
     })
     app.get('/request_to_compare_with_username', function(req, res) {
         //1. extract user email id --done
@@ -503,6 +550,7 @@ module.exports = function(app) {
         // var myEmailId = func
         console.log("req.session.username : ", req.session.username)
         var acceptUrl = CONTEXT_URI + "/accept?reqUsername=" + req.session.username;
+        var rejectUrl = CONTEXT_URI + "/reject?reqUsername=" + req.session.username;
         createEmailIdPromiseArray(req.session.username, friendsUsername)
             .then(function(emailIds) {
                 return Q.all(emailIds)
@@ -514,6 +562,7 @@ module.exports = function(app) {
                 emailTemplates(emailConfigOptions, function(err, emailRender) {
                     var context = {
                         acceptUrl: acceptUrl,
+                        rejectUrl: rejectUrl
                     };
                     console.log("Error is ", err);
                     emailRender('invite.eml.html', context, function(err, html, text) {
@@ -548,6 +597,8 @@ module.exports = function(app) {
         // var myEmailId = func.0
         console.log("req.session.username : ", req.session.username)
         var acceptUrl = CONTEXT_URI + "/accept?reqUsername=" + req.session.username;
+        var rejectUrl = CONTEXT_URI + "/reject?reqUsername=" + req.session.username;
+
         getEmailId(req.session.username)
             .then(function(myEmail) {
                 return [myEmail, friendsEmail]
@@ -559,6 +610,7 @@ module.exports = function(app) {
                 emailTemplates(emailConfigOptions, function(err, emailRender) {
                     var context = {
                         acceptUrl: acceptUrl,
+                        rejectUrl: rejectUrl
                     };
                     console.log("Error is ", err);
                     emailRender('invite.eml.html', context, function(err, html, text) {
