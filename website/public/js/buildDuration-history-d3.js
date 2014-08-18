@@ -118,7 +118,7 @@ window.qd.plotBuildDurationHistory = function() {
         });
 
     rule.append("svg:text")
-        .attr("x", w - p[1] - p[3] + 6)
+        .attr("x", -12)
         .attr("dy", ".35em")
         .text(d3.format(",d"));
 
