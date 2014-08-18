@@ -81,34 +81,79 @@
                   <h3 class="header-text text-center">Request Comparison</h3>
                 </div>
                 <div class="modal-body">
-                  <div id="request-comparison" name="input" class="text-center">
-                    Enter your friend’s QuantifiedDev username: <input type="text" id="friend-name1">
+                  <div id="request-comparison" name="input">
+                    <div class="row">
+                      <div class="col-md-5">
+                        Enter your friend’s QuantifiedDev username:
+                      </div>
+                      <div class="col-md-7">
+                        <input class="form-control" type="text" id="friend-name1">
+                      </div>
+                    </div>
+                    <div class="row text-center" style="margin: 10px 0px;">
+                      <div class="col-md-12">
+                        -- OR --
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-5">
+                        Enter your friend’s email
+                      </div>
+                      <div class="col-md-7">
+                        <input class="form-control" type="text" id="friend-email">
+                      </div>
+                    </div>
                     <br>
-                    --OR--
                     <br>
-                    Enter your friend’s email <input type="text" id="friend-email">
-                    <br>
-                    <br>
-                    <input type="button" id="submit-compare-details" class="btn btn-info" value="Next">
+                    <div class="row text-center">
+                      <input type="button" id="submit-compare-details" class="btn btn-info" value="Next">
+                    </div>
                   </div>
-                  <div id="comparison-email" class="text-center" name="input" style="display:none">
-                    Your name  <input type="text" id="your-name" disabled="true">
-                    <br>
 
-                   Friend's name <input type="text" id="friend-name2" disabled="true">
-                   
-                    <p id ="email-message">
-                      Hi friend-name,
+                  <div id="comparison-email" name="input" style="display:none">
+                    <div class="row">
+                      <div class="col-md-6">
+                           Your name 
+                      </div>
+                      <div class="col-md-6">
+                        <input class="form-control" type="text" id="your-name" disabled="true">
+                      </div>
+                    </div>
 
-                      I’d like to compare our build history and development environment activity on QuantifiedDev.org.
+                    <div  style="margin-top:10px;" >
+                    </div>
 
-                      Please hit “Start Comparing” below and we can start comparing! 
+                    <div class="row">
+                      <div class="col-md-6">
+                           Friend's QD username / Email Id
+                      </div>
+                      <div class="col-md-6">
+                        <input class="form-control" type="text" id="friend-name2" disabled="true">
+                      </div>
+                    </div>
 
-                      Thanks!
+                    <div class="row" style="margin-top:10px;" >
+                      <div class="col-md-12">Email invite preview</div>
+                    </div>
+                    
+                    <div class="row" style="margin-top:15px;">
+                      <div class="col-md-12">
+                        
+                        <pre id ="email-message">
+Hi friend-name,
 
-                      your-name</p>
-                      <br>
+I’d like to compare our build history and development environment activity on QuantifiedDev.org.
+Please hit “Start Comparing” below and we can start comparing!
+
+Thanks!
+your-name 
+</pre>
+                      </div>
+                    </div>
+                    
+                    <div class="text-center">
                       <input type="button" id="send-email" class="btn btn-info" value="Send Comparison Request">
+                    </div>
                     </div>
                   </div>
                 </div>
