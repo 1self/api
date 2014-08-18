@@ -2857,9 +2857,8 @@ ul#mini-nav-right li.list-box, ul#mini-nav-right li.list-box a, ul#mini-nav-righ
     margin-left: 5px;
 }
 .github-push-events-sync {
-    background: url("../img/refresh_button.png");
-    background: url("../img/refresh_button.png");
-    background-size: 30px 30px;
+    background: url("../img/reload.png") no-repeat;
+    background-size: 23px 23px;
     width: 30px;
     height: 30px;
     border: none;
