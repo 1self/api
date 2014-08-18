@@ -535,20 +535,10 @@ module.exports = function(app) {
                 return Q.all(emailIds)
             })
             .then(deleteUserInvitesEntryFor)
-        //deleteUserInvitesEntryFor(req.session.requesterUsername, req.session.username)
+        res.render('rejectMessage');
     })
     app.get('/request_to_compare_with_username', function(req, res) {
-        //1. extract user email id --done
-        // 2. i) if friend's username--> extract friend's 
-        //      email id from oneself username
-        //    ii) else get friends email from req  
-        // 3.save myEmail - friendEmail entry in db
-        // 4. Send email
-
         var friendsUsername = req.query.friendsUsername;
-        // var friendsEmailId = func
-        // var myEmailId = func
-        console.log("req.session.username : ", req.session.username)
         var acceptUrl = CONTEXT_URI + "/accept?reqUsername=" + req.session.username;
         var rejectUrl = CONTEXT_URI + "/reject?reqUsername=" + req.session.username;
         createEmailIdPromiseArray(req.session.username, friendsUsername)
