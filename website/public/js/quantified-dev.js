@@ -318,23 +318,11 @@ var qd = function() {
     };
 
     result.compareBuildHistories = function(myBuildEvents, theirBuildEvents) {
-        if (eventsExist(myBuildEvents[0])) {
-            result.plotBuildHistoryFor(myBuildEvents[0], "#my-build-history");
-        }
-        if (eventsExist(theirBuildEvents[0])) {
-            result.plotBuildHistoryFor(theirBuildEvents[0], "#their-build-history");
-        }
         if (eventsExist(myBuildEvents[0]) || eventsExist(theirBuildEvents[0])) {
             result.plotComparison("#compare-build-history", myBuildEvents[0], theirBuildEvents[0])
         }
     };
     result.compareActiveEvents = function(myActiveEvents, theirActiveEvents) {
-        if (eventsExist(myActiveEvents[0])) {
-            result.plotActiveEventsFor(myActiveEvents[0], "#my-active-events");
-        }
-        if (eventsExist(theirActiveEvents[0])) {
-            result.plotActiveEventsFor(theirActiveEvents[0], "#their-active-events");
-        }
         if (eventsExist(myActiveEvents[0]) || eventsExist(theirActiveEvents[0])) {
             result.plotComparisonForActiveEvents("#compare-active-events", myActiveEvents[0], theirActiveEvents[0])
         }
