@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Quantified Dev {ALPHA}</title>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1">
-  <meta name="description" content="Quantified Dev Dashboard" />
-  <meta name="keywords" content="Quantified Dev Development QuantifiedSelf Quantified Self" />
-  <meta name="author" content="Quantified Dev" />
-  <link rel="shortcut icon" href="/img/quantified-dev-favicon.ico">
-  <link href="/css/twitter.css" rel="stylesheet">
-  <link href="/css/import.css" rel="stylesheet" media="screen">
-  <link href="/fonts/font-awesome.css" rel="stylesheet">
-  <script>
+  <head>
+    <title>Quantified Dev {ALPHA}</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1">
+    <meta name="description" content="Quantified Dev Dashboard" />
+    <meta name="keywords" content="Quantified Dev Development QuantifiedSelf Quantified Self" />
+    <meta name="author" content="Quantified Dev" />
+    <link rel="shortcut icon" href="/img/quantified-dev-favicon.ico">
+    <link href="/css/twitter.css" rel="stylesheet">
+    <link href="/css/import.css" rel="stylesheet" media="screen">
+    <link href="/fonts/font-awesome.css" rel="stylesheet">
+    <script>
     (function(i, s, o, g, r, a, m) {
-      i['GoogleAnalyticsObject'] = r;
-      i[r] = i[r] || function() {
-        (i[r].q = i[r].q || []).push(arguments)
-      }, i[r].l = 1 * new Date();
-      a = s.createElement(o),
-      m = s.getElementsByTagName(o)[0];
-      a.async = 1;
-      a.src = g;
-      m.parentNode.insertBefore(a, m)
+    i['GoogleAnalyticsObject'] = r;
+    i[r] = i[r] || function() {
+    (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date();
+    a = s.createElement(o),
+    m = s.getElementsByTagName(o)[0];
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m)
     })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
     ga('create', 'UA-49828181-1', 'quantifieddev.org');
     ga('send', 'pageview');
@@ -30,7 +30,7 @@
     addListener(mc_embedded_subscribe_click, 'click', function() {
     alert('sup click');
     ga('send', 'event', 'signup_button', 'click', 'mc-embedded-subscribe');
-  });*/
+    });*/
     /**
     * Utility to wrap the different behaviors between W3C-compliant browsers
     * and IE when adding event handlers.
@@ -43,168 +43,154 @@
     function addListener(element, type, callback) {
     if (element.addEventListener) element.addEventListener(type, callback);
     else if (element.attachEvent) element.attachEvent('on' + type, callback);
-  }*/
-</script>
-</head>
-<body class="animated fadeInDown" ng-app>
-  {% include "./templates/_qd_header.html" %}
-
-  <!-- Top Bar End -->
-  <!-- Left sidebar start -->
-  <aside id="sidebar">
-    <div>
-      {% include "./templates/_menu.html" %}
-    </div>
-  </aside>
-  <!-- Left sidebar end -->
-  <div class="dashboard-wrapper">
-    <div class="container">
-
+    }*/
+    </script>
+  </head>
+  <body class="animated fadeInDown" ng-app>
+    {% include "./templates/_qd_header.html" %}
+    <!-- Top Bar End -->
+    <!-- Left sidebar start -->
+    <aside id="sidebar">
       <div>
-        {% include "./templates/_link_datasource.html" %}
+        {% include "./templates/_menu.html" %}
       </div>
-      <div class="row page-title">
-        <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-          <h2>Comparison</h2>
-          <ul class="breadcrumb">
-            <li>Home</li>
-            <li>Comparison</li>
-          </ul>
+    </aside>
+    <!-- Left sidebar end -->
+    <div class="dashboard-wrapper">
+      <div class="container">
+        <div>
+          {% include "./templates/_link_datasource.html" %}
         </div>
-        <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-          <button data-toggle="modal" class="btn btn-info" id="compare-btn">Send Comparison Request</button>
-          <div class="modal fade modal-overflow in" id="compare-modal" tabindex="-1" role="dialog" aria-hidden="false" style="display: none; margin-top: 0px;">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" data-original-title="" title=""><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
-                  <h3 class="header-text text-center">Request Comparison</h3>
-                </div>
-                <div class="modal-body">
-                  <div id="request-comparison" name="input">
-                    <form id="request-comparision-form">
-                      <div class="row">
-                        <div class="col-md-5">
-                          Enter your friend’s QuantifiedDev username:
-                        </div>
-                        <div class="col-md-7">
-                          <input class="form-control" type="text" id="friend-name1">
-                        </div>
+        <div class="row page-title">
+          <div class="row">
+            <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+              <h2>Comparison</h2>
+              <ul class="breadcrumb">
+                <li>Home</li>
+                <li>Comparison</li>
+              </ul>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+              <button data-toggle="modal" class="btn btn-info" id="compare-btn">Send Comparison Request</button>
+              <div class="modal fade modal-overflow in" id="compare-modal" tabindex="-1" role="dialog" aria-hidden="false" style="display: none; margin-top: 0px;">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" data-original-title="" title=""><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                      <h3 class="header-text text-center">Request Comparison</h3>
+                    </div>
+                    <div class="modal-body">
+                      <div id="request-comparison" name="input">
+                        <form id="request-comparision-form">
+                          <div class="row">
+                            <div class="col-md-5">
+                              Enter your friend’s QuantifiedDev username:
+                            </div>
+                            <div class="col-md-7">
+                              <input class="form-control" type="text" id="friend-name1">
+                            </div>
+                          </div>
+                          <div class="row text-center" style="margin: 10px 0px;">
+                            <div class="col-md-12">
+                              -- OR --
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-md-5">
+                              Enter your friend’s email
+                            </div>
+                            <div class="col-md-7">
+                              <input class="form-control" type="text" id="friend-email">
+                            </div>
+                          </div>
+                          <div class="top-buffer-20">
+                          </div>
+                          <div class="row compare_error_message" style="display:none;">
+                            <div class="class-md-12 alert alert-danger" role="alert">
+                              Please enter QuantifiedDev username or Email Id
+                            </div>
+                          </div>
+                          <div class="row text-center">
+                            <input type="button" id="submit-compare-details" class="btn btn-info" value="Next">
+                          </div>
+                        </form>
                       </div>
-                      <div class="row text-center" style="margin: 10px 0px;">
-                        <div class="col-md-12">
-                          -- OR --
-                        </div>
+                      <div id="comparison-email" name="input" style="display:none">
+                        <form id="comparision-email-form">
+                          <div class="row">
+                            <div class="col-md-6">
+                              Your name
+                            </div>
+                            <div class="col-md-6">
+                              <input class="form-control" type="text" id="your-name" disabled="true">
+                            </div>
+                          </div>
+                          <div  style="margin-top:10px;" >
+                          </div>
+                          <div class="row">
+                            <div class="col-md-6">
+                              Friend's QD username / Email Id
+                            </div>
+                            <div class="col-md-6">
+                              <input class="form-control" type="text" id="friend-name2" disabled="true">
+                            </div>
+                          </div>
+                          <div class="row" style="margin-top:10px;" >
+                            <div class="col-md-12">Email invite preview</div>
+                          </div>
+                          <div class="row" style="margin-top:15px;">
+                            <div class="col-md-12">
+                              <pre id ="email-message">
+                                Hi friend-name,
+                                I’d like to compare our build history and development environment activity on QuantifiedDev.org.
+                                Please hit “Start Comparing” below and we can start comparing!
+                                Thanks!
+                                your-name
+</pre>
+                            </div>
+                          </div>
+                          <div class="text-center">
+                            <input type="button" id="send-compare-request-email" class="btn btn-info" value="Send Comparison Request">
+                          </div>
+                        </form>
                       </div>
-                      <div class="row">
-                        <div class="col-md-5">
-                          Enter your friend’s email
-                        </div>
-                        <div class="col-md-7">
-                          <input class="form-control" type="text" id="friend-email">
-                        </div>
-                      </div>
-                      <div class="top-buffer-20">
-                      </div>
-                      <div class="row compare_error_message" style="display:none;">
-                        <div class="class-md-12 alert alert-danger" role="alert">
-                          Please enter QuantifiedDev username or Email Id
-                        </div>
-                      </div>
-                      <div class="row text-center">
-                        <input type="button" id="submit-compare-details" class="btn btn-info" value="Next">
-                      </div>
-                    </form>
+                    </div>
                   </div>
-
-                  <div id="comparison-email" name="input" style="display:none">
-                    <form id="comparision-email-form">
-                      <div class="row">
-                        <div class="col-md-6">
-                          Your name 
-                        </div>
-                        <div class="col-md-6">
-                          <input class="form-control" type="text" id="your-name" disabled="true">
-                        </div>
-                      </div>
-
-                      <div  style="margin-top:10px;" >
-                      </div>
-
-                      <div class="row">
-                        <div class="col-md-6">
-                          Friend's QD username / Email Id
-                        </div>
-                        <div class="col-md-6">
-                          <input class="form-control" type="text" id="friend-name2" disabled="true">
-                        </div>
-                      </div>
-
-                      <div class="row" style="margin-top:10px;" >
-                        <div class="col-md-12">Email invite preview</div>
-                      </div>
-                      
-                      <div class="row" style="margin-top:15px;">
-                        <div class="col-md-12">
-                          
-                          <pre id ="email-message">
-Hi friend-name,
-
-I’d like to compare our build history and development environment activity on QuantifiedDev.org.
-Please hit “Start Comparing” below and we can start comparing!
-
-Thanks!
-your-name 
-                          </pre>
-                        </div>
-                      </div>
-                      
-                      <div class="text-center">
-                        <input type="button" id="send-compare-request-email" class="btn btn-info" value="Send Comparison Request">
-                      </div>
-                  </div>
-                    </form>
-                </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-            <div class="row">
-              <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-             <!--  <div class="btn-group">
-                <button class="btn btn-success">{{friendsUsername}}</button>
-                <button class="btn dropdown-toggle" data-toggle="dropdown">
-                  <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-
-                 
-                </ul>
-              </div> -->
-              {% if friends %}
-              <select id="friendList" class="btn btn-default" onChange="combo(this, 'theinput')" onMouseOut="comboInit(this, 'theinput')" >
-                <!-- <option>Select Friend</option> -->
-                {% for friend in friends %}
-                <option>
-                  {{ friend }}
-                </option>
-                {% endfor %}
-              </select>
-              <span><button id="auth-save-compare" type="button" class="btn btn-info">Update</button></span>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
               <div class="row">
                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                  <p id="compare-username-errors" class="text-danger text-bold" style="margin-top: 3%"></p>
+                  <!--  <div class="btn-group">
+                    <button class="btn btn-success">{{friendsUsername}}</button>
+                    <button class="btn dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                      
+                    </ul>
+                  </div> -->
+                  {% if friends %}
+                    <select id="friendList" class="btn btn-default" onChange="combo(this, 'theinput')" onMouseOut="comboInit(this, 'theinput')" >
+                      <!-- <option>Select Friend</option> -->
+                      {% for friend in friends %}
+                        <option>
+                          {{ friend }}
+                        </option>
+                      {% endfor %}
+                    </select>
+                    <span><button id="auth-save-compare" type="button" class="btn btn-info">Update</button></span>
+                    <div class="row">
+                      <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                        <p id="compare-username-errors" class="text-danger text-bold" style="margin-top: 3%"></p>
+                      </div>
+                    </div>
+                  {% endif %}
                 </div>
               </div>
-              {% endif %}
             </div>
-
-
-
           </div>
-
         </div>
         <div class="row sortable">
           <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
@@ -227,12 +213,11 @@ your-name
                   <div class="no-data-msg alert" role="alert">No data available</div>
                 </div>
               </div>
-
             </div>
           </div>
-      </div>
-      <div class="row sortable">
-           <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+        </div>
+        <div class="row sortable">
+          <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
             <div class="panel panel-secondary fixed-height">
               <div class="panel-heading cursor-move">
                 <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Github Push Events Difference HeatMap</h3>
@@ -252,82 +237,82 @@ your-name
               </div>
             </div>
           </div>
-      </div>
-      <div class="row sortable">
-        <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-          <div class="panel panel-secondary fixed-height">
-            <div class="panel-heading cursor-move">
-              <h3 class="panel-title"><i class="icon-bar-chart"></i>My Github Push Events vs Avg of the Rest of the World</h3>
+        </div>
+        <div class="row sortable">
+          <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+            <div class="panel panel-secondary fixed-height">
+              <div class="panel-heading cursor-move">
+                <h3 class="panel-title"><i class="icon-bar-chart"></i>My Github Push Events vs Avg of the Rest of the World</h3>
+              </div>
+              <div class="panel-body">
+                <div id="compare-github-events">
+                  <div class="no-data-msg alert" role="alert">No data available</div>
+                </div>
+              </div>
             </div>
-            <div class="panel-body">
-              <div id="compare-github-events">
-                <div class="no-data-msg alert" role="alert">No data available</div>
+            <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+              <div class="panel panel-secondary fixed-height">
+                <div class="panel-heading cursor-move">
+                  <h3 class="panel-title"><i class="icon-bar-chart"></i>My IDE Activity vs Avg of the Rest of the World</h3>
+                </div>
+                <div class="panel-body">
+                  <div id="compare-ide-activity">
+                    <div class="no-data-msg alert" role="alert">No data available</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-          <div class="panel panel-secondary fixed-height">
-            <div class="panel-heading cursor-move">
-              <h3 class="panel-title"><i class="icon-bar-chart"></i>My IDE Activity vs Avg of the Rest of the World</h3>
-            </div>
-            <div class="panel-body">
-              <div id="compare-ide-activity">
-                <div class="no-data-msg alert" role="alert">No data available</div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
-   
-  <!-- Main Container End -->
-  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-  <script src="/js/jquery.js"></script>
-  <script src="/js/jquery.cookie.js"></script>
-  <!-- Include all compiled plugins (below), or include individual files as needed -->
-  <script src="/js/bootstrap.min.js"></script>
-  <script src="/js/bootstrap-modal.js"></script>
-  <script src="/js/bootstrap-modalmanager.js"></script>
-  <script src="/js/underscore-min.js"></script>
-  <!-- jQuery UI JS -->
-  <script src="/js/jquery-ui-v1.10.3.js"></script>
-  <!-- Sparkline graphs -- >
-  <script src="/js/sparkline.js"></script>
-  <!-- Data tables -->
-  <script src="/js/jquery.datatables.js"></script>
-  <!-- Date Range -->
-  <script src="/js/daterange/moment.js"></script>
-  <script src="/js/daterange/daterangepicker.js"></script>
-  <!-- Animated Right Sidebar -->
-  <script src="/js/slidebars.js"></script>
-  <!-- JVector Map -->
-  <script src="/js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
-  <script src="/js/jvectormap/jquery-jvectormap-usa.js"></script>
-  <!-- Custom JS -->
-  <script src="/js/custom.js"></script>
-  <script src="/js/custom-index.js"></script>
-  <script src="/packages/d3/d3.js"></script>
-  <script src="/packages/d3/d3.geo.projection.v0.min.js"></script>
-  <script src="/packages/d3/topojson.v1.min.js"></script>
-  <script src="/packages/d3/queue.v1.min.js"></script>
-  <script src="/packages/regressionjs/regression.js"></script>
-  <script src="/js/ajax_request.js"></script>    
-  <script src="/js/quantified-dev.js"></script>
-  <script src="/js/wtf-history-d3.js"></script>
-  <script src="/js/hydration-history-d3.js"></script>
-  <script src="/js/caffeine-history-d3.js"></script>
-  <script src="/js/buildDuration-history-d3.js"></script>
-  <script src="/js/active-events-d3.js"></script>
-  <script src="/js/compare.js"></script>
-  <script src="/js/build-history-d3-for.js"></script>
-  <script src="/js/active-events-d3-for.js"></script>
-  <script src="/js/build-history-d3.js"></script>
-  <script src="/js/build-compare-d3.js"></script>
-  <script src="/js/active-events-compare-d3.js"></script>
-  <script src="/js/link-datasource.js"></script>
-  <script src="/js/github-events-compare-d3.js"></script>
-  <script src="js/hourlyEvent-diff-d3.js"></script>
-  <script src="js/event-daily-compare-d3.js"></script>
-
-</body>
+    </div>
+    <!-- Main Container End -->
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="/js/jquery.js"></script>
+    <script src="/js/jquery.cookie.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap-modal.js"></script>
+    <script src="/js/bootstrap-modalmanager.js"></script>
+    <script src="/js/underscore-min.js"></script>
+    <!-- jQuery UI JS -->
+    <script src="/js/jquery-ui-v1.10.3.js"></script>
+    <!-- Sparkline graphs -- >
+    <script src="/js/sparkline.js"></script>
+    <!-- Data tables -->
+    <script src="/js/jquery.datatables.js"></script>
+    <!-- Date Range -->
+    <script src="/js/daterange/moment.js"></script>
+    <script src="/js/daterange/daterangepicker.js"></script>
+    <!-- Animated Right Sidebar -->
+    <script src="/js/slidebars.js"></script>
+    <!-- JVector Map -->
+    <script src="/js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
+    <script src="/js/jvectormap/jquery-jvectormap-usa.js"></script>
+    <!-- Custom JS -->
+    <script src="/js/custom.js"></script>
+    <script src="/js/custom-index.js"></script>
+    <script src="/packages/d3/d3.js"></script>
+    <script src="/packages/d3/d3.geo.projection.v0.min.js"></script>
+    <script src="/packages/d3/topojson.v1.min.js"></script>
+    <script src="/packages/d3/queue.v1.min.js"></script>
+    <script src="/packages/regressionjs/regression.js"></script>
+    <script src="/js/ajax_request.js"></script>
+    <script src="/js/quantified-dev.js"></script>
+    <script src="/js/wtf-history-d3.js"></script>
+    <script src="/js/hydration-history-d3.js"></script>
+    <script src="/js/caffeine-history-d3.js"></script>
+    <script src="/js/buildDuration-history-d3.js"></script>
+    <script src="/js/active-events-d3.js"></script>
+    <script src="/js/compare.js"></script>
+    <script src="/js/build-history-d3-for.js"></script>
+    <script src="/js/active-events-d3-for.js"></script>
+    <script src="/js/build-history-d3.js"></script>
+    <script src="/js/build-compare-d3.js"></script>
+    <script src="/js/active-events-compare-d3.js"></script>
+    <script src="/js/link-datasource.js"></script>
+    <script src="/js/github-events-compare-d3.js"></script>
+    <script src="js/hourlyEvent-diff-d3.js"></script>
+    <script src="js/event-daily-compare-d3.js"></script>
+  </body>
 </html>
