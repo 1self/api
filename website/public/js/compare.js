@@ -22,13 +22,7 @@ $(function() {
 		var theirUsernameIsAvailable = function() {
 			return window.localStorage.theirUsername;
 		};
-		/*var populateTheirUsername = function() {
-         $('#their-username').val(window.localStorage.theirUsername);
-         };
-         */
-		/*if (theirUsernameIsAvailable()) {
-         populateTheirUsername();
-         }*/
+		updateLocalStorage();
 		window.qd.plotComparisonGraphs(window.localStorage.theirUsername);
 	});
 
