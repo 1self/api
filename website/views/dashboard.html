@@ -1,30 +1,30 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Quantified Dev {ALPHA} {{showOverlay}}</title>
-        <meta charset="UTF-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1">
-        <meta name="description" content="Quantified Dev Dashboard"/>
-        <meta name="keywords" content="Quantified Dev Development QuantifiedSelf Quantified Self"/>
-        <meta name="author" content="Quantified Dev"/>
-        <link rel="shortcut icon" href="/img/quantified-dev-favicon.ico">
-        <link href="/css/twitter.css" rel="stylesheet">
-        <link href="/css/import.css" rel="stylesheet" media="screen">
-        <link href="/fonts/font-awesome.css" rel="stylesheet">
-        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-        <script src="/js/jquery.js"></script>
-        <script src="/js/jquery.cookie.js"></script>
-        <script>
+<head>
+    <title>Quantified Dev {ALPHA} {{showOverlay}}</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1">
+    <meta name="description" content="Quantified Dev Dashboard"/>
+    <meta name="keywords" content="Quantified Dev Development QuantifiedSelf Quantified Self"/>
+    <meta name="author" content="Quantified Dev"/>
+    <link rel="shortcut icon" href="/img/quantified-dev-favicon.ico">
+    <link href="/css/twitter.css" rel="stylesheet">
+    <link href="/css/import.css" rel="stylesheet" media="screen">
+    <link href="/fonts/font-awesome.css" rel="stylesheet">
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="/js/jquery.js"></script>
+    <script src="/js/jquery.cookie.js"></script>
+    <script>
         (function (i, s, o, g, r, a, m) {
-        i['GoogleAnalyticsObject'] = r;
-        i[r] = i[r] || function () {
-        (i[r].q = i[r].q || []).push(arguments)
-        }, i[r].l = 1 * new Date();
-        a = s.createElement(o),
-        m = s.getElementsByTagName(o)[0];
-        a.async = 1;
-        a.src = g;
-        m.parentNode.insertBefore(a, m)
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
         })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
         ga('create', 'UA-49828181-1', 'quantifieddev.org');
         ga('send', 'pageview');
@@ -33,7 +33,7 @@
         addListener(mc_embedded_subscribe_click, 'click', function() {
         alert('sup click');
         ga('send', 'event', 'signup_button', 'click', 'mc-embedded-subscribe');
-        });*/
+    });*/
         /**
         * Utility to wrap the different behaviors between W3C-compliant browsers
         * and IE when adding event handlers.
@@ -45,319 +45,358 @@
         function addListener(element, type, callback) {
         if (element.addEventListener) element.addEventListener(type, callback);
         else if (element.attachEvent) element.attachEvent('on' + type, callback);
-        }*/
-        </script>
-    </head>
-    <body class="animated fadeInDown" ng-app>
-        {% include "./templates/_qd_header.html" %}
-        <!-- Top Bar End -->
-        <!-- Left sidebar start -->
-        <aside id="sidebar">
-            <div>
-                {% include "./templates/_menu.html" %}
+    }*/
+</script>
+</head>
+<body class="animated fadeInDown" ng-app>
+    {% include "./templates/_qd_header.html" %}
+    <!-- Top Bar End -->
+    <!-- Left sidebar start -->
+    <aside id="sidebar">
+        <div>
+            {% include "./templates/_menu.html" %}
+        </div>
+    </aside>
+    <!-- Left sidebar end -->
+    <div class="dashboard-wrapper">
+        <div class="container">
+            <div id="showOverlayFlag" showOverlay="{{showOverlay}}"></div>
+            <div>{% include "./templates/_link_datasource.html" %}</div>
+            <div class="row page-title">
+                <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+                    <h2>Dashboard</h2>
+                    <ul class="breadcrumb">
+                        <li>Home</li>
+                        <li>Dashboard</li>
+                    </ul>
+                </div>
+
+                {% if streamLinked == "yes" %}
+                <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12 alert alert-success alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>Stream Id linked successfully!
+                </div>
+                {% elseif streamLinked == "no" %}
+                <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12 alert alert-danger alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>The Stream Id that you tried to link is incorrect. So it is not linked!
+                </div>
+                {% endif %}
             </div>
-        </aside>
-        <!-- Left sidebar end -->
-        <div class="dashboard-wrapper">
-            <div class="container">
-                <div id="showOverlayFlag" showOverlay="{{showOverlay}}"></div>
-                <div>{% include "./templates/_link_datasource.html" %}</div>
-                <div class="row page-title">
-                    <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-                        <h2>Dashboard</h2>
-                        <ul class="breadcrumb">
-                            <li>Home</li>
-                            <li>Dashboard</li>
-                        </ul>
-                    </div>
-
-                    {% if streamLinked == "yes" %}
-                        <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12 alert alert-success alert-dismissible" role="alert">
-                            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>Stream Id linked successfully!
+            <!-- Page title end -->
+            <div class="row">
+                <div class="col-lg-2 col-md-4 col-sm-6">
+                    <div class="info-tiles tiles-secondary">
+                        <div class="tiles-heading">
+                            <div class="pull-left">My Builds</div>
+                            <div id="total-build-comparison" class="pull-right"></div>
                         </div>
-                    {% elseif streamLinked == "no" %}
-                        <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12 alert alert-danger alert-dismissible" role="alert">
-                            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>The Stream Id that you tried to link is incorrect. So it is not linked!
+                        <div class="tiles-body">
+                            <div class="pull-left animated bounceIn">
+                                <i class="icon-cog"></i>
+                            </div>
+                            <div class="pull-right number"><span id="builds-x">0</span></div>
                         </div>
-                    {% endif %}
-                </div>
-                <!-- Page title end -->
-                <div class="row">
-                    <div class="col-lg-2 col-md-4 col-sm-6">
-                        <div class="info-tiles tiles-secondary">
-                            <div class="tiles-heading">
-                                <div class="pull-left">My Builds</div>
-                                <div id="total-build-comparison" class="pull-right"></div>
-                            </div>
-                            <div class="tiles-body">
-                                <div class="pull-left animated bounceIn">
-                                    <i class="icon-cog"></i>
-                                </div>
-                                <div class="pull-right number"><span id="builds-x">0</span></div>
-                            </div>
-                            <div class="tiles-footer">
-                                <span class="pull-left">Today</span>
-                                <span class="inline-sparkline pull-right" id="visits"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-4 col-sm-6">
-                        <div class="info-tiles tiles-secondary">
-                            <div class="tiles-heading">
-                                <div class="pull-left">Passed Builds</div>
-                                <div id="passed-build-comparison" class="pull-right"></div>
-                            </div>
-                            <div class="tiles-body">
-                                <div class="pull-left animated bounceIn">
-                                    <i class="icon-cog"></i> <i class="icon-smile"></i>
-                                </div>
-                                <div class="pull-right number"><span id="passed-x">0</span></div>
-                            </div>
-                            <div class="tiles-footer">
-                                <span class="pull-left">Today</span>
-                                <span class="inline-sparkline pull-right" id="unique-visitors"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-4 col-sm-6">
-                        <div class="info-tiles tiles-secondary">
-                            <div class="tiles-heading">
-                                <div class="pull-left">Failed Builds</div>
-                                <div id="failed-build-comparison" class="pull-right"></div>
-                            </div>
-                            <div class="tiles-body">
-                                <div class="pull-left animated bounceIn">
-                                    <i class="icon-cog"></i> <i class="icon-frown"></i>
-                                </div>
-                                <div class="pull-right number"><span id="failed-x">0</span></div>
-                            </div>
-                            <div class="tiles-footer">
-                                <span class="pull-left">Today</span>
-                                <span class="inline-sparkline pull-right" id="page-views"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-4 col-sm-6">
-                        <div class="info-tiles tiles-secondary">
-                            <div class="tiles-heading">
-                                <div class="pull-left">Avg Noise</div>
-                            </div>
-                            <div class="tiles-body">
-                                <div class="pull-left animated bounceIn">
-                                    <i class="icon-volume-up"></i>
-                                </div>
-                                <div class="h4 col-md-offset-6 space animated bounceIn">Coming soon</div>
-                            </div>
-                            <div class="tiles-footer">
-                                <span class="inline-sparkline pull-right" id="noise"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-4 col-sm-6">
-                        <div class="info-tiles tiles-secondary">
-                            <div class="tiles-heading">
-                                <div class="pull-left">Average Sleep</div>
-                            </div>
-                            <div class="tiles-body">
-                                <div class="pull-left animated bounceIn">
-                                    <i class="icon-moon"></i>
-                                </div>
-                                <div class="h4 col-md-offset-6 animated bounceIn"><span id="sleep-x">Coming soon</span></div>
-                            </div>
-                            <div class="tiles-footer">
-                                <span class="inline-sparkline pull-right" id="sleep"></span>
-                            </div>
+                        <div class="tiles-footer">
+                            <span class="pull-left">Today</span>
+                            <span class="inline-sparkline pull-right" id="visits"></span>
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div id="hourlyGithubPush-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:block;">
-                        <div class="panel panel-secondary fixed-height">
-                            <div class="panel-heading cursor-move">
-                                <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly GitHub Push Events </h3> <button id="github-push-events-sync" class="pull-right github-push-events-sync"></button>
-                                <br>
-                                <span id="last-updated-since"></span>
+                <div class="col-lg-2 col-md-4 col-sm-6">
+                    <div class="info-tiles tiles-secondary">
+                        <div class="tiles-heading">
+                            <div class="pull-left">Passed Builds</div>
+                            <div id="passed-build-comparison" class="pull-right"></div>
+                        </div>
+                        <div class="tiles-body">
+                            <div class="pull-left animated bounceIn">
+                                <i class="icon-cog"></i> <i class="icon-smile"></i>
                             </div>
-                            <div class="panel-body">
+                            <div class="pull-right number"><span id="passed-x">0</span></div>
+                        </div>
+                        <div class="tiles-footer">
+                            <span class="pull-left">Today</span>
+                            <span class="inline-sparkline pull-right" id="unique-visitors"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6">
+                    <div class="info-tiles tiles-secondary">
+                        <div class="tiles-heading">
+                            <div class="pull-left">Failed Builds</div>
+                            <div id="failed-build-comparison" class="pull-right"></div>
+                        </div>
+                        <div class="tiles-body">
+                            <div class="pull-left animated bounceIn">
+                                <i class="icon-cog"></i> <i class="icon-frown"></i>
+                            </div>
+                            <div class="pull-right number"><span id="failed-x">0</span></div>
+                        </div>
+                        <div class="tiles-footer">
+                            <span class="pull-left">Today</span>
+                            <span class="inline-sparkline pull-right" id="page-views"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6">
+                    <div class="info-tiles tiles-secondary">
+                        <div class="tiles-heading">
+                            <div class="pull-left">Avg Noise</div>
+                        </div>
+                        <div class="tiles-body">
+                            <div class="pull-left animated bounceIn">
+                                <i class="icon-volume-up"></i>
+                            </div>
+                            <div class="h4 col-md-offset-6 space animated bounceIn">Coming soon</div>
+                        </div>
+                        <div class="tiles-footer">
+                            <span class="inline-sparkline pull-right" id="noise"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6">
+                    <div class="info-tiles tiles-secondary">
+                        <div class="tiles-heading">
+                            <div class="pull-left">Average Sleep</div>
+                        </div>
+                        <div class="tiles-body">
+                            <div class="pull-left animated bounceIn">
+                                <i class="icon-moon"></i>
+                            </div>
+                            <div class="h4 col-md-offset-6 animated bounceIn"><span id="sleep-x">Coming soon</span></div>
+                        </div>
+                        <div class="tiles-footer">
+                            <span class="inline-sparkline pull-right" id="sleep"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div id="hourlyGithubPush-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:block;">
+                    <div class="panel panel-secondary fixed-height">
+                        <div class="helpContainer">
+                            <div class="row">
+                                <h4>Help - Github Push Events</h4>
+                                <div class="help-description">
+                                    <h4>What does this show me?
+                                    </h4>
+                                    <p>We’ve taken all your pushes to the public repositories and visualisated your weekly push patterns. We’ve broken the week down into hourly buckets and counted how many pushes you have done in each hour. You should see something about your weekly habits. </p>
+                                    <p>Try scanning horizontally along the days to see the daily pattern of when you push. Which days do you push most? Do you push on the weekend? Try scanning vertically, is there a pattern? Do you push before lunch? Before you finish working for the day? Are there parts of the week that don’t have any pushes at all? Why is that? 
+                                    </p>
+                                </div>
+                                <div class="help-description">
+                                    <h4>Linking your data
+                                    </h4>
+                                    <p>You need to have pushed to a public repository on GitHub to see something in this graph. Then, just click on ‘Link Data’, “Link Up My Public GitHub Data’  to get started. 
+                                   </p>
+                                </div>
+                                 <div class="help-description">
+                                    <h4>How quickly will I see my data?
+                                    </h4>
+                                    <p>Straight away! GitHub holds this historical data which means that we show your patterns immediately.
+                                   </p>
+                                </div>
+                                <div class="help-description">
+                                    <h4>Can I see pushes to private repos?
+                                    </h4>
+                                    <p>Not yet, it’s coming soon though. You can bump it up the queue by letting us know this is important to you.
+                                   </p>
+                                </div>
+                                <div class="help-description">
+                                    <h4>See something interesting?
+                                    </h4>
+                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to team@quantifieddev.org
+                                   </p>
+                                </div>
 
-                                <div id="hourlyGithubPush-heat-map" class="hourlyHeatMapContainer">
-                                    <div class="githubPushEvents text-center grid" >
-                                        <div  class="grid-row">
-                                            <div  class="grid-cell" >
-                                                <button id="connect_to_github_btn" style="display:none" type="button" class="btn btn-success" data-original-title="">Connect to GitHub</button>
-                                            </div>
+                            </div>
+                        </div>
+                        <div class="panel-heading cursor-move">
+                            <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly GitHub Push Events </h3> <button id="hourlyGithubPush-heat-map-help" class="pull-right help-btn" onclick=show("hourlyGithubPush-heat-map-parent")>?</button><button id="github-push-events-sync" class="pull-right github-push-events-sync"></button>
+                            
+
+                            <br>
+                            <span id="last-updated-since"></span>
+                        </div>
+                        <div class="panel-body">
+
+                            <div id="hourlyGithubPush-heat-map" class="hourlyHeatMapContainer">
+                                <div class="githubPushEvents text-center grid" >
+                                    <div  class="grid-row">
+                                        <div  class="grid-cell" >
+                                            <button id="connect_to_github_btn" style="display:none" type="button" class="btn btn-success" data-original-title="">Connect to GitHub</button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div id="hourlyBuild-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-                        <div class="panel panel-secondary fixed-height">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Builds</h3>
-                            </div>
-                            <div class="panel-body">
-                                <div id="hourlyBuild-heat-map" class="hourlyHeatMapContainer"></div>
-                            </div>
+                </div>
+                <div id="hourlyBuild-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+                    <div class="panel panel-secondary fixed-height">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Builds</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div id="hourlyBuild-heat-map" class="hourlyHeatMapContainer"></div>
                         </div>
                     </div>
-                    <div id="build-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-                        <div class="panel panel-secondary fixed-height">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="icon-bar-chart"></i>Build History</h3>
-                                <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank"
-                                onclick="qd.tweetBuildSparkline()">Tweet</a>
-                            </div>
-                            <div class="panel-body">
-                                <div id="build-history"></div>
-                            </div>
+                </div>
+                <div id="build-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+                    <div class="panel panel-secondary fixed-height">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="icon-bar-chart"></i>Build History</h3>
+                            <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank"
+                            onclick="qd.tweetBuildSparkline()">Tweet</a>
+                        </div>
+                        <div class="panel-body">
+                            <div id="build-history"></div>
                         </div>
                     </div>
-                    <div id="hourlyWtf-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-                        <div class="panel panel-secondary fixed-height">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Wtfs</h3>
-                            </div>
-                            <div class="panel-body">
-                                <div id="hourlyWtf-heat-map" class="hourlyHeatMapContainer"></div>
-                            </div>
+                </div>
+                <div id="hourlyWtf-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+                    <div class="panel panel-secondary fixed-height">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Wtfs</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div id="hourlyWtf-heat-map" class="hourlyHeatMapContainer"></div>
                         </div>
                     </div>
-                    <div id="wtf-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-                        <div class="panel panel-secondary fixed-height">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="icon-bar-chart"></i>WTF History</h3>
-                                <a id="tweetMyWtfs" class="twitter-share-button pull-right" target="_blank"
-                                onclick="qd.tweetWtfSparkline()">Tweet</a>
-                            </div>
-                            <div class="panel-body">
-                                <div id="wtf-history"></div>
-                            </div>
+                </div>
+                <div id="wtf-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+                    <div class="panel panel-secondary fixed-height">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="icon-bar-chart"></i>WTF History</h3>
+                            <a id="tweetMyWtfs" class="twitter-share-button pull-right" target="_blank"
+                            onclick="qd.tweetWtfSparkline()">Tweet</a>
+                        </div>
+                        <div class="panel-body">
+                            <div id="wtf-history"></div>
                         </div>
                     </div>
-                    <div id="hourlyHydration-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-                        <div class="panel panel-secondary fixed-height">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Water Intake</h3>
-                            </div>
-                            <div class="panel-body">
-                                <div id="hourlyHydration-heat-map" class="hourlyHeatMapContainer"></div>
-                            </div>
+                </div>
+                <div id="hourlyHydration-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+                    <div class="panel panel-secondary fixed-height">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Water Intake</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div id="hourlyHydration-heat-map" class="hourlyHeatMapContainer"></div>
                         </div>
                     </div>
-                    <div id="hydration-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-                        <div class="panel panel-secondary fixed-height">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="icon-bar-chart"></i>Water Intake History</h3>
-                                <a id="tweetMyHydration" class="twitter-share-button pull-right" target="_blank"
-                                onclick="qd.tweetHydrationSparkline()">Tweet</a>
-                            </div>
-                            <div class="panel-body">
-                                <div id="hydration-history"></div>
-                            </div>
+                </div>
+                <div id="hydration-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+                    <div class="panel panel-secondary fixed-height">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="icon-bar-chart"></i>Water Intake History</h3>
+                            <a id="tweetMyHydration" class="twitter-share-button pull-right" target="_blank"
+                            onclick="qd.tweetHydrationSparkline()">Tweet</a>
+                        </div>
+                        <div class="panel-body">
+                            <div id="hydration-history"></div>
                         </div>
                     </div>
-                    <div id="hourlyCaffeine-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-                        <div class="panel panel-secondary fixed-height">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Caffeine Intake</h3>
-                            </div>
-                            <div class="panel-body">
-                                <div id="hourlyCaffeine-heat-map" class="hourlyHeatMapContainer"></div>
-                            </div>
+                </div>
+                <div id="hourlyCaffeine-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+                    <div class="panel panel-secondary fixed-height">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Caffeine Intake</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div id="hourlyCaffeine-heat-map" class="hourlyHeatMapContainer"></div>
                         </div>
                     </div>
-                    <div id="caffeine-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-                        <div class="panel panel-secondary fixed-height">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="icon-bar-chart"></i>Caffeine Intake History</h3>
-                                <a id="tweetMyCaffeine" class="twitter-share-button pull-right" target="_blank"
-                                onclick="qd.tweetCaffeineSparkline()">Tweet</a>
-                            </div>
-                            <div class="panel-body">
-                                <div id="caffeine-history"></div>
-                            </div>
+                </div>
+                <div id="caffeine-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+                    <div class="panel panel-secondary fixed-height">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="icon-bar-chart"></i>Caffeine Intake History</h3>
+                            <a id="tweetMyCaffeine" class="twitter-share-button pull-right" target="_blank"
+                            onclick="qd.tweetCaffeineSparkline()">Tweet</a>
+                        </div>
+                        <div class="panel-body">
+                            <div id="caffeine-history"></div>
                         </div>
                     </div>
-                    <div id="buildDuration-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-                        <div class="panel panel-secondary fixed-height">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="icon-bar-chart"></i>Build Duration History</h3>
-                                <a id="tweetMyBuildDuration" class="twitter-share-button pull-right" target="_blank"
-                                onclick="qd.tweetBuildDurationSparkline()">Tweet</a>
-                            </div>
-                            <div class="panel-body">
-                                <div id="buildDuration-history"></div>
-                            </div>
+                </div>
+                <div id="buildDuration-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+                    <div class="panel panel-secondary fixed-height">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="icon-bar-chart"></i>Build Duration History</h3>
+                            <a id="tweetMyBuildDuration" class="twitter-share-button pull-right" target="_blank"
+                            onclick="qd.tweetBuildDurationSparkline()">Tweet</a>
+                        </div>
+                        <div class="panel-body">
+                            <div id="buildDuration-history"></div>
                         </div>
                     </div>
-                    <div id="active-event-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-                        <div class="panel panel-secondary fixed-height">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="icon-bar-chart"></i>Active programming duration</h3>
-                                <a id="tweetMyActiveDuration" class="twitter-share-button pull-right" target="_blank"
-                                onclick="qd.tweetActiveEventSparkline()">Tweet</a>
-                            </div>
-                            <div class="panel-body">
-                                <div id="active-event-history"></div>
-                            </div>
+                </div>
+                <div id="active-event-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+                    <div class="panel panel-secondary fixed-height">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="icon-bar-chart"></i>Active programming duration</h3>
+                            <a id="tweetMyActiveDuration" class="twitter-share-button pull-right" target="_blank"
+                            onclick="qd.tweetActiveEventSparkline()">Tweet</a>
+                        </div>
+                        <div class="panel-body">
+                            <div id="active-event-history"></div>
                         </div>
                     </div>
-                    <div id="correlate-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-                        <div class="panel panel-secondary fixed-height">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="icon-bar-chart"></i>Correlate IDE Activity with Github Pushes</h3>
-                            </div>
-                            <div class="panel-body">
-                                <div id="correlate-events"></div>
-                            </div>
+                </div>
+                <div id="correlate-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+                    <div class="panel panel-secondary fixed-height">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="icon-bar-chart"></i>Correlate IDE Activity with Github Pushes</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div id="correlate-events"></div>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- Bootstrap Container End -->
         </div>
-        <!-- Main Container End -->
-        <!-- Include all compiled plugins (below), or include individual files as needed -->
-        <script src="/js/bootstrap.min.js"></script>
-        <script src="/js/bootstrap-modal.js"></script>
-        <script src="/js/bootstrap-modalmanager.js"></script>
-        <script src="/js/underscore-min.js"></script>
-        <!-- jQuery UI JS -->
-        <script src="/js/jquery-ui-v1.10.3.js"></script>
-        <!-- Sparkline graphs -- >
-        <script src="/js/sparkline.js"></script>
-        <!-- Data tables -->
-        <script src="/js/jquery.datatables.js"></script>
-        <!-- Date Range -->
-        <script src="/js/daterange/moment.js"></script>
-        <script src="/js/daterange/daterangepicker.js"></script>
-        <!-- Animated Right Sidebar -->
-        <script src="/js/slidebars.js"></script>
-        <!-- JVector Map -->
-        <script src="/js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
-        <script src="/js/jvectormap/jquery-jvectormap-usa.js"></script>
-        <!-- Custom JS -->
-        <script src="/js/custom.js"></script>
-        <script src="/js/custom-index.js"></script>
-        <script src="/packages/d3/d3.js"></script>
-        <script src="/packages/d3/d3.geo.projection.v0.min.js"></script>
-        <script src="/packages/d3/topojson.v1.min.js"></script>
-        <script src="/packages/d3/queue.v1.min.js"></script>
-        <script src="/packages/regressionjs/regression.js"></script>
-        <script src="/js/1self.js"></script>
-        <script src="/js/ajax_request.js"></script>
-        <script src="/js/quantified-dev.js"></script>
-        <script src="/js/build-history-d3.js"></script>
-        <script src="/js/wtf-history-d3.js"></script>
-        <script src="/js/hydration-history-d3.js"></script>
-        <script src="/js/caffeine-history-d3.js"></script>
-        <script src="/js/buildDuration-history-d3.js"></script>
-        <script src="/js/active-events-d3.js"></script>
-        <script src="/js/hourlyEvent-heatMap-d3.js"></script>
-        <script src="/js/correlation-scatterplot-d3.js"></script>
-        <script src="/js/dashboard.js"></script>
-        <script src="/js/link-datasource.js"></script>
-    </body>
+        <!-- Bootstrap Container End -->
+    </div>
+    <!-- Main Container End -->
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap-modal.js"></script>
+    <script src="/js/bootstrap-modalmanager.js"></script>
+    <script src="/js/underscore-min.js"></script>
+    <!-- jQuery UI JS -->
+    <script src="/js/jquery-ui-v1.10.3.js"></script>
+    <!-- Sparkline graphs -- >
+    <script src="/js/sparkline.js"></script>
+    <!-- Data tables -->
+    <script src="/js/jquery.datatables.js"></script>
+    <!-- Date Range -->
+    <script src="/js/daterange/moment.js"></script>
+    <script src="/js/daterange/daterangepicker.js"></script>
+    <!-- Animated Right Sidebar -->
+    <script src="/js/slidebars.js"></script>
+    <!-- JVector Map -->
+    <script src="/js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
+    <script src="/js/jvectormap/jquery-jvectormap-usa.js"></script>
+    <!-- Custom JS -->
+    <script src="/js/custom.js"></script>
+    <script src="/js/custom-index.js"></script>
+    <script src="/packages/d3/d3.js"></script>
+    <script src="/packages/d3/d3.geo.projection.v0.min.js"></script>
+    <script src="/packages/d3/topojson.v1.min.js"></script>
+    <script src="/packages/d3/queue.v1.min.js"></script>
+    <script src="/packages/regressionjs/regression.js"></script>
+    <script src="/js/1self.js"></script>
+    <script src="/js/ajax_request.js"></script>
+    <script src="/js/quantified-dev.js"></script>
+    <script src="/js/build-history-d3.js"></script>
+    <script src="/js/wtf-history-d3.js"></script>
+    <script src="/js/hydration-history-d3.js"></script>
+    <script src="/js/caffeine-history-d3.js"></script>
+    <script src="/js/buildDuration-history-d3.js"></script>
+    <script src="/js/active-events-d3.js"></script>
+    <script src="/js/hourlyEvent-heatMap-d3.js"></script>
+    <script src="/js/correlation-scatterplot-d3.js"></script>
+    <script src="/js/dashboard.js"></script>
+    <script src="/js/link-datasource.js"></script>
+</body>
 </html>

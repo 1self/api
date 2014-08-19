@@ -64,7 +64,19 @@ var handleConnectToGithub = function() {
         console.log(error);
     })
 }
+$(document).ready(function(){
+  /*$(".help-btn").click(function(){
+    $(".helpContainer").toggle();
+});*/
 
+
+});
+var show = function(element) {
+   var showElement = "#" + element +" "+".helpContainer";
+      $(showElement).slideToggle();
+}
 $("#connect_to_github_btn").click(handleConnectToGithub);
 $("#github-push-events-sync").click(handleConnectToGithub);
 $("#connect_to_github_link_popup_btn").click(handleConnectToGithub);
+
+/*onclick=show("hourlyGithubPush-heat-map-parent") */
