@@ -392,7 +392,7 @@ var qd = function() {
             .fail("Error getting active events!");
         $.when(result.getHourlyGithubPushCountFor(myUsername), result.getTheirHourlyGithubPushCount(myUsername, theirUsername))
             .done(result.compareGithubPushCount)
-            .fail(failureCallback("Error in comparison of hourly github push events"));
+            .fail("Error in comparison of hourly github push events");
         result.updateCompareGithubEvents();
         result.updateIdeActivityEventForCompare();
     };
