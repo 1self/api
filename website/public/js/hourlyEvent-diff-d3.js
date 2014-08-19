@@ -113,7 +113,7 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
         };
         var createLegend = function() {
             return svg.selectAll(".legend")
-                .data([1].concat(colorScale.quantiles()), function(d) {
+                .data([1].concat(colorScaleForPositiveValues.quantiles()), function(d) {
                     return d;
                 })
                 .enter().append("g")
@@ -155,7 +155,7 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
                 .attr("height", legendElementWidth + 10)
                 .attr("width", gridSize / 2)
                 .style("fill", function(d, i) {
-                    return colors[i];
+                    return positiveColors[i];
                 });
 
             legend.append("text")
@@ -202,7 +202,7 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
                 .attr("width", legendElementWidth)
                 .attr("height", gridSize / 2)
                 .style("fill", function(d, i) {
-                    return colors[i];
+                    return positiveColors[i];
                 });
 
             legend.append("text")

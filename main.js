@@ -844,6 +844,20 @@ var generateHoursForWeek = function(defaultValues) {
     }
     return result;
 };
+var generateWeek = function(defaultValues) {
+    var result = {};
+    var numberOfDaysToReportBuildsOn = 7;
+    for (var i = 1; i <= numberOfDaysToReportBuildsOn; i++) {
+        var day = i;
+        result[day] = {
+            day: day
+        };
+        for (var index in defaultValues) {
+            result[day][defaultValues[index].key] = defaultValues[index].value;
+        }
+    }
+    return result;
+};
 
 var defaultEventValues = [{
     key: "hourlyEventCount",
@@ -1481,6 +1495,74 @@ var getHourlyGithubPushEventsCount = function(streamid) {
 
     return deferred.promise;
 };
+var getDailyGithubPushEventsCount = function(streamid) {
+    var deferred = q.defer();
+    groupQuery = {
+        "$groupBy": {
+            "fields": [{
+                "name": "payload.eventDateTime",
+                "format": "e"
+            }],
+            "filterSpec": {
+                "payload.streamid": {
+                    "$operator": {
+                        "in": [streamid]
+                    }
+                },
+                "payload.actionTags": "Push"
+            },
+            "projectionSpec": {
+                "payload.eventDateTime": "date",
+                "payload.properties": "properties"
+            },
+            "orderSpec": {}
+        }
+    };
+    dailyGithubPushEventCount = {
+        "$count": {
+            "data": groupQuery,
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "githubPushEventCount"
+            }
+        }
+    };
+    var options = {
+        url: platformUri + '/rest/analytics/aggregate',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: {
+            spec: JSON.stringify(dailyGithubPushEventCount)
+        },
+        method: 'GET'
+    };
+
+    function callback(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var result = JSON.parse(body);
+            result = result[0];
+            var defaultEventValues = [{
+                key: "dailyEventCount",
+                value: 0
+            }];
+            var dailyGithubPushEvents = generateWeek(defaultEventValues);
+            for (var date in result) {
+                if (dailyGithubPushEvents[date] !== undefined) {
+                    dailyGithubPushEvents[date].dailyEventCount = result[date].githubPushEventCount;
+                }
+            }
+            deferred.resolve(rollupToArray(dailyGithubPushEvents));
+
+        } else {
+            deferred.reject(error);
+        }
+    }
+    requestModule(options, callback);
+
+    return deferred.promise;
+};
 var getMyActiveDuration = function(params) {
     var streams = params[0];
     var streamids = _.map(streams, function(stream) {
@@ -1713,7 +1795,14 @@ app.get('/users_count', function(req, res) {
 
 app.get('/recent_signups', function(req, res) {
     mongoDbConnection(function(qdDb) {
-        qdDb.collection('users').find( {}, {"githubUser.profileUrl": true}, {"sort": [["_id", -1]], "limit": "10"}, function(error, results) {
+        qdDb.collection('users').find({}, {
+            "githubUser.profileUrl": true
+        }, {
+            "sort": [
+                ["_id", -1]
+            ],
+            "limit": "10"
+        }, function(error, results) {
             results.toArray(function(err, users) {
                 if (err) {
                     console.log("Err", err);
@@ -2002,6 +2091,21 @@ app.get('/quantifieddev/hourlyGithubPushEvents', function(req, res) {
     validEncodedUsername(encodedUsername, req.query.forUsername, [])
         .then(getGithubStreamIdForUsername)
         .then(getHourlyGithubPushEventsCount)
+        .then(function(response) {
+            res.send(response);
+        }).catch(function(error) {
+            console.log("Error is", error);
+            res.status(404).send("stream not found");
+        });
+});
+
+app.get('/quantifieddev/dailyGithubPushEvents', function(req, res) {
+    var encodedUsername = req.headers.authorization;
+
+
+    validEncodedUsername(encodedUsername, req.query.forUsername, [])
+        .then(getGithubStreamIdForUsername)
+        .then(getDailyGithubPushEventsCount)
         .then(function(response) {
             res.send(response);
         }).catch(function(error) {
