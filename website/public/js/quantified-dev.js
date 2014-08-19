@@ -14,9 +14,9 @@ var qd = function() {
             c();
         });
     }
-    var failureCallback = function(divId, msg) {
+    var failureCallbackForComparison = function(divId, msg) {
         return function() {
-            if ($(divId).length > 0)
+            if ($("#friendList").length > 0)
                 $(divId).text(msg);
         }
     }
@@ -358,7 +358,7 @@ var qd = function() {
         var myUsername = $.cookie("_eun");
         $.when(result.getBuildHistoryModelFor(myUsername), result.getTheirBuildHistoryModel(myUsername, theirUsername))
             .done(handlePlotComparisonGraphsSuccess)
-            .fail(failureCallback("#compare-username-errors", "Username doesn't exist!"));
+            .fail(failureCallbackForComparison("#compare-username-errors", "Username doesn't exist!"));
         $.when(result.getActiveEventsModelFor(myUsername), result.getTheirActiveEventsModel(myUsername, theirUsername))
             .done(result.compareActiveEvents)
             .fail("Error getting active events!");
