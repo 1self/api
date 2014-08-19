@@ -18,11 +18,19 @@ var PasswordEncrypt = require('./lib/PasswordEncrypt');
 var githubEvents = require("./githubEvents");
 
 var MongoStore = require("express-session-mongo");
+var logger = require('morgan');
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+
 
 var app = express();
-app.use(express.logger());
-app.use(express.bodyParser());
-app.use(express.cookieParser());
+app.use(logger());
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(bodyParser.json());
+app.use(cookieParser());
+
 
 app.engine('html', swig.renderFile);
 app.use(express.static(path.join(__dirname, 'website/public')));
