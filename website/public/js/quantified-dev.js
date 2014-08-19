@@ -341,18 +341,20 @@ var qd = function() {
 
     result.plotComparisonGraphs = function(theirUsername) {
         var myUsername = $.cookie("_eun");
-        $.when(result.getEventsFor(myUsername, "mydev"), result.getTheirEventsFor(myUsername, theirUsername, "mydev"))
-            .done(handlePlotComparisonGraphsSuccess)
-            .fail(failureCallbackForComparison("#compare-username-errors", "Username doesn't exist!"));
-        $.when(result.getEventsFor(myUsername, "myActiveEvents"), result.getTheirEventsFor(myUsername, theirUsername, "myActiveEvents"))
-            .done(result.compareActiveEvents)
-            .fail("Error getting active events!");
-        $.when(result.getEventsFor(myUsername, "hourlyGithubPushEvents"), result.getTheirEventsFor(myUsername, theirUsername, "hourlyGithubPushEvents"))
-            .done(result.compareGithubPushCount)
-            .fail("Error in comparison of hourly github push events");
-        $.when(result.getEventsFor(myUsername, "dailyGithubPushEvents"), result.getTheirEventsFor(myUsername, theirUsername, "dailyGithubPushEvents"))
-            .done(result.compareDailyGithubPushCount)
-            .fail("Error in comparison of hourly github push events");
+        if (theirUsername !== undefined) {
+            $.when(result.getEventsFor(myUsername, "mydev"), result.getTheirEventsFor(myUsername, theirUsername, "mydev"))
+                .done(handlePlotComparisonGraphsSuccess)
+                .fail(failureCallbackForComparison("#compare-username-errors", "Username doesn't exist!"));
+            $.when(result.getEventsFor(myUsername, "myActiveEvents"), result.getTheirEventsFor(myUsername, theirUsername, "myActiveEvents"))
+                .done(result.compareActiveEvents)
+                .fail("Error getting active events!");
+            $.when(result.getEventsFor(myUsername, "hourlyGithubPushEvents"), result.getTheirEventsFor(myUsername, theirUsername, "hourlyGithubPushEvents"))
+                .done(result.compareGithubPushCount)
+                .fail("Error in comparison of hourly github push events");
+            $.when(result.getEventsFor(myUsername, "dailyGithubPushEvents"), result.getTheirEventsFor(myUsername, theirUsername, "dailyGithubPushEvents"))
+                .done(result.compareDailyGithubPushCount)
+                .fail("Error in comparison of hourly github push events");
+        }
         result.updateCompareGithubEvents();
         result.updateIdeActivityEventForCompare();
     };
