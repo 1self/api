@@ -186,9 +186,6 @@ your-name
               {% if friends %}
               <select name="friendList" class="btn btn-default" onChange="combo(this, 'theinput')" onMouseOut="comboInit(this, 'theinput')" >
                 <!-- <option>Select Friend</option> -->
-                {% if friendsUsername %}
-                <option>{{friendsUsername}}</option>
-                {% endif %}
                 {% for friend in friends %}
                 <option>
                   {{ friend }}
