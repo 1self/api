@@ -134,7 +134,7 @@ var getStreamIdForUsername = function(params) {
     usernames = params[0];
     var encodedUsername = usernames[0];
     var forUsername = usernames[1];
-    if (forUsername !== undefined) {
+    if (!(_.isEmpty(forUsername)) && (forUsername !== 'undefined')) {
         query = {
             "username": forUsername
         };
@@ -171,7 +171,7 @@ var getGithubStreamIdForUsername = function(params) {
     var usernames = params[0];
     var encodedUsername = usernames[0];
     var forUsername = usernames[1];
-    if (forUsername !== undefined) {
+    if (!(_.isEmpty(forUsername)) && (forUsername !== 'undefined')) {
         query = {
             "username": forUsername
         };
