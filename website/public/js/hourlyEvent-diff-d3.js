@@ -7,7 +7,7 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
             bottom: 100,
             left: 28
         },
-        width = $(divId).width() - 10,
+        width = $(divId).width() - 30,
         height = width / 2.5,
         p = [height * 0.05, width * 0.1, height * 0.35, width * 0.05],
         gridSize = Math.floor(width / 24),
