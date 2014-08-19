@@ -2889,6 +2889,12 @@ body {
   .help-description{
     margin: 10px 0;
 }
+#sb-site{
+    min-height: 1024px!important;
+}
+a.twitter-share-button{
+    margin-right: 7px;
+}
 .top-buffer-20 { margin-top:20px; };
 @media screen and (max-width: 500px) {
     .hourlyHeatMapContainer {

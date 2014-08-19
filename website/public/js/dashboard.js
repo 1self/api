@@ -79,4 +79,3 @@ $("#connect_to_github_btn").click(handleConnectToGithub);
 $("#github-push-events-sync").click(handleConnectToGithub);
 $("#connect_to_github_link_popup_btn").click(handleConnectToGithub);
 
-/*onclick=show("hourlyGithubPush-heat-map-parent") */
