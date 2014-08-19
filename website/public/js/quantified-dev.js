@@ -314,6 +314,29 @@ var qd = function() {
             }
         });
     };
+
+    result.getHourlyGithubPushCountFor = function(encodedUsername) {
+        return $.ajax({
+            url: url("quantifieddev", "hourlyGithubPushEvents"),
+            headers: {
+                "Accept": "application/json",
+                "Authorization": encodedUsername
+            }
+        });
+    };
+
+    result.getTheirHourlyGithubPushCount = function(encodedUsername, forUsername) {
+        return $.ajax({
+            data: {
+                forUsername: forUsername
+            },
+            url: url("quantifieddev", "hourlyGithubPushEvents"),
+            headers: {
+                "Accept": "application/json",
+                "Authorization": encodedUsername
+            }
+        });
+    };
     var eventsExist = function(events) {
         return events.length > 0;
     };
@@ -329,7 +352,12 @@ var qd = function() {
         }
 
     };
-
+    result.compareGithubPushCount = function(myHourlyGithubPushCount, theirHourlyGithubPushCount){
+        if (eventsExist(myHourlyGithubPushCount[0]) || eventsExist(theirHourlyGithubPushCount[0])) {
+            result.plotHourlyEventDiff('#diff-hourly-github-events',myHourlyGithubPushCount[0],theirHourlyGithubPushCount[0]);
+            result.plotDailyComparison('#daily-github-event-compare');
+        }
+    };
     var compareIdeActivityEventsSuccessCallback = function(ideActivityEventForCompare) {
         result.plotComparisonAgainstAvgOfRestOfTheWorld("#compare-ide-activity", ideActivityEventForCompare);
     };
@@ -362,6 +390,9 @@ var qd = function() {
         $.when(result.getActiveEventsModelFor(myUsername), result.getTheirActiveEventsModel(myUsername, theirUsername))
             .done(result.compareActiveEvents)
             .fail("Error getting active events!");
+        $.when(result.getHourlyGithubPushCountFor(myUsername), result.getTheirHourlyGithubPushCount(myUsername, theirUsername))
+            .done(result.compareGithubPushCount)
+            .fail(failureCallback("Error in comparison of hourly github push events"));
         result.updateCompareGithubEvents();
         result.updateIdeActivityEventForCompare();
     };

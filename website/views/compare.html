@@ -232,6 +232,28 @@ your-name
           </div>
       </div>
       <div class="row sortable">
+           <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+            <div class="panel panel-secondary fixed-height">
+              <div class="panel-heading cursor-move">
+                <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Github Push Events Difference HeatMap</h3>
+              </div>
+              <div class="panel-body">
+                <div id="diff-hourly-github-events"><div class="no-data-msg alert" role="alert">No data available</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+            <div class="panel panel-secondary fixed-height">
+              <div class="panel-heading cursor-move">
+                <h3 class="panel-title"><i class="icon-bar-chart"></i>Daily Github Push Event Comparison</h3>
+              </div>
+              <div class="panel-body">
+                <div id="daily-github-event-compare"><div class="no-data-msg alert" role="alert">No data available</div></div>
+              </div>
+            </div>
+          </div>
+      </div>
+      <div class="row sortable">
         <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
           <div class="panel panel-secondary fixed-height">
             <div class="panel-heading cursor-move">
@@ -304,6 +326,8 @@ your-name
   <script src="/js/active-events-compare-d3.js"></script>
   <script src="/js/link-datasource.js"></script>
   <script src="/js/github-events-compare-d3.js"></script>
+  <script src="js/hourlyEvent-diff-d3.js"></script>
+  <script src="js/event-daily-compare-d3.js"></script>
 
 </body>
 </html>
