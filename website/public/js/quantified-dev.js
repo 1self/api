@@ -269,68 +269,21 @@ var qd = function() {
         var url = "https://twitter.com/intent/tweet?text=" + tweetText + "&hashtags=" + hashTags;
         $('#tweetMyActiveDuration').attr('href', url);
     };
-    result.getBuildHistoryModelFor = function(encodedUsername) {
+    result.getEventsFor = function(encodedUsername, resource) {
         return $.ajax({
-            url: url("quantifieddev", "mydev"),
+            url: url("quantifieddev", resource),
             headers: {
                 "Accept": "application/json",
                 "Authorization": encodedUsername
             }
         });
     };
-
-    result.getTheirBuildHistoryModel = function(encodedUsername, forUsername) {
+    result.getTheirEventsFor = function(encodedUsername, forUsername, resource) {
         return $.ajax({
             data: {
                 forUsername: forUsername
             },
-            url: url("quantifieddev", "mydev"),
-            headers: {
-                "Accept": "application/json",
-                "Authorization": encodedUsername
-            }
-        });
-    };
-
-    result.getActiveEventsModelFor = function(encodedUsername) {
-        return $.ajax({
-            url: url("quantifieddev", "myActiveEvents"),
-            headers: {
-                "Accept": "application/json",
-                "Authorization": encodedUsername
-            }
-        });
-    };
-
-    result.getTheirActiveEventsModel = function(encodedUsername, forUsername) {
-        return $.ajax({
-            data: {
-                forUsername: forUsername
-            },
-            url: url("quantifieddev", "myActiveEvents"),
-            headers: {
-                "Accept": "application/json",
-                "Authorization": encodedUsername
-            }
-        });
-    };
-
-    result.getHourlyGithubPushCountFor = function(encodedUsername) {
-        return $.ajax({
-            url: url("quantifieddev", "hourlyGithubPushEvents"),
-            headers: {
-                "Accept": "application/json",
-                "Authorization": encodedUsername
-            }
-        });
-    };
-
-    result.getTheirHourlyGithubPushCount = function(encodedUsername, forUsername) {
-        return $.ajax({
-            data: {
-                forUsername: forUsername
-            },
-            url: url("quantifieddev", "hourlyGithubPushEvents"),
+            url: url("quantifieddev", resource),
             headers: {
                 "Accept": "application/json",
                 "Authorization": encodedUsername
@@ -352,12 +305,16 @@ var qd = function() {
         }
 
     };
-    result.compareGithubPushCount = function(myHourlyGithubPushCount, theirHourlyGithubPushCount){
+    result.compareGithubPushCount = function(myHourlyGithubPushCount, theirHourlyGithubPushCount) {
         if (eventsExist(myHourlyGithubPushCount[0]) || eventsExist(theirHourlyGithubPushCount[0])) {
-            result.plotHourlyEventDiff('#diff-hourly-github-events',myHourlyGithubPushCount[0],theirHourlyGithubPushCount[0]);
-            result.plotDailyComparison('#daily-github-event-compare');
+            result.plotHourlyEventDiff('#diff-hourly-github-events', myHourlyGithubPushCount[0], theirHourlyGithubPushCount[0]);
         }
     };
+    result.compareDailyGithubPushCount = function(myDailyGithubPushCount, theirDailyGithubPushCount) {
+        if (eventsExist(myDailyGithubPushCount[0]) || eventsExist(theirDailyGithubPushCount[0])) {
+            result.plotDailyComparison('#daily-github-event-compare', myDailyGithubPushCount[0], theirDailyGithubPushCount[0]);
+        }
+    }
     var compareIdeActivityEventsSuccessCallback = function(ideActivityEventForCompare) {
         result.plotComparisonAgainstAvgOfRestOfTheWorld("#compare-ide-activity", ideActivityEventForCompare);
     };
@@ -384,14 +341,17 @@ var qd = function() {
 
     result.plotComparisonGraphs = function(theirUsername) {
         var myUsername = $.cookie("_eun");
-        $.when(result.getBuildHistoryModelFor(myUsername), result.getTheirBuildHistoryModel(myUsername, theirUsername))
+        $.when(result.getEventsFor(myUsername, "mydev"), result.getTheirEventsFor(myUsername, theirUsername, "mydev"))
             .done(handlePlotComparisonGraphsSuccess)
             .fail(failureCallbackForComparison("#compare-username-errors", "Username doesn't exist!"));
-        $.when(result.getActiveEventsModelFor(myUsername), result.getTheirActiveEventsModel(myUsername, theirUsername))
+        $.when(result.getEventsFor(myUsername, "myActiveEvents"), result.getTheirEventsFor(myUsername, theirUsername, "myActiveEvents"))
             .done(result.compareActiveEvents)
             .fail("Error getting active events!");
-        $.when(result.getHourlyGithubPushCountFor(myUsername), result.getTheirHourlyGithubPushCount(myUsername, theirUsername))
+        $.when(result.getEventsFor(myUsername, "hourlyGithubPushEvents"), result.getTheirEventsFor(myUsername, theirUsername, "hourlyGithubPushEvents"))
             .done(result.compareGithubPushCount)
+            .fail("Error in comparison of hourly github push events");
+        $.when(result.getEventsFor(myUsername, "dailyGithubPushEvents"), result.getTheirEventsFor(myUsername, theirUsername, "dailyGithubPushEvents"))
+            .done(result.compareDailyGithubPushCount)
             .fail("Error in comparison of hourly github push events");
         result.updateCompareGithubEvents();
         result.updateIdeActivityEventForCompare();

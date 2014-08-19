@@ -1,61 +1,4 @@
-window.qd.plotDailyComparison = function(divId) {
-  var data = [{
-    "Name": "Mon",
-    "Month": "Devika",
-    "ExamCount": 15
-  }, {
-    "Month": "Devika",
-    "Name": "Tue",
-    "ExamCount": 35
-  }, {
-    "Month": "Devika",
-    "Name": "Wed",
-    "ExamCount": 40
-  }, {
-    "Month": "Devika",
-    "Name": "Thu",
-    "ExamCount": 20
-  }, {
-    "Month": "Devika",
-    "Name": "Fri",
-    "ExamCount": 23
-  }, {
-    "Month": "Devika",
-    "Name": "Sat",
-    "ExamCount": 0
-  }, {
-    "Month": "Devika",
-    "Name": "Sun",
-    "ExamCount": 0
-  }, {
-    "Month": "Chinmay",
-    "Name": "Mon",
-    "ExamCount": 53
-  }, {
-    "Month": "Chinmay",
-    "Name": "Tue",
-    "ExamCount": 25
-  }, {
-    "Month": "Chinmay",
-    "Name": "Wed",
-    "ExamCount": 21
-  }, {
-    "Month": "Chinmay",
-    "Name": "Thu",
-    "ExamCount": 52
-  }, {
-    "Month": "Chinmay",
-    "Name": "Fri",
-    "ExamCount": 23
-  }, {
-    "Month": "Chinmay",
-    "Name": "Sat",
-    "ExamCount": 1
-  }, {
-    "Month": "Chinmay",
-    "Name": "Sun",
-    "ExamCount": 0
-  }];
+window.qd.plotDailyComparison = function(divId, myDailyEvents, theirDailyEvents) {
   $(divId).html("");
   var margin = {
       top: 50,
@@ -63,8 +6,20 @@ window.qd.plotDailyComparison = function(divId) {
       bottom: 100,
       left: 28
     },
-    width = $(divId).width() - 10,
+    width = $(divId).width() - 30,
     height = width / 2.5;
+
+  var myTransformedEvents = _.map(myDailyEvents, function(e) {
+    e.dataFor = "My Events";
+    e.day = moment().days(e.day).format("ddd");
+    return e;
+  });
+  var theirTransformedEvents = _.map(theirDailyEvents, function(e) {
+    e.dataFor = "Their Events";
+    e.day = moment().days(e.day).format("ddd");
+    return e;
+  });
+  var data = _.union(myTransformedEvents, theirTransformedEvents);
 
   var x0 = d3.scale.ordinal()
     .rangeRoundBands([0, width], .1);
@@ -92,16 +47,15 @@ window.qd.plotDailyComparison = function(divId) {
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  var months = d3.set(data.map(function(line) {
-    return line.Month;
+  var events = d3.set(data.map(function(line) {
+    return line.dataFor;
   })).values();
-  console.log(months);
   x0.domain(data.map(function(d) {
-    return d.Name;
+    return d.day;
   }));
-  x1.domain(months).rangeRoundBands([0, x0.rangeBand()]);
+  x1.domain(events).rangeRoundBands([0, x0.rangeBand()]);
   y.domain([0, d3.max(data, function(d) {
-    return d.ExamCount;
+    return d.dailyEventCount;
   })]);
 
   svg.append("g")
@@ -124,20 +78,20 @@ window.qd.plotDailyComparison = function(divId) {
     .enter().append("rect")
     .attr("width", x1.rangeBand())
     .attr("x", function(d) {
-      return x0(d.Name) + x1(d.Month);
+      return x0(d.day) + x1(d.dataFor);
     })
     .attr("y", function(d) {
-      return y(+d.ExamCount);
+      return y(+d.dailyEventCount);
     })
     .attr("height", function(d) {
-      return height - y(+d.ExamCount);
+      return height - y(+d.dailyEventCount);
     })
     .style("fill", function(d) {
-      return color(d.Month);
+      return color(d.dataFor);
     });
 
   var legend = svg.selectAll(".legend")
-    .data(months.slice().reverse())
+    .data(events.slice().reverse())
     .enter().append("g")
     .attr("class", "legend")
     .attr("transform", function(d, i) {
