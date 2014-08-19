@@ -231,36 +231,33 @@ your-name
             </div>
           </div>
       </div>
-      <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-        <div class="panel panel-secondary fixed-height">
-          <div class="panel-heading cursor-move">
-            <h3 class="panel-title"><i class="icon-bar-chart"></i>Their IDE Active Work History</h3>
-            <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
+      <div class="row sortable">
+        <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+          <div class="panel panel-secondary fixed-height">
+            <div class="panel-heading cursor-move">
+              <h3 class="panel-title"><i class="icon-bar-chart"></i>My Github Push Events vs Avg of the Rest of the World</h3>
+            </div>
+            <div class="panel-body">
+              <div id="compare-github-events">
+                <div class="no-data-msg alert" role="alert">No data available</div>
+              </div>
+            </div>
           </div>
-          <div class="panel-body">
-            <div id="their-active-events">
-              <div class="no-data-msg alert" role="alert">No data available</div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+          <div class="panel panel-secondary fixed-height">
+            <div class="panel-heading cursor-move">
+              <h3 class="panel-title"><i class="icon-bar-chart"></i>My IDE Activity vs Avg of the Rest of the World</h3>
+            </div>
+            <div class="panel-body">
+              <div id="compare-ide-activity">
+                <div class="no-data-msg alert" role="alert">No data available</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="row sortable">
-      <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-        <div class="panel panel-secondary fixed-height">
-          <div class="panel-heading cursor-move">
-            <h3 class="panel-title"><i class="icon-bar-chart"></i>Combined IDE Active Work History</h3>
-          </div>
-          <div class="panel-body">
-            <div id="compare-active-events">
-              <div class="no-data-msg alert" role="alert">No data available</div>
-            </div>
-          </div>
-        </div>
-      </div></div>
-      <!-- Bootstrap Container End -->
-    </div>
-  </div>
+   
   <!-- Main Container End -->
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="/js/jquery.js"></script>
