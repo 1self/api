@@ -285,22 +285,57 @@ module.exports = function(app) {
         });
         return deferred.promise;
     }
+
+
+    var doesEmailMappingExist = function(emails) {
+        var deferred = Q.defer();
+        var query = {
+            "from": emails[1],
+            "to": emails[0]
+        }
+        mongoDbConnection(function(qdDb) {
+            qdDb.collection('emailMap').findOne(query,
+                function(err, data) {
+                    if (err) {
+                        console.log("Error", err);
+                        deferred.reject(false);
+                    } else {
+                        console.log("EMail map is PPPPP: ", query);
+                        deferred.resolve(true);
+                    }
+                });
+
+        });
+        return deferred.promise;
+    }
+
+
+
     app.get("/compare", sessionManager.requiresSession, function(req, res) {
         var requesterUsername = req.session.requesterUsername;
         if (requesterUsername) {
-            addFriendTo(requesterUsername, req.session.username)
-            addFriendTo(req.session.username, requesterUsername)
+            createEmailIdPromiseArray(req.session.username, requesterUsername)
+                .then(function(emailIds) {
+                    return Q.all(emailIds)
+                })
+                .then(doesEmailMappingExist)
+                .then(function(emailMapExists) {
+                    console.log("Mapping exists ", emailMapExists);
+                    if (emailMapExists) {
+                        addFriendTo(requesterUsername, req.session.username)
+                        addFriendTo(req.session.username, requesterUsername)
+                        delete req.session.requesterUsername;
+                        res.redirect("/compare");
+                    }
+                })
         }
         fetchFriendList(req.session.username).then(function(friends) {
-                res.render('compare', {
-                    username: req.session.username,
-                    avatarUrl: req.session.avatarUrl,
-                    friendsUsername: requesterUsername,
-                    friends:friends
-                });
-            }
-        )
-        delete req.session.requesterUsername;
+            res.render('compare', {
+                username: req.session.username,
+                avatarUrl: req.session.avatarUrl,
+                friends: friends
+            });
+        })
     });
 
     var doesGitHubStreamIdExist = function(username) {
@@ -503,8 +538,8 @@ module.exports = function(app) {
     }
     var deleteUserInvitesEntryFor = function(emailIds) {
         var emailMap = {
-            "from": emailIds[0],
-            "to": emailIds[1]
+            "from": emailIds[1],
+            "to": emailIds[0]
         };
         mongoDbConnection(function(qdDb) {
             qdDb.collection("emailMap", function(err, collection) {
@@ -526,9 +561,7 @@ module.exports = function(app) {
         res.redirect(CONTEXT_URI + '/compare');
     })
     app.get('/reject', function(req, res) {
-
-        req.session.requesterUsername = req.query.reqUsername;
-        createEmailIdPromiseArray(req.session.requesterUsername, req.query.reqUsername)
+        createEmailIdPromiseArray(req.session.username, req.query.reqUsername)
             .then(function(emailIds) {
                 return Q.all(emailIds)
             })
