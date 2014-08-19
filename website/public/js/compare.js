@@ -63,7 +63,11 @@ $(function() {
     alert("Successfully sent compare request.")
     $("#compare-modal").modal("hide");
   };
-
+  var emailFailureCallback = function() {
+    $("#send-compare-request-email").removeAttr("disabled");
+    alert("Error in sending email! Please try again")
+    $("#compare-modal").modal("hide");
+  };
   $('#send-compare-request-email').on('click', function(e) {
     $("#send-compare-request-email").attr("disabled", "true");
     var friendsUsername = $("#friend-name1").val();
@@ -73,12 +77,12 @@ $(function() {
       data = {
         'friendsUsername': friendsUsername
       };
-      postAjaxWithData("request_to_compare_with_username", data, emailSuccessCallback);
+      postAjaxWithData("request_to_compare_with_username", data, emailSuccessCallback, emailFailureCallback);
     } else if (!(_.isEmpty(friendsEmail))) {
       data = {
         'friendsEmail': friendsEmail
       };
-      postAjaxWithData("request_to_compare_with_email", data, emailSuccessCallback);
+      postAjaxWithData("request_to_compare_with_email", data, emailSuccessCallback, emailFailureCallback);
     }
   });
 
