@@ -344,7 +344,7 @@ var qd = function() {
         if (theirUsername !== undefined) {
             $.when(result.getEventsFor(myUsername, "mydev"), result.getTheirEventsFor(myUsername, theirUsername, "mydev"))
                 .done(handlePlotComparisonGraphsSuccess)
-                .fail(failureCallbackForComparison("#compare-username-errors", "Username doesn't exist!"));
+                .fail(failureCallbackForComparison("#compare-username-errors", "No data for user!"));
             $.when(result.getEventsFor(myUsername, "myActiveEvents"), result.getTheirEventsFor(myUsername, theirUsername, "myActiveEvents"))
                 .done(result.compareActiveEvents)
                 .fail("Error getting active events!");

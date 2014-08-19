@@ -554,9 +554,6 @@ module.exports = function(app) {
         });
     }
     app.get('/accept', function(req, res) {
-        //store req.query.requsterUsername
-        //take friend to compare page
-        //add entry into friend's User collection   
         req.session.requesterUsername = req.query.reqUsername;
         res.redirect(CONTEXT_URI + '/compare');
     })

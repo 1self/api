@@ -172,7 +172,7 @@
                     </ul>
                   </div> -->
                   {% if friends %}
-                    <select id="friendList" class="btn btn-default" onChange="combo(this, 'theinput')" onMouseOut="comboInit(this, 'theinput')" >
+                    <select id="friendList" class="btn btn-default" >
                       <!-- <option>Select Friend</option> -->
                       {% for friend in friends %}
                         <option>
@@ -298,6 +298,7 @@
     <script src="/packages/d3/queue.v1.min.js"></script>
     <script src="/packages/regressionjs/regression.js"></script>
     <script src="/js/ajax_request.js"></script>
+    <script src="js/event-daily-compare-d3.js"></script>
     <script src="/js/quantified-dev.js"></script>
     <script src="/js/wtf-history-d3.js"></script>
     <script src="/js/hydration-history-d3.js"></script>
@@ -313,6 +314,6 @@
     <script src="/js/link-datasource.js"></script>
     <script src="/js/github-events-compare-d3.js"></script>
     <script src="js/hourlyEvent-diff-d3.js"></script>
-    <script src="js/event-daily-compare-d3.js"></script>
+    
   </body>
 </html>
