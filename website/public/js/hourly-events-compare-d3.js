@@ -18,7 +18,8 @@ window.qd.plotComparisonForHourlyEvents = function(divId, myHourlyEvents, theirH
 		],
 		/*theirColors = ["#FFCCE5", "#FF99CC", "#FF66B2", "#FF3399", "#FF007F",
 			"#CC0066", "#99004C", "#660033", "#330019"
-		]*/theirColors = myColors, // alternatively colorbrewer.YlGnBu[9]
+		],*/
+		theirColors = myColors, // alternatively colorbrewer.YlGnBu[9]
 		days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
 		times = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"];
 
@@ -136,8 +137,6 @@ window.qd.plotComparisonForHourlyEvents = function(divId, myHourlyEvents, theirH
 				.attr("x", function(d) {
 					return ((d.day) * gridDaySize) - 10;
 				})
-				.attr("rx", 4)
-				.attr("ry", 4)
 				.attr("width", gridDaySize)
 				.attr("height", gridTimeSize / 2)
 				.style("fill", baseColor);
@@ -169,7 +168,7 @@ window.qd.plotComparisonForHourlyEvents = function(divId, myHourlyEvents, theirH
 				.style("fill", function(d, i) {
 					return myColors[i];
 				});
-			var theirLegend = createLegend(".theirLegend",theirColorScale);
+			/*var theirLegend = createLegend(".theirLegend",theirColorScale);
 			var legendRectXaxis = (gridDaySize * 7) - 5;
 			var legendTextXaxis = legendRectXaxis + (gridSize / 2) + 2;
 			theirLegend.append("rect")
@@ -181,9 +180,9 @@ window.qd.plotComparisonForHourlyEvents = function(divId, myHourlyEvents, theirH
 				.attr("width", gridSize / 2)
 				.style("fill", function(d, i) {
 					return myColors[i];
-				});
+				});*/
 
-			theirLegend.append("text")
+			myLegend.append("text")
 				.attr("class", "mono")
 				.text(function(d) {
 					return "≥ " + Math.round(d * 10) / 10;
@@ -204,16 +203,14 @@ window.qd.plotComparisonForHourlyEvents = function(divId, myHourlyEvents, theirH
 					if (i % 2 == 0) {
 						return ((d.hour) * gridSize + 9);
 					} else {
-						return ((d.hour) * gridSize);
+						return ((d.hour) * gridSize + 2);
 					}
 				})
 				.attr("y", function(d) {
 					return ((d.day) * gridSize);
 				})
-				.attr("rx", 4)
-				.attr("ry", 4)
-				.attr("width", gridSize / 2)
-				.attr("height", gridSize)
+				.attr("width", gridSize / 2 - 2)
+				.attr("height", gridSize - 2)
 				.style("fill", baseColor);
 
 			heatMap.transition().duration(1000)
@@ -245,7 +242,7 @@ window.qd.plotComparisonForHourlyEvents = function(divId, myHourlyEvents, theirH
 				.style("fill", function(d, i) {
 					return myColors[i];
 				});
-			var theirLegend = createLegend(".theirLegend",theirColorScale);
+			/*var theirLegend = createLegend(".theirLegend",theirColorScale);
 			var legendRectYaxis = legendRectYaxis + 9 ;
 			var legendTextYaxis = legendRectYaxis + 20;
 			theirLegend.append("rect")
@@ -257,9 +254,9 @@ window.qd.plotComparisonForHourlyEvents = function(divId, myHourlyEvents, theirH
 				.attr("height", gridSize / 2)
 				.style("fill", function(d, i) {
 					return theirColors[i];
-				});
+				});*/
 
-			theirLegend.append("text")
+			myLegend.append("text")
 				.attr("class", "mono")
 				.text(function(d) {
 					return "≥ " + Math.round(d * 10) / 10;

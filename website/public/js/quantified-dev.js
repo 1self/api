@@ -354,6 +354,7 @@ var qd = function() {
     result.compareGithubPushCount = function(myHourlyGithubPushCount, theirHourlyGithubPushCount){
         if (eventsExist(myHourlyGithubPushCount[0]) || eventsExist(theirHourlyGithubPushCount[0])) {
             result.plotComparisonForHourlyEvents("#compare-hourly-github-events", myHourlyGithubPushCount[0], theirHourlyGithubPushCount[0])
+            result.plotHourlyEventDiff('#diff-hourly-github-events',myHourlyGithubPushCount[0],theirHourlyGithubPushCount[0]);
         }
     };
     var compareIdeActivityEventsSuccessCallback = function(ideActivityEventForCompare) {
