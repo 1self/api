@@ -64,6 +64,7 @@
         {% include "./templates/_link_datasource.html" %}
       </div>
       <div class="row page-title">
+      <div class="row">
         <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
           <h2>Comparison</h2>
           <ul class="breadcrumb">
@@ -146,15 +147,15 @@
                       
                       <div class="row" style="margin-top:15px;">
                         <div class="col-md-12">
-                          
+
                           <pre id ="email-message">
-Hi friend-name,
+                            Hi friend-name,
 
-I’d like to compare our build history and development environment activity on QuantifiedDev.org.
-Please hit “Start Comparing” below and we can start comparing!
+                            I’d like to compare our build history and development environment activity on QuantifiedDev.org.
+                            Please hit “Start Comparing” below and we can start comparing!
 
-Thanks!
-your-name 
+                            Thanks!
+                            your-name 
                           </pre>
                         </div>
                       </div>
@@ -162,16 +163,16 @@ your-name
                       <div class="text-center">
                         <input type="button" id="send-compare-request-email" class="btn btn-info" value="Send Comparison Request">
                       </div>
-                  </div>
-                    </form>
-                </div>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>
           </div>
-          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-            <div class="row">
-              <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+          <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 
              <!--  <div class="btn-group">
                 <button class="btn btn-success">{{friendsUsername}}</button>
@@ -206,6 +207,7 @@ your-name
           </div>
 
         </div>
+        </div>
         <div class="row sortable">
           <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
             <div class="panel panel-secondary fixed-height">
@@ -230,80 +232,80 @@ your-name
 
             </div>
           </div>
-      </div>
-      <div class="row sortable">
-        <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-          <div class="panel panel-secondary fixed-height">
-            <div class="panel-heading cursor-move">
-              <h3 class="panel-title"><i class="icon-bar-chart"></i>My Github Push Events vs Avg of the Rest of the World</h3>
+        </div>
+        <div class="row sortable">
+          <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+            <div class="panel panel-secondary fixed-height">
+              <div class="panel-heading cursor-move">
+                <h3 class="panel-title"><i class="icon-bar-chart"></i>My Github Push Events vs Avg of the Rest of the World</h3>
+              </div>
+              <div class="panel-body">
+                <div id="compare-github-events">
+                  <div class="no-data-msg alert" role="alert">No data available</div>
+                </div>
+              </div>
             </div>
-            <div class="panel-body">
-              <div id="compare-github-events">
-                <div class="no-data-msg alert" role="alert">No data available</div>
+          </div>
+          <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+            <div class="panel panel-secondary fixed-height">
+              <div class="panel-heading cursor-move">
+                <h3 class="panel-title"><i class="icon-bar-chart"></i>My IDE Activity vs Avg of the Rest of the World</h3>
+              </div>
+              <div class="panel-body">
+                <div id="compare-ide-activity">
+                  <div class="no-data-msg alert" role="alert">No data available</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-          <div class="panel panel-secondary fixed-height">
-            <div class="panel-heading cursor-move">
-              <h3 class="panel-title"><i class="icon-bar-chart"></i>My IDE Activity vs Avg of the Rest of the World</h3>
-            </div>
-            <div class="panel-body">
-              <div id="compare-ide-activity">
-                <div class="no-data-msg alert" role="alert">No data available</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-   
-  <!-- Main Container End -->
-  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-  <script src="/js/jquery.js"></script>
-  <script src="/js/jquery.cookie.js"></script>
-  <!-- Include all compiled plugins (below), or include individual files as needed -->
-  <script src="/js/bootstrap.min.js"></script>
-  <script src="/js/bootstrap-modal.js"></script>
-  <script src="/js/bootstrap-modalmanager.js"></script>
-  <script src="/js/underscore-min.js"></script>
-  <!-- jQuery UI JS -->
-  <script src="/js/jquery-ui-v1.10.3.js"></script>
-  <!-- Sparkline graphs -- >
-  <script src="/js/sparkline.js"></script>
-  <!-- Data tables -->
-  <script src="/js/jquery.datatables.js"></script>
-  <!-- Date Range -->
-  <script src="/js/daterange/moment.js"></script>
-  <script src="/js/daterange/daterangepicker.js"></script>
-  <!-- Animated Right Sidebar -->
-  <script src="/js/slidebars.js"></script>
-  <!-- JVector Map -->
-  <script src="/js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
-  <script src="/js/jvectormap/jquery-jvectormap-usa.js"></script>
-  <!-- Custom JS -->
-  <script src="/js/custom.js"></script>
-  <script src="/js/custom-index.js"></script>
-  <script src="/packages/d3/d3.js"></script>
-  <script src="/packages/d3/d3.geo.projection.v0.min.js"></script>
-  <script src="/packages/d3/topojson.v1.min.js"></script>
-  <script src="/packages/d3/queue.v1.min.js"></script>
-  <script src="/packages/regressionjs/regression.js"></script>
-  <script src="/js/ajax_request.js"></script>    
-  <script src="/js/quantified-dev.js"></script>
-  <script src="/js/wtf-history-d3.js"></script>
-  <script src="/js/hydration-history-d3.js"></script>
-  <script src="/js/caffeine-history-d3.js"></script>
-  <script src="/js/buildDuration-history-d3.js"></script>
-  <script src="/js/active-events-d3.js"></script>
-  <script src="/js/compare.js"></script>
-  <script src="/js/build-history-d3-for.js"></script>
-  <script src="/js/active-events-d3-for.js"></script>
-  <script src="/js/build-history-d3.js"></script>
-  <script src="/js/build-compare-d3.js"></script>
-  <script src="/js/active-events-compare-d3.js"></script>
-  <script src="/js/link-datasource.js"></script>
-  <script src="/js/github-events-compare-d3.js"></script>
 
-</body>
-</html>
+        <!-- Main Container End -->
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="/js/jquery.js"></script>
+        <script src="/js/jquery.cookie.js"></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="/js/bootstrap.min.js"></script>
+        <script src="/js/bootstrap-modal.js"></script>
+        <script src="/js/bootstrap-modalmanager.js"></script>
+        <script src="/js/underscore-min.js"></script>
+        <!-- jQuery UI JS -->
+        <script src="/js/jquery-ui-v1.10.3.js"></script>
+        <!-- Sparkline graphs -- >
+        <script src="/js/sparkline.js"></script>
+        <!-- Data tables -->
+        <script src="/js/jquery.datatables.js"></script>
+        <!-- Date Range -->
+        <script src="/js/daterange/moment.js"></script>
+        <script src="/js/daterange/daterangepicker.js"></script>
+        <!-- Animated Right Sidebar -->
+        <script src="/js/slidebars.js"></script>
+        <!-- JVector Map -->
+        <script src="/js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
+        <script src="/js/jvectormap/jquery-jvectormap-usa.js"></script>
+        <!-- Custom JS -->
+        <script src="/js/custom.js"></script>
+        <script src="/js/custom-index.js"></script>
+        <script src="/packages/d3/d3.js"></script>
+        <script src="/packages/d3/d3.geo.projection.v0.min.js"></script>
+        <script src="/packages/d3/topojson.v1.min.js"></script>
+        <script src="/packages/d3/queue.v1.min.js"></script>
+        <script src="/packages/regressionjs/regression.js"></script>
+        <script src="/js/ajax_request.js"></script>    
+        <script src="/js/quantified-dev.js"></script>
+        <script src="/js/wtf-history-d3.js"></script>
+        <script src="/js/hydration-history-d3.js"></script>
+        <script src="/js/caffeine-history-d3.js"></script>
+        <script src="/js/buildDuration-history-d3.js"></script>
+        <script src="/js/active-events-d3.js"></script>
+        <script src="/js/compare.js"></script>
+        <script src="/js/build-history-d3-for.js"></script>
+        <script src="/js/active-events-d3-for.js"></script>
+        <script src="/js/build-history-d3.js"></script>
+        <script src="/js/build-compare-d3.js"></script>
+        <script src="/js/active-events-compare-d3.js"></script>
+        <script src="/js/link-datasource.js"></script>
+        <script src="/js/github-events-compare-d3.js"></script>
+
+      </body>
+      </html>
