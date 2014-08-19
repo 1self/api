@@ -324,18 +324,19 @@ module.exports = function(app) {
                     if (emailMapExists) {
                         addFriendTo(requesterUsername, req.session.username)
                         addFriendTo(req.session.username, requesterUsername)
-                        delete req.session.requesterUsername;
-                        res.redirect("/compare");
-                    }
-                })
-        }
-        fetchFriendList(req.session.username).then(function(friends) {
-            res.render('compare', {
-                username: req.session.username,
-                avatarUrl: req.session.avatarUrl,
-                friends: friends
+                    } 
+                    delete req.session.requesterUsername;
+                    res.redirect("/compare");
+                });
+        } else {
+            fetchFriendList(req.session.username).then(function(friends) {
+                res.render('compare', {
+                    username: req.session.username,
+                    avatarUrl: req.session.avatarUrl,
+                    friends: friends
+                });
             });
-        })
+        }
     });
 
     var doesGitHubStreamIdExist = function(username) {
@@ -615,7 +616,7 @@ module.exports = function(app) {
         var friendsEmail = req.query.friendsEmail;
         // var friendsEmailId = func
         // var myEmailId = func.0
-        console.log("req.session.username : ", req.session.username)
+        console.log("req.session.username : ", req.session.username);
         var acceptUrl = CONTEXT_URI + "/accept?reqUsername=" + req.session.username;
         var rejectUrl = CONTEXT_URI + "/reject?reqUsername=" + req.session.username;
 
