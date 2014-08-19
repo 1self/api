@@ -1,7 +1,7 @@
 $(function() {
 
 	var updateLocalStorage = function() {
-		window.localStorage.theirUsername = $('#their-username').val();
+		window.localStorage.theirUsername = $('#friendList').val();
 	};
 
 	$('#auth-save-compare').click(function() {
