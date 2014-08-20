@@ -2934,6 +2934,7 @@ a.twitter-share-button {
     .mobile-globe-container {
         width: 100%;
         margin: 0;
+        background: #FFF;
     }
      .mobile-globe-container  .tiles-secondary{
         padding: 0;
@@ -2945,4 +2946,5 @@ a.twitter-share-button {
         margin: 0 auto;
         display: block;
      }
+    
 }
