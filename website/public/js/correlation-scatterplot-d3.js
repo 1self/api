@@ -19,7 +19,7 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 			};
 		});
 	};
-
+var heightnew = height - 10;
 	var xValue = function(d) {
 			return d.x;
 		},
@@ -32,7 +32,7 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 	var yValue = function(d) {
 			return d.y;
 		},
-		yScale = d3.scale.linear().range([height, 0]),
+		yScale = d3.scale.linear().range([heightnew, 0]),
 		yMap = function(d) {
 			return yScale(yValue(d));
 		},

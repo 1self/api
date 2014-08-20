@@ -2920,3 +2920,15 @@ a.twitter-share-button {
         margin-bottom: 0px;
     }
 }
+@media screen and (max-width: 768px) {
+    .pull-xs-left{
+        float: left!important;
+    }
+    .ex-sm-margin-top-ten{
+        margin-top: 10px;
+    }
+    .github-push-events-sync,.help-btn{
+        width: 27px;
+        margin-left: 0;
+    }
+}

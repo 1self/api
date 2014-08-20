@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Quantified Dev {ALPHA} {{showOverlay}}</title>
-    <meta charset="UTF-8"/>
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1">
-    <meta name="description" content="Quantified Dev Dashboard"/>
-    <meta name="keywords" content="Quantified Dev Development QuantifiedSelf Quantified Self"/>
-    <meta name="author" content="Quantified Dev"/>
+    <meta name="description" content="Quantified Dev Dashboard" />
+    <meta name="keywords" content="Quantified Dev Development QuantifiedSelf Quantified Self" />
+    <meta name="author" content="Quantified Dev" />
     <link rel="shortcut icon" href="/img/quantified-dev-favicon.ico">
     <link href="/css/twitter.css" rel="stylesheet">
     <link href="/css/import.css" rel="stylesheet" media="screen">
@@ -15,26 +16,26 @@
     <script src="/js/jquery.js"></script>
     <script src="/js/jquery.cookie.js"></script>
     <script>
-        (function (i, s, o, g, r, a, m) {
-            i['GoogleAnalyticsObject'] = r;
-            i[r] = i[r] || function () {
-                (i[r].q = i[r].q || []).push(arguments)
-            }, i[r].l = 1 * new Date();
-            a = s.createElement(o),
-            m = s.getElementsByTagName(o)[0];
-            a.async = 1;
-            a.src = g;
-            m.parentNode.insertBefore(a, m)
-        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-        ga('create', 'UA-49828181-1', 'quantifieddev.org');
-        ga('send', 'pageview');
-        /*
+    (function(i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function() {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+    ga('create', 'UA-49828181-1', 'quantifieddev.org');
+    ga('send', 'pageview');
+    /*
         var mc_embedded_subscribe_click = document.getElementById('mc-embedded-subscribe');
         addListener(mc_embedded_subscribe_click, 'click', function() {
         alert('sup click');
         ga('send', 'event', 'signup_button', 'click', 'mc-embedded-subscribe');
     });*/
-        /**
+    /**
         * Utility to wrap the different behaviors between W3C-compliant browsers
         * and IE when adding event handlers.
         *
@@ -46,8 +47,9 @@
         if (element.addEventListener) element.addEventListener(type, callback);
         else if (element.attachEvent) element.attachEvent('on' + type, callback);
     }*/
-</script>
+    </script>
 </head>
+
 <body class="animated fadeInDown" ng-app>
     {% include "./templates/_qd_header.html" %}
     <!-- Top Bar End -->
@@ -73,11 +75,17 @@
 
                 {% if streamLinked == "yes" %}
                 <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12 alert alert-success alert-dismissible" role="alert">
-                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>Stream Id linked successfully!
+                    <button type="button" class="close" data-dismiss="alert">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>Stream Id linked successfully!
                 </div>
                 {% elseif streamLinked == "no" %}
                 <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12 alert alert-danger alert-dismissible" role="alert">
-                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>The Stream Id that you tried to link is incorrect. So it is not linked!
+                    <button type="button" class="close" data-dismiss="alert">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>The Stream Id that you tried to link is incorrect. So it is not linked!
                 </div>
                 {% endif %}
             </div>
@@ -93,7 +101,9 @@
                             <div class="pull-left animated bounceIn">
                                 <i class="icon-cog"></i>
                             </div>
-                            <div class="pull-right number"><span id="builds-x">0</span></div>
+                            <div class="pull-right number">
+                                <span id="builds-x">0</span>
+                            </div>
                         </div>
                         <div class="tiles-footer">
                             <span class="pull-left">Today</span>
@@ -109,9 +119,11 @@
                         </div>
                         <div class="tiles-body">
                             <div class="pull-left animated bounceIn">
-                                <i class="icon-cog"></i> <i class="icon-smile"></i>
+                                <i class="icon-cog"></i>  <i class="icon-smile"></i>
                             </div>
-                            <div class="pull-right number"><span id="passed-x">0</span></div>
+                            <div class="pull-right number">
+                                <span id="passed-x">0</span>
+                            </div>
                         </div>
                         <div class="tiles-footer">
                             <span class="pull-left">Today</span>
@@ -127,9 +139,11 @@
                         </div>
                         <div class="tiles-body">
                             <div class="pull-left animated bounceIn">
-                                <i class="icon-cog"></i> <i class="icon-frown"></i>
+                                <i class="icon-cog"></i>  <i class="icon-frown"></i>
                             </div>
-                            <div class="pull-right number"><span id="failed-x">0</span></div>
+                            <div class="pull-right number">
+                                <span id="failed-x">0</span>
+                            </div>
                         </div>
                         <div class="tiles-footer">
                             <span class="pull-left">Today</span>
@@ -162,7 +176,9 @@
                             <div class="pull-left animated bounceIn">
                                 <i class="icon-moon"></i>
                             </div>
-                            <div class="h4 col-md-offset-6 animated bounceIn"><span id="sleep-x">Coming soon</span></div>
+                            <div class="h4 col-md-offset-6 animated bounceIn">
+                                <span id="sleep-x">Coming soon</span>
+                            </div>
                         </div>
                         <div class="tiles-footer">
                             <span class="inline-sparkline pull-right" id="sleep"></span>
@@ -179,14 +195,14 @@
                                 <div class="help-description">
                                     <h4>What does this show me?
                                     </h4>
-                                    <p>We’ve taken all your pushes to the public repositories and visualisated your weekly push patterns. We’ve broken the week down into hourly buckets and counted how many pushes you have done in each hour. You should see something about your weekly habits. </p>
-                                    <p>Try scanning horizontally along the days to see the daily pattern of when you push. Which days do you push most? Do you push on the weekend? Try scanning vertically, is there a pattern? Do you push before lunch? Before you finish working for the day? Are there parts of the week that don’t have any pushes at all? Why is that? 
+                                    <p>We’ve taken all your pushes to the public repositories and visualisated your weekly push patterns. We’ve broken the week down into hourly buckets and counted how many pushes you have done in each hour. You should see something about your weekly habits.</p>
+                                    <p>Try scanning horizontally along the days to see the daily pattern of when you push. Which days do you push most? Do you push on the weekend? Try scanning vertically, is there a pattern? Do you push before lunch? Before you finish working for the day? Are there parts of the week that don’t have any pushes at all? Why is that?
                                     </p>
                                 </div>
                                 <div class="help-description">
                                     <h4>Linking your data
                                     </h4>
-                                    <p>You need to have pushed to a public repository on GitHub to see something in this graph. Then, just click on ‘Link Data’, “Link Up My Public GitHub Data’  to get started. 
+                                    <p>You need to have pushed to a public repository on GitHub to see something in this graph. Then, just click on ‘Link Data’, “Link Up My Public GitHub Data’ to get started.
                                     </p>
                                 </div>
                                 <div class="help-description">
@@ -211,18 +227,25 @@
                             </div>
                         </div>
                         <div class="panel-heading cursor-move">
-                            <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly GitHub Push Events </h3> <button id="hourlyGithubPush-heat-map-help" class="pull-right help-btn" onclick=show("hourlyGithubPush-heat-map-parent")></button><button id="github-push-events-sync" class="pull-right github-push-events-sync"></button>
-                            
+                            <div class="row">
+                                <div class="col-sm-8 col-xs-12">
+                                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly GitHub Push Events</h3>
+                                    <br>
+                                    <span id="last-updated-since"></span>
+                                </div>
+                                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
+                                    <button id="hourlyGithubPush-heat-map-help" class="pull-right help-btn pull-xs-left" onclick=show( "hourlyGithubPush-heat-map-parent")></button>
+                                    <button id="github-push-events-sync" class="pull-right github-push-events-sync pull-xs-left"></button>
+                                </div>
 
-                            <br>
-                            <span id="last-updated-since"></span>
+                            </div>
                         </div>
                         <div class="panel-body">
 
                             <div id="hourlyGithubPush-heat-map" class="hourlyHeatMapContainer">
-                                <div class="githubPushEvents text-center grid" >
-                                    <div  class="grid-row">
-                                        <div  class="grid-cell" >
+                                <div class="githubPushEvents text-center grid">
+                                    <div class="grid-row">
+                                        <div class="grid-cell">
                                             <button id="connect_to_github_btn" style="display:none" type="button" class="btn btn-success" data-original-title="">Connect to GitHub</button>
                                         </div>
                                     </div>
@@ -233,13 +256,13 @@
                 </div>
                 <div id="hourlyBuild-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
                     <div class="panel panel-secondary fixed-height">
-                     <div class="helpContainer">
+                        <div class="helpContainer">
                             <div class="row">
                                 <h4 class="heading">Help - Hourly Builds</h4>
                                 <div class="help-description">
                                     <h4>What does this show me?
                                     </h4>
-                                    <p>If you are working in IntellJ or Visual Studio, a build event is created each time you start a build. The hourly builds shows the pattern of when you were building over each day of the week. What patterns do you see? Do you break for lunch at the same time every day? Do you program on the weekends? Are you a morning person or a night owl? </p>
+                                    <p>If you are working in IntellJ or Visual Studio, a build event is created each time you start a build. The hourly builds shows the pattern of when you were building over each day of the week. What patterns do you see? Do you break for lunch at the same time every day? Do you program on the weekends? Are you a morning person or a night owl?</p>
                                     <p>Closely tied to this visualisation is the build history and build duration visualisations. Once you start collecting builds, these visualisation will automatically appear in your dashboard.
 
                                     </p>
@@ -247,12 +270,12 @@
                                 <div class="help-description">
                                     <h4>Getting the data
                                     </h4>
-                                    <p>To see data in this graph you have to install one of the plugins for the IDEs that we support: Sublime Text, IntelliJ or Visual Studio. This data is collected from the point at which you install the plugin, so get started now by going to the downloads page.   
+                                    <p>To see data in this graph you have to install one of the plugins for the IDEs that we support: Sublime Text, IntelliJ or Visual Studio. This data is collected from the point at which you install the plugin, so get started now by going to the downloads page.
                                     </p>
                                     <p>You can install plugins by going to the downloads page and following the instructions for your IDE. Don’t forget to register the IDE plugin by following the link to QuantifiedDev in the plugin.
-</p>
-<p>If you use multiple IDEs or multiple computers, install the plugin on each IDE that you use.
-</p>
+                                    </p>
+                                    <p>If you use multiple IDEs or multiple computers, install the plugin on each IDE that you use.
+                                    </p>
                                 </div>
                                 <div class="help-description">
                                     <h4>How quickly will I see my data?
@@ -260,7 +283,7 @@
                                     <p>Straight away! GitHub holds this historical data which means that we show your patterns immediately.
                                     </p>
                                 </div>
-                               
+
                                 <div class="help-description">
                                     <h4>See something interesting?
                                     </h4>
@@ -272,8 +295,14 @@
                             </div>
                         </div>
                         <div class="panel-heading">
-                            <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Builds</h3>
-                            <button id="hourlyGithubPush-heat-map-help" class="pull-right help-btn" onclick=show("hourlyBuild-heat-map-parent")></button>
+                            <div class="row">
+                                <div class="col-sm-8 col-xs-12 ">
+                                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Builds</h3>
+                                </div>
+                                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
+                                    <button id="hourlyGithubPush-heat-map-help" class="pull-right pull-xs-left help-btn" onclick=show( "hourlyBuild-heat-map-parent")></button>
+                                </div>
+                            </div>
                         </div>
                         <div class="panel-body">
                             <div id="hourlyBuild-heat-map" class="hourlyHeatMapContainer"></div>
@@ -284,8 +313,7 @@
                     <div class="panel panel-secondary fixed-height">
                         <div class="panel-heading">
                             <h3 class="panel-title"><i class="icon-bar-chart"></i>Build History</h3>
-                            <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank"
-                            onclick="qd.tweetBuildSparkline()">Tweet</a>
+                            <a id="tweetMyBuilds" class="twitter-share-button pull-right" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
                         </div>
                         <div class="panel-body">
                             <div id="build-history"></div>
@@ -305,9 +333,14 @@
                 <div id="wtf-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
                     <div class="panel panel-secondary fixed-height">
                         <div class="panel-heading">
-                            <h3 class="panel-title"><i class="icon-bar-chart"></i>WTF History</h3>
-                            <a id="tweetMyWtfs" class="twitter-share-button pull-right" target="_blank"
-                            onclick="qd.tweetWtfSparkline()">Tweet</a>
+                            <div class="row">
+                                <div class="col-sm-8 col-xs-12 ">
+                                    <h3 class="panel-title"><i class="icon-bar-chart"></i>WTF History</h3>
+                                </div>
+                                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
+                                    <a id="tweetMyWtfs" class="twitter-share-button pull-right pull-xs-left" target="_blank" onclick="qd.tweetWtfSparkline()">Tweet</a>
+                                </div>
+                            </div>
                         </div>
                         <div class="panel-body">
                             <div id="wtf-history"></div>
@@ -327,9 +360,14 @@
                 <div id="hydration-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
                     <div class="panel panel-secondary fixed-height">
                         <div class="panel-heading">
-                            <h3 class="panel-title"><i class="icon-bar-chart"></i>Water Intake History</h3>
-                            <a id="tweetMyHydration" class="twitter-share-button pull-right" target="_blank"
-                            onclick="qd.tweetHydrationSparkline()">Tweet</a>
+                            <div class="row">
+                                <div class="col-sm-8 col-xs-12 ">
+                                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Water Intake History</h3>
+                                </div>
+                                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
+                                    <a id="tweetMyHydration" class="twitter-share-button pull-right pull-xs-left" target="_blank" onclick="qd.tweetHydrationSparkline()">Tweet</a>
+                                </div>
+                            </div>
                         </div>
                         <div class="panel-body">
                             <div id="hydration-history"></div>
@@ -349,9 +387,14 @@
                 <div id="caffeine-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
                     <div class="panel panel-secondary fixed-height">
                         <div class="panel-heading">
-                            <h3 class="panel-title"><i class="icon-bar-chart"></i>Caffeine Intake History</h3>
-                            <a id="tweetMyCaffeine" class="twitter-share-button pull-right" target="_blank"
-                            onclick="qd.tweetCaffeineSparkline()">Tweet</a>
+                            <div class="row">
+                                <div class="col-sm-8 col-xs-12 ">
+                                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Caffeine Intake History</h3>
+                                </div>
+                                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
+                                    <a id="tweetMyCaffeine" class="twitter-share-button pull-right pull-xs-left" target="_blank" onclick="qd.tweetCaffeineSparkline()">Tweet</a>
+                                </div>
+                            </div>
                         </div>
                         <div class="panel-body">
                             <div id="caffeine-history"></div>
@@ -361,9 +404,14 @@
                 <div id="buildDuration-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
                     <div class="panel panel-secondary fixed-height">
                         <div class="panel-heading">
-                            <h3 class="panel-title"><i class="icon-bar-chart"></i>Build Duration History</h3>
-                            <a id="tweetMyBuildDuration" class="twitter-share-button pull-right" target="_blank"
-                            onclick="qd.tweetBuildDurationSparkline()">Tweet</a>
+                            <div class="row">
+                                <div class="col-sm-8 col-xs-12 ">
+                                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Build Duration History</h3>
+                                </div>
+                                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten ">
+                                    <a id="tweetMyBuildDuration" class="twitter-share-button pull-right pull-xs-left" target="_blank" onclick="qd.tweetBuildDurationSparkline()">Tweet</a>
+                                </div>
+                            </div>
                         </div>
                         <div class="panel-body">
                             <div id="buildDuration-history"></div>
@@ -372,122 +420,133 @@
                 </div>
                 <div id="active-event-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
                     <div class="panel panel-secondary fixed-height">
-                     <div class="helpContainer">
-                        <div class="row">
-                            <h4 class="heading">Help - Active Programming Duration
-                            </h4>
-                            <div class="help-description">
-                                <h4>What does this show me?
+                        <div class="helpContainer">
+                            <div class="row">
+                                <h4 class="heading">Help - Active Programming Duration
                                 </h4>
-                                <p>This graph shows you how much time you spent each day actively creating code. Our plugins track your mouse clicks and edits to determine how long you are reading or writing code. If you spend a long time thinking, or debugging, or waiting for builds, none of that time is included. The only time included is when you are browsing your source files or editing them.
-                                </p>
-                            </div>
-                            <div class="help-description">
-                                <h4>Getting the data
-                                </h4>
-                                <p>To see data in this graph you have to install one of the plugins for the IDEs that we support: Sublime Text, IntelliJ or Visual Studio. This data is collected from the point at which you install the plugin, so get started now by going to the downloads page. 
-                                </p>
-                            </div>
-                            <div class="help-description">
-                                <h4>How quickly will I see my data?
-                                </h4>
-                                <p>Straight away, however you will only see your data from the point of installation of our plugin. The best thing to do is to install the plugin and revisit the dashboard in a couple of days.
-                                </p>
-                            </div>
-                            <div class="help-description">
-                                <h4>Can I see pushes to private repos?
-                                </h4>
-                                <p>Not yet, it’s coming soon though. You can bump it up the queue by letting us know this is important to you.
-                                </p>
-                            </div>
-                            <div class="help-description">
-                                <h4>See something interesting?
-                                </h4>
-                                <p>Show us! We’d love hearing the stories behind the data. Send your story to team@quantifieddev.org
-                                </p>
-                            </div>
+                                <div class="help-description">
+                                    <h4>What does this show me?
+                                    </h4>
+                                    <p>This graph shows you how much time you spent each day actively creating code. Our plugins track your mouse clicks and edits to determine how long you are reading or writing code. If you spend a long time thinking, or debugging, or waiting for builds, none of that time is included. The only time included is when you are browsing your source files or editing them.
+                                    </p>
+                                </div>
+                                <div class="help-description">
+                                    <h4>Getting the data
+                                    </h4>
+                                    <p>To see data in this graph you have to install one of the plugins for the IDEs that we support: Sublime Text, IntelliJ or Visual Studio. This data is collected from the point at which you install the plugin, so get started now by going to the downloads page.
+                                    </p>
+                                </div>
+                                <div class="help-description">
+                                    <h4>How quickly will I see my data?
+                                    </h4>
+                                    <p>Straight away, however you will only see your data from the point of installation of our plugin. The best thing to do is to install the plugin and revisit the dashboard in a couple of days.
+                                    </p>
+                                </div>
+                                <div class="help-description">
+                                    <h4>Can I see pushes to private repos?
+                                    </h4>
+                                    <p>Not yet, it’s coming soon though. You can bump it up the queue by letting us know this is important to you.
+                                    </p>
+                                </div>
+                                <div class="help-description">
+                                    <h4>See something interesting?
+                                    </h4>
+                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to team@quantifieddev.org
+                                    </p>
+                                </div>
 
+                            </div>
                         </div>
-                    </div>
-                    <div class="panel-heading">
-                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Active programming duration</h3>
-                        <button  class="pull-right help-btn" onclick=show("active-event-history-parent")></button>
-                        <a id="tweetMyActiveDuration" class="twitter-share-button pull-right" target="_blank"
-                        onclick="qd.tweetActiveEventSparkline()">Tweet</a>
-                    </div>
-                    <div class="panel-body">
-                        <div id="active-event-history"></div>
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-sm-8 col-xs-12 ">
+                                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Active programming duration</h3>
+                                </div>
+                                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
+                                    <button class="pull-right help-btn pull-xs-left" onclick=show( "active-event-history-parent")></button>
+                                    <a id="tweetMyActiveDuration" class="twitter-share-button pull-right pull-xs-left" target="_blank" onclick="qd.tweetActiveEventSparkline()">Tweet</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div id="active-event-history"></div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div id="correlate-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-                <div class="panel panel-secondary fixed-height">
-                    <div class="helpContainer">
-                        <div class="row">
-                            <h4 class="heading">Help - Correlate IDE Activity with GitHub pushes
-                            </h4>
-                            <div class="help-description">
-                                <h4>What does this show me?
+                <div id="correlate-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+                    <div class="panel panel-secondary fixed-height">
+                        <div class="helpContainer">
+                            <div class="row">
+                                <h4 class="heading">Help - Correlate IDE Activity with GitHub pushes
                                 </h4>
-                                <p>If you have both IDE activity data and GitHub pushes, you will see a correlation between the number of minutes spent active in your IDE and the number of pushes to your public repositories. There is a data point for each day that there is either IDE acitivty or github pushes.
-                                </p>
-                            </div>
-                            <div class="help-description">
-                                <h4>Getting the data
-                                </h4>
-                                <p>To see correlations you must link up your GitHub data and install at least one plugin for your IDE(s). 
-                                </p>
-                                <p>
-                                    For the GitHub pushes, you need to have pushed to a public repository on GitHub to see something in this graph. If you have, just click on ‘Link Data’, “Link Up My Public GitHub Data’  to get started.
-                                </p>
-                                <p>
-                                    To see data in the IDE activity data install one of the plugins for the IDEs that we support: Sublime Text, IntelliJ or Visual Studio. This data is collected from the point at which you install the plugin.  
-                                </p>
-                            </div>
-                            <div class="help-description">
-                                <h4>How quickly will I see my data?
-                                </h4>
-                                <p>Since the IDE activity is collected from the point of install, correlations will appear for days from the point of installation of the plugin. Check back regularly to see the correlations appear.
+                                <div class="help-description">
+                                    <h4>What does this show me?
+                                    </h4>
+                                    <p>If you have both IDE activity data and GitHub pushes, you will see a correlation between the number of minutes spent active in your IDE and the number of pushes to your public repositories. There is a data point for each day that there is either IDE acitivty or github pushes.
+                                    </p>
+                                </div>
+                                <div class="help-description">
+                                    <h4>Getting the data
+                                    </h4>
+                                    <p>To see correlations you must link up your GitHub data and install at least one plugin for your IDE(s).
+                                    </p>
+                                    <p>
+                                        For the GitHub pushes, you need to have pushed to a public repository on GitHub to see something in this graph. If you have, just click on ‘Link Data’, “Link Up My Public GitHub Data’ to get started.
+                                    </p>
+                                    <p>
+                                        To see data in the IDE activity data install one of the plugins for the IDEs that we support: Sublime Text, IntelliJ or Visual Studio. This data is collected from the point at which you install the plugin.
+                                    </p>
+                                </div>
+                                <div class="help-description">
+                                    <h4>How quickly will I see my data?
+                                    </h4>
+                                    <p>Since the IDE activity is collected from the point of install, correlations will appear for days from the point of installation of the plugin. Check back regularly to see the correlations appear.
 
-                                </p>
-                            </div>
-                            <div class="help-description">
-                                <h4>Can I see pushes to private repos?
-                                </h4>
-                                <p>Not yet, it’s coming soon though. You can bump it up the queue by letting us know this is important to you.
-                                </p>
-                            </div>
-                            <div class="help-description">
-                                <h4>See something interesting?
-                                </h4>
-                                <p>Show us! We’d love hearing the stories behind the data. Send your story to team@quantifieddev.org
-                                </p>
-                            </div>
+                                    </p>
+                                </div>
+                                <div class="help-description">
+                                    <h4>Can I see pushes to private repos?
+                                    </h4>
+                                    <p>Not yet, it’s coming soon though. You can bump it up the queue by letting us know this is important to you.
+                                    </p>
+                                </div>
+                                <div class="help-description">
+                                    <h4>See something interesting?
+                                    </h4>
+                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to team@quantifieddev.org
+                                    </p>
+                                </div>
 
+                            </div>
                         </div>
-                    </div>
-                    <div class="panel-heading">
-                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Correlate IDE Activity with Github Pushes</h3>
-                        <button  class="pull-right help-btn" onclick=show("correlate-events-parent")></button>
-                    </div>
-                    <div class="panel-body">
-                        <div id="correlate-events"></div>
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-sm-8 col-xs-12 ">
+                                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Correlate IDE Activity with Github Pushes</h3>
+                                </div>
+                                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten ">
+                                    <button class="pull-right  pull-xs-left help-btn" onclick=show( "correlate-events-parent")></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div id="correlate-events"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- Bootstrap Container End -->
     </div>
-    <!-- Bootstrap Container End -->
-</div>
-<!-- Main Container End -->
-<!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="/js/bootstrap.min.js"></script>
-<script src="/js/bootstrap-modal.js"></script>
-<script src="/js/bootstrap-modalmanager.js"></script>
-<script src="/js/underscore-min.js"></script>
-<!-- jQuery UI JS -->
-<script src="/js/jquery-ui-v1.10.3.js"></script>
-<!-- Sparkline graphs -- >
+    <!-- Main Container End -->
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap-modal.js"></script>
+    <script src="/js/bootstrap-modalmanager.js"></script>
+    <script src="/js/underscore-min.js"></script>
+    <!-- jQuery UI JS -->
+    <script src="/js/jquery-ui-v1.10.3.js"></script>
+    <!-- Sparkline graphs -- >
     <script src="/js/sparkline.js"></script>
     <!-- Data tables -->
     <script src="/js/jquery.datatables.js"></script>
@@ -521,4 +580,5 @@
     <script src="/js/dashboard.js"></script>
     <script src="/js/link-datasource.js"></script>
 </body>
+
 </html>
