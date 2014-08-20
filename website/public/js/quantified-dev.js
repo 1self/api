@@ -341,7 +341,7 @@ var qd = function() {
 
     result.plotComparisonGraphs = function(theirUsername) {
         var myUsername = $.cookie("_eun");
-        if (theirUsername !== undefined) {
+        if (!(_.isEmpty(theirUsername)) && (theirUsername !== 'undefined')) {
             $.when(result.getEventsFor(myUsername, "mydev"), result.getTheirEventsFor(myUsername, theirUsername, "mydev"))
                 .done(handlePlotComparisonGraphsSuccess)
                 .fail(failureCallbackForComparison("#compare-username-errors", "No data for user!"));
