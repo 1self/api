@@ -41,7 +41,7 @@ $(function() {
       return false;
     }
 
-    var yourUsername = $(".hidden-xs").text().trim().split(' ')[0];
+    var yourUsername = $(".user-name").attr('data-username');
     var emailMessage = $("#email-message").text();
     $("#request-comparison").hide();
     $("#comparison-email").show();
