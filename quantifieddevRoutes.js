@@ -286,7 +286,6 @@ module.exports = function(app) {
         return deferred.promise;
     };
 
-
     var doesEmailMappingExist = function(emails) {
         var deferred = Q.defer();
         var query = {
@@ -300,11 +299,13 @@ module.exports = function(app) {
                         console.log("Error", err);
                         deferred.reject(false);
                     } else {
-                        console.log("EMail map is PPPPP: ", query);
-                        deferred.resolve(true);
+                        if(_.isEmpty(data)) {
+                            deferred.resolve(false);
+                        } else {
+                            deferred.resolve(true);
+                        }
                     }
                 });
-
         });
         return deferred.promise;
     };
