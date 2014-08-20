@@ -14,12 +14,12 @@ var qd = function() {
             c();
         });
     }
-    var failureCallbackForComparison = function(divId, msg) {
+ /*   var failureCallbackForComparison = function(divId, msg) {
         return function() {
             if ($("#friendList").length > 0)
                 $(divId).text(msg);
         }
-    }
+    }*/
     var populateBuildTilesData = function(buildEvents) {
         if (buildEvents.length > 0) {
             var todaysBuild = buildEvents[buildEvents.length - 1]; // last record
@@ -345,7 +345,7 @@ var qd = function() {
             $("#compare-build-history-parent").show();
             $.when(result.getEventsFor(myUsername, "mydev"), result.getTheirEventsFor(myUsername, theirUsername, "mydev"))
                 .done(handlePlotComparisonGraphsSuccess)
-                .fail(failureCallbackForComparison("#compare-username-errors", "No data for user!"));
+                .fail("Error getting build events!");
             $("#compare-active-events-parent").show();
             $.when(result.getEventsFor(myUsername, "myActiveEvents"), result.getTheirEventsFor(myUsername, theirUsername, "myActiveEvents"))
                 .done(result.compareActiveEvents)
