@@ -8,6 +8,7 @@ window.qd.plotBuildHistory = function() {
         x = d3.scale.ordinal().rangeRoundBands([0, w - p[1] - p[3]]),
         xLinear = d3.scale.linear().range([0, w - p[1] - p[3]]);
     y = d3.scale.linear().range([0, h - p[0] - p[2]]),
+    xTicks = d3.scale.linear().range([0, w - p[1] - p[3]])
     z = d3.scale.ordinal().range(["lightpink", "lightblue"]),
     parse = d3.time.format("%m/%d/%Y").parse,
     format = d3.time.format("%d");
@@ -35,6 +36,7 @@ window.qd.plotBuildHistory = function() {
     x.domain(buildsByResult[0].map(function(d) {
         return d.x;
     }));
+    xTicks.domain(_.range(0, 31));
     xLinear.domain([0, buildsByResult[0].length]);
     y.domain([0, d3.max(buildsByResult[buildsByResult.length - 1], function(d) {
         return d.y0 + d.y;
@@ -123,6 +125,51 @@ window.qd.plotBuildHistory = function() {
         .attr("dy", ".35em")
         .text(d3.format(",d"));
 
+    var ruleForX = svg.selectAll("g.ruleForX")
+        .data(xTicks.ticks(30))
+        .enter().append("svg:g")
+        .attr("class", "ruleForX")
+        .attr("transform", function(d) {
+            console.log(x.rangeBand());
+            var xValue = (x.rangeBand() * d);
+            return "translate(" + xValue + ",0)";
+        });
+
+    ruleForX.append("svg:line")
+        .attr("x1", function(d) {
+            return d;
+        })
+        .attr("x2", function(d) {
+            return d;
+        })
+        .attr("y1", function(d) {
+            return 0;
+        })
+        .attr("y2", -(h - p[2] - p[0] + 10))
+        .style("stroke", function(d) {
+            return d !== 0 ? "#fff" : "#000";
+        })
+        .style("stroke-opacity", function(d) {
+            return .7;
+        });
+
+    /*var label = svg.selectAll("g.labelForX")
+        .append("svg:text")
+        .attr("x", -0)
+        .attr("y", -(h - p[2] - p[0] - 50))
+        .attr("dy", ".35em")
+        .attr("transform", "rotate(-90)")
+        .text("Number of Builds");
+
+    ruleForX.append("svg:text")
+        .attr("x", w - p[3] - p[1] - 25)
+        .attr("y", -10)
+        .attr("dy", ".35em")
+        .text(function(d) {
+            console.log(d)
+            return d == 30 ? "Date" : "";
+        });
+*/
     // Failed Builds Average:
     var failedBuildsMovingAverage = d3.svg.line()
         .x(function(d, i) {
