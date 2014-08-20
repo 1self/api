@@ -134,7 +134,7 @@ var validEncodedUsername = function(encodedUsername, forUsername, params) {
     });
 
     return deferred.promise;
-}
+};
 
 var getStreamIdForUsername = function(params) {
     var deferred = q.defer();
@@ -144,7 +144,7 @@ var getStreamIdForUsername = function(params) {
     var forUsername = usernames[1];
     if (!(_.isEmpty(forUsername)) && (forUsername !== 'undefined')) {
         query = {
-            "username": forUsername
+            "username": forUsername.toLowerCase()
         };
     } else {
         query = {
@@ -160,7 +160,7 @@ var getStreamIdForUsername = function(params) {
                 deferred.reject(err);
             } else {
                 if (user && user.streams) {
-                    var paramsToPassOn = [user.streams, params[1]]
+                    var paramsToPassOn = [user.streams, params[1]];
                     deferred.resolve(paramsToPassOn);
                 } else {
                     deferred.reject();
@@ -181,7 +181,7 @@ var getGithubStreamIdForUsername = function(params) {
     var forUsername = usernames[1];
     if (!(_.isEmpty(forUsername)) && (forUsername !== 'undefined')) {
         query = {
-            "username": forUsername
+            "username": forUsername.toLowerCase()
         };
     } else {
         query = {
@@ -227,12 +227,12 @@ var saveEvent_driver = function(myEvent, stream, eventDateTime, res, rm) {
     requestModule.post(options,
         function(error, response, body) {
             if (!error && response.statusCode == 200) {
-                res.send(body)
+                res.send(body);
             } else {
                 res.status(500).send("Database error");
             }
         });
-}
+};
 
 var authenticateWriteToken = function(token, id, error, success) {
     mongoDbConnection(function(qdDb) {
@@ -299,7 +299,7 @@ var getEventsForStreams = function(params) {
         } else {
             deferred.reject(error);
         }
-    }
+    };
     requestModule(options, getEventsFromPlatform);
     return deferred.promise;
 };
@@ -324,7 +324,7 @@ var getEventsCount = function() {
         } else {
             deferred.reject(error);
         }
-    }
+    };
     requestModule(options, getEventsCountFromPlatform);
     return deferred.promise;
 };
@@ -343,7 +343,7 @@ var generateDatesFor = function(defaultValues) {
         }
         var day = eachDay.getDate();
         if (day < 10) {
-            day = '0' + day
+            day = '0' + day;
         }
         var dateKey = (month) + '/' + day + '/' + eachDay.getFullYear();
         result[dateKey] = {
@@ -355,7 +355,7 @@ var generateDatesFor = function(defaultValues) {
         }
     };
     return result;
-}
+};
 
 var rollupToArray = function(rollup) {
     var result = [];
@@ -363,7 +363,7 @@ var rollupToArray = function(rollup) {
         result.push(rollup[r]);
     }
     return result;
-}
+};
 
 var getBuildEventsFromPlatform = function(params) {
     var streams = params[0];
@@ -467,7 +467,7 @@ var getBuildEventsFromPlatform = function(params) {
     requestModule(options, callback);
 
     return deferred.promise;
-}
+};
 
 var getMyWTFsFromPlatform = function(params) {
     var streams = params[0];
@@ -538,7 +538,7 @@ var getMyWTFsFromPlatform = function(params) {
                     value: 0
                 }];
                 var wtfsByDay = generateDatesFor(defaultWTFValues);
-                for (date in result) {
+                for (var date in result) {
                     if (wtfsByDay[date] !== undefined) {
                         wtfsByDay[date].wtfCount = result[date].wtfCount;
                     }
@@ -623,7 +623,7 @@ var getMyHydrationEventsFromPlatform = function(params) {
                     value: 0
                 }];
                 var hydrationsByDay = generateDatesFor(defaultHydrationValues);
-                for (date in result) {
+                for (var date in result) {
                     if (hydrationsByDay[date] !== undefined) {
                         hydrationsByDay[date].hydrationCount = result[date].hydrationCount;
                     }
@@ -708,7 +708,7 @@ var getMyCaffeineEventsFromPlatform = function(params) {
                     value: 0
                 }];
                 var caffeineIntakeByDay = generateDatesFor(defaultCaffeineValues);
-                for (date in result) {
+                for (var date in result) {
                     if (caffeineIntakeByDay[date] !== undefined) {
                         caffeineIntakeByDay[date].caffeineCount = result[date].caffeineCount;
                     }
@@ -809,13 +809,13 @@ var getAvgBuildDurationFromPlatform = function(params) {
                     value: 0
                 }];
                 var buildDurationByDay = generateDatesFor(defaultBuildValues);
-                for (date in result) {
+                for (var date in result) {
                     if (buildDurationByDay[date] !== undefined) {
-                        buildDurationInMillis = result[date].totalDuration / result[date].eventCount;
+                        var buildDurationInMillis = result[date].totalDuration / result[date].eventCount;
                         buildDurationByDay[date].avgBuildDuration = convertMillisToSeconds(buildDurationInMillis);
                     }
                 }
-                deferred.resolve(rollupToArray(buildDurationByDay))
+                deferred.resolve(rollupToArray(buildDurationByDay));
             }
         } else {
             deferred.reject(error);
@@ -832,7 +832,7 @@ var orderDateAsPerWeek = function(date) {
     var orderedDates = [];
     orderedDates[dayOfWeek] = date;
     return orderedDates;
-}
+};
 var generateHoursForWeek = function(defaultValues) {
     var result = {};
     var numberOfDaysToReportBuildsOn = 7;
@@ -1217,7 +1217,7 @@ var getGithubPushEventCountForCompare = function(params) {
                 },
                 "orderSpec": {}
             }
-        }
+        };
     };
     myGithubPushEventCount = {
         "$count": {
@@ -1334,7 +1334,7 @@ var getIdeActivityDurationForCompare = function(params) {
                 },
                 "orderSpec": {}
             }
-        }
+        };
     };
     var myIdeActivityDuration = {
         "$sum": {
@@ -1441,7 +1441,7 @@ var getIdeActivityDurationForCompare = function(params) {
 
 var getHourlyGithubPushEventsCount = function(streamid) {
     var deferred = q.defer();
-    groupQuery = {
+    var groupQuery = {
         "$groupBy": {
             "fields": [{
                 "name": "payload.eventDateTime",
@@ -1462,7 +1462,7 @@ var getHourlyGithubPushEventsCount = function(streamid) {
             "orderSpec": {}
         }
     };
-    hourlyGithubPushEventCount = {
+    var hourlyGithubPushEventCount = {
         "$count": {
             "data": groupQuery,
             "filterSpec": {},
@@ -1505,7 +1505,7 @@ var getHourlyGithubPushEventsCount = function(streamid) {
 };
 var getDailyGithubPushEventsCount = function(streamid) {
     var deferred = q.defer();
-    groupQuery = {
+    var groupQuery = {
         "$groupBy": {
             "fields": [{
                 "name": "payload.eventDateTime",
@@ -1526,7 +1526,7 @@ var getDailyGithubPushEventsCount = function(streamid) {
             "orderSpec": {}
         }
     };
-    dailyGithubPushEventCount = {
+    var dailyGithubPushEventCount = {
         "$count": {
             "data": groupQuery,
             "filterSpec": {},
@@ -1705,7 +1705,7 @@ var correlateGithubPushesAndIDEActivity = function(params) {
                 },
                 "orderSpec": {}
             }
-        }
+        };
     };
     var sumQuery = {
         "$sum": {
@@ -1845,7 +1845,6 @@ app.get('/stream/:id', function(req, res) {
     };
 
     mongoDbConnection(function(qdDb) {
-
         qdDb.collection('stream').find(spec, function(err, docs) {
             docs.toArray(function(err, streamArray) {
                 var stream = streamArray[0] || {};
@@ -1879,7 +1878,7 @@ app.get('/eventsCount', function(req, res) {
         .then(function(response) {
             res.send(response);
         }).catch(function(error) {
-            console.log("Err", error)
+            console.log("Err", error);
             res.status(400).send("Invalid request");
         });
 });

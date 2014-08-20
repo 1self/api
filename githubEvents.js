@@ -121,6 +121,7 @@ var filterEvents = function(allEvents, latestGitHubEventDate) {
             return true;
         }
     });
+    console.log("BBB filterEvents greater than latestGitHubEventDate : " + JSON.stringify(filteredEvents));
     return filteredEvents;
     // console.log("Filtered events : ", filteredEvents);
 };
@@ -140,6 +141,7 @@ var sendEventsToPlatform = function(myEvents) {
     var deferred = q.defer();
     var encryptedPassword = encryptPassword();
     var myEventsWithPayload = [];
+    console.log("CCC Event sent to platform : " + JSON.stringify(myEvents));
     _.each(myEvents, function(myEvent) {
         myEventsWithPayload.push({
             'payload': myEvent
@@ -173,6 +175,7 @@ var getGithubPushEventsFromService = function(promiseArray) {
 };
 
 var getFilteredEvents = function(allEvents) {
+    console.log("AAA All Events From GitHub: " + JSON.stringify(allEvents));
     return filterEvents(allEvents, user.latestGitHubEventDate);
 };
 

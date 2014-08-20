@@ -13,7 +13,7 @@ var QD_EMAIL = process.env.QD_EMAIL;
 var mongoDbConnection = require('./lib/connection.js');
 
 var emailConfigOptions = {
-    root: path.join(__dirname, "email_templates"),
+    root: path.join(__dirname, "email_templates")
 };
 
 module.exports = function(app) {
@@ -75,7 +75,7 @@ module.exports = function(app) {
         var getStreamsForUser = function() {
             var oneselfUsername = req.session.username;
             var streamidUsernameMapping = {
-                "username": oneselfUsername
+                "username": oneselfUsername.toLowerCase()
             };
             var deferred = Q.defer();
 
@@ -106,7 +106,7 @@ module.exports = function(app) {
                         }
                     };
                     qdDb.collection('users').update({
-                        "username": req.session.username
+                        "username": req.session.username.toLowerCase()
                     }, mappingToInsert, function(err, user) {
                         if (user) {
                             deferred.resolve();
@@ -177,7 +177,7 @@ module.exports = function(app) {
     });
 
     var isUsernameValid = function(username) {
-        return username.match("^[a-z0-9_]*$")
+        return username.match("^[a-z0-9_]*$");
     };
 
     app.post("/claimUsername", function(req, res) {
@@ -187,7 +187,7 @@ module.exports = function(app) {
 
                 var githubUsername = req.body.githubUsername;
                 var byOneselfUsername = {
-                    "username": oneselfUsername
+                    "username": oneselfUsername.toLowerCase()
                 };
                 mongoDbConnection(function(qdDb) {
 
@@ -200,7 +200,7 @@ module.exports = function(app) {
                             });
                         } else {
                             var byGithubUsername = {
-                                "githubUser.username": githubUsername
+                                "githubUser.username": githubUsername.toLowerCase()
                             };
 
                             qdDb.collection('users').update(byGithubUsername, {
@@ -230,7 +230,7 @@ module.exports = function(app) {
                             });
                         }
                     });
-                })
+                });
             });
         } else {
             res.render('claimUsername', {
@@ -243,11 +243,11 @@ module.exports = function(app) {
     var addFriendTo = function(friendUsername, myUsername) {
         var deferred = Q.defer();
         var user = {
-            "username": myUsername
-        }
+            "username": myUsername.toLowerCase()
+        };
         var friend = {
-            "friends": friendUsername
-        }
+            "friends": friendUsername.toLowerCase()
+        };
 
         mongoDbConnection(function(qdDb) {
             qdDb.collection("users", function(err, collection) {
@@ -257,22 +257,22 @@ module.exports = function(app) {
                     upsert: true
                 }, function(error, data) {
                     if (error) {
-                        console.log("DB error")
-                        deferred.reject(error)
+                        console.log("DB error");
+                        deferred.reject(error);
                     } else {
-                        console.log("friend inserted successfully")
+                        console.log("friend inserted successfully");
                         deferred.resolve();
                     }
                 });
             });
         });
         return deferred.promise;
-    }
+    };
     var fetchFriendList = function(username) {
         var deferred = Q.defer();
         var query = {
-            "username": username
-        }
+            "username": username.toLowerCase()
+        };
         mongoDbConnection(function(qdDb) {
             qdDb.collection('users').findOne(query, function(err, user) {
                 if (err) {
@@ -284,15 +284,15 @@ module.exports = function(app) {
             });
         });
         return deferred.promise;
-    }
+    };
 
 
     var doesEmailMappingExist = function(emails) {
         var deferred = Q.defer();
         var query = {
-            "from": emails[1],
-            "to": emails[0]
-        }
+            "from": emails[1].toLowerCase(),
+            "to": emails[0].toLowerCase()
+        };
         mongoDbConnection(function(qdDb) {
             qdDb.collection('emailMap').findOne(query,
                 function(err, data) {
@@ -307,21 +307,21 @@ module.exports = function(app) {
 
         });
         return deferred.promise;
-    }
+    };
 
     app.get("/compare", sessionManager.requiresSession, function(req, res) {
         var requesterUsername = req.session.requesterUsername;
         if (requesterUsername) {
             createEmailIdPromiseArray(req.session.username, requesterUsername)
                 .then(function(emailIds) {
-                    return Q.all(emailIds)
+                    return Q.all(emailIds);
                 })
                 .then(doesEmailMappingExist)
                 .then(function(emailMapExists) {
                     console.log("Mapping exists ", emailMapExists);
                     if (emailMapExists) {
-                        addFriendTo(requesterUsername, req.session.username)
-                        addFriendTo(req.session.username, requesterUsername)
+                        addFriendTo(requesterUsername, req.session.username);
+                        addFriendTo(req.session.username, requesterUsername);
                     } 
                     delete req.session.requesterUsername;
                     res.redirect("/compare");
@@ -340,7 +340,7 @@ module.exports = function(app) {
     var doesGitHubStreamIdExist = function(username) {
         var deferred = Q.defer();
         var usernameQuery = {
-            "username": username
+            "username": username.toLowerCase()
         };
         mongoDbConnection(function(qdDb) {
             qdDb.collection('users').findOne(usernameQuery, function(err, user) {
@@ -358,11 +358,11 @@ module.exports = function(app) {
             });
         });
         return deferred.promise;
-    }
+    };
     var linkGithubStreamToUser = function(username, stream) {
         var deferred = Q.defer();
         var query = {
-            "username": username
+            "username": username.toLowerCase()
         };
         var updateQuery = {
             $set: {
@@ -403,7 +403,7 @@ module.exports = function(app) {
                     .then(function() {
                         res.send({
                             status: "ok"
-                        })
+                        });
                     });
             } else {
                 util.createStream(function(err, stream) {
@@ -456,8 +456,8 @@ module.exports = function(app) {
     var createUserInvitesEntry = function(emailIds) {
         var deferred = Q.defer();
         var emailMap = {
-            "from": emailIds[0],
-            "to": emailIds[1]
+            "from": emailIds[0].toLowerCase(),
+            "to": emailIds[1].toLowerCase()
         };
         mongoDbConnection(function(qdDb) {
             qdDb.collection("emailMap", function(err, collection) {
@@ -492,7 +492,7 @@ module.exports = function(app) {
         //Try using mongo aggregation 
         var deferred = Q.defer();
         var query = {
-            "username": username
+            "username": username.toLowerCase()
         };
         mongoDbConnection(function(qdDb) {
             qdDb.collection('users').findOne(query, {
@@ -515,7 +515,7 @@ module.exports = function(app) {
         getEmailIdsForUsername(username)
             .then(function(emails) {
                 var primaryEmail = filterPrimaryEmailId(emails);
-                deferred.resolve(primaryEmail)
+                deferred.resolve(primaryEmail);
             })
             .catch(function(error) {
                 console.log("DB error", error);
@@ -536,8 +536,8 @@ module.exports = function(app) {
 
     var deleteUserInvitesEntryFor = function(emailIds) {
         var emailMap = {
-            "from": emailIds[1],
-            "to": emailIds[0]
+            "from": emailIds[1].toLowerCase(),
+            "to": emailIds[0].toLowerCase()
         };
         mongoDbConnection(function(qdDb) {
             qdDb.collection("emailMap", function(err, collection) {
@@ -634,4 +634,4 @@ module.exports = function(app) {
             });
     });
 
-}
+};
