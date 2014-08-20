@@ -2921,14 +2921,28 @@ a.twitter-share-button {
     }
 }
 @media screen and (max-width: 768px) {
-    .pull-xs-left{
+    .pull-xs-left {
         float: left!important;
     }
-    .ex-sm-margin-top-ten{
+    .ex-sm-margin-top-ten {
         margin-top: 10px;
     }
-    .github-push-events-sync,.help-btn{
+    .github-push-events-sync, .help-btn {
         width: 22px;
         margin-left: 0;
     }
+    .mobile-globe-container {
+        width: 100%;
+        margin: 0;
+    }
+     .mobile-globe-container  .tiles-secondary{
+        padding: 0;
+     }
+     .mobile-float-none{
+        float: none;
+     }
+     .mobile-globe-container  canvas{
+        margin: 0 auto;
+        display: block;
+     }
 }
