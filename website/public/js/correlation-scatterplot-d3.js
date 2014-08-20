@@ -19,7 +19,7 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 			};
 		});
 	};
-var heightnew = height - 10;
+	var heightnew = height - 10;
 	var xValue = function(d) {
 			return d.x;
 		},
@@ -91,7 +91,9 @@ var heightnew = height - 10;
 			.attr("r", 3.5)
 			.attr("cx", xMap)
 			.attr("cy", yMap)
-			.style("fill", "blue")
+			.style("fill", function(d) {
+				return (d.x === 0 || d.y === 0) ? "lightgrey": "blue";
+			})
 		/*.style("fill", function(d) {
 				return color(cValue(d));
 			})*/
@@ -99,7 +101,7 @@ var heightnew = height - 10;
 			tooltip.transition()
 				.duration(200)
 				.style("opacity", .9);
-			tooltip.html("<br/> (Date: " + d.date+ ", IDE Activity: "+xValue(d) + " mins, PushCount: " + yValue(d) + ")")
+			tooltip.html("<br/> (Date: " + d.date + ", IDE Activity: " + xValue(d) + " mins, PushCount: " + yValue(d) + ")")
 				.style("left", (d3.event.pageX + 5) + "px")
 				.style("top", (d3.event.pageY - 28) + "px");
 		})
