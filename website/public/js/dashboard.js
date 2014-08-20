@@ -65,16 +65,26 @@ var handleConnectToGithub = function() {
     })
 }
 $(document).ready(function(){
-  /*$(".help-btn").click(function(){
-    $(".helpContainer").toggle();
-});*/
+ 
+$(document).on('mouseup keyup', function(e){ 
+        var e = e || event,
+         code = (e.keyCode ? e.keyCode : e.which),
+       target = e.srcElement || e.target;
 
+        if (code==27) {
+            $('.helpContainer').hide();
+        }
+
+    });
 
 });
 var show = function(element) {
+
    var showElement = "#" + element +" "+".helpContainer";
-      $(showElement).slideToggle();
+   $(showElement).slideToggle();
 }
+
+
 $("#connect_to_github_btn").click(handleConnectToGithub);
 $("#github-push-events-sync").click(handleConnectToGithub);
 $("#connect_to_github_link_popup_btn").click(handleConnectToGithub);

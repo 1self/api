@@ -2889,8 +2889,13 @@ ul#mini-nav-right li.list-box, ul#mini-nav-right li.list-box a, ul#mini-nav-righ
     height: auto;
     padding: 20px 40px 10px 40px;
     border: 2px solid #d8d8d8;
-    background: rgb(238, 238, 238);
+    background: #f7f7f9;
     display: none;
+    border-radius: 5px;
+}
+.helpContainer .heading {
+    border-bottom: 1px solid #CCC;
+    padding-bottom: 10px;
 }
 .help-description {
     margin: 10px 0;
@@ -2904,7 +2909,9 @@ a.twitter-share-button {
 .top-buffer-20 {
     margin-top: 20px;
 }
-;
+.modal-dialog .close {
+    font-size: 30px;
+}
 @media screen and (max-width: 500px) {
     .hourlyHeatMapContainer {
         width: 100%;
