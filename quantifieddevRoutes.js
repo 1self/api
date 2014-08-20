@@ -13,7 +13,7 @@ var QD_EMAIL = process.env.QD_EMAIL;
 var mongoDbConnection = require('./lib/connection.js');
 
 var emailConfigOptions = {
-    root: path.join(__dirname, "email_templates")
+    root: path.join(__dirname, "/website/public/email_templates")
 };
 
 module.exports = function(app) {
@@ -576,7 +576,10 @@ module.exports = function(app) {
         emailTemplates(emailConfigOptions, function(err, emailRender) {
             var context = {
                 acceptUrl: acceptUrl,
-                rejectUrl: rejectUrl
+                rejectUrl: rejectUrl,
+                friendName: sessionUsername,
+                yourName: sessionUsername,
+                yourEmailId: userInviteMap.from
             };
             emailRender('invite.eml.html', context, function(err, html, text) {
                 sendgrid.send({

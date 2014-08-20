@@ -41,32 +41,50 @@ $(function() {
       return false;
     }
 
+    var pattern = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+    function isEmailAddress(str) {
+       return str.match(pattern);    
+    }
+      
+    if ((_.isEmpty(friendsUsername)) && !(_.isEmpty(friendsEmail)) ) {
+        if (!(isEmailAddress(friendsEmail))){
+            $(".compare_error_message").show();
+            return;
+       };
+    }
+
     var yourUsername = $(".user-name").attr('data-username');
-    var emailMessage = $("#email-message").text();
+
     $("#request-comparison").hide();
     $("#comparison-email").show();
     $("#your-name").val(yourUsername);
-
+    var friendName = "";
     if (friendsUsername !== undefined) {
       $("#friend-name2").val(friendsUsername);
-      emailMessage = emailMessage.replace("friend-name", friendsUsername);
+      friendName = friendsUsername;
     } else {
       $("#friend-name2").val(friendsEmail);
-      emailMessage = emailMessage.replace("friend-name", friendsEmail);
+      friendName = friendsEmail;
     }
-    emailMessage = emailMessage.replace("your-name", yourUsername);
-    $("#email-message").html(emailMessage)
+
+    $.get('/email_templates/invite.eml.html', function(template) {
+        var rendered = Mustache.render(template, {yourName: yourUsername, friendName: friendName,
+                                                 acceptUrl: "#", rejectUrl: "#" });
+        $("#email-message").html(rendered);
+     });
+    
   });
 
   var emailSuccessCallback = function() {
     $("#send-compare-request-email").removeAttr("disabled");
-    alert("Successfully sent compare request.")
+    alert("Successfully sent compare request.");
     $("#compare-modal").modal("hide");
   };
   var emailFailureCallback = function() {
     $("#send-compare-request-email").removeAttr("disabled");
-    alert("Error in sending email! Please try again")
-    $("#compare-modal").modal("hide");
+    $(".compare_error_message").show();
+    $("#request-comparison").show();
+    $("#comparison-email").hide();
   };
   $('#send-compare-request-email').on('click', function(e) {
     $("#send-compare-request-email").attr("disabled", "true");
