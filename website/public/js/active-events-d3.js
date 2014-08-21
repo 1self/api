@@ -120,7 +120,7 @@ window.qd.plotActiveEvents = function() {
         });
 
     rule.append("svg:text")
-        .attr("x", -16)
+        .attr("x", -20)
         .attr("dy", ".35em")
         .text(d3.format(",d"));
     rule.append("svg:text")
