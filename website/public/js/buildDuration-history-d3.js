@@ -72,7 +72,9 @@ window.qd.plotBuildDurationHistory = function() {
         .attr("height", function(d) {
             return y(d.y);
         })
-        .attr("width", x.rangeBand());
+        .attr("width", x.rangeBand())
+        .on("mouseover", tip.show)
+        .on("mouseout", tip.hide);
 
     //    Add a label per date
     var label = svg.selectAll("text.month")
