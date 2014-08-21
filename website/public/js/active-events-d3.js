@@ -120,7 +120,7 @@ window.qd.plotActiveEvents = function() {
         });
 
     rule.append("svg:text")
-        .attr("x", -16)
+        .attr("x", -20)
         .attr("dy", ".35em")
         .text(d3.format(",d"));
     rule.append("svg:text")
@@ -159,14 +159,6 @@ window.qd.plotActiveEvents = function() {
         .style("stroke-opacity", function(d) {
             return d !== 0 ? 0 : .7;
         });
-
-    var label = svg.selectAll("g.labelForX")
-        .append("svg:text")
-        .attr("x", -0)
-        .attr("y", -(h - p[2] - p[0] - 50))
-        .attr("dy", ".35em")
-        .attr("transform", "rotate(-90)")
-        .text("Number of Builds");
 
     ruleForX.append("svg:text")
         .attr("x", w - p[3] - p[1] - 30)

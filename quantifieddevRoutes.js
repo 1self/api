@@ -618,12 +618,12 @@ module.exports = function(app) {
         });
     };
 
-    app.get('/accept', function(req, res) {
+    app.get('/accept', sessionManager.requiresSession, function(req, res) {
         req.session.requesterUsername = req.query.reqUsername;
         res.redirect(CONTEXT_URI + '/compare');
     });
 
-    app.get('/reject', function(req, res) {
+    app.get('/reject', sessionManager.requiresSession, function(req, res) {
         createEmailIdPromiseArray(req.session.username, req.query.reqUsername)
             .then(function(emailIds) {
                 return Q.all(emailIds);
@@ -665,7 +665,7 @@ module.exports = function(app) {
         return deferred.promise;
     };
 
-    app.get('/request_to_compare_with_username', function(req, res) {
+    app.get('/request_to_compare_with_username', sessionManager.requiresSession, function(req, res) {
         var friendsUsername = req.query.friendsUsername;
 
         createEmailIdPromiseArray(req.session.username, friendsUsername)
@@ -684,7 +684,7 @@ module.exports = function(app) {
             });
     });
 
-    app.get('/request_to_compare_with_email', function(req, res) {
+    app.get('/request_to_compare_with_email', sessionManager.requiresSession, function(req, res) {
         var friendsEmail = req.query.friendsEmail;
 
         getEmailId(req.session.username)
