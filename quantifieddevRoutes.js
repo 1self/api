@@ -345,6 +345,28 @@ module.exports = function(app) {
         return deferred.promise;
     };
 
+    var getFullName = function(username) {
+        var deferred = Q.defer();
+        var query = {
+            "username": username.toLowerCase()
+        };
+        mongoDbConnection(function(qdDb) {
+            qdDb.collection('users').findOne(query, function(err, user) {
+                if (err) {
+                    console.log("err : ", err);
+                    deferred.reject("DB error");
+                } else {
+                    if (!(_.isEmpty(user.githubUser.displayName))){
+                        deferred.resolve(user.githubUser.displayName);
+                    } else {
+                        deferred.resolve(username);
+                    }
+                } 
+            });
+        });
+        return deferred.promise;
+    };
+
     var doesEmailMappingExist = function(emails) {
         var deferred = Q.defer();
         var query = {
@@ -394,11 +416,17 @@ module.exports = function(app) {
                 });
         } else {
             fetchFriendList(req.session.username).then(function(friends) {
-                res.render('compare', {
-                    username: req.session.username,
-                    avatarUrl: req.session.avatarUrl,
-                    friends: friends
-                });
+                getFullName(req.session.username).then(function(fullName) {
+                    res.render('compare', {
+                        username: req.session.username,
+                        avatarUrl: req.session.avatarUrl,
+                        friends: friends,
+                        fullName: fullName
+                    });
+                }).catch(function(err) {
+                    console.log("Error is ", err);
+                    res.redirect("/");
+                });;
             });
         }
     });

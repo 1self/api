@@ -16,8 +16,8 @@ $(function() {
     $("#request-comparision-form")[0].reset();
     $("#comparision-email-form")[0].reset();
     $(".compare_error_message").hide();
-    var yourName = $(".user-name").attr('data-username');
-    $("#your-name1").val(yourName);
+    var fullName = $(".user-name").attr('data-fullname');
+    $("#your-name1").val(fullName);
   });
 
   $(document).ready(function() {
