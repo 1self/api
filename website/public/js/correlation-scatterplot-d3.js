@@ -36,12 +36,7 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 		yMap = function(d) {
 			return yScale(yValue(d));
 		},
-		yAxis = d3.svg.axis().scale(yScale).orient("left");
-
-	/*var cValue = function(d) {
-			return d.x;
-		},
-		color = d3.scale.category10();*/
+		yAxis = d3.svg.axis().scale(yScale).orient("left").ticks(5);
 
 	var svg = d3.select(divId).append("svg")
 		.attr("width", width + margin.left + margin.right)
@@ -58,6 +53,31 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 		// don't want dots overlapping axis, so add in buffer to data domain
 		xScale.domain([d3.min(data, xValue) - 1, d3.max(data, xValue) + 1]);
 		yScale.domain([d3.min(data, yValue) - 1, d3.max(data, yValue) + 1]);
+
+		// draw dots
+		svg.selectAll(".dot")
+			.data(data)
+			.enter().append("circle")
+			.attr("class", "dot")
+			.attr("r", 3.5)
+			.attr("cx", xMap)
+			.attr("cy", yMap)
+			.style("fill", function(d) {
+				return (d.x === 0 || d.y === 0) ? "lightgrey" : "blue";
+			})
+			.on("mouseover", function(d) {
+				tooltip.transition()
+					.duration(200)
+					.style("opacity", .9);
+				tooltip.html("<br/> (Date: " + d.date + ", IDE Activity: " + xValue(d) + " mins, PushCount: " + yValue(d) + ")")
+					.style("left", (d3.event.pageX + 5) + "px")
+					.style("top", (d3.event.pageY - 28) + "px");
+			})
+			.on("mouseout", function(d) {
+				tooltip.transition()
+					.duration(500)
+					.style("opacity", 0);
+			});
 
 		// x-axis
 		svg.append("g")
@@ -81,61 +101,7 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 			.attr("y", 6)
 			.attr("dy", ".71em")
 			.style("text-anchor", "end")
-			.text("Github Push Count");
-
-		// draw dots
-		svg.selectAll(".dot")
-			.data(data)
-			.enter().append("circle")
-			.attr("class", "dot")
-			.attr("r", 3.5)
-			.attr("cx", xMap)
-			.attr("cy", yMap)
-			.style("fill", function(d) {
-				return (d.x === 0 || d.y === 0) ? "lightgrey": "blue";
-			})
-		/*.style("fill", function(d) {
-				return color(cValue(d));
-			})*/
-		.on("mouseover", function(d) {
-			tooltip.transition()
-				.duration(200)
-				.style("opacity", .9);
-			tooltip.html("<br/> (Date: " + d.date + ", IDE Activity: " + xValue(d) + " mins, PushCount: " + yValue(d) + ")")
-				.style("left", (d3.event.pageX + 5) + "px")
-				.style("top", (d3.event.pageY - 28) + "px");
-		})
-			.on("mouseout", function(d) {
-				tooltip.transition()
-					.duration(500)
-					.style("opacity", 0);
-			});
-
-		/*// draw legend
-		var legend = svg.selectAll(".legend")
-			.data(color.domain())
-			.enter().append("g")
-			.attr("class", "legend")
-			.attr("transform", function(d, i) {
-				return "translate(0," + i * 20 + ")";
-			});
-
-		// draw legend colored rectangles
-		legend.append("rect")
-			.attr("x", width - 18)
-			.attr("width", 18)
-			.attr("height", 18)
-			.style("fill", color);
-
-		// draw legend text
-		legend.append("text")
-			.attr("x", width - 24)
-			.attr("y", 9)
-			.attr("dy", ".35em")
-			.style("text-anchor", "end")
-			.text(function(d) {
-				return d;
-			})*/
+			.text("Push Count");
 	};
 	_plotGraph();
 };
