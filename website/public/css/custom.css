@@ -59,17 +59,6 @@ x.axis {
         font-size: 13px;
     }
 }
-.col-centered {
-	float: none;
-	margin: 0 auto;
-}
-.popover {
-	max-width: none;
-	width: 100%;
-}
-#last-updated-since {
-	margin-left: 5%;
-}
 .d3-tip {
   line-height: 1;
   font-weight: bold;
