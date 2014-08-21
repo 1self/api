@@ -2919,6 +2919,10 @@ a.twitter-share-button {
 .margin-zero{
     margin: 0;
 }
+#live-country canvas{
+    margin: 0 auto;
+    display: block;
+}
 @media screen and (max-width: 500px) {
     .hourlyHeatMapContainer {
         width: 100%;
