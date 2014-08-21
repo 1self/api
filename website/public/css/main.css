@@ -2912,7 +2912,7 @@ a.twitter-share-button {
 .modal-dialog .close {
     font-size: 30px;
 }
-.embed-globe{
+.embed-globe {
     display: block;
     margin: 0 auto 10px auto;
 }
@@ -2940,12 +2940,14 @@ a.twitter-share-button {
         margin: 0;
         background: #FFF;
     }
-     .mobile-globe-container  .tiles-secondary{
+    .mobile-globe-container .tiles-secondary {
         padding: 0;
-     }
-      .mobile-globe-container  canvas{
+    }
+    .mobile-globe-container canvas {
         margin: 0 auto;
         display: block;
-     }
-    
+    }
+    .popover {
+        max-width: 300px; 
+    }
 }
