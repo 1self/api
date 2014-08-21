@@ -75,6 +75,8 @@ window.qd.plotBuildHistory = function() {
         })
         .attr("width", x.rangeBand())
         .on("mouseover", tip.show)
+        .on("mouseout", tip.hide)
+        .on("mouseover", tip.show)
         .on("mouseout", tip.hide);
 
     //    Add a label per date

@@ -19,7 +19,13 @@ window.qd.plotBuildDurationHistory = function() {
         .attr("height", h)
         .append("svg:g")
         .attr("transform", "translate(" + p[3] + "," + (h - p[2]) + ")");
-
+    var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        .offset([-10, 0])
+        .html(function(d) {
+            return "<strong>" + d.y + "mins</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>";
+        });
+    svg.call(tip);
     buildDurationHistory = window.qd.buildDurationEvents;
 
     // Transpose the data into layers by cause.
