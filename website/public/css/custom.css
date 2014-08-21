@@ -37,15 +37,21 @@ x.axis {
 #last-updated-since {
     margin-left: 5%;
 }
-@media screen and (max-width: 768px) {
+
+@media screen and (min-width: 769px) {
+    .popover {
+        max-width: none;
+        width: 100%;
+        border:1px solid red;
+    }
+}
+@media screen and (max-width: 450px) {
+    .fixed-height {
+        height: auto;
+    }
     .popover {
         max-width: 300px;
         width: 100%;
-    }
-}
-@media screen and (max-width: 500px) {
-    .fixed-height {
-        height: auto;
     }
 }
 @media screen and (max-width: 318px) {
