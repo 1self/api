@@ -657,6 +657,7 @@ module.exports = function(app) {
                         console.error(err);
                         deferred.reject(err);
                     } else {
+                        console.log("Compare request email successfully sent to", userInviteMap.to);
                         deferred.resolve();
                     }
                 });
