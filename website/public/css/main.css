@@ -2916,6 +2916,9 @@ a.twitter-share-button {
     display: block;
     margin: 0 auto 10px auto;
 }
+.margin-zero{
+    margin: 0;
+}
 @media screen and (max-width: 500px) {
     .hourlyHeatMapContainer {
         width: 100%;
