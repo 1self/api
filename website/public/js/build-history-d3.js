@@ -8,6 +8,7 @@ window.qd.plotBuildHistory = function() {
         x = d3.scale.ordinal().rangeRoundBands([0, w - p[1] - p[3]]),
         xLinear = d3.scale.linear().range([0, w - p[1] - p[3]]);
     y = d3.scale.linear().range([0, h - p[0] - p[2]]),
+    xTicks = d3.scale.linear().range([0, w - p[1] - p[3]])
     z = d3.scale.ordinal().range(["lightpink", "lightblue"]),
     parse = d3.time.format("%m/%d/%Y").parse,
     format = d3.time.format("%d");
@@ -122,6 +123,60 @@ window.qd.plotBuildHistory = function() {
         .attr("x", -12)
         .attr("dy", ".35em")
         .text(d3.format(",d"));
+    rule.append("svg:text")
+        .attr("x", (h - p[2] - p[0] - 58))
+        .attr("y", 8)
+        .attr("dy", ".35em")
+        .attr("transform", "rotate(-90)")
+        .style("font-size","12px")
+        .text(function(d) {
+            return d !== 0 ? "" : "Build Count";
+        });
+
+    var ruleForX = svg.selectAll("g.ruleForX")
+        .data(xTicks.ticks(30))
+        .enter().append("svg:g")
+        .attr("class", "ruleForX")
+        .attr("transform", function(d) {
+            console.log(x.rangeBand());
+            var xValue = (x.rangeBand() * d);
+            return "translate(" + xValue + ",0)";
+        });
+
+    ruleForX.append("svg:line")
+        .attr("x1", function(d) {
+            return d;
+        })
+        .attr("x2", function(d) {
+            return d;
+        })
+        .attr("y1", function(d) {
+            return 0;
+        })
+        .attr("y2", -(h - p[2] - p[0] + 10))
+        .style("stroke", function(d) {
+            return d !== 0 ? "#fff" : "#000";
+        })
+        .style("stroke-opacity", function(d) {
+            return d !== 0 ? 0 : .7;
+        });
+
+    var label = svg.selectAll("g.labelForX")
+        .append("svg:text")
+        .attr("x", -0)
+        .attr("y", -(h - p[2] - p[0] - 50))
+        .attr("dy", ".35em")
+        .attr("transform", "rotate(-90)")
+        .text("Number of Builds");
+
+    ruleForX.append("svg:text")
+        .attr("x", w - p[3] - p[1] - 30)
+        .attr("y", -10)
+        .attr("dy", ".35em")
+        .style("font-size","12px")
+        .text(function(d) {
+            return d !== 0 ? "" : "Date";
+        });
 
     // Failed Builds Average:
     var failedBuildsMovingAverage = d3.svg.line()

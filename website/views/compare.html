@@ -100,14 +100,14 @@
                               Enter your friend’s email
                             </div>
                             <div class="col-md-7">
-                              <input class="form-control" type="text" id="friend-email">
+                              <input class="form-control" type="email" id="friend-email">
                             </div>
                           </div>
                           <div class="top-buffer-20">
                           </div>
                           <div class="row compare_error_message" style="display:none;">
                             <div class="class-md-12 alert alert-danger" role="alert">
-                              Please enter QuantifiedDev username or Email Id
+                              Please enter valid QuantifiedDev username or valid Email Id.
                             </div>
                           </div>
                           <div class="row text-center">
@@ -140,13 +140,9 @@
                           </div>
                           <div class="row" style="margin-top:15px;">
                             <div class="col-md-12">
-                              <pre id ="email-message">
-                                Hi friend-name,
-                                I’d like to compare our build history and development environment activity on QuantifiedDev.org.
-                                Please hit “Start Comparing” below and we can start comparing!
-                                Thanks!
-                                your-name
-</pre>
+                              <div class="well" id="email-message">
+                                
+                              </div>
                             </div>
                           </div>
                           <div class="text-center">
@@ -311,5 +307,8 @@
     <script src="/js/github-events-compare-d3.js"></script>
     <script src="js/hourlyEvent-diff-d3.js"></script>
     <script src="js/event-daily-compare-d3.js"></script>
+    <script src="js/mustache.js"></script>
+
+  
   </body>
 </html>

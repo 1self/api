@@ -13,7 +13,7 @@ var QD_EMAIL = process.env.QD_EMAIL;
 var mongoDbConnection = require('./lib/connection.js');
 
 var emailConfigOptions = {
-    root: path.join(__dirname, "email_templates")
+    root: path.join(__dirname, "/website/public/email_templates")
 };
 
 module.exports = function(app) {
@@ -240,34 +240,83 @@ module.exports = function(app) {
             });
         }
     });
-    var addFriendTo = function(friendUsername, myUsername) {
+    
+    var getUserId = function(username) {
         var deferred = Q.defer();
         var user = {
-            "username": myUsername.toLowerCase()
+            "username": username
         };
-        var friend = {
-            "friends": friendUsername.toLowerCase()
-        };
-
         mongoDbConnection(function(qdDb) {
             qdDb.collection("users", function(err, collection) {
-                collection.update(user, {
-                    $addToSet: friend
-                }, {
-                    upsert: true
-                }, function(error, data) {
-                    if (error) {
-                        console.log("DB error");
-                        deferred.reject(error);
+                collection.findOne(user, function(err, data){
+                    if (err) {
+                        console.log("DB error", err);
+                        deferred.reject(err);
                     } else {
-                        console.log("friend inserted successfully");
-                        deferred.resolve();
+                        console.log(data);
+                        deferred.resolve(data["_id"]);
                     }
                 });
             });
         });
         return deferred.promise;
     };
+
+    var addFriendTo = function(friendUsername, myUsername) {
+        var deferred = Q.defer();        
+        var promiseArray = [];
+
+        promiseArray.push(getUserId(myUsername.toLowerCase()));
+        promiseArray.push(getUserId(friendUsername.toLowerCase()));
+
+        Q.all(promiseArray).then(function(userIds) {
+            
+            var user = {
+                "username": myUsername.toLowerCase()
+            };
+            var friend = {
+                "friends": userIds[1]
+            };
+
+            mongoDbConnection(function(qdDb) {
+                qdDb.collection("users", function(err, collection) {
+                    collection.update(user, {
+                        $addToSet: friend
+                    }, {
+                        upsert: true
+                    }, function(error, data) {
+                        if (error) {
+                            console.log("DB error");
+                            deferred.reject(error);
+                        } else {
+                            console.log("friend inserted successfully");
+                            deferred.resolve();
+                        }
+                    });
+                });
+            });
+        } );
+        return deferred.promise;
+    };
+
+    var getFriendUsername = function(userDbId) {
+        var deferred = Q.defer();
+        var query = {
+            "_id": userDbId
+        };
+        mongoDbConnection(function(qdDb) {
+            qdDb.collection('users').findOne(query, function(err, user) {
+                if(err) {
+                    console.log("DB error", err);
+                    deferred.reject(err);
+                }else {
+                    deferred.resolve(user.username);
+                }
+            });
+        });
+        return deferred.promise;
+    };
+
     var fetchFriendList = function(username) {
         var deferred = Q.defer();
         var query = {
@@ -279,8 +328,18 @@ module.exports = function(app) {
                     console.log("err : ", err);
                     deferred.reject("DB error");
                 } else {
-                    deferred.resolve(user.friends);
-                }
+                    if (!(_.isEmpty(user.friends))){
+                        var promiseArray = [];
+                        user.friends.forEach(function(friendId) {
+                            promiseArray.push(getFriendUsername(friendId));
+                        });
+                        Q.all(promiseArray).then(function(friendUsernames) {
+                            deferred.resolve(friendUsernames);
+                        });
+                    } else {
+                        deferred.resolve(null);
+                   }
+                } 
             });
         });
         return deferred.promise;
@@ -312,17 +371,23 @@ module.exports = function(app) {
 
     app.get("/compare", sessionManager.requiresSession, function(req, res) {
         var requesterUsername = req.session.requesterUsername;
+        var emailIdsMap;
         if (requesterUsername) {
             createEmailIdPromiseArray(req.session.username, requesterUsername)
                 .then(function(emailIds) {
+                    emailIdsMap = emailIds;
                     return Q.all(emailIds);
                 })
                 .then(doesEmailMappingExist)
                 .then(function(emailMapExists) {
                     console.log("Mapping exists ", emailMapExists);
                     if (emailMapExists) {
-                        addFriendTo(requesterUsername, req.session.username);
-                        addFriendTo(req.session.username, requesterUsername);
+                        var promiseArray = [];
+                        promiseArray.push(addFriendTo(requesterUsername, req.session.username));
+                        promiseArray.push(addFriendTo(req.session.username, requesterUsername));
+                        Q.all(promiseArray).then(function() {
+                            deleteUserInvitesEntryFor(emailIdsMap);
+                        });
                     } 
                     delete req.session.requesterUsername;
                     res.redirect("/compare");
@@ -576,7 +641,10 @@ module.exports = function(app) {
         emailTemplates(emailConfigOptions, function(err, emailRender) {
             var context = {
                 acceptUrl: acceptUrl,
-                rejectUrl: rejectUrl
+                rejectUrl: rejectUrl,
+                friendName: sessionUsername,
+                yourName: sessionUsername,
+                yourEmailId: userInviteMap.from
             };
             emailRender('invite.eml.html', context, function(err, html, text) {
                 sendgrid.send({
