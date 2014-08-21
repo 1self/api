@@ -2920,7 +2920,7 @@ a.twitter-share-button {
     margin: 0;
 }
 #live-country canvas{
-    margin: 0 auto;
+    margin: 0 auto 10px auto;
     display: block;
 }
 @media screen and (max-width: 500px) {
