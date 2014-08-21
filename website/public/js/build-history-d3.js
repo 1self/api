@@ -19,7 +19,13 @@ window.qd.plotBuildHistory = function() {
         .attr("height", h)
         .append("svg:g")
         .attr("transform", "translate(" + p[3] + "," + (h - p[2]) + ")");
-
+    var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        .offset([-10, 0])
+        .html(function(d) {
+            return "<strong>" + d.y + " build(s)</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>";
+        });
+    svg.call(tip);
     buildHistory = window.qd.buildEvents;
 
     // Transpose the data into layers by cause.
@@ -67,7 +73,9 @@ window.qd.plotBuildHistory = function() {
         .attr("height", function(d) {
             return y(d.y);
         })
-        .attr("width", x.rangeBand());
+        .attr("width", x.rangeBand())
+        .on("mouseover", tip.show)
+        .on("mouseout", tip.hide);
 
     //    Add a label per date
     var label = svg.selectAll("text.month")
@@ -128,7 +136,7 @@ window.qd.plotBuildHistory = function() {
         .attr("y", 8)
         .attr("dy", ".35em")
         .attr("transform", "rotate(-90)")
-        .style("font-size","12px")
+        .style("font-size", "12px")
         .text(function(d) {
             return d !== 0 ? "" : "Build Count";
         });
@@ -164,7 +172,7 @@ window.qd.plotBuildHistory = function() {
         .attr("x", w - p[3] - p[1] - 30)
         .attr("y", -10)
         .attr("dy", ".35em")
-        .style("font-size","12px")
+        .style("font-size", "12px")
         .text(function(d) {
             return d !== 0 ? "" : "Date";
         });

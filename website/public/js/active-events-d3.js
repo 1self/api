@@ -32,6 +32,13 @@ window.qd.plotActiveEvents = function() {
         });
     }));
 
+    var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        .offset([-10, 0])
+        .html(function(d) {
+            return "<strong>"+d.y+"mins</strong> <span style='color:lightgrey'> on "+moment(d.x).format("ddd MMM DD")+"</span>";
+        });
+    svg.call(tip);
     // Compute the x-domain (by date) and y-domain (by top).        
     x.domain(activeEventsByResult[0].map(function(d) {
         return d.x;
@@ -53,7 +60,6 @@ window.qd.plotActiveEvents = function() {
         .style("stroke", function(d, i) {
             return d3.rgb(z(i)).darker();
         });
-
     // Add a rect for each date.
     var rect = cause.selectAll("rect")
         .data(Object)
@@ -67,7 +73,9 @@ window.qd.plotActiveEvents = function() {
         .attr("height", function(d) {
             return y(d.y);
         })
-        .attr("width", x.rangeBand());
+        .attr("width", x.rangeBand())
+        .on("mouseover", tip.show)
+        .on("mouseout", tip.hide);
 
     //    Add a label per date
     var label = svg.selectAll("text.month")
@@ -167,4 +175,5 @@ window.qd.plotActiveEvents = function() {
         .text(function(d) {
             return d !== 0 ? "" : "Date";
         });
+
 };

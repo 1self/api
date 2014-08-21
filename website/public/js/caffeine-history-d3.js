@@ -19,7 +19,13 @@ window.qd.plotCaffeineHistory = function() {
         .attr("height", h)
         .append("svg:g")
         .attr("transform", "translate(" + p[3] + "," + (h - p[2]) + ")");
-
+    var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        .offset([-10, 0])
+        .html(function(d) {
+            return "<strong>" + d.y + " cup(s)</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>";
+        });
+    svg.call(tip);
     caffeineHistory = window.qd.caffeineEvents;
 
     // Transpose the data into layers by cause.
@@ -66,7 +72,9 @@ window.qd.plotCaffeineHistory = function() {
         .attr("height", function(d) {
             return y(d.y);
         })
-        .attr("width", x.rangeBand());
+        .attr("width", x.rangeBand())
+        .on("mouseover", tip.show)
+        .on("mouseout", tip.hide);
 
     //    Add a label per date
     var label = svg.selectAll("text.month")
