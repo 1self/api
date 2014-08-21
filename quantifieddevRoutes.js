@@ -372,7 +372,7 @@ module.exports = function(app) {
     app.get("/compare", sessionManager.requiresSession, function(req, res) {
         var requesterUsername = req.session.requesterUsername;
         var emailIdsMap;
-        if (requesterUsername) {
+        if (req.session.requesterUsername) {
             createEmailIdPromiseArray(req.session.username, requesterUsername)
                 .then(function(emailIds) {
                     emailIdsMap = emailIds;
