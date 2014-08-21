@@ -632,7 +632,7 @@ module.exports = function(app) {
         res.render('rejectMessage');
     });
 
-    var sendUserInviteEmail = function(userInviteMap, sessionUsername) {
+    var sendUserInviteEmail = function(userInviteMap, sessionUsername, yourName) {
         var deferred = Q.defer();
 
         var acceptUrl = CONTEXT_URI + "/accept?reqUsername=" + sessionUsername;
@@ -643,14 +643,14 @@ module.exports = function(app) {
                 acceptUrl: acceptUrl,
                 rejectUrl: rejectUrl,
                 friendName: userInviteMap.to,
-                yourName: sessionUsername,
+                yourName: yourName,
                 yourEmailId: userInviteMap.from
             };
             emailRender('invite.eml.html', context, function(err, html, text) {
                 sendgrid.send({
                     to: userInviteMap.to,
                     from: QD_EMAIL,
-                    subject: sessionUsername + ' wants to share their data',
+                    subject: yourName + ' wants to share their data',
                     html: html
                 }, function(err, json) {
                     if (err) {
@@ -668,6 +668,10 @@ module.exports = function(app) {
 
     app.get('/request_to_compare_with_username', sessionManager.requiresSession, function(req, res) {
         var friendsUsername = req.query.friendsUsername;
+        var yourName = req.query.yourName;
+
+        console.log("Session username", req.session.username);
+        console.log("friendsUsername", friendsUsername);
 
         createEmailIdPromiseArray(req.session.username, friendsUsername)
             .then(function(emailIds) {
@@ -675,7 +679,7 @@ module.exports = function(app) {
             })
             .then(createUserInvitesEntry)
             .then(function(userInviteMap) {
-                return sendUserInviteEmail(userInviteMap, req.session.username);
+                return sendUserInviteEmail(userInviteMap, req.session.username, yourName);
             }).
             then(function(){
                 res.send(200, "success");
@@ -687,6 +691,7 @@ module.exports = function(app) {
 
     app.get('/request_to_compare_with_email', sessionManager.requiresSession, function(req, res) {
         var friendsEmail = req.query.friendsEmail;
+        var yourName = req.query.yourName;
 
         getEmailId(req.session.username)
             .then(function(myEmail) {
@@ -694,7 +699,7 @@ module.exports = function(app) {
             })
             .then(createUserInvitesEntry)
             .then(function(userInviteMap) {
-                return sendUserInviteEmail(userInviteMap, req.session.username);
+                return sendUserInviteEmail(userInviteMap, req.session.username, yourName);
             }).
             then(function(){
                 res.send(200, "success");
