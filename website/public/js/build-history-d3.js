@@ -36,7 +36,6 @@ window.qd.plotBuildHistory = function() {
     x.domain(buildsByResult[0].map(function(d) {
         return d.x;
     }));
-    xTicks.domain(_.range(0, 31));
     xLinear.domain([0, buildsByResult[0].length]);
     y.domain([0, d3.max(buildsByResult[buildsByResult.length - 1], function(d) {
         return d.y0 + d.y;
@@ -129,6 +128,7 @@ window.qd.plotBuildHistory = function() {
         .attr("y", 8)
         .attr("dy", ".35em")
         .attr("transform", "rotate(-90)")
+        .style("font-size","12px")
         .text(function(d) {
             return d !== 0 ? "" : "Build Count";
         });
@@ -173,6 +173,7 @@ window.qd.plotBuildHistory = function() {
         .attr("x", w - p[3] - p[1] - 30)
         .attr("y", -10)
         .attr("dy", ".35em")
+        .style("font-size","12px")
         .text(function(d) {
             return d !== 0 ? "" : "Date";
         });
