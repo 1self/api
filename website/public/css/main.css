@@ -2935,6 +2935,9 @@ a.twitter-share-button {
     .pull-xs-left {
         float: left!important;
     }
+    .mobile-margin-bottom-five{
+     margin-bottom: 5px;   
+    }
     .ex-sm-margin-top-ten {
         margin-top: 10px;
     }
@@ -2957,4 +2960,5 @@ a.twitter-share-button {
     .popover {
         max-width: 300px; 
     }
+
 }
