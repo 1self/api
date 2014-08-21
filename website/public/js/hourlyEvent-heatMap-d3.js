@@ -44,9 +44,10 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
         var maximumEventValue = d3.max([1, d3.max(data, function(d) {
             return d.value;
         })]);
+        var colorsRequired = _.first(colors,maximumEventValue!==1?maximumEventValue-1:maximumEventValue);
         var colorScale = d3.scale.quantile()
             .domain([1, maximumEventValue])
-            .range(colors);
+            .range(colorsRequired);
         var createSvg = function(width, height) {
             d3.select(divId).selectAll("svg").remove();
             return d3.select(divId).append("svg")
@@ -148,7 +149,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                 .attr("height", legendElementWidth + 10)
                 .attr("width", gridSize / 2)
                 .style("fill", function(d, i) {
-                    return colors[i];
+                    return colorsRequired[i];
                 });
 
             legend.append("text")
@@ -191,13 +192,13 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                 .attr("width", legendElementWidth)
                 .attr("height", gridSize / 2)
                 .style("fill", function(d, i) {
-                    return colors[i];
+                    return colorsRequired[i];
                 });
 
             legend.append("text")
                 .attr("class", "mono")
                 .text(function(d) {
-                    return "≥ " + Math.round(d * 10) / 10;
+                    return "≥ " + Math.round(d);
                 })
                 .attr("font-size", "10px")
                 .attr("x", function(d, i) {

@@ -137,7 +137,6 @@ window.qd.plotHydrationHistory = function() {
         .enter().append("svg:g")
         .attr("class", "ruleForX")
         .attr("transform", function(d) {
-            console.log(x.rangeBand());
             var xValue = (x.rangeBand() * d);
             return "translate(" + xValue + ",0)";
         });
