@@ -642,7 +642,7 @@ module.exports = function(app) {
             var context = {
                 acceptUrl: acceptUrl,
                 rejectUrl: rejectUrl,
-                friendName: sessionUsername,
+                friendName: userInviteMap.to,
                 yourName: sessionUsername,
                 yourEmailId: userInviteMap.from
             };
@@ -650,7 +650,7 @@ module.exports = function(app) {
                 sendgrid.send({
                     to: userInviteMap.to,
                     from: QD_EMAIL,
-                    subject: sessionUsername + ' wants to compare with your data',
+                    subject: sessionUsername + ' wants to share their data',
                     html: html
                 }, function(err, json) {
                     if (err) {
