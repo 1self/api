@@ -131,7 +131,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                 .attr('class', 'd3-tip')
                 .offset([-10, 0])
                 .html(function(d) {
-                    return "<strong>" + d.value + (d.value === 1 ? " push" : " pushes") + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day).format('ddd') + " at " + moment().hours(d.hour+1).format('h a') + "</span>";
+                    return "<strong>" + d.value + (d.value === 1 ? " event" : " events") + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day).format('ddd') + " at " + moment().hours(d.hour+1).format('h a') + "</span>";
                 });
             svg.call(tip);
             var dayLabels = createDayLabels(svg, "y", "x", 10, gridDaySize, "translate(" + gridDaySize / 1.5 + ",-6)");
