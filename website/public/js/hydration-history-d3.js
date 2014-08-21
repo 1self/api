@@ -23,7 +23,8 @@ window.qd.plotHydrationHistory = function() {
         .attr('class', 'd3-tip')
         .offset([-10, 0])
         .html(function(d) {
-            return "<strong>" + d.y + " glass(es)</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>";
+            return "<strong>" + d.y + (d.y === 1 ? " glass" : " glasses") +
+                "</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>";
         });
     svg.call(tip);
     hydrationHistory = window.qd.hydrationEvents;

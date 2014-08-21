@@ -44,7 +44,7 @@ window.qd.plotWTFHistory = function() {
         .attr('class', 'd3-tip')
         .offset([-10, 0])
         .html(function(d) {
-            return "<strong>" + d.y + " wtf(s)</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>";
+            return "<strong>" + d.y + (d.y === 1 ? " WTF" : " WTFs") + "</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>";
         });
     svg.call(tip);
     // Add a group for each cause.

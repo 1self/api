@@ -23,7 +23,7 @@ window.qd.plotBuildDurationHistory = function() {
         .attr('class', 'd3-tip')
         .offset([-10, 0])
         .html(function(d) {
-            return "<strong>" + d.y + "mins</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>";
+            return "<strong>" + d.y + " mins</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>";
         });
     svg.call(tip);
     buildDurationHistory = window.qd.buildDurationEvents;

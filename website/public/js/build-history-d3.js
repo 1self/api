@@ -23,7 +23,7 @@ window.qd.plotBuildHistory = function() {
         .attr('class', 'd3-tip')
         .offset([-10, 0])
         .html(function(d) {
-            return "<strong>" + d.y + " build(s)</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>";
+            return "<strong>" + d.y + (d.y === 1 ? " build" : " builds") + "</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>";
         });
     svg.call(tip);
     buildHistory = window.qd.buildEvents;
