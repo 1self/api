@@ -124,6 +124,14 @@ window.qd.plotBuildHistory = function() {
         .attr("x", -12)
         .attr("dy", ".35em")
         .text(d3.format(",d"));
+    rule.append("svg:text")
+        .attr("x", (h - p[2] - p[0] - 58))
+        .attr("y", 8)
+        .attr("dy", ".35em")
+        .attr("transform", "rotate(-90)")
+        .text(function(d) {
+            return d !== 0 ? "" : "Build Count";
+        });
 
     var ruleForX = svg.selectAll("g.ruleForX")
         .data(xTicks.ticks(30))
@@ -150,10 +158,10 @@ window.qd.plotBuildHistory = function() {
             return d !== 0 ? "#fff" : "#000";
         })
         .style("stroke-opacity", function(d) {
-            return .7;
+            return d !== 0 ? 0 : .7;
         });
 
-    /*var label = svg.selectAll("g.labelForX")
+    var label = svg.selectAll("g.labelForX")
         .append("svg:text")
         .attr("x", -0)
         .attr("y", -(h - p[2] - p[0] - 50))
@@ -162,14 +170,13 @@ window.qd.plotBuildHistory = function() {
         .text("Number of Builds");
 
     ruleForX.append("svg:text")
-        .attr("x", w - p[3] - p[1] - 25)
+        .attr("x", w - p[3] - p[1] - 30)
         .attr("y", -10)
         .attr("dy", ".35em")
         .text(function(d) {
-            console.log(d)
-            return d == 30 ? "Date" : "";
+            return d !== 0 ? "" : "Date";
         });
-*/
+
     // Failed Builds Average:
     var failedBuildsMovingAverage = d3.svg.line()
         .x(function(d, i) {
