@@ -240,7 +240,7 @@ module.exports = function(app) {
             });
         }
     });
-    
+
     var getUserId = function(username) {
         var deferred = Q.defer();
         var user = {
@@ -248,7 +248,7 @@ module.exports = function(app) {
         };
         mongoDbConnection(function(qdDb) {
             qdDb.collection("users", function(err, collection) {
-                collection.findOne(user, function(err, data){
+                collection.findOne(user, function(err, data) {
                     if (err) {
                         console.log("DB error", err);
                         deferred.reject(err);
@@ -263,14 +263,14 @@ module.exports = function(app) {
     };
 
     var addFriendTo = function(friendUsername, myUsername) {
-        var deferred = Q.defer();        
+        var deferred = Q.defer();
         var promiseArray = [];
 
         promiseArray.push(getUserId(myUsername.toLowerCase()));
         promiseArray.push(getUserId(friendUsername.toLowerCase()));
 
         Q.all(promiseArray).then(function(userIds) {
-            
+
             var user = {
                 "username": myUsername.toLowerCase()
             };
@@ -295,7 +295,7 @@ module.exports = function(app) {
                     });
                 });
             });
-        } );
+        });
         return deferred.promise;
     };
 
@@ -306,10 +306,10 @@ module.exports = function(app) {
         };
         mongoDbConnection(function(qdDb) {
             qdDb.collection('users').findOne(query, function(err, user) {
-                if(err) {
+                if (err) {
                     console.log("DB error", err);
                     deferred.reject(err);
-                }else {
+                } else {
                     deferred.resolve(user.username);
                 }
             });
@@ -328,7 +328,7 @@ module.exports = function(app) {
                     console.log("err : ", err);
                     deferred.reject("DB error");
                 } else {
-                    if (!(_.isEmpty(user.friends))){
+                    if (!(_.isEmpty(user.friends))) {
                         var promiseArray = [];
                         user.friends.forEach(function(friendId) {
                             promiseArray.push(getFriendUsername(friendId));
@@ -338,8 +338,8 @@ module.exports = function(app) {
                         });
                     } else {
                         deferred.resolve(null);
-                   }
-                } 
+                    }
+                }
             });
         });
         return deferred.promise;
@@ -356,12 +356,12 @@ module.exports = function(app) {
                     console.log("err : ", err);
                     deferred.reject("DB error");
                 } else {
-                    if (!(_.isEmpty(user.githubUser.displayName))){
+                    if (!(_.isEmpty(user.githubUser.displayName))) {
                         deferred.resolve(user.githubUser.displayName);
                     } else {
                         deferred.resolve(username);
                     }
-                } 
+                }
             });
         });
         return deferred.promise;
@@ -380,7 +380,7 @@ module.exports = function(app) {
                         console.log("Error", err);
                         deferred.reject(false);
                     } else {
-                        if(_.isEmpty(data)) {
+                        if (_.isEmpty(data)) {
                             deferred.resolve(false);
                         } else {
                             deferred.resolve(true);
@@ -410,9 +410,12 @@ module.exports = function(app) {
                         Q.all(promiseArray).then(function() {
                             deleteUserInvitesEntryFor(emailIdsMap);
                         });
-                    } 
+                    }
                     delete req.session.requesterUsername;
                     res.redirect("/compare");
+                })
+                .catch(function(error) {
+                    res.status(404).send("Can not complete request!");
                 });
         } else {
             fetchFriendList(req.session.username).then(function(friends) {
@@ -612,8 +615,8 @@ module.exports = function(app) {
                 deferred.resolve(primaryEmail);
             })
             .catch(function(error) {
-                console.log("DB error", error);
-                deferred.reject("Error", error);
+                console.log("DB error in getting Email id ", error);
+                deferred.reject(error);
             });
         return deferred.promise;
     };
@@ -709,9 +712,9 @@ module.exports = function(app) {
             .then(function(userInviteMap) {
                 return sendUserInviteEmail(userInviteMap, req.session.username, yourName);
             }).
-            then(function(){
-                res.send(200, "success");
-            })
+        then(function() {
+            res.send(200, "success");
+        })
             .catch(function(error) {
                 res.status(404).send("stream not found");
             });
@@ -729,9 +732,9 @@ module.exports = function(app) {
             .then(function(userInviteMap) {
                 return sendUserInviteEmail(userInviteMap, req.session.username, yourName);
             }).
-            then(function(){
-                res.send(200, "success");
-            })
+        then(function() {
+            res.send(200, "success");
+        })
             .catch(function(error) {
                 res.status(404).send("stream not found");
             });
