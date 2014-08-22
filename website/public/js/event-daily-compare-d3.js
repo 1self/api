@@ -46,7 +46,13 @@ window.qd.plotDailyComparison = function(divId, myDailyEvents, theirDailyEvents)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
+  var tip = d3.tip()
+    .attr('class', 'd3-tip')
+    .offset([-10, 0])
+    .html(function(d) {
+      return "<strong>" + d.dailyEventCount + (d.dailyEventCount === 1 ? " event" : " events") + "</strong> <span style='color:lightgrey'> on " + d.day + "</span>";
+    });
+  svg.call(tip);
   var events = d3.set(data.map(function(line) {
     return line.dataFor;
   })).values();
@@ -76,6 +82,7 @@ window.qd.plotDailyComparison = function(divId, myDailyEvents, theirDailyEvents)
   svg.selectAll("rect")
     .data(data)
     .enter().append("rect")
+    .attr("class", "bar")
     .attr("width", x1.rangeBand())
     .attr("x", function(d) {
       return x0(d.day) + x1(d.dataFor);
@@ -88,7 +95,9 @@ window.qd.plotDailyComparison = function(divId, myDailyEvents, theirDailyEvents)
     })
     .style("fill", function(d) {
       return color(d.dataFor);
-    });
+    })
+    .on("mouseover", tip.show)
+    .on("mouseout", tip.hide);
 
   var legend = svg.selectAll(".legend")
     .data(events.slice().reverse())

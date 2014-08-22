@@ -17,7 +17,13 @@ window.qd.plotComparisonForActiveEvents = function(divId, myActiveEvents, theirA
 		.attr("height", h)
 		.append("svg:g")
 		.attr("transform", "translate(" + p[3] + "," + (h - p[2]) + ")");
-
+	var tip = d3.tip()
+		.attr('class', 'd3-tip')
+		.offset([-10, 0])
+		.html(function(d) {
+			return "<strong>" + Math.round(d.y) + "mins</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>";
+		});
+	svg.call(tip);
 	var _groupActiveEvents = function(eventsMap) {
 		return ["totalActiveDuration"].map(function(cause) {
 			return eventsMap.map(function(d) {
@@ -57,6 +63,20 @@ window.qd.plotComparisonForActiveEvents = function(divId, myActiveEvents, theirA
 			.style("stroke-dasharray", dashArrayValue)
 			.style("stroke-width", 2);
 
+		svg.selectAll("dot")
+			.data(dataArray)
+			.enter().append("circle")
+			.attr("r", 2)
+			.attr("cx", function(d) {
+				return x(d.x);
+			})
+			.attr("cy", function(d) {
+				console.log(d.y)
+				return -y(d.y);
+			})
+			.attr("fill",color)
+			.on("mouseover", tip.show)
+			.on("mouseout", tip.hide);
 	};
 	var _createAxesAndLabels = function() {
 		//    Add a label per date
