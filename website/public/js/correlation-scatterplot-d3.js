@@ -48,7 +48,7 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 		.attr('class', 'd3-tip')
 		.offset([-10, 0])
 		.html(function(d) {
-			return "<strong>Active programming duration of " + xValue(d) + " mins with " + yValue(d) +" github"+ (yValue(d)===1?" push":" pushes")+"</strong> <span style='color:lightgrey'> on " + moment().days(d.date).format("ddd MMM DD") + "</span>";
+			return "<strong>Active programming duration of " + xValue(d) + " mins with " + yValue(d) +" github"+ (yValue(d)===1?" push":" pushes")+"</strong> <span style='color:lightgrey'> on " + moment(d.date).format("ddd MMM DD") + "</span>";
 		});
 	svg.call(tip);
 	var _plotGraph = function() {
