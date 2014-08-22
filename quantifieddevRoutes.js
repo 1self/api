@@ -408,7 +408,7 @@ module.exports = function(app) {
                 };
                 emailRender('acceptCompareRequest.eml.html', context, function(err, html, text) {
                     sendgrid.send({
-                        to: userInviteMap[1], //userInviteMap.to,
+                        to: userInviteMap[1],
                         from: QD_EMAIL,
                         subject: requesteeFullname + " accepted, it’s time to compare!",
                         html: html
@@ -426,6 +426,40 @@ module.exports = function(app) {
         return deferred.promise;
     };
 
+    var sendRejectEmail = function(userInviteMap, requesteeUsername, requesterUsername) {
+        var deferred = Q.defer();
+        var promiseArray = [];
+        promiseArray.push(getFullName(requesteeUsername));
+        promiseArray.push(getFullName(requesterUsername));
+
+        Q.all(promiseArray).then(function(names) {
+            var requesteeFullname = names[0];
+            var requesterFullname = names[1];
+
+            emailTemplates(emailConfigOptions, function(err, emailRender) {
+                var context = {
+                    requesteeFullname: requesteeFullname,
+                    requesterFullname: requesterFullname
+                };
+                emailRender('rejectCompareRequest.eml.html', context, function(err, html, text) {
+                    sendgrid.send({
+                        to: userInviteMap[1], //userInviteMap.to,
+                        from: QD_EMAIL,
+                        subject: requesteeFullname + " declined, try someone else",
+                        html: html
+                    }, function(err, json) {
+                        if (err) {
+                            console.error("", err);
+                            deferred.reject(err);
+                        } else {
+                            deferred.resolve();
+                        }
+                    });
+                });
+            });
+        });
+        return deferred.promise;
+    };
 
     app.get("/compare", sessionManager.requiresSession, function(req, res) {
         var requesterUsername = req.session.requesterUsername;
@@ -697,9 +731,10 @@ module.exports = function(app) {
     app.get('/reject', sessionManager.requiresSession, function(req, res) {
         createEmailIdPromiseArray(req.session.username, req.query.reqUsername)
             .then(function(emailIds) {
+                sendRejectEmail(emailIds, req.session.username, req.query.reqUsername);
                 return Q.all(emailIds);
             })
-            .then(deleteUserInvitesEntryFor);
+            .then(deleteUserInvitesEntryFor); 
         res.render('rejectMessage');
     });
 
