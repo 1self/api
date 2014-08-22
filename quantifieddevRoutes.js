@@ -415,22 +415,25 @@ module.exports = function(app) {
                     res.redirect("/compare");
                 })
                 .catch(function(error) {
-                    res.status(404).send("Can not complete request!");
+                    delete req.session.requesterUsername;
+                    res.redirect("/dashboard");
                 });
         } else {
-            fetchFriendList(req.session.username).then(function(friends) {
-                getFullName(req.session.username).then(function(fullName) {
-                    res.render('compare', {
-                        username: req.session.username,
-                        avatarUrl: req.session.avatarUrl,
-                        friends: friends,
-                        fullName: fullName
-                    });
-                }).catch(function(err) {
-                    console.log("Error is ", err);
-                    res.redirect("/");
-                });;
-            });
+            fetchFriendList(req.session.username)
+                .then(function(friends) {
+                    getFullName(req.session.username)
+                        .then(function(fullName) {
+                            res.render('compare', {
+                                username: req.session.username,
+                                avatarUrl: req.session.avatarUrl,
+                                friends: friends,
+                                fullName: fullName
+                            });
+                        }).catch(function(err) {
+                            console.log("Error is ", err);
+                            res.redirect("/");
+                        });;
+                });
         }
     });
 
