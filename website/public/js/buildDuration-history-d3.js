@@ -23,7 +23,7 @@ window.qd.plotBuildDurationHistory = function() {
         .attr('class', 'd3-tip')
         .offset([-10, 0])
         .html(function(d) {
-            return "<strong>" + d.y + " mins</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>";
+            return "<strong>" + d.y + " secs</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>";
         });
     svg.call(tip);
     buildDurationHistory = window.qd.buildDurationEvents;
@@ -63,6 +63,7 @@ window.qd.plotBuildDurationHistory = function() {
     var rect = cause.selectAll("rect")
         .data(Object)
         .enter().append("svg:rect")
+        .attr("class", "bar")
         .attr("x", function(d) {
             return x(d.x);
         })
@@ -137,7 +138,7 @@ window.qd.plotBuildDurationHistory = function() {
         .attr("transform", "rotate(-90)")
         .style("font-size", "12px")
         .text(function(d) {
-            return d !== 0 ? "" : "Duration(mins)";
+            return d !== 0 ? "" : "Duration(secs)";
         });
     var ruleForX = svg.selectAll("g.ruleForX")
         .data(xTicks.ticks(30))
@@ -174,51 +175,6 @@ window.qd.plotBuildDurationHistory = function() {
         .text(function(d) {
             return d !== 0 ? "" : "Date";
         });
-    // Build Duration Average:
-    var buildDurationMovingAverage = d3.svg.line()
-        .x(function(d, i) {
-            return xLinear(i);
-        })
-        .y(function(d, i) {
-            var filteredData = buildDurationHistory.filter(function(rangeDay, fi) {
-                var extent = 5;
-                var end = 0;
-                var begin = 5;
-
-                if (day == 0) {
-                    end += 2;
-                    begin += 2;
-                }
-                if (day == 6) {
-                    end += 1;
-                    begin += 1;
-                }
-                var day = new Date(rangeDay.date).getDay();
-                if (fi > i - 7 && fi <= i) {
-                    return rangeDay;
-                }
-            });
-
-            var curval = d3.mean(filteredData, function(d) {
-                return +d.avgBuildDuration;
-            });
-            return -y(curval); // going up in height so need to go negative
-        })
-        .interpolate("basis");
-
-    svg.append("path")
-        .attr("class", "average")
-        .attr("d", buildDurationMovingAverage(buildDurationHistory))
-        .style("fill", "none")
-        .style("stroke", "blue")
-        .style("stroke-width", 2);
-
-    var weekDays = buildDurationHistory.filter(function(day, fi) {
-        var dayOfWeek = new Date(day.date).getDay();
-        if (dayOfWeek != 0 && dayOfWeek != 6) {
-            return day;
-        }
-    });
 
     // add legend
     var legendSvg = d3.select("#buildDuration-history").append("svg:svg")
@@ -235,7 +191,7 @@ window.qd.plotBuildDurationHistory = function() {
         .attr("width", 100);
 
     var legendColours = [
-        ["avg build duration(sec)", "blue"]
+        ["avg build duration(sec)", "lightblue"]
     ]
 
     legend.selectAll("g").data(legendColours)

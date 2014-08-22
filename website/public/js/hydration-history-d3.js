@@ -64,6 +64,7 @@ window.qd.plotHydrationHistory = function() {
     var rect = cause.selectAll("rect")
         .data(Object)
         .enter().append("svg:rect")
+        .attr("class", "bar")
         .attr("x", function(d) {
             return x(d.x);
         })
@@ -177,52 +178,6 @@ window.qd.plotHydrationHistory = function() {
             return d !== 0 ? "" : "Date";
         });
 
-    // hydration Average:
-    var hydrationsMovingAverage = d3.svg.line()
-        .x(function(d, i) {
-            return xLinear(i);
-        })
-        .y(function(d, i) {
-            var filteredData = hydrationHistory.filter(function(rangeDay, fi) {
-                var extent = 5;
-                var end = 0;
-                var begin = 5;
-
-                if (day == 0) {
-                    end += 2;
-                    begin += 2;
-                }
-                if (day == 6) {
-                    end += 1;
-                    begin += 1;
-                }
-                var day = new Date(rangeDay.date).getDay();
-                if (fi > i - 7 && fi <= i) {
-                    return rangeDay;
-                }
-            });
-
-            var curval = d3.mean(filteredData, function(d) {
-                return +d.hydrationCount;
-            });
-            return -y(curval); // going up in height so need to go negative
-        })
-        .interpolate("basis");
-
-    svg.append("path")
-        .attr("class", "average")
-        .attr("d", hydrationsMovingAverage(hydrationHistory))
-        .style("fill", "none")
-        .style("stroke", "blue")
-        .style("stroke-width", 2);
-
-    var weekDays = hydrationHistory.filter(function(day, fi) {
-        var dayOfWeek = new Date(day.date).getDay();
-        if (dayOfWeek != 0 && dayOfWeek != 6) {
-            return day;
-        }
-    });
-
     // add legend
     var legendSvg = d3.select("#hydration-history").append("svg:svg")
         .attr("width", w)
@@ -238,7 +193,7 @@ window.qd.plotHydrationHistory = function() {
         .attr("width", 100);
 
     var legendColours = [
-        ["number of glasses", "blue"]
+        ["number of glasses", "lightblue"]
     ]
 
     legend.selectAll("g").data(legendColours)

@@ -36,7 +36,7 @@ window.qd.plotActiveEvents = function() {
         .attr('class', 'd3-tip')
         .offset([-10, 0])
         .html(function(d) {
-            return "<strong>"+d.y+"mins</strong> <span style='color:lightgrey'> on "+moment(d.x).format("ddd MMM DD")+"</span>";
+            return "<strong>" + Math.round(d.y) + "mins</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>";
         });
     svg.call(tip);
     // Compute the x-domain (by date) and y-domain (by top).        
@@ -64,6 +64,7 @@ window.qd.plotActiveEvents = function() {
     var rect = cause.selectAll("rect")
         .data(Object)
         .enter().append("svg:rect")
+        .attr("class", "bar")
         .attr("x", function(d) {
             return x(d.x);
         })
