@@ -176,52 +176,6 @@ window.qd.plotCaffeineHistory = function() {
             return d !== 0 ? "" : "Date";
         });
 
-    // caffeine Average:
-    var caffeineMovingAverage = d3.svg.line()
-        .x(function(d, i) {
-            return xLinear(i);
-        })
-        .y(function(d, i) {
-            var filteredData = caffeineHistory.filter(function(rangeDay, fi) {
-                var extent = 5;
-                var end = 0;
-                var begin = 5;
-
-                if (day == 0) {
-                    end += 2;
-                    begin += 2;
-                }
-                if (day == 6) {
-                    end += 1;
-                    begin += 1;
-                }
-                var day = new Date(rangeDay.date).getDay();
-                if (fi > i - 7 && fi <= i) {
-                    return rangeDay;
-                }
-            });
-
-            var curval = d3.mean(filteredData, function(d) {
-                return +d.caffeineCount;
-            });
-            return -y(curval); // going up in height so need to go negative
-        })
-        .interpolate("basis");
-
-    svg.append("path")
-        .attr("class", "average")
-        .attr("d", caffeineMovingAverage(caffeineHistory))
-        .style("fill", "none")
-        .style("stroke", "black")
-        .style("stroke-width", 2);
-
-    var weekDays = caffeineHistory.filter(function(day, fi) {
-        var dayOfWeek = new Date(day.date).getDay();
-        if (dayOfWeek != 0 && dayOfWeek != 6) {
-            return day;
-        }
-    });
-
     // add legend
     var legendSvg = d3.select("#caffeine-history").append("svg:svg")
         .attr("width", w)
@@ -237,7 +191,7 @@ window.qd.plotCaffeineHistory = function() {
         .attr("width", 100);
 
     var legendColours = [
-        ["caffeine", "black"]
+        ["caffeine", "brown"]
     ]
 
     legend.selectAll("g").data(legendColours)

@@ -176,52 +176,6 @@ window.qd.plotWTFHistory = function() {
             return d !== 0 ? "" : "Date";
         });
 
-    // wtf Average:
-    var wtfsMovingAverage = d3.svg.line()
-        .x(function(d, i) {
-            return xLinear(i);
-        })
-        .y(function(d, i) {
-            var filteredData = wtfHistory.filter(function(rangeDay, fi) {
-                var extent = 5;
-                var end = 0;
-                var begin = 5;
-
-                if (day == 0) {
-                    end += 2;
-                    begin += 2;
-                }
-                if (day == 6) {
-                    end += 1;
-                    begin += 1;
-                }
-                var day = new Date(rangeDay.date).getDay();
-                if (fi > i - 7 && fi <= i) {
-                    return rangeDay;
-                }
-            });
-
-            var curval = d3.mean(filteredData, function(d) {
-                return +d.wtfCount;
-            });
-            return -y(curval); // going up in height so need to go negative
-        })
-        .interpolate("basis");
-
-    svg.append("path")
-        .attr("class", "average")
-        .attr("d", wtfsMovingAverage(wtfHistory))
-        .style("fill", "none")
-        .style("stroke", "red")
-        .style("stroke-width", 2);
-
-    var weekDays = wtfHistory.filter(function(day, fi) {
-        var dayOfWeek = new Date(day.date).getDay();
-        if (dayOfWeek != 0 && dayOfWeek != 6) {
-            return day;
-        }
-    });
-
     // add legend
     var legendSvg = d3.select("#wtf-history").append("svg:svg")
         .attr("width", w)
@@ -237,7 +191,7 @@ window.qd.plotWTFHistory = function() {
         .attr("width", 100);
 
     var legendColours = [
-        ["number of wtfs", "red"]
+        ["number of wtfs", "lightpink"]
     ]
 
     legend.selectAll("g").data(legendColours)

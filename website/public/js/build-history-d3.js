@@ -180,123 +180,6 @@ window.qd.plotBuildHistory = function() {
             return d !== 0 ? "" : "Date";
         });
 
-    // Failed Builds Average:
-    var failedBuildsMovingAverage = d3.svg.line()
-        .x(function(d, i) {
-            //return xLinear(i) * w;
-            return xLinear(i);
-        })
-        .y(function(meanDay, i) {
-            var filteredData = buildHistory.filter(function(rangeDay, fi) {
-
-
-                var extent = 5;
-                var end = 0;
-                var begin = 5;
-
-                if (day == 0) {
-                    end += 2;
-                    begin += 2;
-                }
-
-                if (day == 6) {
-                    end += 1;
-                    begin += 1;
-                }
-
-                var day = new Date(rangeDay.date).getDay();
-                var sat = 6;
-                var sun = 0;
-                if (fi > i - 7 && fi <= i) {
-                    return rangeDay;
-                }
-            })
-            var curval = d3.mean(filteredData, function(d) {
-                return +d.failed;
-            });
-
-            // When we're starting from the beginning of the range, the rolling average doesn't work.
-            curval = curval || null;
-            return -y(curval); // going up in height so need to go negative
-        })
-        .interpolate("basis");
-
-    svg.append("path")
-        .attr("class", "average")
-        .attr("d", failedBuildsMovingAverage(buildHistory))
-        .style("fill", "none")
-        .style("stroke", "red")
-        .style("stroke-width", 2);
-
-    // Successful Builds Average:
-    var passedBuildsMovingAverage = d3.svg.line()
-        .x(function(d, i) {
-            return xLinear(i);
-        })
-        .y(function(d, i) {
-            var filteredData = buildHistory.filter(function(rangeDay, fi) {
-                var extent = 5;
-                var end = 0;
-                var begin = 5;
-
-                if (day == 0) {
-                    end += 2;
-                    begin += 2;
-                }
-                if (day == 6) {
-                    end += 1;
-                    begin += 1;
-                }
-                var day = new Date(rangeDay.date).getDay();
-                if (fi > i - 7 && fi <= i) {
-                    return rangeDay;
-                }
-            });
-
-            var curval = d3.mean(filteredData, function(d) {
-                return +d.passed;
-            });
-            return -y(curval); // going up in height so need to go negative
-        })
-        .interpolate("basis");
-
-    svg.append("path")
-        .attr("class", "average")
-        .attr("d", passedBuildsMovingAverage(buildHistory))
-        .style("fill", "none")
-        .style("stroke", "blue")
-        .style("stroke-width", 2);
-
-    var weekDays = buildHistory.filter(function(day, fi) {
-
-        var dayOfWeek = new Date(day.date).getDay();
-
-        if (dayOfWeek != 0 && dayOfWeek != 6) {
-            return day;
-        }
-    });
-
-    var overallMean = d3.mean(weekDays, function(d) {
-        return +d.passed + +d.failed;
-    });
-
-    // Successful Builds Average:
-    var overallAverage = d3.svg.line()
-        .x(function(d, i) {
-            return xLinear(i);
-        })
-        .y(function(d, i) {
-            return -y(overallMean);
-            s
-        });
-
-    svg.append("path")
-        .attr("class", "average")
-        .attr("d", overallAverage(buildHistory))
-        .style("fill", "none")
-        .style("stroke", "orange")
-        .style("stroke-width", 2);
-
     // add legend
     var legendSvg = d3.select("#build-history").append("svg:svg")
         .attr("width", w)
@@ -312,8 +195,8 @@ window.qd.plotBuildHistory = function() {
         .attr("width", 100);
 
     var legendColours = [
-        ["passed", "blue"],
-        ["failed", "red"]
+        ["passed", "lightblue"],
+        ["failed", "lightpink"]
     ]
 
     legend.selectAll("g").data(legendColours)
