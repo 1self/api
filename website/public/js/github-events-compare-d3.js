@@ -21,7 +21,7 @@ window.qd.plotComparisonAgainstAvgOfRestOfTheWorld = function(divId, events) {
 		.attr('class', 'd3-tip')
 		.offset([-10, 0])
 		.html(function(d) {
-			return "<strong>" + d.y + (d.y === 1 ? " event" : " events") + "</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>";
+			return "<strong>" + Math.round(d.y * 100) / 100 + "</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>";
 		});
 	svg.call(tip);
 	var _groupMyEvents = function(eventsMap) {
@@ -64,7 +64,7 @@ window.qd.plotComparisonAgainstAvgOfRestOfTheWorld = function(divId, events) {
 				var curval = +d.y;
 				return -y(curval);
 			})
-			.interpolate("monotone");
+			.interpolate("linear");
 
 		svg.append("path")
 			.attr("class", "average")
@@ -76,7 +76,8 @@ window.qd.plotComparisonAgainstAvgOfRestOfTheWorld = function(divId, events) {
 		svg.selectAll("dot")
 			.data(dataArray)
 			.enter().append("circle")
-			.attr("r", 2)
+			.attr("class", "dot-line")
+			.attr("r", 4)
 			.attr("cx", function(d) {
 				return x(d.x);
 			})

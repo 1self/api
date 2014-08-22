@@ -21,7 +21,7 @@ window.qd.plotComparisonForActiveEvents = function(divId, myActiveEvents, theirA
 		.attr('class', 'd3-tip')
 		.offset([-10, 0])
 		.html(function(d) {
-			return "<strong>" + Math.round(d.y) + "mins</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>";
+			return "<strong>" + Math.round(d.y) + " mins</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>";
 		});
 	svg.call(tip);
 	var _groupActiveEvents = function(eventsMap) {
@@ -53,7 +53,7 @@ window.qd.plotComparisonForActiveEvents = function(divId, myActiveEvents, theirA
 				var curval = +d.y;
 				return -y(curval);
 			})
-			.interpolate("monotone");
+			.interpolate("linear");
 
 		svg.append("path")
 			.attr("class", "average")
@@ -66,7 +66,8 @@ window.qd.plotComparisonForActiveEvents = function(divId, myActiveEvents, theirA
 		svg.selectAll("dot")
 			.data(dataArray)
 			.enter().append("circle")
-			.attr("r", 2)
+			.attr("class","dot-line")
+			.attr("r", 4)
 			.attr("cx", function(d) {
 				return x(d.x);
 			})
