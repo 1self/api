@@ -14,7 +14,7 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
         legendElementWidth = gridSize * 2,
         buckets = 9,
         positiveColors = ["#C0FF00", "#80FF00", "#40FF00"], // alternatively colorbrewer.YlGnBu[9]
-        negativeColors = ["#FFC000", "#FF8000","#FF4000", "#FF0000"],
+        negativeColors = ["#FFC000", "#FF8000", "#FF4000", "#FF0000"],
         days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
         times = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"];
 
@@ -106,10 +106,12 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
                 .attr("stroke", "white")
                 .attr("rx", 4)
                 .attr("ry", 4)
-                .attr("class", "hour bordered")
+                .attr("class", "heatMapRect")
                 .attr("width", gridDaySize)
                 .attr("height", gridTimeSize)
-                .style("fill", baseColor);
+                .style("fill", baseColor)
+                .on("mouseover", tip.show)
+                .on("mouseout", tip.hide);
         };
         var createLegend = function() {
             return svg.selectAll(".legend")
@@ -126,6 +128,17 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
             gridDaySize = Math.floor(190 / 7);
             gridTimeSize = Math.floor(400 / 24);
             var svg = createSvg(svgWidth, svgHeight);
+            var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                .offset([-10, 0])
+                .html(function(d) {
+                    if (d.value !== 0) {
+                        var val;
+                        val = d.value > 0 ? "ahead" : "behind";
+                        return "<strong>" + Math.abs(d.value) + (d.value === 1 ? " event " : " events ") + val + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day + 1).format('ddd') + " at " + moment().hours(d.hour + 1).format('h a') + "</span>";
+                    }
+                });
+            svg.call(tip);
             var dayLabels = createDayLabels(svg, "y", "x", 10, gridDaySize, "translate(" + gridDaySize / 1.5 + ",-6)");
             var timeLabels = createTimeLabels(svg, "x", "y", -15, gridTimeSize, "translate( -6," + (gridTimeSize) / 2.5 + ")");
             var heatMap = createHeatMap(svg, "y", "x", 2.5, 10, gridDaySize, gridTimeSize);
@@ -141,9 +154,6 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
                         }
                     }
                 });
-            heatMap.append("title").text(function(d) {
-                return d.value;
-            });
             var legend = createLegend();
             var legendRectXaxis = (gridDaySize * 7) - 5;
             var legendTextXaxis = legendRectXaxis + (gridSize / 2) + 2;
@@ -170,6 +180,20 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
                 .attr("x", legendTextXaxis);
         } else {
             var svg = createSvg(width + 50, height + 50);
+            var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                .offset([-10, 0])
+                .html(function(d) {
+                    if (d.value !== 0) {
+                        var val;
+                        val = d.value > 0 ? "AHEAD" : "BEHIND";
+                        return "<strong>" + Math.abs(d.value) + (d.value === 1 ? " event " : " events ") + val + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day + 1).format('ddd') + " at " + moment().hours(d.hour + 1).format('h a') + "</span>";
+                    }
+                    else {
+                        return "<strong> SAME events on " + moment().days(d.day + 1).format('ddd') + " at " + moment().hours(d.hour + 1).format('h a') + "</span>";
+                    }
+                });
+            svg.call(tip);
             var dayLabels = createDayLabels(svg, "x", "y", 0, gridSize, "translate(-6," + gridSize / 1.5 + ")");
             var timeLabels = createTimeLabels(svg, "y", "x", 0, gridSize, "translate(" + gridSize / 2.5 + ", -6)");
             var heatMap = createHeatMap(svg, "x", "y", 0, 0, gridSize, gridSize);
@@ -186,10 +210,6 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
                         }
                     }
                 });
-
-            heatMap.append("title").text(function(d) {
-                return d.value;
-            });
             var legend = createLegend();
 
             var legendRectYaxis = (gridSize * 7) + 5;
