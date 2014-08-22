@@ -16,6 +16,8 @@ $(function() {
     $("#request-comparision-form")[0].reset();
     $("#comparision-email-form")[0].reset();
     $(".compare_error_message").hide();
+    var fullName = $(".user-name").attr('data-fullname');
+    $("#your-name1").val(fullName);
   });
 
   $(document).ready(function() {
@@ -29,24 +31,24 @@ $(function() {
   $('#submit-compare-details').on('click', function(e) {
     var friendsEmail;
 
-    var friendsUsername;
-    if ($("#friend-name1").val() !== "") {
-      friendsUsername = $("#friend-name1").val()
+    var friendsQdUsername;
+    if ($("#friend-qd-username1").val() !== "") {
+      friendsQdUsername = $("#friend-qd-username1").val();
     } else if ($("#friend-email").val() !== "") {
-      friendsEmail = $("#friend-email").val()
+      friendsEmail = $("#friend-email").val();
     }
 
-    if ((_.isEmpty(friendsUsername) && (_.isEmpty(friendsEmail)))) {
+    if ((_.isEmpty(friendsQdUsername) && (_.isEmpty(friendsEmail)))) {
       $(".compare_error_message").show();
       return false;
     }
 
-    var pattern = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+    var pattern = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     function isEmailAddress(str) {
        return str.match(pattern);    
     }
       
-    if ((_.isEmpty(friendsUsername)) && !(_.isEmpty(friendsEmail)) ) {
+    if ((_.isEmpty(friendsQdUsername)) && !(_.isEmpty(friendsEmail)) ) {
         if (!(isEmailAddress(friendsEmail))){
             $(".compare_error_message").show();
             return;
@@ -54,25 +56,28 @@ $(function() {
     }
 
     var yourUsername = $(".user-name").attr('data-username');
+    var yourName = $("#your-name1").val();
+    $("#your-name2").val(yourName);
 
     $("#request-comparison").hide();
     $("#comparison-email").show();
-    $("#your-name").val(yourUsername);
-    var friendName = "";
-    if (friendsUsername !== undefined) {
-      $("#friend-name2").val(friendsUsername);
-      friendName = friendsUsername;
-    } else {
-      $("#friend-name2").val(friendsEmail);
-      friendName = friendsEmail;
-    }
 
+    if (friendsQdUsername !== undefined) {
+      $("#friend-qd-username2").val(friendsQdUsername);
+    } else {
+      $("#friend-qd-username2").val(friendsEmail);
+    }
+    
     $.get('/email_templates/invite.eml.html', function(template) {
-        var rendered = Mustache.render(template, {yourName: yourUsername, friendName: friendName,
-                                                 acceptUrl: "#", rejectUrl: "#" });
+        var rendered = Mustache.render(template, {yourName: yourName, acceptUrl: "#", rejectUrl: "#" });
         $("#email-message").html(rendered);
      });
     
+  });
+
+  $("#send-compare-request-back").click(function(){
+      $("#request-comparison").show();
+      $("#comparison-email").hide();
   });
 
   var emailSuccessCallback = function() {
@@ -88,17 +93,20 @@ $(function() {
   };
   $('#send-compare-request-email').on('click', function(e) {
     $("#send-compare-request-email").attr("disabled", "true");
-    var friendsUsername = $("#friend-name1").val();
+    var friendsUsername = $("#friend-qd-username1").val();
     var friendsEmail = $("#friend-email").val();
+    var yourName = $("#your-name2").val();
     var data;
     if (!(_.isEmpty(friendsUsername))) {
       data = {
-        'friendsUsername': friendsUsername
+        'friendsUsername': friendsUsername,
+        'yourName': yourName
       };
       postAjaxWithData("request_to_compare_with_username", data, emailSuccessCallback, emailFailureCallback);
     } else if (!(_.isEmpty(friendsEmail))) {
       data = {
-        'friendsEmail': friendsEmail
+        'friendsEmail': friendsEmail,
+        'yourName': yourName
       };
       postAjaxWithData("request_to_compare_with_email", data, emailSuccessCallback, emailFailureCallback);
     }

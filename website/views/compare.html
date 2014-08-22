@@ -62,15 +62,15 @@
           {% include "./templates/_link_datasource.html" %}
         </div>
         <div class="row page-title">
-          <div class="row">
-            <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+         
+            <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12 mobile-margin-bottom-five">
               <h2>Comparison</h2>
               <ul class="breadcrumb">
                 <li>Home</li>
                 <li>Comparison</li>
               </ul>
             </div>
-            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 mobile-margin-bottom-five">
               <button data-toggle="modal" class="btn btn-info" id="compare-btn">Send Comparison Request</button>
               <div class="modal fade modal-overflow in" id="compare-modal" tabindex="-1" role="dialog" aria-hidden="false" style="display: none; margin-top: 0px;">
                 <div class="modal-dialog">
@@ -84,10 +84,26 @@
                         <form id="request-comparision-form">
                           <div class="row">
                             <div class="col-md-5">
-                              Enter your friend’s QuantifiedDev username:
+                              Enter your name
                             </div>
                             <div class="col-md-7">
-                              <input class="form-control" type="text" id="friend-name1">
+                              <input class="form-control" type="text" id="your-name1">
+                            </div>
+                          </div>
+                          <!-- <div class="row top-buffer-20">
+                          <div class="col-md-5">
+                          Enter your friend's name
+                          </div>
+                          <div class="col-md-7">
+                          <input class="form-control" type="text" id="friend-name">
+                          </div>
+                          </div> -->
+                          <div class="row  top-buffer-20">
+                            <div class="col-md-5">
+                              Enter your friend’s QuantifiedDev username
+                            </div>
+                            <div class="col-md-7">
+                              <input class="form-control" type="text" id="friend-qd-username1">
                             </div>
                           </div>
                           <div class="row text-center" style="margin: 10px 0px;">
@@ -122,7 +138,7 @@
                               Your name
                             </div>
                             <div class="col-md-6">
-                              <input class="form-control" type="text" id="your-name" disabled="true">
+                              <input class="form-control" type="text" id="your-name2" disabled="true">
                             </div>
                           </div>
                           <div  style="margin-top:10px;" >
@@ -132,7 +148,7 @@
                               Friend's QD username / Email Id
                             </div>
                             <div class="col-md-6">
-                              <input class="form-control" type="text" id="friend-name2" disabled="true">
+                              <input class="form-control" type="text" id="friend-qd-username2" disabled="true">
                             </div>
                           </div>
                           <div class="row" style="margin-top:10px;" >
@@ -146,7 +162,8 @@
                             </div>
                           </div>
                           <div class="text-center">
-                            <input type="button" id="send-compare-request-email" class="btn btn-info" value="Send Comparison Request">
+                            <input type="button" id="send-compare-request-email" class="btn btn-info" value="Send Comparison Request">&nbsp
+                            <input type="button" id="send-compare-request-back" class="btn btn-default" value="Back">
                           </div>
                         </form>
                       </div>
@@ -186,7 +203,7 @@
                 </div>
               </div>
             </div>
-          </div>
+         
         </div>
         <div class="row">
           <div id="compare-build-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12"  style="display:none;">

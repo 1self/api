@@ -345,6 +345,28 @@ module.exports = function(app) {
         return deferred.promise;
     };
 
+    var getFullName = function(username) {
+        var deferred = Q.defer();
+        var query = {
+            "username": username.toLowerCase()
+        };
+        mongoDbConnection(function(qdDb) {
+            qdDb.collection('users').findOne(query, function(err, user) {
+                if (err) {
+                    console.log("err : ", err);
+                    deferred.reject("DB error");
+                } else {
+                    if (!(_.isEmpty(user.githubUser.displayName))){
+                        deferred.resolve(user.githubUser.displayName);
+                    } else {
+                        deferred.resolve(username);
+                    }
+                } 
+            });
+        });
+        return deferred.promise;
+    };
+
     var doesEmailMappingExist = function(emails) {
         var deferred = Q.defer();
         var query = {
@@ -372,7 +394,7 @@ module.exports = function(app) {
     app.get("/compare", sessionManager.requiresSession, function(req, res) {
         var requesterUsername = req.session.requesterUsername;
         var emailIdsMap;
-        if (requesterUsername) {
+        if (req.session.requesterUsername) {
             createEmailIdPromiseArray(req.session.username, requesterUsername)
                 .then(function(emailIds) {
                     emailIdsMap = emailIds;
@@ -394,11 +416,17 @@ module.exports = function(app) {
                 });
         } else {
             fetchFriendList(req.session.username).then(function(friends) {
-                res.render('compare', {
-                    username: req.session.username,
-                    avatarUrl: req.session.avatarUrl,
-                    friends: friends
-                });
+                getFullName(req.session.username).then(function(fullName) {
+                    res.render('compare', {
+                        username: req.session.username,
+                        avatarUrl: req.session.avatarUrl,
+                        friends: friends,
+                        fullName: fullName
+                    });
+                }).catch(function(err) {
+                    console.log("Error is ", err);
+                    res.redirect("/");
+                });;
             });
         }
     });
@@ -632,7 +660,7 @@ module.exports = function(app) {
         res.render('rejectMessage');
     });
 
-    var sendUserInviteEmail = function(userInviteMap, sessionUsername) {
+    var sendUserInviteEmail = function(userInviteMap, sessionUsername, yourName) {
         var deferred = Q.defer();
 
         var acceptUrl = CONTEXT_URI + "/accept?reqUsername=" + sessionUsername;
@@ -642,21 +670,22 @@ module.exports = function(app) {
             var context = {
                 acceptUrl: acceptUrl,
                 rejectUrl: rejectUrl,
-                friendName: sessionUsername,
-                yourName: sessionUsername,
+                friendName: userInviteMap.to,
+                yourName: yourName,
                 yourEmailId: userInviteMap.from
             };
             emailRender('invite.eml.html', context, function(err, html, text) {
                 sendgrid.send({
                     to: userInviteMap.to,
                     from: QD_EMAIL,
-                    subject: sessionUsername + ' wants to compare with your data',
+                    subject: yourName + ' wants to share their data',
                     html: html
                 }, function(err, json) {
                     if (err) {
                         console.error(err);
                         deferred.reject(err);
                     } else {
+                        console.log("Compare request email successfully sent to", userInviteMap.to);
                         deferred.resolve();
                     }
                 });
@@ -667,6 +696,10 @@ module.exports = function(app) {
 
     app.get('/request_to_compare_with_username', sessionManager.requiresSession, function(req, res) {
         var friendsUsername = req.query.friendsUsername;
+        var yourName = req.query.yourName;
+
+        console.log("Session username", req.session.username);
+        console.log("friendsUsername", friendsUsername);
 
         createEmailIdPromiseArray(req.session.username, friendsUsername)
             .then(function(emailIds) {
@@ -674,7 +707,7 @@ module.exports = function(app) {
             })
             .then(createUserInvitesEntry)
             .then(function(userInviteMap) {
-                return sendUserInviteEmail(userInviteMap, req.session.username);
+                return sendUserInviteEmail(userInviteMap, req.session.username, yourName);
             }).
             then(function(){
                 res.send(200, "success");
@@ -686,6 +719,7 @@ module.exports = function(app) {
 
     app.get('/request_to_compare_with_email', sessionManager.requiresSession, function(req, res) {
         var friendsEmail = req.query.friendsEmail;
+        var yourName = req.query.yourName;
 
         getEmailId(req.session.username)
             .then(function(myEmail) {
@@ -693,7 +727,7 @@ module.exports = function(app) {
             })
             .then(createUserInvitesEntry)
             .then(function(userInviteMap) {
-                return sendUserInviteEmail(userInviteMap, req.session.username);
+                return sendUserInviteEmail(userInviteMap, req.session.username, yourName);
             }).
             then(function(){
                 res.send(200, "success");

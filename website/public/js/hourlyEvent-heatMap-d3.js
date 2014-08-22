@@ -13,8 +13,9 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
         gridSize = Math.floor(width / 24),
         legendElementWidth = gridSize * 2,
         buckets = 9,
-        colors = ["#DBEDFF", "#A8D4FF", "#8FC7FF", "#75BAFF", "#5CADFF", 
-        "#42A1FF", "#2994FF", "#007AF5", "#0054A8"], // alternatively colorbrewer.YlGnBu[9]
+        colors = ["#DBEDFF", "#A8D4FF", "#8FC7FF", "#75BAFF", "#5CADFF",
+            "#42A1FF", "#2994FF", "#007AF5", "#0054A8"
+        ], // alternatively colorbrewer.YlGnBu[9]
         days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
         times = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"];
 
@@ -38,15 +39,16 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
     };
 
     var hourlyBuildCountsData = rotateArray(hourlyBuildCountsMondayToSunday.slice(), -1 * window.qd.timezoneDifferenceInHours);
-    
+
 
     var _generateHeatMap = function(data) {
         var maximumEventValue = d3.max([1, d3.max(data, function(d) {
             return d.value;
         })]);
+        var colorsRequired = _.first(colors, maximumEventValue !== 1 ? maximumEventValue - 1 : maximumEventValue);
         var colorScale = d3.scale.quantile()
             .domain([1, maximumEventValue])
-            .range(colors);
+            .range(colorsRequired);
         var createSvg = function(width, height) {
             d3.select(divId).selectAll("svg").remove();
             return d3.select(divId).append("svg")
@@ -106,7 +108,9 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                 .attr("class", "hour bordered")
                 .attr("width", gridDaySize)
                 .attr("height", gridTimeSize)
-                .style("fill", baseColor);
+                .style("fill", baseColor)
+                .on("mouseover", tip.show)
+                .on("mouseout", tip.hide);
         };
         var createLegend = function() {
             return svg.selectAll(".legend")
@@ -123,20 +127,24 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
             gridDaySize = Math.floor(190 / 7);
             gridTimeSize = Math.floor(400 / 24);
             var svg = createSvg(svgWidth, svgHeight);
+            var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                .offset([-10, 0])
+                .html(function(d) {
+                    return "<strong>" + d.value + (d.value === 1 ? " event" : " events") + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day).format('ddd') + " at " + moment().hours(d.hour+1).format('h a') + "</span>";
+                });
+            svg.call(tip);
             var dayLabels = createDayLabels(svg, "y", "x", 10, gridDaySize, "translate(" + gridDaySize / 1.5 + ",-6)");
             var timeLabels = createTimeLabels(svg, "x", "y", -15, gridTimeSize, "translate( -6," + (gridTimeSize) / 2.5 + ")");
             var heatMap = createHeatMap(svg, "y", "x", 2.5, 10, gridDaySize, gridTimeSize);
             heatMap.transition().duration(1000)
                 .style("fill", function(d) {
-                    if (d.value === 0){
+                    if (d.value === 0) {
                         return baseColor;
                     } else {
                         return colorScale(d.value);
                     }
                 });
-            heatMap.append("title").text(function(d) {
-                return d.value;
-            });
             var legend = createLegend();
             var legendRectXaxis = (gridDaySize * 7) - 5;
             var legendTextXaxis = legendRectXaxis + (gridSize / 2) + 2;
@@ -148,7 +156,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                 .attr("height", legendElementWidth + 10)
                 .attr("width", gridSize / 2)
                 .style("fill", function(d, i) {
-                    return colors[i];
+                    return colorsRequired[i];
                 });
 
             legend.append("text")
@@ -163,24 +171,26 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                 .attr("x", legendTextXaxis);
         } else {
             var svg = createSvg(width + 50, height + 50);
+            var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                .offset([-10, 0])
+                .html(function(d) {
+                    return "<strong>" + d.value + (d.value === 1 ? " event" : " events") + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day).format('ddd') + " at " + moment().hours(d.hour+1).format('h a') + "</span>";
+                });
+            svg.call(tip);
             var dayLabels = createDayLabels(svg, "x", "y", 0, gridSize, "translate(-6," + gridSize / 1.5 + ")");
             var timeLabels = createTimeLabels(svg, "y", "x", 0, gridSize, "translate(" + gridSize / 2.5 + ", -6)");
             var heatMap = createHeatMap(svg, "x", "y", 0, 0, gridSize, gridSize);
 
             heatMap.transition().duration(1000)
                 .style("fill", function(d) {
-                    if (d.value === 0){
+                    if (d.value === 0) {
                         return baseColor;
                     } else {
                         return colorScale(d.value);
                     }
                 });
-
-            heatMap.append("title").text(function(d) {
-                return d.value;
-            });
             var legend = createLegend();
-
             var legendRectYaxis = (gridSize * 7) + 5;
             var legendTextYaxis = legendRectYaxis + 20;
             legend.append("rect")
@@ -191,13 +201,13 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                 .attr("width", legendElementWidth)
                 .attr("height", gridSize / 2)
                 .style("fill", function(d, i) {
-                    return colors[i];
+                    return colorsRequired[i];
                 });
 
             legend.append("text")
                 .attr("class", "mono")
                 .text(function(d) {
-                    return "≥ " + Math.round(d * 10) / 10;
+                    return "≥ " + Math.round(d);
                 })
                 .attr("font-size", "10px")
                 .attr("x", function(d, i) {

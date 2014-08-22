@@ -40,7 +40,13 @@ window.qd.plotWTFHistory = function() {
     y.domain([0, d3.max(wtfsByResult[wtfsByResult.length - 1], function(d) {
         return d.y0 + d.y;
     })]);
-
+    var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        .offset([-10, 0])
+        .html(function(d) {
+            return "<strong>" + d.y + (d.y === 1 ? " WTF" : " WTFs") + "</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>";
+        });
+    svg.call(tip);
     // Add a group for each cause.
     var cause = svg.selectAll("g.cause")
         .data(wtfsByResult)
@@ -66,7 +72,9 @@ window.qd.plotWTFHistory = function() {
         .attr("height", function(d) {
             return y(d.y);
         })
-        .attr("width", x.rangeBand());
+        .attr("width", x.rangeBand())
+        .on("mouseover", tip.show)
+        .on("mouseout", tip.hide);
 
     //    Add a label per date
     var label = svg.selectAll("text.month")
@@ -127,7 +135,7 @@ window.qd.plotWTFHistory = function() {
         .attr("y", 8)
         .attr("dy", ".35em")
         .attr("transform", "rotate(-90)")
-        .style("font-size","12px")
+        .style("font-size", "12px")
         .text(function(d) {
             return d !== 0 ? "" : "WTF Count";
         });
@@ -136,7 +144,6 @@ window.qd.plotWTFHistory = function() {
         .enter().append("svg:g")
         .attr("class", "ruleForX")
         .attr("transform", function(d) {
-            console.log(x.rangeBand());
             var xValue = (x.rangeBand() * d);
             return "translate(" + xValue + ",0)";
         });
@@ -163,7 +170,7 @@ window.qd.plotWTFHistory = function() {
         .attr("x", w - p[3] - p[1] - 30)
         .attr("y", -10)
         .attr("dy", ".35em")
-        .style("font-size","12px")
+        .style("font-size", "12px")
         .text(function(d) {
             return d !== 0 ? "" : "Date";
         });
