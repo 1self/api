@@ -391,6 +391,42 @@ module.exports = function(app) {
         return deferred.promise;
     };
 
+    var sendAcceptEmail = function(userInviteMap, requesteeUsername, requesterUsername) {
+        var deferred = Q.defer();
+        var promiseArray = [];
+        promiseArray.push(getFullName(requesteeUsername));
+        promiseArray.push(getFullName(requesterUsername));
+
+        Q.all(promiseArray).then(function(names) {
+            var requesteeFullname = names[0];
+            var requesterFullname = names[1];
+
+            emailTemplates(emailConfigOptions, function(err, emailRender) {
+                var context = {
+                    requesteeFullname: requesteeFullname,
+                    requesterFullname: requesterFullname
+                };
+                emailRender('acceptCompareRequest.eml.html', context, function(err, html, text) {
+                    sendgrid.send({
+                        to: userInviteMap[1], //userInviteMap.to,
+                        from: QD_EMAIL,
+                        subject: requesteeFullname + " accepted, it’s time to compare!",
+                        html: html
+                    }, function(err, json) {
+                        if (err) {
+                            console.error("", err);
+                            deferred.reject(err);
+                        } else {
+                            deferred.resolve();
+                        }
+                    });
+                });
+            });
+        });
+        return deferred.promise;
+    };
+
+
     app.get("/compare", sessionManager.requiresSession, function(req, res) {
         var requesterUsername = req.session.requesterUsername;
         var emailIdsMap;
@@ -402,13 +438,14 @@ module.exports = function(app) {
                 })
                 .then(doesEmailMappingExist)
                 .then(function(emailMapExists) {
-                    console.log("Mapping exists ", emailMapExists);
+
                     if (emailMapExists) {
                         var promiseArray = [];
                         promiseArray.push(addFriendTo(requesterUsername, req.session.username));
                         promiseArray.push(addFriendTo(req.session.username, requesterUsername));
                         Q.all(promiseArray).then(function() {
                             deleteUserInvitesEntryFor(emailIdsMap);
+                            sendAcceptEmail(emailIdsMap, req.session.username, requesterUsername);
                         });
                     }
                     delete req.session.requesterUsername;
