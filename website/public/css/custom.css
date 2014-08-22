@@ -89,3 +89,7 @@ x.axis {
   top: 100%;
   left: 0;
 }
+.bar:hover, .dot:hover, .heatMapRect:hover {
+  stroke: grey;
+  stroke-width:2;
+}

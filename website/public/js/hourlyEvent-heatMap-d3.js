@@ -105,7 +105,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                 .attr("stroke", "white")
                 .attr("rx", 4)
                 .attr("ry", 4)
-                .attr("class", "hour bordered")
+                .attr("class", "heatMapRect")
                 .attr("width", gridDaySize)
                 .attr("height", gridTimeSize)
                 .style("fill", baseColor)

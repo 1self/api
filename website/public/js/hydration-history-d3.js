@@ -64,6 +64,7 @@ window.qd.plotHydrationHistory = function() {
     var rect = cause.selectAll("rect")
         .data(Object)
         .enter().append("svg:rect")
+        .attr("class", "bar")
         .attr("x", function(d) {
             return x(d.x);
         })
