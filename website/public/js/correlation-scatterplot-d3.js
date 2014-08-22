@@ -44,10 +44,13 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 		.append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-	var tooltip = d3.select("body").append("div")
-		.attr("class", "tooltip")
-		.style("opacity", 0);
-
+	var tip = d3.tip()
+		.attr('class', 'd3-tip')
+		.offset([-10, 0])
+		.html(function(d) {
+			return "<strong>Active programming duration of " + xValue(d) + " mins with " + yValue(d) +" github"+ (yValue(d)===1?" push":" pushes")+"</strong> <span style='color:lightgrey'> on " + moment().days(d.date).format("ddd MMM DD") + "</span>";
+		});
+	svg.call(tip);
 	var _plotGraph = function() {
 		var data = _groupCorrelateEvents(correlateEvents);
 		// don't want dots overlapping axis, so add in buffer to data domain
@@ -65,19 +68,8 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 			.style("fill", function(d) {
 				return (d.x === 0 || d.y === 0) ? "lightgrey" : "blue";
 			})
-			.on("mouseover", function(d) {
-				tooltip.transition()
-					.duration(200)
-					.style("opacity", .9);
-				tooltip.html("<br/> (Date: " + d.date + ", IDE Activity: " + xValue(d) + " mins, PushCount: " + yValue(d) + ")")
-					.style("left", (d3.event.pageX + 5) + "px")
-					.style("top", (d3.event.pageY - 28) + "px");
-			})
-			.on("mouseout", function(d) {
-				tooltip.transition()
-					.duration(500)
-					.style("opacity", 0);
-			});
+			.on("mouseover", tip.show)
+			.on("mouseout", tip.hide);
 
 		// x-axis
 		svg.append("g")
