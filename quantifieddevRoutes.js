@@ -464,7 +464,7 @@ module.exports = function(app) {
 
     app.get("/compare", sessionManager.requiresSession, function(req, res) {
         var requesterUsername = req.session.requesterUsername;
-        var compareWith = req.query.compareWith;
+        var compareWith = (_.isEmpty(req.query.compareWith)) ?  req.session.requesterUsername : req.query.compareWith;
         var emailIdsMap;
         if (req.session.requesterUsername) {
             createEmailIdPromiseArray(req.session.username, requesterUsername)
