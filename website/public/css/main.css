@@ -2969,3 +2969,8 @@ a.twitter-share-button {
     }
 
 }
+@media screen and (max-width: 1200px) {
+.comparison .mobile-margin-bottom-five{
+    margin-bottom: 5px;
+}
+}
