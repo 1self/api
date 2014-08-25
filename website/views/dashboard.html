@@ -199,7 +199,7 @@
                                 <div class="help-description">
                                     <h4>See something interesting?
                                     </h4>
-                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to team@quantifieddev.org
+                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
                                     </p>
                                 </div>
 
@@ -269,7 +269,7 @@
                                 <div class="help-description">
                                     <h4>My IDE isn’t support, what do I do?
                                     </h4>
-                                    <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and we can give you the algorithms we use in the other plugins to calculate activity. Email team@quantifieddev.org if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.
+                                    <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and we can give you the algorithms we use in the other plugins to calculate activity. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.
                                     </p>
                                 </div>
                                 <div class="help-description">
@@ -281,7 +281,7 @@
                                 <div class="help-description">
                                     <h4>See something interesting?
                                     </h4>
-                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to team@quantifieddev.org
+                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
 
                                     </p>
                                 </div>
@@ -305,12 +305,69 @@
                 </div>
                 <div id="build-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
                     <div class="panel panel-secondary fixed-height">
+                                     <div class="helpContainer">
+                            <div class="row">
+                                <h4 class="heading">Help - Build History</h4>
+                                <div class="help-description">
+                                    <h4>What does this show me?
+                                    </h4>
+                                    <p>If you are working in IntellJ or Visual Studio, a build event is created each time you build. The build history shows your local builds over the last month. This is broken down into successful builds in blue and failed builds in red. Do most of your builds pass? Are you consistenly building the same amount each day? Any builds on the weekend?
+
+</p>
+                                    <p>Closely tied to this visualisation is the hourly  history and build duration visualisations. Once you start collecting builds, these visualisation will automatically appear in your dashboard.
+
+                                    </p>
+                                </div>
+                                <div class="help-description">
+                                    <h4>How do I get data into this graph?
+                                    </h4>
+                                    <p>To see data in this graph you have to be working on a stack that involves a build step using an IDE that we support. Currently, this is IntelliJ or Visual Studio. Once you install the plugin, collection is completely automatic. To connect your build data go to the <a href="http://www.quantifieddev.org/#/download" target="_blank">downloads page</a> and download the plugin for your IDE.  
+                                   </p>
+                                </div>
+                                <div class="help-description">
+                                    <h4>When will I see something interesting?
+                                    </h4>
+                                    <p>You’ll start seeing data as soon as you build your software with the plugin installed. Do you know how many build you do locally a day? After just a single day, you’ll know something new about your development self! Make sure you check back on the dashboard to see the patterns emerge as you build your data up towards a full month.
+
+                                    </p>
+                                </div>
+
+                                <div class="help-description">
+                                    <h4>Can I collect data from multiple IDEs? From work? Home?
+                                    </h4>
+                                    <p>Absolutely! Our goal at QuantifedDev is to give you a complete picture of your development life, that includes all of the IDEs and all of the computers that you use. Simply install our plugins on all your IDEs, across all of your computers. 
+ 
+                                    </p>
+                                </div>
+                                <div class="help-description">
+                                    <h4>My IDE isn’t support, what do I do?
+                                    </h4>
+                                    <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and we can give you the algorithms we use in the other plugins to calculate activity. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.
+                                    </p>
+                                </div>
+                                <div class="help-description">
+                                    <h4>How do I update the data?
+                                    </h4>
+                                    <p>Grab a cup of coffee and a chocolate digestive. It’s automatic. The plugins collect and send the data as you build your software in your IDE. As soon as the data arrives at our server, it’s available in your visualisation.
+                                    </p>
+                                </div>
+                                <div class="help-description">
+                                    <h4>See something interesting?
+                                    </h4>
+                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
+
+                                    </p>
+                                </div>
+
+                            </div>
+                        </div>
                         <div class="panel-heading">
                             <div class="row">
                                 <div class="col-sm-8 col-xs-12 ">
                                     <h3 class="panel-title"><i class="icon-bar-chart"></i>Build History</h3>
                                 </div>
                                 <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
+                                    <button id="hourlyGithubPush-heat-map-help" class="pull-right pull-xs-left help-btn" onclick=show("build-history-parent")></button>
                                     <a id="tweetMyBuilds" class="twitter-share-button pull-right pull-xs-left" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
                                 </div>
                             </div>
@@ -361,7 +418,7 @@
                                 <div class="help-description">
                                     <h4>My IDE isn’t support, what do I do?
                                     </h4>
-                                    <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and we can give you the algorithms we use in the other plugins to calculate activity. Email team@quantifieddev.org if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.
+                                    <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and we can give you the algorithms we use in the other plugins to calculate activity. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.
                                     </p>
                                 </div>
                                 <div class="help-description">
@@ -374,7 +431,7 @@
                                 <div class="help-description">
                                     <h4>See something interesting?
                                     </h4>
-                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to team@quantifieddev.org
+                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
                                     </p>
                                 </div>
 
@@ -456,7 +513,7 @@
                                 <div class="help-description">
                                     <h4>My IDE isn’t support, what do I do?
                                     </h4>
-                                    <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and it’s really easy to create a button that will log your water. Email team@quantifieddev.org if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.
+                                    <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and it’s really easy to create a button that will log your water. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.
                                     </p>
                                 </div>
                                 <div class="help-description">
@@ -750,7 +807,7 @@
                                 <div class="help-description">
                                     <h4>My IDE isn’t support, what do I do?
                                     </h4>
-                                    <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and we can give you the algorithms we use in the other plugins to calculate activity. Email team@quantifieddev.org if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it. 
+                                    <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and we can give you the algorithms we use in the other plugins to calculate activity. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it. 
                                     </p>
                                 </div>
                                 <div class="help-description">
@@ -762,7 +819,7 @@
                                 <div class="help-description">
                                     <h4>See something interesting?
                                     </h4>
-                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to team@quantifieddev.org
+                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
                                     </p>
                                 </div>
 
@@ -831,7 +888,7 @@
                                 <div class="help-description">
                                     <h4>See something interesting?
                                     </h4>
-                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to team@quantifieddev.org
+                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
                                     </p>
                                 </div>
 
