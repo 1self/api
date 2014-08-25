@@ -77,6 +77,7 @@ window.qd.plotComparisonForActiveEvents = function(divId, myActiveEvents, theirA
 				return -y(curval);
 			})
 			.attr("fill", color)
+			.on("click", tip.show)
 			.on("mouseover", tip.show)
 			.on("mouseout", tip.hide);
 	};

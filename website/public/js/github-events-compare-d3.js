@@ -87,6 +87,7 @@ window.qd.plotComparisonAgainstAvgOfRestOfTheWorld = function(divId, events) {
 				return -y(curval);
 			})
 			.attr("fill", color)
+			.on("click", tip.show)
 			.on("mouseover", tip.show)
 			.on("mouseout", tip.hide);
 

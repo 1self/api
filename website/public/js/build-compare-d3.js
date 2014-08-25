@@ -77,6 +77,7 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 				return -y(curval);
 			})
 			.attr("fill", color)
+			.on("click", tip.show)
 			.on("mouseover", tip.show)
 			.on("mouseout", tip.hide);
 

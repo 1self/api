@@ -75,6 +75,7 @@ window.qd.plotHydrationHistory = function() {
             return y(d.y);
         })
         .attr("width", x.rangeBand())
+        .on("click", tip.show)
         .on("mouseover", tip.show)
         .on("mouseout", tip.hide);
 

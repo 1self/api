@@ -110,6 +110,7 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
                 .attr("width", gridDaySize)
                 .attr("height", gridTimeSize)
                 .style("fill", baseColor)
+                .on("click", tip.show)
                 .on("mouseover", tip.show)
                 .on("mouseout", tip.hide);
         };
