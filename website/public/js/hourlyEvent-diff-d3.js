@@ -31,13 +31,7 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
 
     var hourlyBuildCountsMondayToSunday = _.flatten(daywiseHourlyBuildCountsSundayToMonday);
 
-    var rotateArray = function(a, inc) {
-        for (var l = a.length, inc = (Math.abs(inc) >= l && (inc %= l), inc < 0 && (inc += l), inc), i, x; inc; inc = (Math.ceil(l / inc) - 1) * inc - l + (l = inc))
-            for (i = l; i > inc; x = a[--i], a[i] = a[i - inc], a[i - inc] = x);
-        return a;
-    };
-
-    var hourlyBuildCountsData = rotateArray(hourlyBuildCountsMondayToSunday.slice(), -1 * window.qd.timezoneDifferenceInHours);
+    var hourlyBuildCountsData = window.qd.rotateArray(hourlyBuildCountsMondayToSunday.slice(), -1 * window.qd.timezoneDifferenceInHours);
 
     var _generateHeatMap = function(data) {
         var maximumEventValue = d3.max([1, d3.max(data, function(d) {
