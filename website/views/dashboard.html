@@ -1,41 +1,40 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-    <title>Quantified Dev {ALPHA} {{showOverlay}}</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1">
-    <meta name="description" content="Quantified Dev Dashboard" />
-    <meta name="keywords" content="Quantified Dev Development QuantifiedSelf Quantified Self" />
-    <meta name="author" content="Quantified Dev" />
-    <link rel="shortcut icon" href="/img/quantified-dev-favicon.ico">
-    <link href="/css/twitter.css" rel="stylesheet">
-    <link href="/css/import.css" rel="stylesheet" media="screen">
-    <link href="/fonts/font-awesome.css" rel="stylesheet">
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="/js/jquery.js"></script>
-    <script src="/js/jquery.cookie.js"></script>
-    <script>
-    (function(i, s, o, g, r, a, m) {
+    <head>
+        <title>Quantified Dev {ALPHA} {{showOverlay}}</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1">
+        <meta name="description" content="Quantified Dev Dashboard" />
+        <meta name="keywords" content="Quantified Dev Development QuantifiedSelf Quantified Self" />
+        <meta name="author" content="Quantified Dev" />
+        <link rel="shortcut icon" href="/img/quantified-dev-favicon.ico">
+        <link href="/css/twitter.css" rel="stylesheet">
+        <link href="/css/import.css" rel="stylesheet" media="screen">
+        <link href="/fonts/font-awesome.css" rel="stylesheet">
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="/js/jquery.js"></script>
+        <script src="/js/jquery.cookie.js"></script>
+        <script>
+        (function(i, s, o, g, r, a, m) {
         i['GoogleAnalyticsObject'] = r;
         i[r] = i[r] || function() {
-            (i[r].q = i[r].q || []).push(arguments)
+        (i[r].q = i[r].q || []).push(arguments)
         }, i[r].l = 1 * new Date();
         a = s.createElement(o),
         m = s.getElementsByTagName(o)[0];
         a.async = 1;
         a.src = g;
         m.parentNode.insertBefore(a, m)
-    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-    ga('create', 'UA-49828181-1', 'quantifieddev.org');
-    ga('send', 'pageview');
-    /*
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+        ga('create', 'UA-49828181-1', 'quantifieddev.org');
+        ga('send', 'pageview');
+        /*
         var mc_embedded_subscribe_click = document.getElementById('mc-embedded-subscribe');
         addListener(mc_embedded_subscribe_click, 'click', function() {
         alert('sup click');
         ga('send', 'event', 'signup_button', 'click', 'mc-embedded-subscribe');
-    });*/
-    /**
+        });*/
+        /**
         * Utility to wrap the different behaviors between W3C-compliant browsers
         * and IE when adding event handlers.
         *
@@ -46,915 +45,872 @@
         function addListener(element, type, callback) {
         if (element.addEventListener) element.addEventListener(type, callback);
         else if (element.attachEvent) element.attachEvent('on' + type, callback);
-    }*/
-    </script>
-</head>
-
-<body class="animated fadeInDown" ng-app>
-    {% include "./templates/_qd_header.html" %}
-    <!-- Top Bar End -->
-    <!-- Left sidebar start -->
-    <aside id="sidebar">
-        <div>
-            {% include "./templates/_menu.html" %}
-        </div>
-    </aside>
-    <!-- Left sidebar end -->
-    <div class="dashboard-wrapper">
-        <div class="container">
-            <div id="showOverlayFlag" showOverlay="{{showOverlay}}"></div>
-            <div>{% include "./templates/_link_datasource.html" %}</div>
-            <div class="row page-title">
-                <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-                    <h2>Dashboard</h2>
-                    <ul class="breadcrumb">
-                        <li>Home</li>
-                        <li>Dashboard</li>
-                    </ul>
-                </div>
-
-                {% if streamLinked == "yes" %}
-                <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12 alert alert-success alert-dismissible" role="alert">
-                    <button type="button" class="close" data-dismiss="alert">
-                        <span aria-hidden="true">&times;</span>
-                        <span class="sr-only">Close</span>
-                    </button>Stream Id linked successfully!
-                </div>
-                {% elseif streamLinked == "no" %}
-                <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12 alert alert-danger alert-dismissible" role="alert">
-                    <button type="button" class="close" data-dismiss="alert">
-                        <span aria-hidden="true">&times;</span>
-                        <span class="sr-only">Close</span>
-                    </button>The Stream Id that you tried to link is incorrect. So it is not linked!
-                </div>
-                {% endif %}
+        }*/
+        </script>
+    </head>
+    <body class="animated fadeInDown" ng-app>
+        {% include "./templates/_qd_header.html" %}
+        <!-- Top Bar End -->
+        <!-- Left sidebar start -->
+        <aside id="sidebar">
+            <div>
+                {% include "./templates/_menu.html" %}
             </div>
-            <!-- Page title end -->
-            <div class="row">
-                <div class="col-lg-2 col-md-4 col-sm-6">
-                    <div class="info-tiles tiles-secondary">
-                        <div class="tiles-heading">
-                            <div class="pull-left">My Builds</div>
-                            <div id="total-build-comparison" class="pull-right"></div>
+        </aside>
+        <!-- Left sidebar end -->
+        <div class="dashboard-wrapper">
+            <div class="container">
+                <div id="showOverlayFlag" showOverlay="{{showOverlay}}"></div>
+                <div>{% include "./templates/_link_datasource.html" %}</div>
+                <div class="row page-title">
+                    <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+                        <h2>Dashboard</h2>
+                        <ul class="breadcrumb">
+                            <li>Home</li>
+                            <li>Dashboard</li>
+                        </ul>
+                    </div>
+                    {% if streamLinked == "yes" %}
+                        <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12 alert alert-success alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert">
+                            <span aria-hidden="true">&times;</span>
+                            <span class="sr-only">Close</span>
+                            </button>Stream Id linked successfully!
                         </div>
-                        <div class="tiles-body">
-                            <div class="pull-left animated bounceIn">
-                                <i class="icon-cog"></i>
+                    {% elseif streamLinked == "no" %}
+                        <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12 alert alert-danger alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert">
+                            <span aria-hidden="true">&times;</span>
+                            <span class="sr-only">Close</span>
+                            </button>The Stream Id that you tried to link is incorrect. So it is not linked!
+                        </div>
+                    {% endif %}
+                </div>
+                <!-- Page title end -->
+                <div class="row">
+                    <div class="col-lg-2 col-md-4 col-sm-6">
+                        <div class="info-tiles tiles-secondary">
+                            <div class="tiles-heading">
+                                <div class="pull-left">My Builds</div>
+                                <div id="total-build-comparison" class="pull-right"></div>
                             </div>
-                            <div class="pull-right number">
-                                <span id="builds-x">0</span>
+                            <div class="tiles-body">
+                                <div class="pull-left animated bounceIn">
+                                    <i class="icon-cog"></i>
+                                </div>
+                                <div class="pull-right number">
+                                    <span id="builds-x">0</span>
+                                </div>
+                            </div>
+                            <div class="tiles-footer">
+                                <span class="pull-left">Today</span>
+                                <span class="inline-sparkline pull-right" id="visits"></span>
                             </div>
                         </div>
-                        <div class="tiles-footer">
-                            <span class="pull-left">Today</span>
-                            <span class="inline-sparkline pull-right" id="visits"></span>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-6">
+                        <div class="info-tiles tiles-secondary">
+                            <div class="tiles-heading">
+                                <div class="pull-left">Passed Builds</div>
+                                <div id="passed-build-comparison" class="pull-right"></div>
+                            </div>
+                            <div class="tiles-body">
+                                <div class="pull-left animated bounceIn">
+                                    <i class="icon-cog"></i>  <i class="icon-smile"></i>
+                                </div>
+                                <div class="pull-right number">
+                                    <span id="passed-x">0</span>
+                                </div>
+                            </div>
+                            <div class="tiles-footer">
+                                <span class="pull-left">Today</span>
+                                <span class="inline-sparkline pull-right" id="unique-visitors"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-6">
+                        <div class="info-tiles tiles-secondary">
+                            <div class="tiles-heading">
+                                <div class="pull-left">Failed Builds</div>
+                                <div id="failed-build-comparison" class="pull-right"></div>
+                            </div>
+                            <div class="tiles-body">
+                                <div class="pull-left animated bounceIn">
+                                    <i class="icon-cog"></i>  <i class="icon-frown"></i>
+                                </div>
+                                <div class="pull-right number">
+                                    <span id="failed-x">0</span>
+                                </div>
+                            </div>
+                            <div class="tiles-footer">
+                                <span class="pull-left">Today</span>
+                                <span class="inline-sparkline pull-right" id="page-views"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-2 col-md-4 col-sm-6">
-                    <div class="info-tiles tiles-secondary">
-                        <div class="tiles-heading">
-                            <div class="pull-left">Passed Builds</div>
-                            <div id="passed-build-comparison" class="pull-right"></div>
-                        </div>
-                        <div class="tiles-body">
-                            <div class="pull-left animated bounceIn">
-                                <i class="icon-cog"></i>  <i class="icon-smile"></i>
+                <div class="row">
+                    <div id="hourlyGithubPush-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:block;">
+                        <div class="panel panel-secondary fixed-height">
+                            <div class="helpContainer">
+                                <div class="row">
+                                    <h4 class="heading">Help - Github Push Events</h4>
+                                    <div class="help-description">
+                                        <h4>What does this show me?
+                                        </h4>
+                                        <p>We’ve taken all your pushes to the public repositories and visualized your weekly push patterns. We’ve broken the week down into hourly buckets and counted how many pushes you have done in each hour. The more pushes, the darker the square in the heatmap.
+                                        </p>
+                                        <p>Try squinting at the picture - what does the overall pattern tell you? Try scanning horizontally along the days to see the daily pattern of when you push. Which days do you push most? Do you push on the weekend? Try scanning vertically, is there a pattern? Do you push before lunch? Before you finish working for the day? Are there parts of the week that don’t have any pushes at all? Why is that?
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>How do I get data into this graph?
+                                        </h4>
+                                        <p>You need to have pushed to a public repository on GitHub to see something in this graph. Then, just click on ‘Link Data’, “Link Up My Public GitHub Data’  to get started.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>When will I see something interesting?
+                                        </h4>
+                                        <p>Immediately! GitHub keeps all your pushes in a useful historical data source. This means that we are able to retrieve data reaching back before you signed up to QuantifiedDev.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>How do I update the data?
+                                        </h4>
+                                        <p>Right now you have to do that manually - what a drag! Don’t worry, it’s easy. Just hit the refresh button on the header of the graph, it’s the one with two arrows in a circle. When you hit refresh, we go back to github and sync up the data.</p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>Can I see pushes to private repos?
+                                        </h4>
+                                        <p>Not yet, it’s coming soon though. You can bump it up the queue by letting us know this is important to you, just go to http://quantifieddev.uservoice.com and send us a request.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>How should I push it?</h4>
+                                        <p>
+                                        Like this:
+                                        </p>
+                                        <iframe width="280" height="158" src="//www.youtube.com/embed/DUgKyX98n2I" frameborder="0" allowfullscreen></iframe>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>See something interesting?
+                                        </h4>
+                                        <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="pull-right number">
-                                <span id="passed-x">0</span>
+                            <div class="panel-heading cursor-move">
+                                <div class="row">
+                                    <div class="col-sm-8 col-xs-12">
+                                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly GitHub Push Events</h3>
+                                        <br>
+                                        <span id="last-updated-since"></span>
+                                    </div>
+                                    <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
+                                        <button id="hourlyGithubPush-heat-map-help" class="pull-right help-btn pull-xs-left" onclick=show("hourlyGithubPush-heat-map-parent")></button>
+                                        <button id="github-push-events-sync" class="pull-right github-push-events-sync pull-xs-left"></button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="tiles-footer">
-                            <span class="pull-left">Today</span>
-                            <span class="inline-sparkline pull-right" id="unique-visitors"></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-md-4 col-sm-6">
-                    <div class="info-tiles tiles-secondary">
-                        <div class="tiles-heading">
-                            <div class="pull-left">Failed Builds</div>
-                            <div id="failed-build-comparison" class="pull-right"></div>
-                        </div>
-                        <div class="tiles-body">
-                            <div class="pull-left animated bounceIn">
-                                <i class="icon-cog"></i>  <i class="icon-frown"></i>
-                            </div>
-                            <div class="pull-right number">
-                                <span id="failed-x">0</span>
-                            </div>
-                        </div>
-                        <div class="tiles-footer">
-                            <span class="pull-left">Today</span>
-                            <span class="inline-sparkline pull-right" id="page-views"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div id="hourlyGithubPush-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:block;">
-                    <div class="panel panel-secondary fixed-height">
-                        <div class="helpContainer">
-                            <div class="row">
-                                <h4 class="heading">Help - Github Push Events</h4>
-                                <div class="help-description">
-                                    <h4>What does this show me?
-                                    </h4>
-                                    <p>We’ve taken all your pushes to the public repositories and visualized your weekly push patterns. We’ve broken the week down into hourly buckets and counted how many pushes you have done in each hour. The more pushes, the darker the square in the heatmap. 
-                                    </p>
-                                    <p>Try squinting at the picture - what does the overall pattern tell you? Try scanning horizontally along the days to see the daily pattern of when you push. Which days do you push most? Do you push on the weekend? Try scanning vertically, is there a pattern? Do you push before lunch? Before you finish working for the day? Are there parts of the week that don’t have any pushes at all? Why is that? 
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>How do I get data into this graph?
-                                    </h4>
-                                    <p>You need to have pushed to a public repository on GitHub to see something in this graph. Then, just click on ‘Link Data’, “Link Up My Public GitHub Data’  to get started.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>When will I see something interesting?
-                                    </h4>
-                                    <p>Immediately! GitHub keeps all your pushes in a useful historical data source. This means that we are able to retrieve data reaching back before you signed up to QuantifiedDev. 
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>How do I update the data?
-                                    </h4>
-                                    <p>Right now you have to do that manually - what a drag! Don’t worry, it’s easy. Just hit the refresh button on the header of the graph, it’s the one with two arrows in a circle. When you hit refresh, we go back to github and sync up the data.</p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>Can I see pushes to private repos?
-                                    </h4>
-                                    <p>Not yet, it’s coming soon though. You can bump it up the queue by letting us know this is important to you, just go to http://quantifieddev.uservoice.com and send us a request.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                <h4>How should I push it?</h4>
-                                <p>
-                                    Like this:
-                                </p>
-                                <iframe width="280" height="158" src="//www.youtube.com/embed/DUgKyX98n2I" frameborder="0" allowfullscreen></iframe>
-                                </div>
-                                <div class="help-description">
-                                    <h4>See something interesting?
-                                    </h4>
-                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
-                                    </p>
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="panel-heading cursor-move">
-                            <div class="row">
-                                <div class="col-sm-8 col-xs-12">
-                                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly GitHub Push Events</h3>
-                                    <br>
-                                    <span id="last-updated-since"></span>
-                                </div>
-                                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
-                                    <button id="hourlyGithubPush-heat-map-help" class="pull-right help-btn pull-xs-left" onclick=show("hourlyGithubPush-heat-map-parent")></button>
-                                    <button id="github-push-events-sync" class="pull-right github-push-events-sync pull-xs-left"></button>
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="panel-body">
-
-                            <div id="hourlyGithubPush-heat-map" class="hourlyHeatMapContainer">
-                                <div class="githubPushEvents text-center grid">
-                                    <div class="grid-row">
-                                        <div class="grid-cell">
-                                            <button id="connect_to_github_btn" style="display:none" type="button" class="btn btn-success" data-original-title="">Connect to GitHub</button>
+                            <div class="panel-body">
+                                <div id="hourlyGithubPush-heat-map" class="hourlyHeatMapContainer">
+                                    <div class="githubPushEvents text-center grid">
+                                        <div class="grid-row">
+                                            <div class="grid-cell">
+                                                <button id="connect_to_github_btn" style="display:none" type="button" class="btn btn-success" data-original-title="">Connect to GitHub</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div id="hourlyBuild-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-                    <div class="panel panel-secondary fixed-height">
-                        <div class="helpContainer">
-                            <div class="row">
-                                <h4 class="heading">Help - Hourly Builds</h4>
-                                <div class="help-description">
-                                    <h4>What does this show me?
+                    <div id="active-event-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+                        <div class="panel panel-secondary fixed-height">
+                            <div class="helpContainer">
+                                <div class="row">
+                                    <h4 class="heading">Help - Active Programming Duration
                                     </h4>
-                                    <p>If you are working in IntellJ or Visual Studio, a build event is created each time you build. The hourly builds shows the pattern of when you were building over each day of the week. Have a squint, what’s the overall picture? What specific patterns do you see? Do you break for lunch at the same time every day? Do you program on the weekends? Are you a morning person or a night owl? 
-</p>
-                                    <p>Closely tied to this visualisation is the build history and build duration visualisations. Once you start collecting builds, these visualisation will automatically appear in your dashboard.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>How do I get data into this graph?
-                                    </h4>
-                                    <p>To see data in this graph you have to be working on a stack that involves a build step using an IDE that we support. Currently, this is IntelliJ or Visual Studio. Oncw you install the plugin, collection is completely automatic. To connect your build data go to the downloads page and download the plugin for your IDE.  
-
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>When will I see something interesting?
-                                    </h4>
-                                    <p>You’ll start seeing data as soon as you have had your first programming session with the plugin installed. A programming session is created when you are active in your IDE and then head off to a meeting, for lunch or to check hackernews, slashdot or twitter. Do you know how much time you spend actively developing? After just a single day, you’ll know something new about your development self! Make sure you check back on the dashboard to see the patterns emerge as you build your data up towards a full month.
-                                    </p>
-                                </div>
-
-                                <div class="help-description">
-                                    <h4>Can I collect data from multiple IDEs? From work? Home?
-                                    </h4>
-                                    <p>Absolutely! Our goal at QuantifedDev is to give you a complete picture of your development life, that includes all of the IDEs and all of the computers that you use. Simply install our plugins on all your IDEs, across all of your computers. 
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>My IDE isn’t support, what do I do?
-                                    </h4>
-                                    <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and we can give you the algorithms we use in the other plugins to calculate activity. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>How do I update the data?
-                                    </h4>
-                                    <p>Go and play a game of tennis with your friends. It’s automatic. The plugins collect and send the data as you spend time programming in your IDE. As soon as the data arrives at our server, it’s available in your visualisation.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>See something interesting?
-                                    </h4>
-                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
-
-                                    </p>
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-sm-8 col-xs-12 ">
-                                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Builds</h3>
-                                </div>
-                                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
-                                    <button id="hourlyGithubPush-heat-map-help" class="pull-right pull-xs-left help-btn" onclick=show("hourlyBuild-heat-map-parent")></button>
+                                    <div class="help-description">
+                                        <h4>What does this show me?
+                                        </h4>
+                                        <p>This graph shows you how much time you spent each day actively creating code. Our plugins track your mouse clicks and edits to determine how long you are reading or writing code. If you spend a long time thinking, or debugging, or waiting for builds, none of that time is included. The only time included is when you are browsing your source files or editing them. We take all the activity over each day for the last month, add it up, then show it to you. The data goes back over a month.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>How do I get data in this graph?
+                                        </h4>
+                                        <p>To see data in this graph you have to install one of the plugins for the IDEs that we support. Currently that’s Sublime Text, IntelliJ or Visual Studio. Go to <a href="http://www.quantifieddev.org/#/downloads">the downloads page</a> and follow the instruction there to get started.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>When will I see something interesting?
+                                        </h4>
+                                        <p>You’ll start seeing data as soon as you have had your first programming session with the plugin installed. A programming session is created when you are active in your IDE and then head off to a meeting, for lunch or to check hackernews, slashdot or twitter. Do you know how much time you spend actively developing? After just a single day, you’ll know something new about your development self! Make sure you check back on the dashboard to see the patterns emerge as you build your data up towards a full month.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>Can I collect data from multiple IDEs? From work? Home?
+                                        </h4>
+                                        <p>Absolutely! Our goal at QuantifedDev is to give you a complete picture of your development life, that includes all of the IDEs and all of the computers that you use. Simply install our plugins on all your IDEs, across all of your computers.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>My IDE isn’t support, what do I do?
+                                        </h4>
+                                        <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and we can give you the algorithms we use in the other plugins to calculate activity. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>How do I update the data?
+                                        </h4>
+                                        <p>Kick back on your sofa and relax. It’s automatic. The plugins collect and send the data as you spend time programming in your IDE. As soon as the data arrives at our server, it’s available in your visualisation.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>See something interesting?
+                                        </h4>
+                                        <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="panel-body">
-                            <div id="hourlyBuild-heat-map" class="hourlyHeatMapContainer"></div>
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-sm-8 col-xs-12 ">
+                                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Active programming duration</h3>
+                                    </div>
+                                    <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
+                                        <button class="pull-right help-btn pull-xs-left" onclick=show("active-event-history-parent")></button>
+                                        <a id="tweetMyActiveDuration" class="twitter-share-button pull-right pull-xs-left" target="_blank" onclick="qd.tweetActiveEventSparkline()">Tweet</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div id="active-event-history"></div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div id="build-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-                    <div class="panel panel-secondary fixed-height">
-                                     <div class="helpContainer">
-                            <div class="row">
-                                <h4 class="heading">Help - Build History</h4>
-                                <div class="help-description">
-                                    <h4>What does this show me?
+                    <div id="correlate-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+                        <div class="panel panel-secondary fixed-height">
+                            <div class="helpContainer">
+                                <div class="row">
+                                    <h4 class="heading">Help - Correlate IDE Activity with GitHub pushes
                                     </h4>
-                                    <p>If you are working in IntellJ or Visual Studio, a build event is created each time you build. The build history shows your local builds over the last month. This is broken down into successful builds in blue and failed builds in red. Do most of your builds pass? Are you consistenly building the same amount each day? Any builds on the weekend?
-
-</p>
-                                    <p>Closely tied to this visualisation is the hourly  history and build duration visualisations. Once you start collecting builds, these visualisation will automatically appear in your dashboard.
-
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>How do I get data into this graph?
-                                    </h4>
-                                    <p>To see data in this graph you have to be working on a stack that involves a build step using an IDE that we support. Currently, this is IntelliJ or Visual Studio. Once you install the plugin, collection is completely automatic. To connect your build data go to the <a href="http://www.quantifieddev.org/#/download" target="_blank">downloads page</a> and download the plugin for your IDE.  
-                                   </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>When will I see something interesting?
-                                    </h4>
-                                    <p>You’ll start seeing data as soon as you build your software with the plugin installed. Do you know how many build you do locally a day? After just a single day, you’ll know something new about your development self! Make sure you check back on the dashboard to see the patterns emerge as you build your data up towards a full month.
-
-                                    </p>
-                                </div>
-
-                                <div class="help-description">
-                                    <h4>Can I collect data from multiple IDEs? From work? Home?
-                                    </h4>
-                                    <p>Absolutely! Our goal at QuantifedDev is to give you a complete picture of your development life, that includes all of the IDEs and all of the computers that you use. Simply install our plugins on all your IDEs, across all of your computers. 
- 
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>My IDE isn’t support, what do I do?
-                                    </h4>
-                                    <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and we can give you the algorithms we use in the other plugins to calculate activity. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>How do I update the data?
-                                    </h4>
-                                    <p>Grab a cup of coffee and a chocolate digestive. It’s automatic. The plugins collect and send the data as you build your software in your IDE. As soon as the data arrives at our server, it’s available in your visualisation.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>See something interesting?
-                                    </h4>
-                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
-
-                                    </p>
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-sm-8 col-xs-12 ">
-                                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Build History</h3>
-                                </div>
-                                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
-                                    <button id="hourlyGithubPush-heat-map-help" class="pull-right pull-xs-left help-btn" onclick=show("build-history-parent")></button>
-                                    <a id="tweetMyBuilds" class="twitter-share-button pull-right pull-xs-left" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel-body">
-                            <div id="build-history"></div>
-                        </div>
-                    </div>
-                </div>
-                <div id="hourlyWtf-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-                    <div class="panel panel-secondary fixed-height">
-                          <div class="helpContainer">
-                            <div class="row">
-                                <h4 class="heading">Help - Hourly WTFs</h4>
-                                <div class="help-description">
-                                    <h4>What does this show me?
-                                    </h4>
-                                    <p>You know those moments where you’re reading code - probably your own - it doesn’t make sense and as you realise what the code is doing you think: WTF?!
-</p>
-                                    <p>This graph shows you all the moments you slapped your head and thought “WTF?!”. Are you grumpier in the morning, therefore logging more WTFs? Maybe you’re sharper before lunch, code is less confusing: fewer WTFs.
-
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>How do I get data into this graph?
-                                    </h4>
-                                    <p>This data can only be logged from our IntelliJ plugin. Once installed, whenever you have a WTF, simply hit the WTF button. Then it will appear immediately in the visualisation.  
-
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>When will I see something interesting?
-                                    </h4>
-                                    <p>Depends on how bad your code base is ;-) 
-                                    </p>
-                                    <p>
-                                        As soon as you hit the WTF button you’ll see the data appear in the visualisation. Check the dashboard every friday to see your week in WTFs. Use WTFs in your retrospective to see whether your code quality is going up or down.
-
-                                    </p>
-                                </div>
-
-                                <div class="help-description">
-                                    <h4>My IDE isn’t support, what do I do?
-                                    </h4>
-                                    <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and it’s really easy to create a button that will log a WTF. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.. 
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>My IDE isn’t support, what do I do?
-                                    </h4>
-                                    <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and we can give you the algorithms we use in the other plugins to calculate activity. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>How do I update the data?
-                                    </h4>
-                                    <p>Talk a walk in the sunshine. It’s automatic. As long as you are logging those WTFs it’s available immediately in your visualisation.
-
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>See something interesting?
-                                    </h4>
-                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
-                                    </p>
-                                </div>
-
-                            </div>
-                        </div>
-                       
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-sm-8 col-xs-12 ">
-                                      <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Wtfs</h3>
-                                </div>
-                                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
-                                   
-                                    <button id="hourlyGithubPush-heat-map-help" class="pull-right pull-xs-left help-btn" onclick=show("hourlyWtf-heat-map-parent")></button>
-                                    
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel-body">
-                            <div id="hourlyWtf-heat-map" class="hourlyHeatMapContainer"></div>
-                        </div>
-                    </div>
-                </div>
-                <div id="wtf-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-                    <div class="panel panel-secondary fixed-height">
-                          
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-sm-8 col-xs-12 ">
-                                    <h3 class="panel-title"><i class="icon-bar-chart"></i>WTF History</h3>
-                                </div>
-                                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
-                                   
-                                    <a id="tweetMyWtfs" class="twitter-share-button pull-right pull-xs-left" target="_blank" onclick="qd.tweetWtfSparkline()">Tweet</a>
-                                    
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel-body">
-                            <div id="wtf-history"></div>
-                        </div>
-                    </div>
-                </div>
-                <div id="hourlyHydration-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-                    <div class="panel panel-secondary fixed-height">
-                           <div class="helpContainer">
-                            <div class="row">
-                                <h4 class="heading">Help - Hourly Water Intake</h4>
-                                <div class="help-description">
-                                    <h4>What does this show me?
-                                    </h4>
-                                    <p>This shows you the patterns of when you drink water over the week, logged right from your IDE. Always hung over on a friday morning after Thursday night work drinks? Up your intake in preparation for a gym visit?
-
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>How do I get data into this graph?
-                                    </h4>
-                                    <p>This data can only be logged from our IntelliJ plugin. Once installed, whenever you fill your glass up, simply hit the water button. Then it will appear immediately in the visualisation.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>When will I see something interesting?
-                                    </h4>
-                                    <p>Depends on how thirsty you are ;-)
-                                    </p>
-                                    <p>
-                                        As soon as you hit the water button you’ll see the data appear in the visualisation. Check the dashboard every friday to see your week in water drunk. 
-
-                                    </p>
-                                </div>
-
-                                <div class="help-description">
-                                    <h4>My IDE isn’t support, what do I do?
-                                    </h4>
-                                    <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and it’s really easy to create a button that will log a WTF. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.. 
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>My IDE isn’t support, what do I do?
-                                    </h4>
-                                    <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and it’s really easy to create a button that will log your water. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>How do I update the data?
-                                    </h4>
-                                    <p>Sip on a long cool glass of iced water and chill. It’s automatic. As long as you are logging those waters it’s available immediately in your visualisation.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>See something interesting?
-                                    </h4>
-                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
-                                    </p>
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="panel-heading">
-                             <div class="row">
-                                <div class="col-sm-8 col-xs-12 ">
-                                     <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Water Intake</h3>
-                                </div>
-                                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
-                                     <button id="hourlyGithubPush-heat-map-help" class="pull-right pull-xs-left help-btn" onclick=show("hourlyHydration-heat-map-parent")></button>
-                                </div>
-                            </div>
-                          
-                        </div>
-                        <div class="panel-body">
-                            <div id="hourlyHydration-heat-map" class="hourlyHeatMapContainer"></div>
-                        </div>
-                    </div>
-                </div>
-                <div id="hydration-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-                    <div class="panel panel-secondary fixed-height">
-                                     <div class="helpContainer">
-                            <div class="row">
-                                <h4 class="heading">Help - Water History</h4>
-                                <div class="help-description">
-                                    <h4>What does this show me?
-                                    </h4>
-                                    <p>This shows you the patterns of when you drink water over last month, logged right from your IDE. Are you staying properly hydrated over the last month? Or forgetting to take those crucial steps to get peak performance?
-
-</p>
-                                    <p>Closely tied to this visualisation is the hourly water heatmap. The data you log will appear in the hourly heatmap and this monthly visualisation.
-
-
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>How do I get data into this graph?
-                                    </h4>
-                                    <p>This data can only be logged from our IntelliJ plugin. Once installed, whenever you fill your glass up, simply hit the water button. Then it will appear immediately in the visualisation.  
-
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>When will I see something interesting?
-                                    </h4>
-                                    <p>Depends on how thirsty you are ;-)
-                                    </p>
-                                    <p>
-                                        As soon as you hit the water button you’ll see the data appear in the visualisation. Check the dashboard every friday to see your week in water drunk. 
-                                    </p>
-                                </div>
-
-                                <div class="help-description">
-                                    <h4>My IDE isn’t support, what do I do?
-                                    </h4>
-                                    <p>   We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and it’s really easy to create a button that will log your water. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>How do I update the data?
-                                    </h4>
-                                    <p>Sip on a long cool glass of iced water and chill. It’s automatic. As long as you are logging those waters it’s available immediately in your visualisation.
-                                    </p>
-                                </div>
-                               
-                                <div class="help-description">
-                                    <h4>See something interesting?
-                                    </h4>
-                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
-                                    </p>
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-sm-8 col-xs-12 ">
-                                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Water Intake History</h3>
-                                </div>
-                                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
-                                     <button id="hourlyGithubPush-heat-map-help" class="pull-right pull-xs-left help-btn" onclick=show("hydration-history-parent")></button>
-                                    <a id="tweetMyHydration" class="twitter-share-button pull-right pull-xs-left" target="_blank" onclick="qd.tweetHydrationSparkline()">Tweet</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel-body">
-                            <div id="hydration-history"></div>
-                        </div>
-                    </div>
-                </div>
-                <div id="hourlyCaffeine-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-                    <div class="panel panel-secondary fixed-height">
-                                        <div class="helpContainer">
-                            <div class="row">
-                                <h4 class="heading">Help - Hourly Caffeine Intake
-</h4>
-                                <div class="help-description">
-                                    <h4>What does this show me?
-                                    </h4>
-                                    <p>This shows you the patterns of when you drink your preferred caffeinated beverage, over the course of a week, logged right from your IDE. Need that wake up jolt at 6am? Flagging in the afternoon and need a pick me up? Find it hard to get going later in the week? 
-
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>How do I get data into this graph?
-                                    </h4>
-                                    <p>This data can only be logged from our IntelliJ plugin. Once installed, whenever you suck down a tea, coffee or energy drink, simply hit the caffeine button. Then it will appear immediately in the visualisation.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>When will I see something interesting?
-                                    </h4>
-                                    <p>Depends on how hard you’re hitting the caffeine ;-)
-
-                                    </p>
-                                    <p>
-                                       As soon as you hit the caffeine button you’ll see the data appear in the visualisation. Check the dashboard every friday to see your week in caffeine jolts. 
-
-                                </div>
-
-                                <div class="help-description">
-                                    <h4>My IDE isn’t support, what do I do?
-                                    </h4>
-                                    <p> 
-                                        We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and it’s really easy to create a button that will log your caffeine right from your browser. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>How do I update the data?
-                                    </h4>
-                                    <p>Make yourself a nice earl grey. It’s automatic. As long as you are logging your cuppait’s available immediately in your visualisation.
-
-                                   </p>
-                                </div>
-                               
-                                <div class="help-description">
-                                    <h4>See something interesting?
-                                    </h4>
-                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
-                                    </p>
-                                </div>
-
-                            </div>
-                        </div>
-                         <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-sm-8 col-xs-12 ">
-                                   <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Caffeine Intake</h3>
-                                </div>
-                                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
-                                     <button id="hourlyGithubPush-heat-map-help" class="pull-right pull-xs-left help-btn" onclick=show("hourlyCaffeine-heat-map-parent")></button>
-                                   
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel-body">
-                            <div id="hourlyCaffeine-heat-map" class="hourlyHeatMapContainer"></div>
-                        </div>
-                    </div>
-                </div>
-                <div id="caffeine-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-                    <div class="panel panel-secondary fixed-height">
-                                    <div class="helpContainer">
-                            <div class="row">
-                                <h4 class="heading">Help - Caffeine Intake History
-</h4>
-                                <div class="help-description">
-                                    <h4>What does this show me?
-                                    </h4>
-                                    <p>This shows you the patterns of when you drank caffeine over last month, logged right from your IDE. Are you using caffeine to stay sharp on the way to a deadline? Are you building tolerance to the caffeine that means you need a bigger kick each week?
-
-</p>
-                                    <p>Closely tied to this visualisation is the hourly caffeine intake heatmap. The data you log will appear in the hourly heatmap and this monthly visualisation.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>How do I get data into this graph?
-                                    </h4>
-                                    <p>This data can only be logged from our IntelliJ plugin. Once installed, whenever you take a caffeine jolt, simply hit the caffeine button. Then it will appear immediately in the visualisation.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>When will I see something interesting?
-                                    </h4>
-                                    <p>Depends on how hard you’re hitting the caffeine ;-)
-                                    </p>
-                                    <p>As soon as you hit the caffeine button you’ll see the data appear in the visualisation. Check the dashboard every friday to see your week in caffeine jolts. 
-                                    </p>
-                                </div>
-
-                                <div class="help-description">
-                                    <h4>My IDE isn’t support, what do I do?
-                                    </h4>
-                                    <p> 
-                                        We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and it’s really easy to create a button that will log your caffeine right from your browser. Email  <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>How do I update the data?
-                                    </h4>
-                                    <p>Go grab yourself a skinny mochacino with a squirt of vanilla syrup. It’s automatic. As long as you are logging that mocha frotha it’s available immediately in your visualisation.
-                                    </p>
-                                </div>
-                               
-                                <div class="help-description">
-                                    <h4>See something interesting?
-                                    </h4>
-                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
-                                    </p>
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-sm-8 col-xs-12 ">
-                                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Caffeine Intake History</h3>
-                                </div>
-                                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
-                                      <button id="hourlyGithubPush-heat-map-help" class="pull-right pull-xs-left help-btn" onclick=show("caffeine-history-parent")></button>
-                                    <a id="tweetMyCaffeine" class="twitter-share-button pull-right pull-xs-left" target="_blank" onclick="qd.tweetCaffeineSparkline()">Tweet</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel-body">
-                            <div id="caffeine-history"></div>
-                        </div>
-                    </div>
-                </div>
-                <div id="buildDuration-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-                    <div class="panel panel-secondary fixed-height">
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-sm-8 col-xs-12 ">
-                                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Build Duration History</h3>
-                                </div>
-                                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten ">
-                                    <a id="tweetMyBuildDuration" class="twitter-share-button pull-right pull-xs-left" target="_blank" onclick="qd.tweetBuildDurationSparkline()">Tweet</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel-body">
-                            <div id="buildDuration-history"></div>
-                        </div>
-                    </div>
-                </div>
-                <div id="active-event-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-                    <div class="panel panel-secondary fixed-height">
-                        <div class="helpContainer">
-                            <div class="row">
-                                <h4 class="heading">Help - Active Programming Duration
-                                </h4>
-                                <div class="help-description">
-                                    <h4>What does this show me?
-                                    </h4>
-                                    <p>This graph shows you how much time you spent each day actively creating code. Our plugins track your mouse clicks and edits to determine how long you are reading or writing code. If you spend a long time thinking, or debugging, or waiting for builds, none of that time is included. The only time included is when you are browsing your source files or editing them. We take all the activity over each day for the last month, add it up, then show it to you. The data goes back over a month.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>How do I get data in this graph?
-                                    </h4>
-                                    <p>To see data in this graph you have to install one of the plugins for the IDEs that we support. Currently that’s Sublime Text, IntelliJ or Visual Studio. Go to <a href="http://www.quantifieddev.org/#/downloads">the downloads page</a> and follow the instruction there to get started.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>When will I see something interesting?
-                                    </h4>
-                                    <p>You’ll start seeing data as soon as you have had your first programming session with the plugin installed. A programming session is created when you are active in your IDE and then head off to a meeting, for lunch or to check hackernews, slashdot or twitter. Do you know how much time you spend actively developing? After just a single day, you’ll know something new about your development self! Make sure you check back on the dashboard to see the patterns emerge as you build your data up towards a full month.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>Can I collect data from multiple IDEs? From work? Home?
-                                    </h4>
-                                    <p>Absolutely! Our goal at QuantifedDev is to give you a complete picture of your development life, that includes all of the IDEs and all of the computers that you use. Simply install our plugins on all your IDEs, across all of your computers. 
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>My IDE isn’t support, what do I do?
-                                    </h4>
-                                    <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and we can give you the algorithms we use in the other plugins to calculate activity. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it. 
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>How do I update the data?
-                                    </h4>
-                                    <p>Kick back on your sofa and relax. It’s automatic. The plugins collect and send the data as you spend time programming in your IDE. As soon as the data arrives at our server, it’s available in your visualisation.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>See something interesting?
-                                    </h4>
-                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
-                                    </p>
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-sm-8 col-xs-12 ">
-                                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Active programming duration</h3>
-                                </div>
-                                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
-                                    <button class="pull-right help-btn pull-xs-left" onclick=show("active-event-history-parent")></button>
-                                    <a id="tweetMyActiveDuration" class="twitter-share-button pull-right pull-xs-left" target="_blank" onclick="qd.tweetActiveEventSparkline()">Tweet</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel-body">
-                            <div id="active-event-history"></div>
-                        </div>
-                    </div>
-                </div>
-                <div id="correlate-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-                    <div class="panel panel-secondary fixed-height">
-                        <div class="helpContainer">
-                            <div class="row">
-                                <h4 class="heading">Help - Correlate IDE Activity with GitHub pushes
-                                </h4>
-                                <div class="help-description">
-                                    <h4>What does this show me?
-                                    </h4>
-                                    <p>If you have both IDE activity data and GitHub pushes, you will see a correlation between the number of minutes spent active in your IDE and the number of pushes to your public repositories. To generate the correlation we create totals for IDE activity and GitHub pushes for each day. Then, we plot a point for each day. We use the x-axis for IDE activity and the y-axis for GitHub pushes.  
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>How do I get data into this graph?
-                                    </h4>
-                                    <p>To see correlations you must link up your GitHub data and install a plugin that collects IDE activity data. 
-                                    </p>
-                                    <h5>IDE Activity</h5>
-                                    <p>
-                                        Currently that’s Sublime Text or IntelliJ. Go to <a href="http://www.quantifieddev.org/#/downloads">the downloads page</a> and follow the instructions there to get started. 
-                                    </p>
-                                    <h5>GitHub pushes</h5>
-                                    <p>
+                                    <div class="help-description">
+                                        <h4>What does this show me?
+                                        </h4>
+                                        <p>If you have both IDE activity data and GitHub pushes, you will see a correlation between the number of minutes spent active in your IDE and the number of pushes to your public repositories. To generate the correlation we create totals for IDE activity and GitHub pushes for each day. Then, we plot a point for each day. We use the x-axis for IDE activity and the y-axis for GitHub pushes.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>How do I get data into this graph?
+                                        </h4>
+                                        <p>To see correlations you must link up your GitHub data and install a plugin that collects IDE activity data.
+                                        </p>
+                                        <h5>IDE Activity</h5>
+                                        <p>
+                                        Currently that’s Sublime Text or IntelliJ. Go to <a href="http://www.quantifieddev.org/#/downloads">the downloads page</a> and follow the instructions there to get started.
+                                        </p>
+                                        <h5>GitHub pushes</h5>
+                                        <p>
                                         For the GitHub pushes, you need to have pushed to a public repository on GitHub to see something in this graph. If you have, go to <a href="https://app.quantifieddev.org">the dashboard</a>, click on ‘Link Data’, “Link Up My Public GitHub Data’  to get started.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>When will I see something interesting?
-                                    </h4>
-                                    <p>GitHub is a historical data source, which means we get lots of juicy data the second you connect it up. IDE activity takes a bit longer as we collect that as you complete programming sessions. To see something interesting you need to wait until you see lots of days where you were active in your IDE and also pushing up to GitHub. It will take a few weeks before you see this. We recommend leaving the data collection going and then coming back after 2 weeks. Why not set
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>Can I see pushes to private repos?
-                                    </h4>
-                                    <p>Not yet, it’s coming soon though. You can bump it up the queue by letting us know this is important to you.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>How do I update the data?
-                                    </h4>
-                                    <p>Right now, you need to sync the GitHub push data manually. IDE activity on the other hand updates automatically. To update the GitHub push data, simply go to the GitHub Push Events graph and click no the refresh button. It’s in the graph header, it’s the one with two arrows in a circle.
-                                    </p>
-                                </div>
-                                <div class="help-description">
-                                    <h4>See something interesting?
-                                    </h4>
-                                    <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
-                                    </p>
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-sm-8 col-xs-12 ">
-                                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Correlate IDE Activity with Github Pushes</h3>
-                                </div>
-                                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten ">
-                                    <button class="pull-right  pull-xs-left help-btn" onclick=show("correlate-events-parent")></button>
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>When will I see something interesting?
+                                        </h4>
+                                        <p>GitHub is a historical data source, which means we get lots of juicy data the second you connect it up. IDE activity takes a bit longer as we collect that as you complete programming sessions. To see something interesting you need to wait until you see lots of days where you were active in your IDE and also pushing up to GitHub. It will take a few weeks before you see this. We recommend leaving the data collection going and then coming back after 2 weeks. Why not set
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>Can I see pushes to private repos?
+                                        </h4>
+                                        <p>Not yet, it’s coming soon though. You can bump it up the queue by letting us know this is important to you.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>How do I update the data?
+                                        </h4>
+                                        <p>Right now, you need to sync the GitHub push data manually. IDE activity on the other hand updates automatically. To update the GitHub push data, simply go to the GitHub Push Events graph and click no the refresh button. It’s in the graph header, it’s the one with two arrows in a circle.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>See something interesting?
+                                        </h4>
+                                        <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-sm-8 col-xs-12 ">
+                                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Correlate IDE Activity with Github Pushes</h3>
+                                    </div>
+                                    <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten ">
+                                        <button class="pull-right  pull-xs-left help-btn" onclick=show("correlate-events-parent")></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div id="correlate-events"></div>
+                            </div>
                         </div>
-                        <div class="panel-body">
-                            <div id="correlate-events"></div>
+                    </div>
+                    <div id="buildDuration-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+                        <div class="panel panel-secondary fixed-height">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-sm-8 col-xs-12 ">
+                                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Build Duration History</h3>
+                                    </div>
+                                    <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten ">
+                                        <a id="tweetMyBuildDuration" class="twitter-share-button pull-right pull-xs-left" target="_blank" onclick="qd.tweetBuildDurationSparkline()">Tweet</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div id="buildDuration-history"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="hourlyBuild-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+                        <div class="panel panel-secondary fixed-height">
+                            <div class="helpContainer">
+                                <div class="row">
+                                    <h4 class="heading">Help - Hourly Builds</h4>
+                                    <div class="help-description">
+                                        <h4>What does this show me?
+                                        </h4>
+                                        <p>If you are working in IntellJ or Visual Studio, a build event is created each time you build. The hourly builds shows the pattern of when you were building over each day of the week. Have a squint, what’s the overall picture? What specific patterns do you see? Do you break for lunch at the same time every day? Do you program on the weekends? Are you a morning person or a night owl?
+                                        </p>
+                                        <p>Closely tied to this visualisation is the build history and build duration visualisations. Once you start collecting builds, these visualisation will automatically appear in your dashboard.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>How do I get data into this graph?
+                                        </h4>
+                                        <p>To see data in this graph you have to be working on a stack that involves a build step using an IDE that we support. Currently, this is IntelliJ or Visual Studio. Oncw you install the plugin, collection is completely automatic. To connect your build data go to the downloads page and download the plugin for your IDE.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>When will I see something interesting?
+                                        </h4>
+                                        <p>You’ll start seeing data as soon as you have had your first programming session with the plugin installed. A programming session is created when you are active in your IDE and then head off to a meeting, for lunch or to check hackernews, slashdot or twitter. Do you know how much time you spend actively developing? After just a single day, you’ll know something new about your development self! Make sure you check back on the dashboard to see the patterns emerge as you build your data up towards a full month.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>Can I collect data from multiple IDEs? From work? Home?
+                                        </h4>
+                                        <p>Absolutely! Our goal at QuantifedDev is to give you a complete picture of your development life, that includes all of the IDEs and all of the computers that you use. Simply install our plugins on all your IDEs, across all of your computers.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>My IDE isn’t support, what do I do?
+                                        </h4>
+                                        <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and we can give you the algorithms we use in the other plugins to calculate activity. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>How do I update the data?
+                                        </h4>
+                                        <p>Go and play a game of tennis with your friends. It’s automatic. The plugins collect and send the data as you spend time programming in your IDE. As soon as the data arrives at our server, it’s available in your visualisation.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>See something interesting?
+                                        </h4>
+                                        <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-sm-8 col-xs-12 ">
+                                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Builds</h3>
+                                    </div>
+                                    <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
+                                        <button id="hourlyGithubPush-heat-map-help" class="pull-right pull-xs-left help-btn" onclick=show("hourlyBuild-heat-map-parent")></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div id="hourlyBuild-heat-map" class="hourlyHeatMapContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="build-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+                        <div class="panel panel-secondary fixed-height">
+                            <div class="helpContainer">
+                                <div class="row">
+                                    <h4 class="heading">Help - Build History</h4>
+                                    <div class="help-description">
+                                        <h4>What does this show me?
+                                        </h4>
+                                        <p>If you are working in IntellJ or Visual Studio, a build event is created each time you build. The build history shows your local builds over the last month. This is broken down into successful builds in blue and failed builds in red. Do most of your builds pass? Are you consistenly building the same amount each day? Any builds on the weekend?
+                                        </p>
+                                        <p>Closely tied to this visualisation is the hourly  history and build duration visualisations. Once you start collecting builds, these visualisation will automatically appear in your dashboard.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>How do I get data into this graph?
+                                        </h4>
+                                        <p>To see data in this graph you have to be working on a stack that involves a build step using an IDE that we support. Currently, this is IntelliJ or Visual Studio. Once you install the plugin, collection is completely automatic. To connect your build data go to the <a href="http://www.quantifieddev.org/#/download" target="_blank">downloads page</a> and download the plugin for your IDE.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>When will I see something interesting?
+                                        </h4>
+                                        <p>You’ll start seeing data as soon as you build your software with the plugin installed. Do you know how many build you do locally a day? After just a single day, you’ll know something new about your development self! Make sure you check back on the dashboard to see the patterns emerge as you build your data up towards a full month.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>Can I collect data from multiple IDEs? From work? Home?
+                                        </h4>
+                                        <p>Absolutely! Our goal at QuantifedDev is to give you a complete picture of your development life, that includes all of the IDEs and all of the computers that you use. Simply install our plugins on all your IDEs, across all of your computers.
+                                        
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>My IDE isn’t support, what do I do?
+                                        </h4>
+                                        <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and we can give you the algorithms we use in the other plugins to calculate activity. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>How do I update the data?
+                                        </h4>
+                                        <p>Grab a cup of coffee and a chocolate digestive. It’s automatic. The plugins collect and send the data as you build your software in your IDE. As soon as the data arrives at our server, it’s available in your visualisation.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>See something interesting?
+                                        </h4>
+                                        <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-sm-8 col-xs-12 ">
+                                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Build History</h3>
+                                    </div>
+                                    <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
+                                        <button id="hourlyGithubPush-heat-map-help" class="pull-right pull-xs-left help-btn" onclick=show("build-history-parent")></button>
+                                        <a id="tweetMyBuilds" class="twitter-share-button pull-right pull-xs-left" target="_blank" onclick="qd.tweetBuildSparkline()">Tweet</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div id="build-history"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="hourlyWtf-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+                        <div class="panel panel-secondary fixed-height">
+                            <div class="helpContainer">
+                                <div class="row">
+                                    <h4 class="heading">Help - Hourly WTFs</h4>
+                                    <div class="help-description">
+                                        <h4>What does this show me?
+                                        </h4>
+                                        <p>You know those moments where you’re reading code - probably your own - it doesn’t make sense and as you realise what the code is doing you think: WTF?!
+                                        </p>
+                                        <p>This graph shows you all the moments you slapped your head and thought “WTF?!”. Are you grumpier in the morning, therefore logging more WTFs? Maybe you’re sharper before lunch, code is less confusing: fewer WTFs.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>How do I get data into this graph?
+                                        </h4>
+                                        <p>This data can only be logged from our IntelliJ plugin. Once installed, whenever you have a WTF, simply hit the WTF button. Then it will appear immediately in the visualisation.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>When will I see something interesting?
+                                        </h4>
+                                        <p>Depends on how bad your code base is ;-)
+                                        </p>
+                                        <p>
+                                        As soon as you hit the WTF button you’ll see the data appear in the visualisation. Check the dashboard every friday to see your week in WTFs. Use WTFs in your retrospective to see whether your code quality is going up or down.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>My IDE isn’t support, what do I do?
+                                        </h4>
+                                        <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and it’s really easy to create a button that will log a WTF. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it..
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>My IDE isn’t support, what do I do?
+                                        </h4>
+                                        <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and we can give you the algorithms we use in the other plugins to calculate activity. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>How do I update the data?
+                                        </h4>
+                                        <p>Talk a walk in the sunshine. It’s automatic. As long as you are logging those WTFs it’s available immediately in your visualisation.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>See something interesting?
+                                        </h4>
+                                        <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-sm-8 col-xs-12 ">
+                                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Wtfs</h3>
+                                    </div>
+                                    <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
+                                        
+                                        <button id="hourlyGithubPush-heat-map-help" class="pull-right pull-xs-left help-btn" onclick=show("hourlyWtf-heat-map-parent")></button>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div id="hourlyWtf-heat-map" class="hourlyHeatMapContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="wtf-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+                        <div class="panel panel-secondary fixed-height">
+                            
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-sm-8 col-xs-12 ">
+                                        <h3 class="panel-title"><i class="icon-bar-chart"></i>WTF History</h3>
+                                    </div>
+                                    <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
+                                        
+                                        <a id="tweetMyWtfs" class="twitter-share-button pull-right pull-xs-left" target="_blank" onclick="qd.tweetWtfSparkline()">Tweet</a>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div id="wtf-history"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="hourlyHydration-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+                        <div class="panel panel-secondary fixed-height">
+                            <div class="helpContainer">
+                                <div class="row">
+                                    <h4 class="heading">Help - Hourly Water Intake</h4>
+                                    <div class="help-description">
+                                        <h4>What does this show me?
+                                        </h4>
+                                        <p>This shows you the patterns of when you drink water over the week, logged right from your IDE. Always hung over on a friday morning after Thursday night work drinks? Up your intake in preparation for a gym visit?
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>How do I get data into this graph?
+                                        </h4>
+                                        <p>This data can only be logged from our IntelliJ plugin. Once installed, whenever you fill your glass up, simply hit the water button. Then it will appear immediately in the visualisation.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>When will I see something interesting?
+                                        </h4>
+                                        <p>Depends on how thirsty you are ;-)
+                                        </p>
+                                        <p>
+                                        As soon as you hit the water button you’ll see the data appear in the visualisation. Check the dashboard every friday to see your week in water drunk.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>My IDE isn’t support, what do I do?
+                                        </h4>
+                                        <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and it’s really easy to create a button that will log a WTF. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it..
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>My IDE isn’t support, what do I do?
+                                        </h4>
+                                        <p>We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and it’s really easy to create a button that will log your water. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>How do I update the data?
+                                        </h4>
+                                        <p>Sip on a long cool glass of iced water and chill. It’s automatic. As long as you are logging those waters it’s available immediately in your visualisation.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>See something interesting?
+                                        </h4>
+                                        <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-sm-8 col-xs-12 ">
+                                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Water Intake</h3>
+                                    </div>
+                                    <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
+                                        <button id="hourlyGithubPush-heat-map-help" class="pull-right pull-xs-left help-btn" onclick=show("hourlyHydration-heat-map-parent")></button>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="panel-body">
+                                <div id="hourlyHydration-heat-map" class="hourlyHeatMapContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="hydration-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+                        <div class="panel panel-secondary fixed-height">
+                            <div class="helpContainer">
+                                <div class="row">
+                                    <h4 class="heading">Help - Water History</h4>
+                                    <div class="help-description">
+                                        <h4>What does this show me?
+                                        </h4>
+                                        <p>This shows you the patterns of when you drink water over last month, logged right from your IDE. Are you staying properly hydrated over the last month? Or forgetting to take those crucial steps to get peak performance?
+                                        </p>
+                                        <p>Closely tied to this visualisation is the hourly water heatmap. The data you log will appear in the hourly heatmap and this monthly visualisation.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>How do I get data into this graph?
+                                        </h4>
+                                        <p>This data can only be logged from our IntelliJ plugin. Once installed, whenever you fill your glass up, simply hit the water button. Then it will appear immediately in the visualisation.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>When will I see something interesting?
+                                        </h4>
+                                        <p>Depends on how thirsty you are ;-)
+                                        </p>
+                                        <p>
+                                        As soon as you hit the water button you’ll see the data appear in the visualisation. Check the dashboard every friday to see your week in water drunk.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>My IDE isn’t support, what do I do?
+                                        </h4>
+                                        <p>   We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and it’s really easy to create a button that will log your water. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>How do I update the data?
+                                        </h4>
+                                        <p>Sip on a long cool glass of iced water and chill. It’s automatic. As long as you are logging those waters it’s available immediately in your visualisation.
+                                        </p>
+                                    </div>
+                                    
+                                    <div class="help-description">
+                                        <h4>See something interesting?
+                                        </h4>
+                                        <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-sm-8 col-xs-12 ">
+                                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Water Intake History</h3>
+                                    </div>
+                                    <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
+                                        <button id="hourlyGithubPush-heat-map-help" class="pull-right pull-xs-left help-btn" onclick=show("hydration-history-parent")></button>
+                                        <a id="tweetMyHydration" class="twitter-share-button pull-right pull-xs-left" target="_blank" onclick="qd.tweetHydrationSparkline()">Tweet</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div id="hydration-history"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="hourlyCaffeine-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+                        <div class="panel panel-secondary fixed-height">
+                            <div class="helpContainer">
+                                <div class="row">
+                                    <h4 class="heading">Help - Hourly Caffeine Intake
+                                    </h4>
+                                    <div class="help-description">
+                                        <h4>What does this show me?
+                                        </h4>
+                                        <p>This shows you the patterns of when you drink your preferred caffeinated beverage, over the course of a week, logged right from your IDE. Need that wake up jolt at 6am? Flagging in the afternoon and need a pick me up? Find it hard to get going later in the week?
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>How do I get data into this graph?
+                                        </h4>
+                                        <p>This data can only be logged from our IntelliJ plugin. Once installed, whenever you suck down a tea, coffee or energy drink, simply hit the caffeine button. Then it will appear immediately in the visualisation.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>When will I see something interesting?
+                                        </h4>
+                                        <p>Depends on how hard you’re hitting the caffeine ;-)
+                                        </p>
+                                        <p>
+                                        As soon as you hit the caffeine button you’ll see the data appear in the visualisation. Check the dashboard every friday to see your week in caffeine jolts.
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>My IDE isn’t support, what do I do?
+                                        </h4>
+                                        <p>
+                                        We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and it’s really easy to create a button that will log your caffeine right from your browser. Email <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>How do I update the data?
+                                        </h4>
+                                        <p>Make yourself a nice earl grey. It’s automatic. As long as you are logging your cuppait’s available immediately in your visualisation.
+                                        </p>
+                                    </div>
+                                    
+                                    <div class="help-description">
+                                        <h4>See something interesting?
+                                        </h4>
+                                        <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-sm-8 col-xs-12 ">
+                                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Caffeine Intake</h3>
+                                    </div>
+                                    <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
+                                        <button id="hourlyGithubPush-heat-map-help" class="pull-right pull-xs-left help-btn" onclick=show("hourlyCaffeine-heat-map-parent")></button>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div id="hourlyCaffeine-heat-map" class="hourlyHeatMapContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="caffeine-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+                        <div class="panel panel-secondary fixed-height">
+                            <div class="helpContainer">
+                                <div class="row">
+                                    <h4 class="heading">Help - Caffeine Intake History
+                                    </h4>
+                                    <div class="help-description">
+                                        <h4>What does this show me?
+                                        </h4>
+                                        <p>This shows you the patterns of when you drank caffeine over last month, logged right from your IDE. Are you using caffeine to stay sharp on the way to a deadline? Are you building tolerance to the caffeine that means you need a bigger kick each week?
+                                        </p>
+                                        <p>Closely tied to this visualisation is the hourly caffeine intake heatmap. The data you log will appear in the hourly heatmap and this monthly visualisation.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>How do I get data into this graph?
+                                        </h4>
+                                        <p>This data can only be logged from our IntelliJ plugin. Once installed, whenever you take a caffeine jolt, simply hit the caffeine button. Then it will appear immediately in the visualisation.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>When will I see something interesting?
+                                        </h4>
+                                        <p>Depends on how hard you’re hitting the caffeine ;-)
+                                        </p>
+                                        <p>As soon as you hit the caffeine button you’ll see the data appear in the visualisation. Check the dashboard every friday to see your week in caffeine jolts.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>My IDE isn’t support, what do I do?
+                                        </h4>
+                                        <p>
+                                        We’d love you to get involved and build a plugin for it! We’ve created QuantifiedDev as open source and not for profit so that you can get involved. Our api is simple and it’s really easy to create a button that will log your caffeine right from your browser. Email  <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a> if you want to help your community and enable QuantifiedDev support in your IDE. You can also make a request on quantifieddev.uservoice.com. The more people who want the plugin, the more likely we are to build it. So get your community behind the request by upvoting it.
+                                        </p>
+                                    </div>
+                                    <div class="help-description">
+                                        <h4>How do I update the data?
+                                        </h4>
+                                        <p>Go grab yourself a skinny mochacino with a squirt of vanilla syrup. It’s automatic. As long as you are logging that mocha frotha it’s available immediately in your visualisation.
+                                        </p>
+                                    </div>
+                                    
+                                    <div class="help-description">
+                                        <h4>See something interesting?
+                                        </h4>
+                                        <p>Show us! We’d love hearing the stories behind the data. Send your story to <a href="mailto:team@quantifieddev.org">team@quantifieddev.org</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-sm-8 col-xs-12 ">
+                                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Caffeine Intake History</h3>
+                                    </div>
+                                    <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
+                                        <button id="hourlyGithubPush-heat-map-help" class="pull-right pull-xs-left help-btn" onclick=show("caffeine-history-parent")></button>
+                                        <a id="tweetMyCaffeine" class="twitter-share-button pull-right pull-xs-left" target="_blank" onclick="qd.tweetCaffeineSparkline()">Tweet</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div id="caffeine-history"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <!-- Bootstrap Container End -->
         </div>
-        <!-- Bootstrap Container End -->
-    </div>
-    <!-- Main Container End -->
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/bootstrap-modal.js"></script>
-    <script src="/js/bootstrap-modalmanager.js"></script>
-    <script src="/js/underscore-min.js"></script>
-    <!-- jQuery UI JS -->
-    <script src="/js/jquery-ui-v1.10.3.js"></script>
-    <!-- Sparkline graphs -- >
-    <script src="/js/sparkline.js"></script>
-    <!-- Data tables -->
-    <script src="/js/jquery.datatables.js"></script>
-    <!-- Date Range -->
-    <script src="/js/daterange/moment.js"></script>
-    <script src="/js/daterange/daterangepicker.js"></script>
-    <!-- Animated Right Sidebar -->
-    <script src="/js/slidebars.js"></script>
-    <!-- JVector Map -->
-    <script src="/js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
-    <script src="/js/jvectormap/jquery-jvectormap-usa.js"></script>
-    <!-- Custom JS -->
-    <script src="/js/custom.js"></script>
-    <script src="/js/custom-index.js"></script>
-    <script src="/packages/d3/d3.js"></script>
-    <script src="/js/d3.tip.v0.6.3.js"></script>
-    <script src="/packages/d3/d3.geo.projection.v0.min.js"></script>
-    <script src="/packages/d3/topojson.v1.min.js"></script>
-    <script src="/packages/d3/queue.v1.min.js"></script>
-    <script src="/packages/regressionjs/regression.js"></script>
-    <script src="/js/1self.js"></script>
-    <script src="/js/ajax_request.js"></script>
-    <script src="/js/quantified-dev.js"></script>
-    <script src="/js/build-history-d3.js"></script>
-    <script src="/js/wtf-history-d3.js"></script>
-    <script src="/js/hydration-history-d3.js"></script>
-    <script src="/js/caffeine-history-d3.js"></script>
-    <script src="/js/buildDuration-history-d3.js"></script>
-    <script src="/js/active-events-d3.js"></script>
-    <script src="/js/hourlyEvent-heatMap-d3.js"></script>
-    <script src="/js/correlation-scatterplot-d3.js"></script>
-    <script src="/js/dashboard.js"></script>
-    <script src="/js/link-datasource.js"></script>
-</body>
-
+        <!-- Main Container End -->
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="/js/bootstrap.min.js"></script>
+        <script src="/js/bootstrap-modal.js"></script>
+        <script src="/js/bootstrap-modalmanager.js"></script>
+        <script src="/js/underscore-min.js"></script>
+        <!-- jQuery UI JS -->
+        <script src="/js/jquery-ui-v1.10.3.js"></script>
+        <!-- Sparkline graphs -- >
+        <script src="/js/sparkline.js"></script>
+        <!-- Data tables -->
+        <script src="/js/jquery.datatables.js"></script>
+        <!-- Date Range -->
+        <script src="/js/daterange/moment.js"></script>
+        <script src="/js/daterange/daterangepicker.js"></script>
+        <!-- Animated Right Sidebar -->
+        <script src="/js/slidebars.js"></script>
+        <!-- JVector Map -->
+        <script src="/js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
+        <script src="/js/jvectormap/jquery-jvectormap-usa.js"></script>
+        <!-- Custom JS -->
+        <script src="/js/custom.js"></script>
+        <script src="/js/custom-index.js"></script>
+        <script src="/packages/d3/d3.js"></script>
+        <script src="/js/d3.tip.v0.6.3.js"></script>
+        <script src="/packages/d3/d3.geo.projection.v0.min.js"></script>
+        <script src="/packages/d3/topojson.v1.min.js"></script>
+        <script src="/packages/d3/queue.v1.min.js"></script>
+        <script src="/packages/regressionjs/regression.js"></script>
+        <script src="/js/1self.js"></script>
+        <script src="/js/ajax_request.js"></script>
+        <script src="/js/quantified-dev.js"></script>
+        <script src="/js/build-history-d3.js"></script>
+        <script src="/js/wtf-history-d3.js"></script>
+        <script src="/js/hydration-history-d3.js"></script>
+        <script src="/js/caffeine-history-d3.js"></script>
+        <script src="/js/buildDuration-history-d3.js"></script>
+        <script src="/js/active-events-d3.js"></script>
+        <script src="/js/hourlyEvent-heatMap-d3.js"></script>
+        <script src="/js/correlation-scatterplot-d3.js"></script>
+        <script src="/js/dashboard.js"></script>
+        <script src="/js/link-datasource.js"></script>
+    </body>
 </html>
