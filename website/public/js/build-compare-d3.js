@@ -6,7 +6,8 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 	var h = w / 1.61;
 	var p = [h * 0.05, w * 0.1, h * 0.35, w * 0.05],
 		x = d3.scale.ordinal().rangeRoundBands([0, w - p[1] - p[3]]),
-		xLinear = d3.scale.linear().range([0, w - p[1] - p[3]]);
+		xLinear = d3.scale.linear().range([0, w - p[1] - p[3]]),
+		xTicks = d3.scale.linear().range([0, w - p[1] - p[3]]);
 	var y = d3.scale.linear().range([0, h - p[0] - p[2]]),
 		parse = d3.time.format("%m/%d/%Y").parse,
 		format = d3.time.format("%d");
@@ -21,7 +22,7 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 		.attr('class', 'd3-tip')
 		.offset([-10, 0])
 		.html(function(d) {
-			return "<strong>" + d.y + (d.y===1?" event":" events") + "</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>";
+			return "<strong>" + d.y + (d.y === 1 ? " event" : " events") + "</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>";
 		});
 	svg.call(tip);
 
@@ -66,7 +67,7 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 		svg.selectAll("dot")
 			.data(dataArray)
 			.enter().append("circle")
-			.attr("class","dot-line")
+			.attr("class", "dot-line")
 			.attr("r", 4)
 			.attr("cx", function(d) {
 				return x(d.x);
@@ -131,9 +132,54 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 			});
 
 		rule.append("svg:text")
-			.attr("x", w - p[1] - p[3] + 6)
+			.attr("x", -12)
 			.attr("dy", ".35em")
 			.text(d3.format(",d"));
+		rule.append("svg:text")
+			.attr("x", (h - p[2] - p[0] - 58))
+			.attr("y", 8)
+			.attr("dy", ".35em")
+			.attr("transform", "rotate(-90)")
+			.style("font-size", "12px")
+			.text(function(d) {
+				return d !== 0 ? "" : "Build Count";
+			});
+
+		var ruleForX = svg.selectAll("g.ruleForX")
+			.data(xTicks.ticks(30))
+			.enter().append("svg:g")
+			.attr("class", "ruleForX")
+			.attr("transform", function(d) {
+				var xValue = (x.rangeBand() * d);
+				return "translate(" + xValue + ",0)";
+			});
+
+		ruleForX.append("svg:line")
+			.attr("x1", function(d) {
+				return d;
+			})
+			.attr("x2", function(d) {
+				return d;
+			})
+			.attr("y1", function(d) {
+				return 0;
+			})
+			.attr("y2", -(h - p[2] - p[0] + 10))
+			.style("stroke", function(d) {
+				return d !== 0 ? "#fff" : "#000";
+			})
+			.style("stroke-opacity", function(d) {
+				return d !== 0 ? 0 : .7;
+			});
+
+		ruleForX.append("svg:text")
+			.attr("x", w - p[3] - p[1] - 30)
+			.attr("y", -10)
+			.attr("dy", ".35em")
+			.style("font-size", "12px")
+			.text(function(d) {
+				return d !== 0 ? "" : "Date";
+			});
 	};
 	var myBuildEventsGroupByStatus = _groupByStatus(myBuildEvents);
 	var myFailedBuildEvents = myBuildEventsGroupByStatus[0];
