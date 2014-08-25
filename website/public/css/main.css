@@ -1345,8 +1345,7 @@ ul.recent-tweets li .tweet-details p {
     border-top: 0;
 }
 .panel-body {
-    /*padding: 10px 20px;*/
-    padding: 10px 5px;
+     padding: 10px 5px;
     position: relative;
 }
 .panel-heading {
@@ -2969,6 +2968,12 @@ a.twitter-share-button {
     }
 
 }
+@media screen and (min-width: 768px) {
+    .panel-body {
+       padding-left: 30px;
+    }
+}
+
 @media screen and (max-width: 1200px) {
 .comparison .mobile-margin-bottom-five{
     margin-bottom: 5px;

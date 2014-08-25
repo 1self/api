@@ -13,12 +13,14 @@ window.qd.plotActiveEvents = function() {
     parse = d3.time.format("%m/%d/%Y").parse,
     format = d3.time.format("%d");
     formatMonth = d3.time.format("%b");
+    var xOriginOfSVG = p[3] +7;
+
 
     var svg = d3.select("#active-event-history").append("svg:svg")
         .attr("width", w)
         .attr("height", h)
         .append("svg:g")
-        .attr("transform", "translate(" + p[3] + "," + (h - p[2]) + ")");
+        .attr("transform", "translate(" + xOriginOfSVG + "," + (h - p[2]) + ")");
 
     activeEvents = window.qd.activeEvents;
 
