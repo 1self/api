@@ -18,12 +18,6 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
         days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
         times = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"];
 
-    var timezoneDifferenceInHours;
-    var setTimezoneDifferenceInHours = function() {
-        var timezoneOffset = new Date().getTimezoneOffset();
-        timezoneDifferenceInHours = Math.round(timezoneOffset / 60);
-    }();
-
     var segmentData = [];
 
     for (var hour = 0; hour < 24 * 7; hour++) {
@@ -43,7 +37,7 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
         return a;
     };
 
-    var hourlyBuildCountsData = rotateArray(hourlyBuildCountsMondayToSunday.slice(), -1 * timezoneDifferenceInHours);
+    var hourlyBuildCountsData = rotateArray(hourlyBuildCountsMondayToSunday.slice(), -1 * window.qd.timezoneDifferenceInHours);
 
     var _generateHeatMap = function(data) {
         var maximumEventValue = d3.max([1, d3.max(data, function(d) {
