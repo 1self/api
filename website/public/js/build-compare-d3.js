@@ -72,7 +72,6 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 				return x(d.x);
 			})
 			.attr("cy", function(d) {
-				console.log(d.y)
 				return -y(d.y);
 			})
 			.attr("fill", color)
