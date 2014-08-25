@@ -19,7 +19,9 @@ $(function() {
     var fullName = $(".user-name").attr('data-fullname');
     $("#your-name1").val(fullName);
   });
-
+  $(window).resize(function() {
+    window.qd.plotComparisonGraphs(window.localStorage.theirUsername);
+  });
   $(document).ready(function() {
     var theirUsernameIsAvailable = function() {
       return window.localStorage.theirUsername;
@@ -44,15 +46,16 @@ $(function() {
     }
 
     var pattern = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
     function isEmailAddress(str) {
-       return str.match(pattern);    
+      return str.match(pattern);
     }
-      
-    if ((_.isEmpty(friendsQdUsername)) && !(_.isEmpty(friendsEmail)) ) {
-        if (!(isEmailAddress(friendsEmail))){
-            $(".compare_error_message").show();
-            return;
-       };
+
+    if ((_.isEmpty(friendsQdUsername)) && !(_.isEmpty(friendsEmail))) {
+      if (!(isEmailAddress(friendsEmail))) {
+        $(".compare_error_message").show();
+        return;
+      };
     }
 
     var yourUsername = $(".user-name").attr('data-username');
@@ -67,17 +70,21 @@ $(function() {
     } else {
       $("#friend-qd-username2").val(friendsEmail);
     }
-    
+
     $.get('/email_templates/invite.eml.html', function(template) {
-        var rendered = Mustache.render(template, {yourName: yourName, acceptUrl: "#", rejectUrl: "#" });
-        $("#email-message").html(rendered);
-     });
-    
+      var rendered = Mustache.render(template, {
+        yourName: yourName,
+        acceptUrl: "#",
+        rejectUrl: "#"
+      });
+      $("#email-message").html(rendered);
+    });
+
   });
 
-  $("#send-compare-request-back").click(function(){
-      $("#request-comparison").show();
-      $("#comparison-email").hide();
+  $("#send-compare-request-back").click(function() {
+    $("#request-comparison").show();
+    $("#comparison-email").hide();
   });
 
   var emailSuccessCallback = function() {
