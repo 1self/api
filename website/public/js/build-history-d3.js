@@ -75,8 +75,7 @@ window.qd.plotBuildHistory = function() {
             return y(d.y);
         })
         .attr("width", x.rangeBand())
-        .on("mouseover", tip.show)
-        .on("mouseout", tip.hide)
+        .on("click", tip.show)
         .on("mouseover", tip.show)
         .on("mouseout", tip.hide);
 

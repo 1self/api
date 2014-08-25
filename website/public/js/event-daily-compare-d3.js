@@ -96,6 +96,7 @@ window.qd.plotDailyComparison = function(divId, myDailyEvents, theirDailyEvents)
     .style("fill", function(d) {
       return color(d.dataFor);
     })
+    .on("click", tip.show)
     .on("mouseover", tip.show)
     .on("mouseout", tip.hide);
 

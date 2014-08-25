@@ -55,7 +55,7 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 				var curval = +d.y;
 				return -y(curval);
 			})
-			.interpolate("linear");
+			.interpolate("monotone");
 
 		svg.append("path")
 			.attr("class", "average")
@@ -69,13 +69,15 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 			.enter().append("circle")
 			.attr("class", "dot-line")
 			.attr("r", 4)
-			.attr("cx", function(d) {
-				return x(d.x);
+			.attr("cx", function(d, i) {
+				return xLinear(i);
 			})
-			.attr("cy", function(d) {
-				return -y(d.y);
+			.attr("cy", function(d, i) {
+				var curval = +d.y;
+				return -y(curval);
 			})
 			.attr("fill", color)
+			.on("click", tip.show)
 			.on("mouseover", tip.show)
 			.on("mouseout", tip.hide);
 
