@@ -188,7 +188,7 @@
                     <select id="friendList" class="btn btn-default" >
                       <!-- <option>Select Friend</option> -->
                       {% for friend in friends %}
-                        <option>
+                        <option {% if friend == compareWith %} selected {% endif %} >
                           {{ friend }}
                         </option>
                       {% endfor %}

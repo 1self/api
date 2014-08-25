@@ -404,7 +404,8 @@ module.exports = function(app) {
             emailTemplates(emailConfigOptions, function(err, emailRender) {
                 var context = {
                     requesteeFullname: requesteeFullname,
-                    requesterFullname: requesterFullname
+                    requesterFullname: requesterFullname,
+                    requesterUsername: requesterUsername
                 };
                 emailRender('acceptCompareRequest.eml.html', context, function(err, html, text) {
                     sendgrid.send({
@@ -463,6 +464,7 @@ module.exports = function(app) {
 
     app.get("/compare", sessionManager.requiresSession, function(req, res) {
         var requesterUsername = req.session.requesterUsername;
+        var compareWith = req.query.compareWith;
         var emailIdsMap;
         if (req.session.requesterUsername) {
             createEmailIdPromiseArray(req.session.username, requesterUsername)
@@ -487,7 +489,7 @@ module.exports = function(app) {
                 })
                 .catch(function(error) {
                     delete req.session.requesterUsername;
-                    res.redirect("/dashboard");
+                    res.redirect("/dashboard?compareWith="+compareWith);
                 });
         } else {
             fetchFriendList(req.session.username)
@@ -498,7 +500,8 @@ module.exports = function(app) {
                                 username: req.session.username,
                                 avatarUrl: req.session.avatarUrl,
                                 friends: friends,
-                                fullName: fullName
+                                fullName: fullName,
+                                compareWith: compareWith
                             });
                         }).catch(function(err) {
                             console.log("Error is ", err);
