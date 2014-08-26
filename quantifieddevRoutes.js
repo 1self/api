@@ -201,7 +201,7 @@ module.exports = function(app) {
                             });
                         } else {
                             var byGithubUsername = {
-                                "githubUser.username": githubUsername.toLowerCase()
+                                "githubUser.username": githubUsername
                             };
 
                             qdDb.collection('users').update(byGithubUsername, {
