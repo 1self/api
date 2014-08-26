@@ -10,9 +10,9 @@ var _ = require("underscore");
 
 var opbeat = require('opbeat');
 var opbeatOptions = { 
-    organization_id: '1e2ec4774dc144199252dc36624fbda3',
-    app_id: '83258eba10',
-    secret_token: 'b5d99ae5b923e7f26b9ce216e68f8d05d634e6ea'
+    organization_id: process.env.OPBEAT_ORGANIZATION_ID,
+    app_id: process.env.OPBEAT_APP_ID,
+    secret_token: process.env.OPBEAT_SECRET_TOKEN
 };
 var client = opbeat.createClient(opbeatOptions); 
 
