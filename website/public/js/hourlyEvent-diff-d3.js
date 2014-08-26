@@ -34,14 +34,17 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
     var hourlyBuildCountsData = window.utils.rotateArray(hourlyBuildCountsMondayToSunday.slice(), -1 * window.utils.timezoneDifferenceInHours);
 
     var _generateHeatMap = function(data) {
-        var maximumEventValue = d3.max([1, d3.max(data, function(d) {
+        var maximumEventValue = d3.max([0, d3.max(data, function(d) {
+            return d.value;
+        })]);
+        var minimumEventValue = d3.min([0, d3.min(data, function(d) {
             return d.value;
         })]);
         var colorScaleForPositiveValues = d3.scale.quantile()
             .domain([1, maximumEventValue])
             .range(positiveColors);
         var colorScaleForNegativeValues = d3.scale.quantile()
-            .domain([1, maximumEventValue])
+            .domain([1, -minimumEventValue])
             .range(negativeColors);
         var createSvg = function(width, height) {
             d3.select(divId).selectAll("svg").remove();
@@ -159,7 +162,7 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
                 .attr("height", legendElementWidth + 10)
                 .attr("width", gridSize / 2)
                 .style("fill", function(d, i) {
-                    return positiveColors[i];
+                    return d > 0 ? positiveColors[i] : negativeColors[i];
                 });
 
             legend.append("text")
@@ -237,7 +240,7 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
         var data = [];
         for (var day = 0; day < 7; day++) {
             for (var timeOfDay = 0; timeOfDay < 24; timeOfDay++) {
-                var tempData = [];
+                var tempData = {};
                 tempData.day = day;
                 tempData.hour = timeOfDay;
                 tempData.value = hourlyBuildCountsData[index];
