@@ -181,6 +181,7 @@ module.exports = function(app) {
     };
 
     app.post("/claimUsername", function(req, res) {
+        console.log("Req in claimUsername is : ",req.user);
         var oneselfUsername = (req.body.username).toLowerCase();
         if (isUsernameValid(oneselfUsername)) {
             encoder.encodeUsername(oneselfUsername, function(error, encUserObj) {
