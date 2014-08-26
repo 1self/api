@@ -4,6 +4,9 @@ window.qd.plotComparisonAgainstAvgOfRestOfTheWorld = function(divId, events) {
 
 	var w = $(divId).width() * 1;
 	var h = w / 1.61;
+	if(h<200){
+		h = 210;
+	}
 	var p = [h * 0.05, w * 0.1, h * 0.35, w * 0.05],
 		x = d3.scale.ordinal().rangeRoundBands([0, w - p[1] - p[3]]),
 		xLinear = d3.scale.linear().range([0, w - p[1] - p[3]]),
@@ -12,12 +15,12 @@ window.qd.plotComparisonAgainstAvgOfRestOfTheWorld = function(divId, events) {
 		parse = d3.time.format("%m/%d/%Y").parse,
 		format = d3.time.format("%d");
 	formatMonth = d3.time.format("%b");
-
+    var xOriginOfSVG = p[3] + 9;
 	var svg = d3.select(divId).append("svg:svg")
 		.attr("width", w)
 		.attr("height", h)
 		.append("svg:g")
-		.attr("transform", "translate(" + p[3] + "," + (h - p[2]) + ")");
+		.attr("transform", "translate(" + xOriginOfSVG + "," + (h - p[2]) + ")");
 	var tip = d3.tip()
 		.attr('class', 'd3-tip')
 		.offset([-10, 0])

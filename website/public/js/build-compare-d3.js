@@ -12,12 +12,13 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 		parse = d3.time.format("%m/%d/%Y").parse,
 		format = d3.time.format("%d");
 	formatMonth = d3.time.format("%b");
+	var xOriginOfSVG = p[3] + 9;
 
 	var svg = d3.select(divId).append("svg:svg")
 		.attr("width", w)
 		.attr("height", h)
 		.append("svg:g")
-		.attr("transform", "translate(" + p[3] + "," + (h - p[2]) + ")");
+		.attr("transform", "translate(" + xOriginOfSVG + "," + (h - p[2]) + ")");
 	var tip = d3.tip()
 		.attr('class', 'd3-tip')
 		.offset([-10, 0])
