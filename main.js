@@ -8,6 +8,7 @@ var url = require('url');
 var swig = require('swig');
 var path = require('path');
 var _ = require("underscore");
+require('newrelic');
 var session = require("express-session");
 var q = require('q');
 
