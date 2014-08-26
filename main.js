@@ -32,7 +32,6 @@ var cookieParser = require('cookie-parser');
 
 
 var app = express();
-app.use(opbeat.middleware.express(client));
 app.use(logger());
 app.use(bodyParser.urlencoded({
   extended: true
@@ -66,6 +65,7 @@ app.use(session({
         secure: false // change to true when using https
     }
 }));
+
 // Constants
 var aDay = 24 * 60 * 60 * 1000;
 var platformUri = process.env.PLATFORM_BASE_URI;
@@ -93,6 +93,9 @@ app.all('*', function(req, res, next) {
 
 
 require('./quantifieddevRoutes')(app);
+// Please keep it below inclusion of quantifieddevRoutes file.
+app.use(opbeat.middleware.express(client));
+
 
 var encryptedPassword = PasswordEncrypt.encryptPassword(sharedSecret);
 
