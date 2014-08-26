@@ -43,6 +43,11 @@ module.exports = function(app) {
         res.render('embeddableGlobe');
     });
 
+    app.get("/error_test_route", function(req, res) {
+        throw new Error("Please ignore this error, it's test error");
+        res.send("ok");
+    });
+
     app.get("/dashboard", sessionManager.requiresSession, function(req, res) {
         var streamid = req.query.streamId ? req.query.streamId : "";
         var readToken = req.query.readToken ? req.query.readToken : "";
