@@ -8,6 +8,7 @@ var sendgrid = require('sendgrid')(process.env.SENDGRID_USERNAME, process.env.SE
 var util = require("./util");
 var emailTemplates = require('swig-email-templates');
 var path = require('path');
+var merge = require('merge');
 var QD_EMAIL = process.env.QD_EMAIL;
 
 var mongoDbConnection = require('./lib/connection.js');
@@ -627,25 +628,51 @@ module.exports = function(app) {
         res.render('community', getFilterValuesForCountry(req));
     });
 
+    var generateToken = function() {
+        var deferred = Q.defer();
+        require('crypto').randomBytes(48, function(ex, buf) {
+            var token = buf.toString('hex');
+            deferred.resolve(token);
+        });
+        return deferred.promise;
+    };
+
     var createUserInvitesEntry = function(emailIds) {
         var deferred = Q.defer();
-        var emailMap = {
-            "from": emailIds[0].toLowerCase(),
-            "to": emailIds[1].toLowerCase()
-        };
-        mongoDbConnection(function(qdDb) {
-            qdDb.collection("emailMap", function(err, collection) {
-                collection.update(emailMap, {
-                    $set: emailMap
-                }, {
-                    upsert: true
-                }, function(error, data) {
-                    if (error) {
-                        console.log("DB error", error);
-                        deferred.reject(error);
-                    } else {
-                        deferred.resolve(emailMap);
-                    }
+        generateToken().then(function(token) { 
+            console.log("TOKEN IS", token);
+            var emailMap = {
+                "from": emailIds[0].toLowerCase(),
+                "to": emailIds[1].toLowerCase()
+            };
+            var tokenObject = {
+                token: token
+            };
+            var emailMapWithToken = merge(emailMap, tokenObject);
+            mongoDbConnection(function(qdDb) {
+                qdDb.collection("emailMap", function(err, collection) {
+                    collection.findAndModify(emailMap,  [['_id','asc']], {
+                        $set: emailMapWithToken
+                    }, function(error, data) {
+                        if (error) {
+                            console.log("DB error", error);
+                            deferred.reject(error);
+                        } else {
+                            if(_.isEmpty(data)){
+                                console.log("Came here and win");
+                                collection.insert(emailMapWithToken, function(err, data) {
+                                    if(err) {
+                                        console.log("DB error occurred", err);
+                         
+                                        deferred.resolve(emailMapWithToken);
+                                        console.log("Data is", data);
+                                    }
+                                });                         
+                            } else {
+                                deferred.resolve(emailMapWithToken);
+                            }
+                        }
+                    });
                 });
             });
         });
