@@ -218,6 +218,7 @@ module.exports = function(app) {
                                     req.session.username = oneselfUsername;
                                     req.session.encodedUsername = encUserObj.encodedUsername;
                                     req.session.githubUsername = githubUsername;
+                                    console.log("User profile available in claimUsername : ",req.user.profile);
                                     req.session.githubAvatar = req.user.profile._json.avatar_url;
 
                                     if (req.session.redirectUrl) {
