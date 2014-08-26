@@ -4,6 +4,9 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 
 	var w = $(divId).width() * 1;
 	var h = w / 1.61;
+	if(h<200){
+		h = 210;
+	}
 	var p = [h * 0.05, w * 0.1, h * 0.35, w * 0.05],
 		x = d3.scale.ordinal().rangeRoundBands([0, w - p[1] - p[3]]),
 		xLinear = d3.scale.linear().range([0, w - p[1] - p[3]]),
