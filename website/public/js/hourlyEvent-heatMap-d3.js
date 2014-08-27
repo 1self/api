@@ -1,4 +1,5 @@
 window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
+
     setTimeout(function() {
         $(divId).html("");
         var baseColor = "#EEEEEE"
@@ -12,14 +13,11 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
             height = width / 2.5,
             p = [height * 0.05, width * 0.1, height * 0.35, width * 0.05],
             gridSize = Math.floor(width / 24),
-            legendElementWidth = gridSize * 2,
+            legendElementWidth = 12,
             buckets = 9,
-            colors = ["#DBEDFF", "#A8D4FF", "#8FC7FF", "#75BAFF", "#5CADFF",
-                "#42A1FF", "#2994FF", "#007AF5", "#0054A8"
-            ], // alternatively colorbrewer.YlGnBu[9]
+            colors = ["#cae5fc", "#8FC7FF", "#5CADFF", "#2994FF", "#0054A8"], // alternatively colorbrewer.YlGnBu[9]
             days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
             times = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"];
-
         var segmentData = [];
 
         for (var hour = 0; hour < 24 * 7; hour++) {
@@ -36,6 +34,9 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
         var hourlyBuildCountsData = window.utils.rotateArray(hourlyBuildCountsMondayToSunday.slice(), -1 * window.utils.timezoneDifferenceInHours);
 
         var _generateHeatMap = function(data) {
+            var legendXCood = width - 120;
+            var legendYCood = width / 2.7;
+
             var maximumEventValue = d3.max([1, d3.max(data, function(d) {
                 return d.value;
             })]);
@@ -107,15 +108,6 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                     .on("mouseover", tip.show)
                     .on("mouseout", tip.hide);
             };
-            var createLegend = function() {
-                return svg.selectAll(".legend")
-                    .data([1].concat(colorScale.quantiles()), function(d) {
-                        return d;
-                    })
-                    .enter().append("g")
-                    .attr("class", "legend");
-            };
-
             if ($(window).width() < 480) {
                 var svgWidth = 300;
                 var svgHeight = 450;
@@ -140,32 +132,10 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                             return colorScale(d.value);
                         }
                     });
-                var legend = createLegend();
-                var legendRectXaxis = (gridDaySize * 7) - 5;
-                var legendTextXaxis = legendRectXaxis + (gridSize / 2) + 2;
-                legend.append("rect")
-                    .attr("y", function(d, i) {
-                        return legendElementWidth * i;
-                    })
-                    .attr("x", legendRectXaxis)
-                    .attr("height", legendElementWidth + 10)
-                    .attr("width", gridSize / 2)
-                    .style("fill", function(d, i) {
-                        return colorsRequired[i];
-                    });
-
-                legend.append("text")
-                    .attr("class", "mono")
-                    .text(function(d) {
-                        return "≥ " + Math.round(d * 10) / 10;
-                    })
-                    .attr("font-size", "10px")
-                    .attr("y", function(d, i) {
-                        return legendElementWidth * i;
-                    })
-                    .attr("x", legendTextXaxis);
+                // var legend = window.utils.createLegend(width, colors);
             } else {
                 var svg = createSvg(width + 50, height + 50);
+
                 var tip = d3.tip()
                     .attr('class', 'd3-tip')
                     .offset([-10, 0])
@@ -185,32 +155,8 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                             return colorScale(d.value);
                         }
                     });
-                var legend = createLegend();
-                var legendRectYaxis = (gridSize * 7) + 5;
-                var legendTextYaxis = legendRectYaxis + 20;
-                legend.append("rect")
-                    .attr("x", function(d, i) {
-                        return legendElementWidth * i;
-                    })
-                    .attr("y", legendRectYaxis)
-                    .attr("width", legendElementWidth)
-                    .attr("height", gridSize / 2)
-                    .style("fill", function(d, i) {
-                        return colorsRequired[i];
-                    });
-
-                legend.append("text")
-                    .attr("class", "mono")
-                    .text(function(d) {
-                        return "≥ " + Math.round(d);
-                    })
-                    .attr("font-size", "10px")
-                    .attr("x", function(d, i) {
-                        return legendElementWidth * i;
-                    })
-                    .attr("y", legendTextYaxis);
+                var legend = window.utils.createLegend(svg, width, colors, legendXCood, legendYCood);
             }
-
         };
 
         var _generateHourlyBuildEventsData = function() {

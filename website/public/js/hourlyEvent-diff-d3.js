@@ -34,6 +34,11 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
     var hourlyBuildCountsData = window.utils.rotateArray(hourlyBuildCountsMondayToSunday.slice(), -1 * window.utils.timezoneDifferenceInHours);
 
     var _generateHeatMap = function(data) {
+        var positiveColorLegendXCood = width - 120;
+        var positiveColorLegendYCood = width / 2.7;
+        var negativeColorLegendXCood = width - 120;
+        var negativeColorLegendYCood = width / 2.46;
+        
         var maximumEventValue = d3.max([0, d3.max(data, function(d) {
             return d.value;
         })]);
@@ -121,7 +126,7 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
 
         if ($(window).width() < 480) {
             var svgWidth = 300;
-            var svgHeight = 450;
+            var svgHeight = 460;
             gridDaySize = Math.floor(190 / 7);
             gridTimeSize = Math.floor(400 / 24);
             var svg = createSvg(svgWidth, svgHeight);
@@ -176,7 +181,7 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
                 })
                 .attr("x", legendTextXaxis);
         } else {
-            var svg = createSvg(width + 50, height + 50);
+            var svg = createSvg(width + 50, height + 70);
             var tip = d3.tip()
                 .attr('class', 'd3-tip')
                 .offset([-10, 0])
@@ -206,9 +211,11 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
                         }
                     }
                 });
-            var legend = createLegend();
+           window.utils.createLegend(svg,width, positiveColors,positiveColorLegendXCood,positiveColorLegendYCood);
 
-            var legendRectYaxis = (gridSize * 7) + 5;
+           window.utils.createLegend(svg,width, negativeColors,negativeColorLegendXCood,negativeColorLegendYCood);
+
+           /* var legendRectYaxis = (gridSize * 7) + 5;
             var legendTextYaxis = legendRectYaxis + 20;
             legend.append("rect")
                 .attr("x", function(d, i) {
@@ -230,7 +237,7 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
                 .attr("x", function(d, i) {
                     return legendElementWidth * i;
                 })
-                .attr("y", legendTextYaxis);
+                .attr("y", legendTextYaxis);*/
         }
 
     };
