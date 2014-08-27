@@ -22,7 +22,7 @@ $("#builds-x").ready(function() {
 });
 
 $(window).resize(function() {
-    window.qd.plotGraphs(dashboardGraphs);
+    window.qd.replotGraphs();
 });
 
 $(window).load(function() {
