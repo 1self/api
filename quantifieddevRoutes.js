@@ -639,12 +639,12 @@ module.exports = function(app) {
     };
 
     var insertUserInvitesInDb = function(userInviteEntry) {
-        var deferred = Q.defer();
 
         var createEntry = function(token) {
+            var deferred = Q.defer();
             userInviteEntry.token = token;
 
-            return mongoDbConnection(function(qdDb) {
+            mongoDbConnection(function(qdDb) {
                 qdDb.collection("emailMap", function(err, collection) {
                     collection.update(userInviteEntry, {
                         $set: userInviteEntry
@@ -660,11 +660,10 @@ module.exports = function(app) {
                     });
                 });
             });
+            return deferred.promise;
         }
 
-        generateToken().then(createEntry);
-
-        return deferred.promise;
+        return generateToken().then(createEntry);
     }
 
     var filterPrimaryEmailId = function(githubEmails) {
