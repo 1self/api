@@ -265,17 +265,38 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    var addFriendTo = function (friendUsername, myUsername) {
+    var getUserIdFromEun = function (eun) {
+        var deferred = Q.defer();
+        var user = {
+            "encodedUsername": eun
+        };
+        mongoDbConnection(function (qdDb) {
+            qdDb.collection("users", function (err, collection) {
+                collection.findOne(user, function (err, user) {
+                    if (err) {
+                        console.log("DB error", err);
+                        deferred.reject(err);
+                    } else {
+                        console.log(user);
+                        deferred.resolve(user["_id"]);
+                    }
+                });
+            });
+        });
+        return deferred.promise;
+    };
+
+
+    var createFriendship = function (eun1, eun2) {
         var deferred = Q.defer();
         var promiseArray = [];
 
-        promiseArray.push(getUserId(myUsername.toLowerCase()));
-        promiseArray.push(getUserId(friendUsername.toLowerCase()));
+        promiseArray.push(getUserIdFromEun(eun1));
+        promiseArray.push(getUserIdFromEun(eun2));
 
         Q.all(promiseArray).then(function (userIds) {
-
-            var user = {
-                "username": myUsername.toLowerCase()
+            var findUserByEun = {
+                "encodedUsername": eun1
             };
             var friend = {
                 "friends": userIds[1]
@@ -283,7 +304,7 @@ module.exports = function (app) {
 
             mongoDbConnection(function (qdDb) {
                 qdDb.collection("users", function (err, collection) {
-                    collection.update(user, {
+                    collection.update(findUserByEun, {
                         $addToSet: friend
                     }, {
                         upsert: true
@@ -328,8 +349,8 @@ module.exports = function (app) {
         mongoDbConnection(function (qdDb) {
             qdDb.collection('users').findOne(query, function (err, user) {
                 if (err) {
-                    console.log("err : ", err);
-                    deferred.reject("DB error");
+                    console.log("DB Error : ", err);
+                    deferred.reject(err);
                 } else {
                     if (!(_.isEmpty(user.friends))) {
                         var promiseArray = [];
@@ -356,8 +377,8 @@ module.exports = function (app) {
         mongoDbConnection(function (qdDb) {
             qdDb.collection('users').findOne(query, function (err, user) {
                 if (err) {
-                    console.log("err : ", err);
-                    deferred.reject("DB error");
+                    console.log("DB Error : ", err);
+                    deferred.reject(err);
                 } else {
                     if (!(_.isEmpty(user.githubUser.displayName))) {
                         deferred.resolve(user.githubUser.displayName);
@@ -370,23 +391,44 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    var doesEmailMappingExist = function (emails) {
+    var getFullNameFromEun = function (eun) {
         var deferred = Q.defer();
         var query = {
-            "from": emails[1].toLowerCase(),
-            "to": emails[0].toLowerCase()
+            "encodedUsername": eun
+        };
+        mongoDbConnection(function (qdDb) {
+            qdDb.collection('users').findOne(query, function (err, user) {
+                if (err) {
+                    console.log("err : ", err);
+                    deferred.reject("DB error", err);
+                } else {
+                    if (!(_.isEmpty(user.githubUser.displayName))) {
+                        deferred.resolve(user.githubUser.displayName);
+                    } else {
+                        deferred.resolve(user.username);
+                    }
+                }
+            });
+        });
+        return deferred.promise;
+    };
+
+    var validateInviteToken = function (token) {
+        var deferred = Q.defer();
+        var query = {
+            "token": token
         };
         mongoDbConnection(function (qdDb) {
             qdDb.collection('emailMap').findOne(query,
                 function (err, data) {
                     if (err) {
                         console.log("Error", err);
-                        deferred.reject(false);
+                        deferred.reject(err);
                     } else {
                         if (_.isEmpty(data)) {
-                            deferred.resolve(false);
+                            deferred.reject("token not found");
                         } else {
-                            deferred.resolve(true);
+                            deferred.resolve(data);
                         }
                     }
                 });
@@ -394,31 +436,35 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    var sendAcceptEmail = function (userInviteMap, requesteeUsername, requesterUsername) {
+    var sendAcceptEmail = function (userInviteEntry, toUsername) {
         var deferred = Q.defer();
+
         var promiseArray = [];
-        promiseArray.push(getFullName(requesteeUsername));
-        promiseArray.push(getFullName(requesterUsername));
+        promiseArray.push(getFullNameFromEun(userInviteEntry.fromEun));
+        promiseArray.push(getFullName(toUsername));
 
         Q.all(promiseArray).then(function (names) {
-            var requesteeFullname = names[0];
-            var requesterFullname = names[1];
+            var fromUserFullName = names[0];
+            var toUserFullName = names[1];
 
             emailTemplates(emailConfigOptions, function (err, emailRender) {
+                if (err) {
+                    console.log("email template render error ", err);
+                    deferred.reject(err);
+                }
                 var context = {
-                    requesteeFullname: requesteeFullname,
-                    requesterFullname: requesterFullname,
-                    requesterUsername: requesterUsername
+                    fromUserFullName: fromUserFullName,
+                    toUserFullName: toUserFullName
                 };
                 emailRender('acceptCompareRequest.eml.html', context, function (err, html, text) {
                     sendgrid.send({
-                        to: userInviteMap[1],
+                        to: userInviteEntry.fromEmailId,
                         from: QD_EMAIL,
-                        subject: requesteeFullname + " accepted, it’s time to compare!",
+                        subject: toUserFullName + " accepted, it’s time to compare!",
                         html: html
                     }, function (err, json) {
                         if (err) {
-                            console.error("", err);
+                            console.error("can't send accept comparison request email ", err);
                             deferred.reject(err);
                         } else {
                             deferred.resolve();
@@ -453,7 +499,7 @@ module.exports = function (app) {
                         html: html
                     }, function (err, json) {
                         if (err) {
-                            console.error("", err);
+                            console.error("can't send reject comparison request email ", err);
                             deferred.reject(err);
                         } else {
                             deferred.resolve();
@@ -466,53 +512,25 @@ module.exports = function (app) {
     };
 
     app.get("/compare", sessionManager.requiresSession, function (req, res) {
-        var requesterUsername = req.session.requesterUsername;
-        var compareWith = (_.isEmpty(req.query.compareWith)) ? req.session.requesterUsername : req.query.compareWith;
-        var emailIdsMap;
-        if (req.session.requesterUsername) {
-            createEmailIdPromiseArray(req.session.username, requesterUsername)
-                .then(function (emailIds) {
-                    emailIdsMap = emailIds;
-                    return Q.all(emailIds);
-                })
-                .then(doesEmailMappingExist)
-                .then(function (emailMapExists) {
+//        var compareWith = (_.isEmpty(req.query.compareWith)) ? req.session.token : req.query.compareWith;
+//        var emailIdsMap;
 
-                    if (emailMapExists) {
-                        var promiseArray = [];
-                        promiseArray.push(addFriendTo(requesterUsername, req.session.username));
-                        promiseArray.push(addFriendTo(req.session.username, requesterUsername));
-                        Q.all(promiseArray).then(function () {
-                            deleteUserInvitesEntryFor(emailIdsMap);
-                            sendAcceptEmail(emailIdsMap, req.session.username, requesterUsername);
+        fetchFriendList(req.session.username)
+            .then(function (friends) {
+                getFullName(req.session.username)
+                    .then(function (fullName) {
+                        res.render('compare', {
+                            username: req.session.username,
+                            avatarUrl: req.session.avatarUrl,
+                            friends: friends,
+                            fullName: fullName
+//                            compareWith: compareWith
                         });
-                    }
-                    delete req.session.requesterUsername;
-                    res.redirect("/compare");
-                })
-                .catch(function (error) {
-                    delete req.session.requesterUsername;
-                    res.redirect("/dashboard?compareWith=" + compareWith);
-                });
-        } else {
-            fetchFriendList(req.session.username)
-                .then(function (friends) {
-                    getFullName(req.session.username)
-                        .then(function (fullName) {
-                            res.render('compare', {
-                                username: req.session.username,
-                                avatarUrl: req.session.avatarUrl,
-                                friends: friends,
-                                fullName: fullName,
-                                compareWith: compareWith
-                            });
-                        }).catch(function (err) {
-                            console.log("Error is ", err);
-                            res.redirect("/");
-                        });
-                    ;
-                });
-        }
+                    }).catch(function (err) {
+                        console.log("Error is ", err);
+                        res.redirect("/");
+                    });
+            });
     });
 
     var doesGitHubStreamIdExist = function (username) {
@@ -523,8 +541,8 @@ module.exports = function (app) {
         mongoDbConnection(function (qdDb) {
             qdDb.collection('users').findOne(usernameQuery, function (err, user) {
                 if (err) {
-                    console.log("err : ", err);
-                    deferred.reject("DB error");
+                    console.log("DB Error : ", err);
+                    deferred.reject(err);
                 } else {
                     if (user.githubUser.githubStreamId !== undefined) {
                         deferred.resolve(user.githubUser.githubStreamId);
@@ -561,7 +579,7 @@ module.exports = function (app) {
                 function (err, user) {
                     if (err) {
                         console.log("Error", err);
-                        deferred.reject();
+                        deferred.reject(err);
                     } else {
                         deferred.resolve(stream.streamid);
                     }
@@ -663,10 +681,10 @@ module.exports = function (app) {
                 });
             });
             return deferred.promise;
-        }
+        };
 
         return generateToken().then(createEntry);
-    }
+    };
 
     var filterPrimaryEmailId = function (githubEmails) {
         emails = githubEmails.githubUser.emails;
@@ -724,27 +742,58 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    var deleteUserInvitesEntryFor = function (emailIds) {
-        var emailMap = {
-            "from": emailIds[1].toLowerCase(),
-            "to": emailIds[0].toLowerCase()
+    var deleteUserInvitesEntryFor = function (userInviteEntry) {
+        var deferred = Q.defer();
+        var findInviteByToken = {
+            "token": userInviteEntry.token
         };
         mongoDbConnection(function (qdDb) {
             qdDb.collection("emailMap", function (err, collection) {
-                collection.remove(emailMap, function (error, data) {
+                collection.remove(findInviteByToken, function (error, data) {
                     if (error) {
-                        console.log("DB error");
+                        console.log("DB error ", error);
+                        deferred.reject(error);
                     } else {
-                        console.log("Email mapping deleted! for ", emailMap);
+                        console.log("Email mapping deleted! for token ", userInviteEntry.token);
+                        deferred.resolve(userInviteEntry);
                     }
                 });
             });
         });
+        return deferred.promise;
+    };
+
+    var associateFriendship = function (userInviteEntry, toEun) {
+        var deferred = Q.defer();
+        var promiseArray = [];
+        var fromEun = userInviteEntry.fromEun;
+        promiseArray.push(createFriendship(fromEun, toEun));
+        promiseArray.push(createFriendship(toEun, fromEun));
+        Q.all(promiseArray).then(function () {
+            deferred.resolve(userInviteEntry);
+        });
+        return deferred.promise;
     };
 
     app.get('/accept', sessionManager.requiresSession, function (req, res) {
-        req.session.requesterUsername = req.query.reqUsername;
-        res.redirect(CONTEXT_URI + '/compare');
+        var token = req.query.token;
+        var toEun = req.session.encodedUsername;
+        var toUsername = req.session.username;
+        validateInviteToken(token)
+            .then(function (userInviteEntry) {
+                return associateFriendship(userInviteEntry, toEun);
+            })
+            .then(deleteUserInvitesEntryFor)
+            .then(function (userInviteEntry) {
+                return sendAcceptEmail(userInviteEntry, toUsername);
+            })
+            .then(function () {
+                res.redirect(CONTEXT_URI + "/compare");
+            })
+            .catch(function (error) {
+                console.log("error in accepting friendship request ", error);
+                res.redirect(CONTEXT_URI + "/dashboard");
+            });
     });
 
     app.get('/reject', sessionManager.requiresSession, function (req, res) {
@@ -757,7 +806,7 @@ module.exports = function (app) {
         res.render('rejectMessage');
     });
 
-    var sendUserInviteEmail = function (userInviteEntry, sessionUsername, yourName) {
+    var sendInvitationEmail = function (userInviteEntry, fromUsername, fromUserFullName) {
         var deferred = Q.defer();
 
         var acceptUrl = CONTEXT_URI + "/accept?token=" + userInviteEntry.token;
@@ -767,21 +816,21 @@ module.exports = function (app) {
             var context = {
                 acceptUrl: acceptUrl,
                 rejectUrl: rejectUrl,
-                yourName: yourName,
-                yourEmailId: userInviteEntry.fromEmailId
+                fromUserFullName: fromUserFullName,
+                fromEmailId: userInviteEntry.fromEmailId
             };
             emailRender('invite.eml.html', context, function (err, html, text) {
                 sendgrid.send({
-                    to: userInviteEntry.to,
+                    to: userInviteEntry.toEmailId,
                     from: QD_EMAIL,
-                    subject: yourName + ' wants to share their data',
+                    subject: fromUserFullName + ' wants to share their data',
                     html: html
                 }, function (err, json) {
                     if (err) {
                         console.error(err);
                         deferred.reject(err);
                     } else {
-                        console.log("Compare request email successfully sent to", userInviteEntry.to);
+                        console.log("Compare request email successfully sent to ", userInviteEntry.toEmailId);
                         deferred.resolve();
                     }
                 });
@@ -792,20 +841,21 @@ module.exports = function (app) {
 
     app.get('/request_to_compare_with_email', sessionManager.requiresSession, function (req, res) {
         var friendsEmail = req.query.friendsEmail;
-        var myName = req.query.myName;
+        var fromUserFullName = req.query.myName;
 
-        var dataToPassOn = {
-            "from": req.session.encodedUsername,
-            "to": friendsEmail
+        var userInvitesEntry = {
+            "fromEun": req.session.encodedUsername,
+            "toEmailId": friendsEmail
         };
 
-        getEmailId(req.session.username)
+        var fromUsername = req.session.username;
+        getEmailId(fromUsername)
             .then(function (fromPrimaryEmail) {
-                dataToPassOn.fromEmailId = fromPrimaryEmail;
-                return insertUserInvitesInDb(dataToPassOn);
+                userInvitesEntry.fromEmailId = fromPrimaryEmail;
+                return insertUserInvitesInDb(userInvitesEntry);
             })
             .then(function (userInviteEntry) {
-                return sendUserInviteEmail(userInviteEntry, req.session.username, myName);
+                return sendInvitationEmail(userInviteEntry, fromUsername, fromUserFullName);
             })
             .then(function () {
                 res.send(200, "success");

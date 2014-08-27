@@ -72,7 +72,7 @@ $(function() {
 
         $.get('/email_templates/invite.eml.html', function(template) {
             var rendered = Mustache.render(template, {
-                yourName: yourName,
+                fromUserFullName: yourName,
                 acceptUrl: "#",
                 rejectUrl: "#"
             });
