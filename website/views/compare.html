@@ -90,26 +90,7 @@
                               <input class="form-control" type="text" id="your-name1">
                             </div>
                           </div>
-                          <!-- <div class="row top-buffer-20">
-                          <div class="col-md-5">
-                          Enter your friend's name
-                          </div>
-                          <div class="col-md-7">
-                          <input class="form-control" type="text" id="friend-name">
-                          </div>
-                          </div> -->
-                          <div class="row  top-buffer-20">
-                            <div class="col-md-5">
-                              Enter your friend’s QuantifiedDev username
-                            </div>
-                            <div class="col-md-7">
-                              <input class="form-control" type="text" id="friend-qd-username1">
-                            </div>
-                          </div>
                           <div class="row text-center" style="margin: 10px 0px;">
-                            <div class="col-md-12">
-                              -- OR --
-                            </div>
                           </div>
                           <div class="row">
                             <div class="col-md-5">
@@ -123,7 +104,7 @@
                           </div>
                           <div class="row compare_error_message" style="display:none;">
                             <div class="class-md-12 alert alert-danger" role="alert">
-                              Please enter valid QuantifiedDev username or valid Email Id.
+                              Please enter valid Email Id.
                             </div>
                           </div>
                           <div class="row text-center">
@@ -145,10 +126,10 @@
                           </div>
                           <div class="row">
                             <div class="col-md-6">
-                              Friend's QD username / Email Id
+                              Friend's Email Id
                             </div>
                             <div class="col-md-6">
-                              <input class="form-control" type="text" id="friend-qd-username2" disabled="true">
+                              <input class="form-control" type="text" id="friend-email-id" disabled="true">
                             </div>
                           </div>
                           <div class="row" style="margin-top:10px;" >
@@ -175,15 +156,7 @@
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
               <div class="row">
                 <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
-                  <!--  <div class="btn-group">
-                    <button class="btn btn-success">{{friendsUsername}}</button>
-                    <button class="btn dropdown-toggle" data-toggle="dropdown">
-                    <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                      
-                    </ul>
-                  </div> -->
+
                   {% if friends %}
                     <select id="friendList" class="btn btn-default" >
                       <!-- <option>Select Friend</option> -->

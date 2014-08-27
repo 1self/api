@@ -43,6 +43,11 @@ module.exports = function(app) {
         res.render('embeddableGlobe');
     });
 
+    app.get("/error_test_route", function(req, res) {
+        throw new Error("Please ignore this error, it's test error");
+        res.send("ok");
+    });
+
     app.get("/dashboard", sessionManager.requiresSession, function(req, res) {
         var streamid = req.query.streamId ? req.query.streamId : "";
         var readToken = req.query.readToken ? req.query.readToken : "";
@@ -201,7 +206,7 @@ module.exports = function(app) {
                             });
                         } else {
                             var byGithubUsername = {
-                                "githubUser.username": githubUsername.toLowerCase()
+                                "githubUser.username": githubUsername
                             };
 
                             qdDb.collection('users').update(byGithubUsername, {
@@ -218,6 +223,7 @@ module.exports = function(app) {
                                     req.session.username = oneselfUsername;
                                     req.session.encodedUsername = encUserObj.encodedUsername;
                                     req.session.githubUsername = githubUsername;
+                                    console.log("User profile available in claimUsername : ",req.user.profile);
                                     req.session.githubAvatar = req.user.profile._json.avatar_url;
 
                                     if (req.session.redirectUrl) {

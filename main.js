@@ -1,6 +1,4 @@
-// require('newrelic');
 var requestModule = require('request');
-var cheerio = require('cheerio');
 var express = require("express");
 var moment = require("moment");
 var url = require('url');
@@ -8,6 +6,15 @@ var url = require('url');
 var swig = require('swig');
 var path = require('path');
 var _ = require("underscore");
+
+var opbeat = require('opbeat');
+var opbeatOptions = { 
+    organization_id: process.env.OPBEAT_ORGANIZATION_ID,
+    app_id: process.env.OPBEAT_APP_ID,
+    secret_token: process.env.OPBEAT_SECRET_TOKEN
+};
+var client = opbeat.createClient(opbeatOptions); 
+
 var session = require("express-session");
 var q = require('q');
 
@@ -57,6 +64,7 @@ app.use(session({
         secure: false // change to true when using https
     }
 }));
+
 // Constants
 var aDay = 24 * 60 * 60 * 1000;
 var platformUri = process.env.PLATFORM_BASE_URI;
@@ -84,6 +92,9 @@ app.all('*', function(req, res, next) {
 
 
 require('./quantifieddevRoutes')(app);
+// Please keep it below inclusion of quantifieddevRoutes file.
+app.use(opbeat.middleware.express(client));
+
 
 var encryptedPassword = PasswordEncrypt.encryptPassword(sharedSecret);
 
@@ -452,7 +463,7 @@ var getBuildEventsFromPlatform = function(params) {
                     value: 0
                 }];
                 var buildsByDay = generateDatesFor(defaultBuildValues);
-                for (date in result) {
+                for (var date in result) {
                     if (buildsByDay[date] !== undefined) {
                         buildsByDay[date].passed = result[date].passed;
                         buildsByDay[date].failed = result[date].failed;
@@ -1279,7 +1290,7 @@ var getGithubPushEventCountForCompare = function(params) {
     };
 
     function callback(error, response, body) {
-        if (!error && response.statusCode == 200) {
+        if (!error && response.statusCode === 200) {
             var result = JSON.parse(body);
             var defaultGithubPushEventsForCompare = [{
                 key: "my",
@@ -1291,10 +1302,10 @@ var getGithubPushEventCountForCompare = function(params) {
             var githubPushEventsForCompare = generateDatesFor(defaultGithubPushEventsForCompare);
             for (var date in result) {
                 if (githubPushEventsForCompare[date] !== undefined) {
-                    if (result[date].myGithubPushEventCount == undefined) {
+                    if (result[date].myGithubPushEventCount === undefined) {
                         result[date].myGithubPushEventCount = 0;
                     }
-                    if (result[date].theirGithubPushEventCount == undefined) {
+                    if (result[date].theirGithubPushEventCount === undefined) {
                         result[date].theirGithubPushEventCount = 0;
                     }
                     githubPushEventsForCompare[date].my = result[date].myGithubPushEventCount;
@@ -1405,7 +1416,7 @@ var getIdeActivityDurationForCompare = function(params) {
     };
 
     function callback(error, response, body) {
-        if (!error && response.statusCode == 200) {
+        if (!error && response.statusCode === 200) {
             var result = JSON.parse(body);
             var defaultIdeActivityDurationForCompare = [{
                 key: "my",
@@ -1417,10 +1428,10 @@ var getIdeActivityDurationForCompare = function(params) {
             var ideActivityDurationForCompare = generateDatesFor(defaultIdeActivityDurationForCompare);
             for (var date in result) {
                 if (ideActivityDurationForCompare[date] !== undefined) {
-                    if (result[date].myIdeActivityDuration == undefined) {
+                    if (result[date].myIdeActivityDuration === undefined) {
                         result[date].myIdeActivityDuration = 0;
                     }
-                    if (result[date].restOfTheWorldIdeActivityDuration == undefined) {
+                    if (result[date].restOfTheWorldIdeActivityDuration === undefined) {
                         result[date].restOfTheWorldIdeActivityDuration = 0;
                     }
                     ideActivityDurationForCompare[date].my = convertMillisToMinutes(result[date].myIdeActivityDuration);
@@ -1548,7 +1559,7 @@ var getDailyGithubPushEventsCount = function(streamid) {
     };
 
     function callback(error, response, body) {
-        if (!error && response.statusCode == 200) {
+        if (!error && response.statusCode === 200) {
             var result = JSON.parse(body);
             result = result[0];
             var defaultEventValues = [{
@@ -1644,7 +1655,7 @@ var getMyActiveDuration = function(params) {
     };
 
     function callback(error, response, body) {
-        if (!error && response.statusCode == 200) {
+        if (!error && response.statusCode === 200) {
             var result = JSON.parse(body);
             if (_.isEmpty(result)) {
                 deferred.resolve([]);
@@ -1751,10 +1762,10 @@ var correlateGithubPushesAndIDEActivity = function(params) {
                 deferred.resolve([]);
             } else {
                 for (var date in result) {
-                    if (result[date].activeTimeInMillis == undefined) {
+                    if (result[date].activeTimeInMillis === undefined) {
                         result[date].activeTimeInMillis = 0;
                     }
-                    if (result[date].githubPushEventCount == undefined) {
+                    if (result[date].githubPushEventCount === undefined) {
                         result[date].githubPushEventCount = 0;
                     }
                     result[date].activeTimeInMinutes = convertMillisToMinutes(result[date].activeTimeInMillis);
@@ -1848,7 +1859,7 @@ app.get('/stream/:id', function(req, res) {
         qdDb.collection('stream').find(spec, function(err, docs) {
             docs.toArray(function(err, streamArray) {
                 var stream = streamArray[0] || {};
-                if (stream.readToken != readToken) {
+                if (stream.readToken !== readToken) {
                     res.status(404).send("stream not found");
                 } else {
                     var response = {
@@ -1885,7 +1896,7 @@ app.get('/eventsCount', function(req, res) {
 
 app.get('/:ip', function(req, res) {
     requestModule('http://freegeoip.net/json/' + req.params.ip, function(error, response, body) {
-        if (!error && response.statusCode == 200) {
+        if (!error && response.statusCode === 200) {
             res.send(body);
         }
     });
@@ -1933,7 +1944,7 @@ app.get('/live/devbuild/:durationMins', function(req, res) {
     };
 
     function callback(error, response, body) {
-        if (!error && response.statusCode == 200) {
+        if (!error && response.statusCode === 200) {
             var info = JSON.parse(body);
             res.send(info);
         } else {
