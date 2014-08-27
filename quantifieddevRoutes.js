@@ -69,7 +69,6 @@ module.exports = function (app) {
                     }
                 });
             });
-            ;
             return deferred.promise;
         };
 
@@ -286,7 +285,6 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-
     var createFriendship = function (eun1, eun2) {
         var deferred = Q.defer();
         var promiseArray = [];
@@ -420,15 +418,15 @@ module.exports = function (app) {
         };
         mongoDbConnection(function (qdDb) {
             qdDb.collection('emailMap').findOne(query,
-                function (err, data) {
+                function (err, userInviteEntry) {
                     if (err) {
                         console.log("Error", err);
                         deferred.reject(err);
                     } else {
-                        if (_.isEmpty(data)) {
+                        if (_.isEmpty(userInviteEntry)) {
                             deferred.reject("token not found");
                         } else {
-                            deferred.resolve(data);
+                            deferred.resolve(userInviteEntry);
                         }
                     }
                 });
@@ -465,41 +463,6 @@ module.exports = function (app) {
                     }, function (err, json) {
                         if (err) {
                             console.error("can't send accept comparison request email ", err);
-                            deferred.reject(err);
-                        } else {
-                            deferred.resolve();
-                        }
-                    });
-                });
-            });
-        });
-        return deferred.promise;
-    };
-
-    var sendRejectEmail = function (userInviteMap, requesteeUsername, requesterUsername) {
-        var deferred = Q.defer();
-        var promiseArray = [];
-        promiseArray.push(getFullName(requesteeUsername));
-        promiseArray.push(getFullName(requesterUsername));
-
-        Q.all(promiseArray).then(function (names) {
-            var requesteeFullname = names[0];
-            var requesterFullname = names[1];
-
-            emailTemplates(emailConfigOptions, function (err, emailRender) {
-                var context = {
-                    requesteeFullname: requesteeFullname,
-                    requesterFullname: requesterFullname
-                };
-                emailRender('rejectCompareRequest.eml.html', context, function (err, html, text) {
-                    sendgrid.send({
-                        to: userInviteMap[1], //userInviteMap.to,
-                        from: QD_EMAIL,
-                        subject: requesteeFullname + " declined, try someone else",
-                        html: html
-                    }, function (err, json) {
-                        if (err) {
-                            console.error("can't send reject comparison request email ", err);
                             deferred.reject(err);
                         } else {
                             deferred.resolve();
@@ -622,29 +585,6 @@ module.exports = function (app) {
         });
     });
 
-    var getFilterValuesFrom = function (req) {
-        var lastHour = 60;
-        var selectedLanguage = req.query.language ? req.query.language : "all";
-        var selectedEvent = req.query.event ? req.query.event : "all";
-        var selectedDuration = req.query.duration ? req.query.duration : lastHour;
-        var filterValues = {
-            username: req.session.username,
-            avatarUrl: req.session.avatarUrl,
-            globe: {
-                lang: selectedLanguage,
-                duration: selectedDuration,
-                event: selectedEvent
-            },
-            country: {
-                lang: selectedLanguage,
-                duration: selectedDuration,
-                event: selectedEvent
-            }
-        };
-        return filterValues;
-    };
-
-
     app.get("/community", function (req, res) {
         res.render('community', getFilterValuesForCountry(req));
     });
@@ -732,17 +672,7 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    var createEmailIdPromiseArray = function (myUsername, friendsUsername) {
-        console.log("1.Inside extractEmailIds");
-        var deferred = Q.defer();
-        var promiseArray = [];
-        promiseArray.push(getEmailId(myUsername));
-        promiseArray.push(getEmailId(friendsUsername));
-        deferred.resolve(promiseArray);
-        return deferred.promise;
-    };
-
-    var deleteUserInvitesEntryFor = function (userInviteEntry) {
+    var deleteUserInvitesEntry = function (userInviteEntry) {
         var deferred = Q.defer();
         var findInviteByToken = {
             "token": userInviteEntry.token
@@ -783,7 +713,7 @@ module.exports = function (app) {
             .then(function (userInviteEntry) {
                 return associateFriendship(userInviteEntry, toEun);
             })
-            .then(deleteUserInvitesEntryFor)
+            .then(deleteUserInvitesEntry)
             .then(function (userInviteEntry) {
                 return sendAcceptEmail(userInviteEntry, toUsername);
             })
@@ -796,14 +726,52 @@ module.exports = function (app) {
             });
     });
 
-    app.get('/reject', sessionManager.requiresSession, function (req, res) {
-        createEmailIdPromiseArray(req.session.username, req.query.reqUsername)
-            .then(function (emailIds) {
-                sendRejectEmail(emailIds, req.session.username, req.query.reqUsername);
-                return Q.all(emailIds);
-            })
-            .then(deleteUserInvitesEntryFor);
-        res.render('rejectMessage');
+    var sendRejectEmail = function (userInviteEntry) {
+        var deferred = Q.defer();
+
+        var _sendEmail = function (fromUserFullName) {
+            emailTemplates(emailConfigOptions, function (err, emailRender) {
+                var toEmailId = userInviteEntry.toEmailId;
+                var context = {
+                    fromUserFullName: fromUserFullName,
+                    toUserEmailId: toEmailId
+                };
+                emailRender('rejectCompareRequest.eml.html', context, function (err, html, text) {
+                    sendgrid.send({
+                        to: userInviteEntry.fromEmailId,
+                        from: QD_EMAIL,
+                        subject: toEmailId + " declined, try someone else",
+                        html: html
+                    }, function (err, json) {
+                        if (err) {
+                            console.error("can't send reject comparison request email ", err);
+                            deferred.reject(err);
+                        } else {
+                            deferred.resolve();
+                        }
+                    });
+                });
+            });
+        };
+
+        getFullNameFromEun(userInviteEntry.fromEun)
+            .then(_sendEmail);
+
+        return deferred.promise;
+    };
+
+    app.get('/reject', function (req, res) {
+        var token = req.query.token;
+
+        validateInviteToken(token)
+            .then(deleteUserInvitesEntry)
+            .then(sendRejectEmail)
+            .then(function () {
+                res.render('rejectMessage');
+            }).catch(function (err) {
+                console.error("error while rejecting comparison request ", err);
+                res.send(400);
+            });
     });
 
     var sendInvitationEmail = function (userInviteEntry, fromUsername, fromUserFullName) {
