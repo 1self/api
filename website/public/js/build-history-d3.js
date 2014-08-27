@@ -13,12 +13,13 @@ window.qd.plotBuildHistory = function() {
     parse = d3.time.format("%m/%d/%Y").parse,
     format = d3.time.format("%d");
     formatMonth = d3.time.format("%b");
+    var xOriginOfSVG = p[3] + 7;
 
     var svg = d3.select("#build-history").append("svg:svg")
         .attr("width", w)
         .attr("height", h)
         .append("svg:g")
-        .attr("transform", "translate(" + p[3] + "," + (h - p[2]) + ")");
+        .attr("transform", "translate(" + xOriginOfSVG + "," + (h - p[2]) + ")");
     var tip = d3.tip()
         .attr('class', 'd3-tip')
         .offset([-10, 0])
@@ -64,7 +65,7 @@ window.qd.plotBuildHistory = function() {
     var rect = cause.selectAll("rect")
         .data(Object)
         .enter().append("svg:rect")
-        .attr("class","bar")
+        .attr("class", "bar")
         .attr("x", function(d) {
             return x(d.x);
         })
@@ -130,8 +131,9 @@ window.qd.plotBuildHistory = function() {
         });
 
     rule.append("svg:text")
-        .attr("x", -12)
+        .attr("x", -2)
         .attr("dy", ".35em")
+        .style("text-anchor", "end")
         .text(d3.format(",d"));
     rule.append("svg:text")
         .attr("x", (h - p[2] - p[0] - 58))

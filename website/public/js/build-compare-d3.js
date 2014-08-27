@@ -4,7 +4,7 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 
 	var w = $(divId).width() * 1;
 	var h = w / 1.61;
-	if(h<200){
+	if (h < 200) {
 		h = 210;
 	}
 	var p = [h * 0.05, w * 0.1, h * 0.35, w * 0.05],
@@ -138,8 +138,9 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 			});
 
 		rule.append("svg:text")
-			.attr("x", -12)
+			.attr("x", -2)
 			.attr("dy", ".35em")
+			.style("text-anchor", "end")
 			.text(d3.format(",d"));
 		rule.append("svg:text")
 			.attr("x", (h - p[2] - p[0] - 58))

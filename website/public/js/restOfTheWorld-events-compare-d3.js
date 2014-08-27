@@ -4,7 +4,7 @@ window.qd.plotComparisonAgainstAvgOfRestOfTheWorld = function(divId, events) {
 
 	var w = $(divId).width() * 1;
 	var h = w / 1.61;
-	if(h<200){
+	if (h < 200) {
 		h = 210;
 	}
 	var p = [h * 0.05, w * 0.1, h * 0.35, w * 0.05],
@@ -15,7 +15,7 @@ window.qd.plotComparisonAgainstAvgOfRestOfTheWorld = function(divId, events) {
 		parse = d3.time.format("%m/%d/%Y").parse,
 		format = d3.time.format("%d");
 	formatMonth = d3.time.format("%b");
-    var xOriginOfSVG = p[3] + 9;
+	var xOriginOfSVG = p[3] + 9;
 	var svg = d3.select(divId).append("svg:svg")
 		.attr("width", w)
 		.attr("height", h)
@@ -147,8 +147,9 @@ window.qd.plotComparisonAgainstAvgOfRestOfTheWorld = function(divId, events) {
 			});
 
 		rule.append("svg:text")
-			.attr("x", -17)
+			.attr("x", -2)
 			.attr("dy", ".35em")
+			.style("text-anchor", "end")
 			.text(d3.format(",d"));
 
 		var ruleForX = svg.selectAll("g.ruleForX")
