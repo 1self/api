@@ -43,11 +43,6 @@ module.exports = function(app) {
         res.render('embeddableGlobe');
     });
 
-    app.get("/error_test_route", function(req, res) {
-        throw new Error("Please ignore this error, it's test error");
-        res.send("ok");
-    });
-
     app.get("/dashboard", sessionManager.requiresSession, function(req, res) {
         var streamid = req.query.streamId ? req.query.streamId : "";
         var readToken = req.query.readToken ? req.query.readToken : "";
@@ -186,7 +181,7 @@ module.exports = function(app) {
     };
 
     app.post("/claimUsername", function(req, res) {
-        console.log("Req in claimUsername is : ",req.user);
+        console.log("Req in claimUsername is : ", req.user);
         var oneselfUsername = (req.body.username).toLowerCase();
         if (isUsernameValid(oneselfUsername)) {
             encoder.encodeUsername(oneselfUsername, function(error, encUserObj) {
@@ -223,7 +218,7 @@ module.exports = function(app) {
                                     req.session.username = oneselfUsername;
                                     req.session.encodedUsername = encUserObj.encodedUsername;
                                     req.session.githubUsername = githubUsername;
-                                    console.log("User profile available in claimUsername : ",req.user.profile);
+                                    console.log("User profile available in claimUsername : ", req.user.profile);
                                     req.session.githubAvatar = req.user.profile._json.avatar_url;
 
                                     if (req.session.redirectUrl) {
@@ -471,7 +466,7 @@ module.exports = function(app) {
 
     app.get("/compare", sessionManager.requiresSession, function(req, res) {
         var requesterUsername = req.session.requesterUsername;
-        var compareWith = (_.isEmpty(req.query.compareWith)) ?  req.session.requesterUsername : req.query.compareWith;
+        var compareWith = (_.isEmpty(req.query.compareWith)) ? req.session.requesterUsername : req.query.compareWith;
         var emailIdsMap;
         if (req.session.requesterUsername) {
             createEmailIdPromiseArray(req.session.username, requesterUsername)
@@ -496,7 +491,7 @@ module.exports = function(app) {
                 })
                 .catch(function(error) {
                     delete req.session.requesterUsername;
-                    res.redirect("/dashboard?compareWith="+compareWith);
+                    res.redirect("/dashboard?compareWith=" + compareWith);
                 });
         } else {
             fetchFriendList(req.session.username)
@@ -634,30 +629,43 @@ module.exports = function(app) {
         res.render('community', getFilterValuesForCountry(req));
     });
 
-    var createUserInvitesEntry = function(emailIds) {
+    var generateToken = function() {
         var deferred = Q.defer();
-        var emailMap = {
-            "from": emailIds[0].toLowerCase(),
-            "to": emailIds[1].toLowerCase()
-        };
-        mongoDbConnection(function(qdDb) {
-            qdDb.collection("emailMap", function(err, collection) {
-                collection.update(emailMap, {
-                    $set: emailMap
-                }, {
-                    upsert: true
-                }, function(error, data) {
-                    if (error) {
-                        console.log("DB error", error);
-                        deferred.reject(error);
-                    } else {
-                        deferred.resolve(emailMap);
-                    }
-                });
-            });
+        require('crypto').randomBytes(48, function(ex, buf) {
+            var token = buf.toString('hex');
+            deferred.resolve(token);
         });
         return deferred.promise;
     };
+
+    var insertUserInvitesInDb = function(userInviteEntry) {
+        var deferred = Q.defer();
+
+        var createEntry = function(token) {
+            userInviteEntry.token = token;
+
+            return mongoDbConnection(function(qdDb) {
+                qdDb.collection("emailMap", function(err, collection) {
+                    collection.update(userInviteEntry, {
+                        $set: userInviteEntry
+                    }, {
+                        upsert: true
+                    }, function(error, data) {
+                        if (error) {
+                            console.log("DB error", error);
+                            deferred.reject(error);
+                        } else {
+                            deferred.resolve(userInviteEntry);
+                        }
+                    });
+                });
+            });
+        }
+
+        generateToken().then(createEntry);
+
+        return deferred.promise;
+    }
 
     var filterPrimaryEmailId = function(githubEmails) {
         emails = githubEmails.githubUser.emails;
@@ -744,7 +752,7 @@ module.exports = function(app) {
                 sendRejectEmail(emailIds, req.session.username, req.query.reqUsername);
                 return Q.all(emailIds);
             })
-            .then(deleteUserInvitesEntryFor); 
+            .then(deleteUserInvitesEntryFor);
         res.render('rejectMessage');
     });
 
@@ -782,44 +790,22 @@ module.exports = function(app) {
         return deferred.promise;
     };
 
-    app.get('/request_to_compare_with_username', sessionManager.requiresSession, function(req, res) {
-        var friendsUsername = req.query.friendsUsername;
-        var yourName = req.query.yourName;
-
-        console.log("Session username", req.session.username);
-        console.log("friendsUsername", friendsUsername);
-
-        createEmailIdPromiseArray(req.session.username, friendsUsername)
-            .then(function(emailIds) {
-                return Q.all(emailIds);
-            })
-            .then(createUserInvitesEntry)
-            .then(function(userInviteMap) {
-                return sendUserInviteEmail(userInviteMap, req.session.username, yourName);
-            }).
-        then(function() {
-            res.send(200, "success");
-        })
-            .catch(function(error) {
-                res.status(404).send("stream not found");
-            });
-    });
-
     app.get('/request_to_compare_with_email', sessionManager.requiresSession, function(req, res) {
         var friendsEmail = req.query.friendsEmail;
-        var yourName = req.query.yourName;
+        var myName = req.query.myName;
 
-        getEmailId(req.session.username)
-            .then(function(myEmail) {
-                return [myEmail, friendsEmail];
-            })
-            .then(createUserInvitesEntry)
+        var dataToPassOn = {
+            "from": req.session.encodedUsername,
+            "to": friendsEmail
+        };
+
+        insertUserInvitesInDb(dataToPassOn)
             .then(function(userInviteMap) {
-                return sendUserInviteEmail(userInviteMap, req.session.username, yourName);
-            }).
-        then(function() {
-            res.send(200, "success");
-        })
+                return sendUserInviteEmail(userInviteMap, req.session.username, myName);
+            })
+            .then(function() {
+                res.send(200, "success");
+            })
             .catch(function(error) {
                 res.status(404).send("stream not found");
             });
