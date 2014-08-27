@@ -134,8 +134,9 @@ window.qd.plotComparisonForActiveEvents = function(divId, myActiveEvents, theirA
 			});
 
 		rule.append("svg:text")
-			.attr("x", -17)
+			.attr("x", -2)
 			.attr("dy", ".35em")
+			.style("text-anchor", "end")
 			.text(d3.format(",d"));
 		rule.append("svg:text")
 			.attr("x", (h - p[2] - p[0] - 66))

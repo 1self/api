@@ -1,11 +1,9 @@
 window.qd.plotBuildHistory = function() {
-
     setTimeout(function() {
         var s = $('#build-history').empty();
         s = d3.select('#build-history');
-        var w = $("#build-history").width() * 1;
-        console.log("Width: ", w);
 
+        var w = $("#build-history").width() * 1;
         var h = w / 1.61;
         var p = [h * 0.05, w * 0.1, h * 0.35, w * 0.05],
             x = d3.scale.ordinal().rangeRoundBands([0, w - p[1] - p[3]]),
@@ -16,12 +14,13 @@ window.qd.plotBuildHistory = function() {
         parse = d3.time.format("%m/%d/%Y").parse,
         format = d3.time.format("%d");
         formatMonth = d3.time.format("%b");
+        var xOriginOfSVG = p[3] + 7;
 
         var svg = d3.select("#build-history").append("svg:svg")
             .attr("width", w)
             .attr("height", h)
             .append("svg:g")
-            .attr("transform", "translate(" + p[3] + "," + (h - p[2]) + ")");
+            .attr("transform", "translate(" + xOriginOfSVG + "," + (h - p[2]) + ")");
         var tip = d3.tip()
             .attr('class', 'd3-tip')
             .offset([-10, 0])
@@ -133,8 +132,9 @@ window.qd.plotBuildHistory = function() {
             });
 
         rule.append("svg:text")
-            .attr("x", -12)
+            .attr("x", -2)
             .attr("dy", ".35em")
+            .style("text-anchor", "end")
             .text(d3.format(",d"));
         rule.append("svg:text")
             .attr("x", (h - p[2] - p[0] - 58))

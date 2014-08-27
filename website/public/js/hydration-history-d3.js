@@ -14,12 +14,13 @@ window.qd.plotHydrationHistory = function() {
         parse = d3.time.format("%m/%d/%Y").parse,
         format = d3.time.format("%d");
         formatMonth = d3.time.format("%b");
+        var xOriginOfSVG = p[3] + 7;
 
         var svg = d3.select("#hydration-history").append("svg:svg")
             .attr("width", w)
             .attr("height", h)
             .append("svg:g")
-            .attr("transform", "translate(" + p[3] + "," + (h - p[2]) + ")");
+            .attr("transform", "translate(" + xOriginOfSVG + "," + (h - p[2]) + ")");
         var tip = d3.tip()
             .attr('class', 'd3-tip')
             .offset([-10, 0])
@@ -131,8 +132,9 @@ window.qd.plotHydrationHistory = function() {
             });
 
         rule.append("svg:text")
-            .attr("x", -12)
+            .attr("x", -2)
             .attr("dy", ".35em")
+            .style("text-anchor", "end")
             .text(d3.format(",d"));
 
         rule.append("svg:text")

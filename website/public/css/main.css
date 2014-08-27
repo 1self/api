@@ -279,6 +279,7 @@ ul.summary-list > li > a > i {
 @media (max-width: 767px) {
     .top-bar .logo {
         padding: 0 15px;
+        width: 180px;
     }
 }
 .right-info-bar {
