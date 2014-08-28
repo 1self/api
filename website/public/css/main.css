@@ -2985,3 +2985,14 @@ a.twitter-share-button {
     margin-bottom: 5px;
 }
 }
+
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  font-size:12px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+  z-index: 1000;
+}
