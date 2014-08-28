@@ -5,16 +5,16 @@ window.utils.rotateArray = function(a, inc) {
 		for (i = l; i > inc; x = a[--i], a[i] = a[i - inc], a[i - inc] = x);
 	return a;
 };
-window.utils.createLegend = function(svg,width, colors,legendXCood,legendYCood) {
-	
+window.utils.createLegend = function(svg, width, colors, legendXCood, legendYCood) {
+
 	legendElementWidth = 12;
 	var text = svg.selectAll(".text")
 		.data([{
 			x: legendXCood - 34,
-			text: "Fewer"
+			text: "Less"
 		}, {
 			x: legendXCood + (legendElementWidth * 5) + 3,
-			text: "Greater"
+			text: "More"
 		}])
 		.enter()
 		.append("text");
@@ -29,19 +29,16 @@ window.utils.createLegend = function(svg,width, colors,legendXCood,legendYCood) 
 		.attr("font-family", "sans-serif")
 		.attr("font-size", "11px")
 		.attr("fill", "grey");
-		/*var legend = svg.append("g").attr("class", "legend");
-	legend.selectAll(".legend")
-		.data(colors)
-		.enter().append("g")
-		.attr("class", "legend")
-		.attr("stroke", "white");*/
-		
-	var legend = svg.selectAll(".legend")
-		.data(colors)
-		.enter().append("g")
+
+	var legend = svg
+		.append("g")
 		.attr("class", "legend")
 		.attr("stroke", "white");
-	return legend.append("rect")
+	return legend
+		.selectAll(".legend")
+		.data(colors)
+		.enter()
+		.append("rect")
 		.attr("x", function(d, i) {
 			return legendXCood + legendElementWidth * i;
 		})
