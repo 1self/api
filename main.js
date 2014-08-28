@@ -8,12 +8,12 @@ var path = require('path');
 var _ = require("underscore");
 
 var opbeat = require('opbeat');
-var opbeatOptions = { 
+var opbeatOptions = {
     organization_id: process.env.OPBEAT_ORGANIZATION_ID,
     app_id: process.env.OPBEAT_APP_ID,
     secret_token: process.env.OPBEAT_SECRET_TOKEN
 };
-var client = opbeat.createClient(opbeatOptions); 
+var client = opbeat.createClient(opbeatOptions);
 
 var session = require("express-session");
 var q = require('q');
@@ -170,11 +170,13 @@ var getStreamIdForUsername = function(params) {
             if (err) {
                 deferred.reject(err);
             } else {
-                if (user && user.streams) {
+                if(!user) {
+                    deferred.reject("user not found");
+                } else if (user.streams) {
                     var paramsToPassOn = [user.streams, params[1]];
                     deferred.resolve(paramsToPassOn);
                 } else {
-                    deferred.reject();
+                    deferred.resolve([[], params[1]]);
                 }
             }
         });
@@ -208,10 +210,12 @@ var getGithubStreamIdForUsername = function(params) {
                 console.log(err);
                 deferred.reject(err);
             } else {
-                if (user && user.githubUser.githubStreamId) {
+                if(!user) {
+                    deferred.reject("user not found");
+                }else if (user.githubUser.githubStreamId) {
                     deferred.resolve(user.githubUser.githubStreamId);
                 } else {
-                    deferred.reject();
+                    deferred.resolve(null);
                 }
             }
         });
@@ -1292,6 +1296,9 @@ var getGithubPushEventCountForCompare = function(params) {
     function callback(error, response, body) {
         if (!error && response.statusCode === 200) {
             var result = JSON.parse(body);
+            if(_.isEmpty(result)) {
+                deferred.resolve([]);
+            }
             var defaultGithubPushEventsForCompare = [{
                 key: "my",
                 value: 0
@@ -1498,6 +1505,9 @@ var getHourlyGithubPushEventsCount = function(streamid) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
             result = result[0];
+            if(_.isEmpty(result)) {
+                deferred.resolve([]);
+            }
             var hourlyGithubPushEvents = generateHoursForWeek(defaultEventValues);
             for (var date in result) {
                 if (hourlyGithubPushEvents[date] !== undefined) {
@@ -1562,6 +1572,9 @@ var getDailyGithubPushEventsCount = function(streamid) {
         if (!error && response.statusCode === 200) {
             var result = JSON.parse(body);
             result = result[0];
+            if(_.isEmpty(result)) {
+                deferred.resolve([]);
+            }
             var defaultEventValues = [{
                 key: "dailyEventCount",
                 value: 0
@@ -1964,7 +1977,8 @@ app.get('/quantifieddev/mydev', function(req, res) {
         .then(function(response) {
             res.send(response);
         }).catch(function(error) {
-            res.status(404).send("stream not found");
+            console.log("error during fetching /mydev data ", error);
+            res.status(404).send("cannot fetch mydev data");
         });
 });
 

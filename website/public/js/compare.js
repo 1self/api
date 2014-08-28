@@ -72,7 +72,7 @@ $(function() {
 
         $.get('/email_templates/invite.eml.html', function(template) {
             var rendered = Mustache.render(template, {
-                yourName: yourName,
+                fromUserFullName: yourName,
                 acceptUrl: "#",
                 rejectUrl: "#"
             });
@@ -100,12 +100,12 @@ $(function() {
     $('#send-compare-request-email').on('click', function(e) {
         $("#send-compare-request-email").attr("disabled", "true");
         var friendsEmail = $("#friend-email").val();
-        var yourName = $("#your-name2").val();
+        var myName = $("#your-name2").val();
         var data;
         if (!(_.isEmpty(friendsEmail))) {
             data = {
                 'friendsEmail': friendsEmail,
-                'yourName': yourName
+                'myName': myName
             };
             postAjaxWithData("request_to_compare_with_email", data, emailSuccessCallback, emailFailureCallback);
         }

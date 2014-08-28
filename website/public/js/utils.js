@@ -6,14 +6,20 @@ window.utils.rotateArray = function(a, inc) {
 	return a;
 };
 var appendText = function(svg, width, colors, data, legendElementWidth) {
-	var text = svg.selectAll(".text")
+	/*svg.selectAll(".text")
 		.data(data)
 		.enter()
 		.append("text");
-
-	text.attr("x", function(d) {
-		return d.x
-	})
+*/
+	var text = svg.append("g")
+		.attr("class", "legendText")
+	text.selectAll(".legendText")
+		.data(data)
+		.enter()
+		.append("text")
+		.attr("x", function(d) {
+			return d.x
+		})
 		.attr("y", function(d) {
 			return d.y
 		})
@@ -27,10 +33,12 @@ var appendText = function(svg, width, colors, data, legendElementWidth) {
 var appendRectangles = function(svg, width, colors, legendXCood, legendYCood, legendXCoodFunc, legendYCoodFunc, legendElementWidth) {
 	var legend = svg
 		.append("g")
-		.attr("class", "legend")
-		.attr("stroke", "white");
+		.attr("class", "heatMapLegend")
+		.attr("stroke", "white")
+		.attr("stroke-width",3);
+		
 	return legend
-		.selectAll(".legend")
+		.selectAll(".heatMapLegend")
 		.data(colors)
 		.enter()
 		.append("rect")
