@@ -168,16 +168,13 @@ module.exports = function(app) {
     });
 
     app.get("/claimUsername", sessionManager.requiresSession, function(req, res) {
-        if (req.query.username) {
+        if (req.query.username && _.isEmpty(req.session.username)) {
             res.render('claimUsername', {
                 username: req.query.username,
                 githubUsername: req.query.username
             });
         } else {
-            res.render('claimUsername', {
-                username: req.session.username,
-                githubUsername: req.session.githubUsername
-            });
+            res.redirect(CONTEXT_URI + "/dashboard");
         }
     });
 
@@ -187,6 +184,10 @@ module.exports = function(app) {
 
     app.post("/claimUsername", function(req, res) {
         console.log("Req in claimUsername is : ",req.user);
+        if(!(_.isEmpty(req.session.username))) {
+            res.redirect(CONTEXT_URI + "/dashboard");
+            return false;
+        };
         var oneselfUsername = (req.body.username).toLowerCase();
         if (isUsernameValid(oneselfUsername)) {
             encoder.encodeUsername(oneselfUsername, function(error, encUserObj) {
