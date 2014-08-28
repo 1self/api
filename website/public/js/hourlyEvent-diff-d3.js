@@ -1,4 +1,4 @@
-window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvents) {
+window.qd.plotHourlyEventDiff = function (divId, myHourlyEvents, theirHourlyEvents) {
     $(divId).html("");
     var baseColor = "#EEEEEE"
     var margin = {
@@ -18,14 +18,25 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
         days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
         times = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"];
 
-    var segmentData = [];
+    var segmentData = new Uint8Array(24 * 7);
+    if (_.isEmpty(myHourlyEvents)) {
+        segmentData = _.map(theirHourlyEvents, function (their) {
+            return -their.hourlyEventCount
+        });
+    } else if (_.isEmpty(theirHourlyEvents)) {
+        segmentData = _.map(myHourlyEvents, function (my) {
+            return my.hourlyEventCount
+        });
+    } else {
+        var zipped = _.zip(myHourlyEvents, theirHourlyEvents);
+        _.map(zipped, function (pair) {
+            var my = pair[0].hourlyEventCount;
+            var their = pair[1].hourlyEventCount;
+            return  my - their;
+        });
+    }
 
-    for (var hour = 0; hour < 24 * 7; hour++) {
-        var buildCountForAnHour = myHourlyEvents[hour].hourlyEventCount - theirHourlyEvents[hour].hourlyEventCount;
-        segmentData[hour] = buildCountForAnHour;
-    };
-
-    var daywiseHourlyBuildCountsSundayToMonday = _.toArray(_.groupBy(segmentData, function(element, index) {
+    var daywiseHourlyBuildCountsSundayToMonday = _.toArray(_.groupBy(segmentData, function (element, index) {
         return Math.floor(index / 24);
     }));
 
@@ -33,11 +44,11 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
 
     var hourlyBuildCountsData = window.utils.rotateArray(hourlyBuildCountsMondayToSunday.slice(), -1 * window.utils.timezoneDifferenceInHours);
 
-    var _generateHeatMap = function(data) {
-        var maximumEventValue = d3.max([0, d3.max(data, function(d) {
+    var _generateHeatMap = function (data) {
+        var maximumEventValue = d3.max([0, d3.max(data, function (d) {
             return d.value;
         })]);
-        var minimumEventValue = d3.min([0, d3.min(data, function(d) {
+        var minimumEventValue = d3.min([0, d3.min(data, function (d) {
             return d.value;
         })]);
         var colorScaleForPositiveValues = d3.scale.quantile()
@@ -46,7 +57,7 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
         var colorScaleForNegativeValues = d3.scale.quantile()
             .domain([1, -minimumEventValue])
             .range(negativeColors);
-        var createSvg = function(width, height) {
+        var createSvg = function (width, height) {
             d3.select(divId).selectAll("svg").remove();
             return d3.select(divId).append("svg")
                 .attr("width", width)
@@ -54,49 +65,49 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
         };
-        var createDayLabels = function(svg, constantAxis, changingAxis, changingAxisAdjustment, gridSize, transformAttribute) {
+        var createDayLabels = function (svg, constantAxis, changingAxis, changingAxisAdjustment, gridSize, transformAttribute) {
             return svg.selectAll(".dayLabel")
                 .data(days)
                 .enter().append("text")
-                .text(function(d) {
+                .text(function (d) {
                     return d;
                 })
                 .attr(constantAxis, 0)
-                .attr(changingAxis, function(d, i) {
+                .attr(changingAxis, function (d, i) {
                     return (i * gridSize) - changingAxisAdjustment;
                 })
                 .style("text-anchor", "end")
                 .attr("transform", transformAttribute)
-                .attr("class", function(d, i) {
+                .attr("class", function (d, i) {
                     return ((i >= 0 && i <= 4) ? "dayLabel mono axis axis-workweek" : "dayLabel mono axis");
                 });
         };
-        var createTimeLabels = function(svg, constantAxis, changingAxis, constantAxisAdjustment, gridSize, transformAttribute) {
+        var createTimeLabels = function (svg, constantAxis, changingAxis, constantAxisAdjustment, gridSize, transformAttribute) {
             return svg.selectAll(".timeLabel")
                 .data(times)
                 .enter().append("text")
-                .text(function(d) {
+                .text(function (d) {
                     return d;
                 })
                 .attr(constantAxis, constantAxisAdjustment)
-                .attr(changingAxis, function(d, i) {
+                .attr(changingAxis, function (d, i) {
                     return (i * gridSize);
                 })
                 .attr("font-size", "10px")
                 .style("text-anchor", "middle")
                 .attr("transform", transformAttribute)
-                .attr("class", function(d, i) {
+                .attr("class", function (d, i) {
                     return ((i >= 7 && i <= 16) ? "timeLabel mono axis axis-worktime" : "timeLabel mono axis");
                 });
         };
-        var createHeatMap = function(svg, timeAxis, dayAxis, timeAxisAdjustment, dayAxisAdjustment, gridDaySize, gridTimeSize) {
+        var createHeatMap = function (svg, timeAxis, dayAxis, timeAxisAdjustment, dayAxisAdjustment, gridDaySize, gridTimeSize) {
             return svg.selectAll(".hour")
                 .data(data)
                 .enter().append("rect")
-                .attr(timeAxis, function(d) {
+                .attr(timeAxis, function (d) {
                     return ((d.hour) * gridTimeSize) - timeAxisAdjustment;
                 })
-                .attr(dayAxis, function(d) {
+                .attr(dayAxis, function (d) {
                     return ((d.day) * gridDaySize) - dayAxisAdjustment;
                 })
                 .attr("stroke", "white")
@@ -110,9 +121,9 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
                 .on("mouseover", tip.show)
                 .on("mouseout", tip.hide);
         };
-        var createLegend = function() {
+        var createLegend = function () {
             return svg.selectAll(".legend")
-                .data([1].concat(colorScaleForPositiveValues.quantiles()), function(d) {
+                .data([1].concat(colorScaleForPositiveValues.quantiles()), function (d) {
                     return d;
                 })
                 .enter().append("g")
@@ -128,7 +139,7 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
             var tip = d3.tip()
                 .attr('class', 'd3-tip')
                 .offset([-10, 0])
-                .html(function(d) {
+                .html(function (d) {
                     if (d.value !== 0) {
                         var val;
                         val = d.value > 0 ? "ahead" : "behind";
@@ -140,7 +151,7 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
             var timeLabels = createTimeLabels(svg, "x", "y", -15, gridTimeSize, "translate( -6," + (gridTimeSize) / 2.5 + ")");
             var heatMap = createHeatMap(svg, "y", "x", 2.5, 10, gridDaySize, gridTimeSize);
             heatMap.transition().duration(1000)
-                .style("fill", function(d) {
+                .style("fill", function (d) {
                     if (d.value === 0) {
                         return baseColor;
                     } else {
@@ -155,23 +166,23 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
             var legendRectXaxis = (gridDaySize * 7) - 5;
             var legendTextXaxis = legendRectXaxis + (gridSize / 2) + 2;
             legend.append("rect")
-                .attr("y", function(d, i) {
+                .attr("y", function (d, i) {
                     return legendElementWidth * i;
                 })
                 .attr("x", legendRectXaxis)
                 .attr("height", legendElementWidth + 10)
                 .attr("width", gridSize / 2)
-                .style("fill", function(d, i) {
+                .style("fill", function (d, i) {
                     return d > 0 ? positiveColors[i] : negativeColors[i];
                 });
 
             legend.append("text")
                 .attr("class", "mono")
-                .text(function(d) {
+                .text(function (d) {
                     return "≥ " + Math.round(d * 10) / 10;
                 })
                 .attr("font-size", "10px")
-                .attr("y", function(d, i) {
+                .attr("y", function (d, i) {
                     return legendElementWidth * i;
                 })
                 .attr("x", legendTextXaxis);
@@ -180,7 +191,7 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
             var tip = d3.tip()
                 .attr('class', 'd3-tip')
                 .offset([-10, 0])
-                .html(function(d) {
+                .html(function (d) {
                     if (d.value !== 0) {
                         var val;
                         val = d.value > 0 ? "AHEAD" : "BEHIND";
@@ -195,7 +206,7 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
             var heatMap = createHeatMap(svg, "x", "y", 0, 0, gridSize, gridSize);
 
             heatMap.transition().duration(1000)
-                .style("fill", function(d) {
+                .style("fill", function (d) {
                     if (d.value === 0) {
                         return baseColor;
                     } else {
@@ -211,23 +222,23 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
             var legendRectYaxis = (gridSize * 7) + 5;
             var legendTextYaxis = legendRectYaxis + 20;
             legend.append("rect")
-                .attr("x", function(d, i) {
+                .attr("x", function (d, i) {
                     return legendElementWidth * i;
                 })
                 .attr("y", legendRectYaxis)
                 .attr("width", legendElementWidth)
                 .attr("height", gridSize / 2)
-                .style("fill", function(d, i) {
+                .style("fill", function (d, i) {
                     return positiveColors[i];
                 });
 
             legend.append("text")
                 .attr("class", "mono")
-                .text(function(d) {
+                .text(function (d) {
                     return "≥ " + Math.round(d * 10) / 10;
                 })
                 .attr("font-size", "10px")
-                .attr("x", function(d, i) {
+                .attr("x", function (d, i) {
                     return legendElementWidth * i;
                 })
                 .attr("y", legendTextYaxis);
@@ -235,7 +246,7 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
 
     };
 
-    var _generateHourlyBuildEventsData = function() {
+    var _generateHourlyBuildEventsData = function () {
         var index = 0;
         var data = [];
         for (var day = 0; day < 7; day++) {
