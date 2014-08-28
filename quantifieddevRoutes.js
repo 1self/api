@@ -356,7 +356,10 @@ module.exports = function (app) {
                             promiseArray.push(getFriendUsername(friendId));
                         });
                         Q.all(promiseArray).then(function (friendUsernames) {
-                            deferred.resolve(friendUsernames);
+                            var sortedAlphabetically = _.sortBy(friendUsernames, function (name) {
+                                return name;
+                            })
+                            deferred.resolve(sortedAlphabetically);
                         });
                     } else {
                         deferred.resolve(null);
