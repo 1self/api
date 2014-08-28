@@ -162,7 +162,7 @@ module.exports = function (app) {
         }
     });
 
-    app.get("/claimUsername", sessionManager.requiresSession, function(req, res) {
+    app.get("/claimUsername", sessionManager.requiresSession, function (req, res) {
         if (req.query.username && _.isEmpty(req.session.username)) {
             res.render('claimUsername', {
                 username: req.query.username
@@ -176,12 +176,13 @@ module.exports = function (app) {
         return username.match("^[a-z0-9_]*$");
     };
 
-    app.post("/claimUsername", function(req, res) {
-        console.log("Req in claimUsername is : ",req.user);
-        if(!(_.isEmpty(req.session.username))) {
+    app.post("/claimUsername", function (req, res) {
+        console.log("Req in claimUsername is : ", req.user);
+        if (!(_.isEmpty(req.session.username))) {
             res.redirect(CONTEXT_URI + "/dashboard");
             return false;
-        };
+        }
+        ;
         var oneselfUsername = (req.body.username).toLowerCase();
         if (isUsernameValid(oneselfUsername)) {
             encoder.encodeUsername(oneselfUsername, function (error, encUserObj) {
@@ -341,21 +342,19 @@ module.exports = function (app) {
                 if (err) {
                     console.log("DB Error : ", err);
                     deferred.reject(err);
+                } else if (_.isEmpty(user) || _.isEmpty(user.friends)) {
+                    deferred.resolve(null);
                 } else {
-                    if (!(_.isEmpty(user.friends))) {
-                        var promiseArray = [];
-                        user.friends.forEach(function (friendId) {
-                            promiseArray.push(getFriendUsername(friendId));
+                    var promiseArray = [];
+                    user.friends.forEach(function (friendId) {
+                        promiseArray.push(getFriendUsername(friendId));
+                    });
+                    Q.all(promiseArray).then(function (friendUsernames) {
+                        var sortedAlphabetically = _.sortBy(friendUsernames, function (name) {
+                            return name;
                         });
-                        Q.all(promiseArray).then(function (friendUsernames) {
-                            var sortedAlphabetically = _.sortBy(friendUsernames, function (name) {
-                                return name;
-                            });
-                            deferred.resolve(sortedAlphabetically);
-                        });
-                    } else {
-                        deferred.resolve(null);
-                    }
+                        deferred.resolve(sortedAlphabetically);
+                    });
                 }
             });
         });
