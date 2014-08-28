@@ -2928,10 +2928,10 @@ a.twitter-share-button {
    width: 100%!important;
 }
 
-.legend {
+/*.legend {
     stroke: white;
     stroke-width:3;
-}
+}*/
 .d3-tip {
   line-height: 1;
   font-weight: bold;
@@ -2988,7 +2988,9 @@ a.twitter-share-button {
 .helpContainer{
     top: 90px;
 }
-
+html,body{
+    overflow-x:hidden;
+}
 }
 @media screen and (min-width: 768px) {
     .panel-body {
