@@ -34,16 +34,15 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
         var hourlyBuildCountsData = window.utils.rotateArray(hourlyBuildCountsMondayToSunday.slice(), -1 * window.utils.timezoneDifferenceInHours);
 
         var _generateHeatMap = function(data) {
-            var legendXCood = width - 120;
-            var legendYCood = width / 2.7;
+            var legendXCood;
+            var legendYCood;
 
             var maximumEventValue = d3.max([1, d3.max(data, function(d) {
                 return d.value;
             })]);
-            var colorsRequired = _.first(colors, maximumEventValue !== 1 ? maximumEventValue - 1 : maximumEventValue);
             var colorScale = d3.scale.quantile()
                 .domain([1, maximumEventValue])
-                .range(colorsRequired);
+                .range(colors);
             var createSvg = function(width, height) {
                 d3.select(divId).selectAll("svg").remove();
                 return d3.select(divId).append("svg")
@@ -108,11 +107,25 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                     .on("mouseover", tip.show)
                     .on("mouseout", tip.hide);
             };
+            var fillDataIntoTheGraph = function() {
+                heatMap.transition().duration(1000)
+                    .style("fill", function(d) {
+                        if (d.value === 0) {
+                            return baseColor;
+                        } else {
+                            return colorScale(d.value);
+                        }
+                    });
+
+            };
             if ($(window).width() < 480) {
                 var svgWidth = 300;
                 var svgHeight = 450;
                 gridDaySize = Math.floor(190 / 7);
                 gridTimeSize = Math.floor(400 / 24);
+                legendXCood = (gridDaySize * 7) - 5;
+                legendYCood = svgHeight - 150;
+
                 var svg = createSvg(svgWidth, svgHeight);
                 var tip = d3.tip()
                     .attr('class', 'd3-tip')
@@ -124,16 +137,12 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                 var dayLabels = createDayLabels(svg, "y", "x", 10, gridDaySize, "translate(" + gridDaySize / 1.5 + ",-6)");
                 var timeLabels = createTimeLabels(svg, "x", "y", -15, gridTimeSize, "translate( -6," + (gridTimeSize) / 2.5 + ")");
                 var heatMap = createHeatMap(svg, "y", "x", 2.5, 10, gridDaySize, gridTimeSize);
-                heatMap.transition().duration(1000)
-                    .style("fill", function(d) {
-                        if (d.value === 0) {
-                            return baseColor;
-                        } else {
-                            return colorScale(d.value);
-                        }
-                    });
-                // var legend = window.utils.createLegend(width, colors);
+                fillDataIntoTheGraph(heatMap);
+                verticalColors = colors.reverse();
+                window.utils.createVerticalLegend(svg, width, verticalColors, legendXCood, legendYCood);
             } else {
+                legendXCood = width - 120;
+                legendYCood = width / 2.7;
                 var svg = createSvg(width + 50, height + 50);
 
                 var tip = d3.tip()
@@ -146,17 +155,11 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                 var dayLabels = createDayLabels(svg, "x", "y", 0, gridSize, "translate(-6," + gridSize / 1.5 + ")");
                 var timeLabels = createTimeLabels(svg, "y", "x", 0, gridSize, "translate(" + gridSize / 2.5 + ", -6)");
                 var heatMap = createHeatMap(svg, "x", "y", 0, 0, gridSize, gridSize);
+                fillDataIntoTheGraph(heatMap);
+                window.utils.createHorizontalLegend(svg, width, colors, legendXCood, legendYCood);
 
-                heatMap.transition().duration(1000)
-                    .style("fill", function(d) {
-                        if (d.value === 0) {
-                            return baseColor;
-                        } else {
-                            return colorScale(d.value);
-                        }
-                    });
-                var legend = window.utils.createLegend(svg, width, colors, legendXCood, legendYCood);
             }
+
         };
 
         var _generateHourlyBuildEventsData = function() {

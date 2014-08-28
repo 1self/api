@@ -13,7 +13,7 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
         gridSize = Math.floor(width / 24),
         legendElementWidth = gridSize * 2,
         buckets = 9,
-        positiveColors = ["#C0FF00", "#80FF00", "#40FF00"], // alternatively colorbrewer.YlGnBu[9]
+        positiveColors = ["#C0FF00", "#80FF00", "#40FF00","#3ae800"], // alternatively colorbrewer.YlGnBu[9]
         negativeColors = ["#FFC000", "#FF8000", "#FF4000", "#FF0000"],
         days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
         times = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"];
@@ -38,7 +38,7 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
         var positiveColorLegendYCood = width / 2.7;
         var negativeColorLegendXCood = width - 120;
         var negativeColorLegendYCood = width / 2.46;
-        
+
         var maximumEventValue = d3.max([0, d3.max(data, function(d) {
             return d.value;
         })]);
@@ -115,20 +115,16 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
                 .on("mouseover", tip.show)
                 .on("mouseout", tip.hide);
         };
-        var createLegend = function() {
-            return svg.selectAll(".legend")
-                .data([1].concat(colorScaleForPositiveValues.quantiles()), function(d) {
-                    return d;
-                })
-                .enter().append("g")
-                .attr("class", "legend");
-        };
 
         if ($(window).width() < 480) {
             var svgWidth = 300;
             var svgHeight = 460;
             gridDaySize = Math.floor(190 / 7);
             gridTimeSize = Math.floor(400 / 24);
+            positiveColorLegendXCood = (gridDaySize * 7) - 5;
+            positiveColorLegendYCood = svgHeight - 250;
+            negativeColorLegendXCood = (gridDaySize * 7) - 5;
+            negativeColorLegendYCood = svgHeight - 150;
             var svg = createSvg(svgWidth, svgHeight);
             var tip = d3.tip()
                 .attr('class', 'd3-tip')
@@ -156,30 +152,11 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
                         }
                     }
                 });
-            var legend = createLegend();
-            var legendRectXaxis = (gridDaySize * 7) - 5;
-            var legendTextXaxis = legendRectXaxis + (gridSize / 2) + 2;
-            legend.append("rect")
-                .attr("y", function(d, i) {
-                    return legendElementWidth * i;
-                })
-                .attr("x", legendRectXaxis)
-                .attr("height", legendElementWidth + 10)
-                .attr("width", gridSize / 2)
-                .style("fill", function(d, i) {
-                    return d > 0 ? positiveColors[i] : negativeColors[i];
-                });
+            verticalPositiveColors = positiveColors.reverse();
+            window.utils.createVerticalLegend(svg, width, verticalPositiveColors, positiveColorLegendXCood, positiveColorLegendYCood);
+            verticalNegativeColors = negativeColors.reverse();
+            window.utils.createVerticalLegend(svg, width, verticalNegativeColors, negativeColorLegendXCood, negativeColorLegendYCood);
 
-            legend.append("text")
-                .attr("class", "mono")
-                .text(function(d) {
-                    return "≥ " + Math.round(d * 10) / 10;
-                })
-                .attr("font-size", "10px")
-                .attr("y", function(d, i) {
-                    return legendElementWidth * i;
-                })
-                .attr("x", legendTextXaxis);
         } else {
             var svg = createSvg(width + 50, height + 70);
             var tip = d3.tip()
@@ -211,33 +188,9 @@ window.qd.plotHourlyEventDiff = function(divId, myHourlyEvents, theirHourlyEvent
                         }
                     }
                 });
-           window.utils.createLegend(svg,width, positiveColors,positiveColorLegendXCood,positiveColorLegendYCood);
+            window.utils.createHorizontalLegend(svg, width, positiveColors, positiveColorLegendXCood, positiveColorLegendYCood);
+            window.utils.createHorizontalLegend(svg, width, negativeColors, negativeColorLegendXCood, negativeColorLegendYCood);
 
-           window.utils.createLegend(svg,width, negativeColors,negativeColorLegendXCood,negativeColorLegendYCood);
-
-           /* var legendRectYaxis = (gridSize * 7) + 5;
-            var legendTextYaxis = legendRectYaxis + 20;
-            legend.append("rect")
-                .attr("x", function(d, i) {
-                    return legendElementWidth * i;
-                })
-                .attr("y", legendRectYaxis)
-                .attr("width", legendElementWidth)
-                .attr("height", gridSize / 2)
-                .style("fill", function(d, i) {
-                    return positiveColors[i];
-                });
-
-            legend.append("text")
-                .attr("class", "mono")
-                .text(function(d) {
-                    return "≥ " + Math.round(d * 10) / 10;
-                })
-                .attr("font-size", "10px")
-                .attr("x", function(d, i) {
-                    return legendElementWidth * i;
-                })
-                .attr("y", legendTextYaxis);*/
         }
 
     };
