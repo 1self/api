@@ -1,58 +1,57 @@
  <!DOCTYPE html>
 <html>
-	<head>
-		<title>Quantified Dev {ALPHA}</title>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1">
-		<meta name="description" content="Quantified Dev Dashboard" />
-		<meta name="keywords" content="Quantified Dev Development QuantifiedSelf Quantified Self" />
-		<meta name="author" content="Quantified Dev" />
-		<link rel="shortcut icon" href="/img/quantified-dev-favicon.ico">
-		<link href="/css/bootstrap.min.css" rel="stylesheet">
-		<link href="/css/signup.css" rel="stylesheet">
-		<link href="/css/animate.css" rel="stylesheet">
-		<link href="/fonts/font-awesome.css" rel="stylesheet">
-	</head>
-	<body class="animated fadeInDown">
-		<div class="top-bar" style="background: #373737">
-			<a href="index.html" class="logo">QuantifiedDev</a>
-		</div>
-		<div class="jumbotron white-background">
-			<div class="container">
-				<form class="form-horizontal well signup-form" name="username-form" action="/claimUsername" method="post">
-					<div class="row">
-						<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-							<h2 class="header-text">Signup</h2>
-						</div> 
-						<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-							<h6 class="pull-right signup-details step-heading">Step 2 of 2</h6>
-						</div> 
-					</div>
-					<div class="row margin-top-five">
-						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							<span class="signup-details signup-stpe2-label">Pick a username, so that others can find you</span>
-						</div>
-					</div>
-					<div class="row margin-top-five">
-						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							<input class="form-control" name="username" type="text" required value="{{ username}}">
-							{% if error %}
-								<span class="error custom-error">{{ error }}</span>
-							{% endif %}
-							
-							<input name="githubUsername" type="hidden" value="{{ githubUsername}}">
-						</div>
-					</div>
-					
-					
-					<div class="row margin-top-ten">
-						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-								<input type="submit" class="btn btn-lg signup-button step-two-signup-button" value="Save and Finish">
-							
-						</div>
-					</div>
-				</form>
-			</div>
-		</div>
-	</body>
+  <head>
+    <title>Quantified Dev {ALPHA}</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1">
+    <meta name="description" content="Quantified Dev Dashboard" />
+    <meta name="keywords" content="Quantified Dev Development QuantifiedSelf Quantified Self" />
+    <meta name="author" content="Quantified Dev" />
+    <link rel="shortcut icon" href="/img/quantified-dev-favicon.ico">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/signup.css" rel="stylesheet">
+    <link href="/css/animate.css" rel="stylesheet">
+    <link href="/fonts/font-awesome.css" rel="stylesheet">
+  </head>
+  <body class="animated fadeInDown">
+    <div class="top-bar" style="background: #373737">
+      <a href="index.html" class="logo">QuantifiedDev</a>
+    </div>
+    <div class="jumbotron white-background">
+      <div class="container">
+        <form class="form-horizontal well signup-form" name="username-form" action="/claimUsername" method="post">
+          <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+              <h2 class="header-text">Signup</h2>
+            </div> 
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+              <h6 class="pull-right signup-details step-heading">Step 2 of 2</h6>
+            </div> 
+          </div>
+          <div class="row margin-top-five">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+              <span class="signup-details signup-stpe2-label">Pick a username, so that others can find you</span>
+            </div>
+          </div>
+          <div class="row margin-top-five">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+              <input class="form-control" name="username" type="text" required value="{{ username}}">
+              {% if error %}
+                <span class="error custom-error">{{ error }}</span>
+              {% endif %}
+              
+            </div>
+          </div>
+          
+          
+          <div class="row margin-top-ten">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input type="submit" class="btn btn-lg signup-button step-two-signup-button" value="Save and Finish">
+              
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
 </html>

@@ -170,8 +170,7 @@ module.exports = function(app) {
     app.get("/claimUsername", sessionManager.requiresSession, function(req, res) {
         if (req.query.username && _.isEmpty(req.session.username)) {
             res.render('claimUsername', {
-                username: req.query.username,
-                githubUsername: req.query.username
+                username: req.query.username
             });
         } else {
             res.redirect(CONTEXT_URI + "/dashboard");
@@ -192,7 +191,7 @@ module.exports = function(app) {
         if (isUsernameValid(oneselfUsername)) {
             encoder.encodeUsername(oneselfUsername, function(error, encUserObj) {
 
-                var githubUsername = req.body.githubUsername;
+                var githubUsername = req.session.githubUsername;
                 var byOneselfUsername = {
                     "username": oneselfUsername.toLowerCase()
                 };
@@ -223,7 +222,6 @@ module.exports = function(app) {
                                 } else {
                                     req.session.username = oneselfUsername;
                                     req.session.encodedUsername = encUserObj.encodedUsername;
-                                    req.session.githubUsername = githubUsername;
                                     console.log("User profile available in claimUsername : ",req.user.profile);
                                     req.session.githubAvatar = req.user.profile._json.avatar_url;
 
@@ -243,7 +241,6 @@ module.exports = function(app) {
         } else {
             res.render('claimUsername', {
                 username: req.body.username,
-                githubUsername: req.body.githubUsername,
                 error: "Username invalid. Username can contain only letters, numbers and _"
             });
         }
