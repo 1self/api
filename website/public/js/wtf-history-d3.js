@@ -1,4 +1,5 @@
 window.qd.plotWTFHistory = function() {
+setTimeout(function() {
     var s = $('#wtf-history').empty();
     s = d3.select('#wtf-history');
 
@@ -217,5 +218,5 @@ window.qd.plotWTFHistory = function() {
                 .attr("width", 100)
                 .style("fill", "black")
                 .text(legendColours[i][0]);
-        });
+        });},1000);
 };
