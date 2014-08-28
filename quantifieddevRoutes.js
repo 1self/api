@@ -9,7 +9,7 @@ var util = require("./util");
 var emailTemplates = require('swig-email-templates');
 var path = require('path');
 var QD_EMAIL = process.env.QD_EMAIL;
-
+var ObjectID = require('mongodb').ObjectID;
 var mongoDbConnection = require('./lib/connection.js');
 
 var emailConfigOptions = {
@@ -276,7 +276,6 @@ module.exports = function (app) {
                         console.log("DB error", err);
                         deferred.reject(err);
                     } else {
-                        console.log(user);
                         deferred.resolve(user["_id"]);
                     }
                 });
@@ -285,36 +284,30 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    var createFriendship = function (eun1, eun2) {
+    var createFriendship = function (userId1, userId2) {
         var deferred = Q.defer();
-        var promiseArray = [];
 
-        promiseArray.push(getUserIdFromEun(eun1));
-        promiseArray.push(getUserIdFromEun(eun2));
+        var findUserByEun = {
+            "_id": ObjectID(userId1)
+        };
+        var friend = {
+            "friends": ObjectID(userId2)
+        };
 
-        Q.all(promiseArray).then(function (userIds) {
-            var findUserByEun = {
-                "encodedUsername": eun1
-            };
-            var friend = {
-                "friends": userIds[1]
-            };
-
-            mongoDbConnection(function (qdDb) {
-                qdDb.collection("users", function (err, collection) {
-                    collection.update(findUserByEun, {
-                        $addToSet: friend
-                    }, {
-                        upsert: true
-                    }, function (error, data) {
-                        if (error) {
-                            console.log("DB error");
-                            deferred.reject(error);
-                        } else {
-                            console.log("friend inserted successfully");
-                            deferred.resolve();
-                        }
-                    });
+        mongoDbConnection(function (qdDb) {
+            qdDb.collection("users", function (err, collection) {
+                collection.update(findUserByEun, {
+                    $addToSet: friend
+                }, {
+                    upsert: true
+                }, function (error, data) {
+                    if (error) {
+                        console.log("DB error");
+                        deferred.reject(error);
+                    } else {
+                        console.log("friend inserted successfully");
+                        deferred.resolve();
+                    }
                 });
             });
         });
@@ -358,7 +351,7 @@ module.exports = function (app) {
                         Q.all(promiseArray).then(function (friendUsernames) {
                             var sortedAlphabetically = _.sortBy(friendUsernames, function (name) {
                                 return name;
-                            })
+                            });
                             deferred.resolve(sortedAlphabetically);
                         });
                     } else {
@@ -370,7 +363,7 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    var getFullName = function (username) {
+    var getFullNameByUsername = function (username) {
         var deferred = Q.defer();
         var query = {
             "username": username.toLowerCase()
@@ -392,7 +385,7 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    var getFullNameFromEun = function (eun) {
+    var getFullNameByEun = function (eun) {
         var deferred = Q.defer();
         var query = {
             "encodedUsername": eun
@@ -407,6 +400,28 @@ module.exports = function (app) {
                         deferred.resolve(user.githubUser.displayName);
                     } else {
                         deferred.resolve(user.username);
+                    }
+                }
+            });
+        });
+        return deferred.promise;
+    };
+
+    var getUsernameByEun = function (eun) {
+        var deferred = Q.defer();
+        var query = {
+            "encodedUsername": eun
+        };
+        mongoDbConnection(function (qdDb) {
+            qdDb.collection('users').findOne(query, function (err, user) {
+                if (err) {
+                    console.log("err : ", err);
+                    deferred.reject("DB error", err);
+                } else {
+                    if (!(_.isEmpty(user))) {
+                        deferred.resolve(user.username);
+                    } else {
+                        deferred.resolve(null);
                     }
                 }
             });
@@ -441,12 +456,16 @@ module.exports = function (app) {
         var deferred = Q.defer();
 
         var promiseArray = [];
-        promiseArray.push(getFullNameFromEun(userInviteEntry.fromEun));
-        promiseArray.push(getFullName(toUsername));
+        promiseArray.push(getFullNameByEun(userInviteEntry.fromEun));
+        promiseArray.push(getFullNameByUsername(toUsername));
+        promiseArray.push(getUsernameByEun(userInviteEntry.fromEun));
+        promiseArray.push(toUsername);
 
         Q.all(promiseArray).then(function (names) {
             var fromUserFullName = names[0];
             var toUserFullName = names[1];
+            var fromUsername = names[2];
+            var toUsername = names[3];
 
             emailTemplates(emailConfigOptions, function (err, emailRender) {
                 if (err) {
@@ -455,7 +474,8 @@ module.exports = function (app) {
                 }
                 var context = {
                     fromUserFullName: fromUserFullName,
-                    toUserFullName: toUserFullName
+                    toUserFullName: toUserFullName,
+                    toUsername: toUsername
                 };
                 emailRender('acceptCompareRequest.eml.html', context, function (err, html, text) {
                     sendgrid.send({
@@ -468,7 +488,7 @@ module.exports = function (app) {
                             console.error("can't send accept comparison request email ", err);
                             deferred.reject(err);
                         } else {
-                            deferred.resolve();
+                            deferred.resolve(fromUsername);
                         }
                     });
                 });
@@ -478,19 +498,18 @@ module.exports = function (app) {
     };
 
     app.get("/compare", sessionManager.requiresSession, function (req, res) {
-//        var compareWith = (_.isEmpty(req.query.compareWith)) ? req.session.token : req.query.compareWith;
-//        var emailIdsMap;
+        var compareWith = req.query.compareWith;
 
         fetchFriendList(req.session.username)
             .then(function (friends) {
-                getFullName(req.session.username)
+                getFullNameByUsername(req.session.username)
                     .then(function (fullName) {
                         res.render('compare', {
                             username: req.session.username,
                             avatarUrl: req.session.avatarUrl,
                             friends: friends,
-                            fullName: fullName
-//                            compareWith: compareWith
+                            fullName: fullName,
+                            compareWith: compareWith
                         });
                     }).catch(function (err) {
                         console.log("Error is ", err);
@@ -661,7 +680,7 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    var getEmailId = function (username) {
+    var getPrimaryEmailId = function (username) {
         var deferred = Q.defer();
         getEmailIdsForUsername(username)
             .then(function (emails) {
@@ -700,11 +719,23 @@ module.exports = function (app) {
         var deferred = Q.defer();
         var promiseArray = [];
         var fromEun = userInviteEntry.fromEun;
-        promiseArray.push(createFriendship(fromEun, toEun));
-        promiseArray.push(createFriendship(toEun, fromEun));
-        Q.all(promiseArray).then(function () {
-            deferred.resolve(userInviteEntry);
+
+        promiseArray.push(getUserIdFromEun(fromEun));
+        promiseArray.push(getUserIdFromEun(toEun));
+
+        Q.all(promiseArray).then(function (userIds) {
+            var friendshipPromises = [];
+            var fromUserId = userIds[0];
+            var toUserId = userIds[1];
+
+            friendshipPromises.push(createFriendship(fromUserId, toUserId));
+            friendshipPromises.push(createFriendship(toUserId, fromUserId));
+
+            Q.all(friendshipPromises).then(function () {
+                deferred.resolve(userInviteEntry);
+            });
         });
+
         return deferred.promise;
     };
 
@@ -720,8 +751,8 @@ module.exports = function (app) {
             .then(function (userInviteEntry) {
                 return sendAcceptEmail(userInviteEntry, toUsername);
             })
-            .then(function () {
-                res.redirect(CONTEXT_URI + "/compare");
+            .then(function (fromUsername) {
+                res.redirect(CONTEXT_URI + "/compare?compareWith=" + fromUsername);
             })
             .catch(function (error) {
                 console.log("error in accepting friendship request ", error);
@@ -757,7 +788,7 @@ module.exports = function (app) {
             });
         };
 
-        getFullNameFromEun(userInviteEntry.fromEun)
+        getFullNameByEun(userInviteEntry.fromEun)
             .then(_sendEmail);
 
         return deferred.promise;
@@ -820,7 +851,7 @@ module.exports = function (app) {
         };
 
         var fromUsername = req.session.username;
-        getEmailId(fromUsername)
+        getPrimaryEmailId(fromUsername)
             .then(function (fromPrimaryEmail) {
                 userInvitesEntry.fromEmailId = fromPrimaryEmail;
                 return insertUserInvitesInDb(userInvitesEntry);
