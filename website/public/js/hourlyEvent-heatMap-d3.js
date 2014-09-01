@@ -87,6 +87,9 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                     });
             };
             var createHeatMap = function(svg, timeAxis, dayAxis, timeAxisAdjustment, dayAxisAdjustment, gridDaySize, gridTimeSize) {
+                var div = d3.select("body").append("div")
+                    .attr("class", "tooltip")
+                    .style("opacity", 0);
                 return svg.selectAll(".hour")
                     .data(data)
                     .enter().append("rect")
@@ -103,9 +106,22 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                     .attr("width", gridDaySize)
                     .attr("height", gridTimeSize)
                     .style("fill", baseColor)
-                    .on("click", tip.show)
+                    .on("click", function(d) {
+
+                        div.transition()
+                            .duration(200)
+                            .style("opacity", .9);
+                        div.html("<strong>" + d.value + (d.value === 1 ? " event" : " events") + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day + 1).format('ddd') + " at " + moment().hours(d.hour + 1).format('h a') + "</span>")
+                            .style("left", (d3.event.pageX) + "px")
+                            .style("top", (d3.event.pageY - 28) + "px");
+                    })
                     .on("mouseover", tip.show)
-                    .on("mouseout", tip.hide);
+                    .on("mouseout", function() {
+                        div.transition()
+                            .duration(500)
+                            .style("opacity", 0);
+                        tip.hide;
+                    });
             };
             var fillDataIntoTheGraph = function() {
                 heatMap.transition().duration(1000)
