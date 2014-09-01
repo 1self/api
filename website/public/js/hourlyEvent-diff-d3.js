@@ -13,7 +13,7 @@ window.qd.plotHourlyEventDiff = function (divId, myHourlyEvents, theirHourlyEven
         gridSize = Math.floor(width / 24),
         legendElementWidth = gridSize * 2,
         buckets = 9,
-        positiveColors = ["#C0FF00", "#80FF00", "#40FF00","#3ae800"], // alternatively colorbrewer.YlGnBu[9]
+        positiveColors = ["#C0FF00", "#80FF00", "#40FF00", "#3ae800"], // alternatively colorbrewer.YlGnBu[9]
         negativeColors = ["#FFC000", "#FF8000", "#FF4000", "#FF0000"],
         days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
         times = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"];
@@ -29,7 +29,7 @@ window.qd.plotHourlyEventDiff = function (divId, myHourlyEvents, theirHourlyEven
         });
     } else {
         var zipped = _.zip(myHourlyEvents, theirHourlyEvents);
-        _.map(zipped, function (pair) {
+        segmentData = _.map(zipped, function (pair) {
             var my = pair[0].hourlyEventCount;
             var their = pair[1].hourlyEventCount;
             return  my - their;
@@ -44,13 +44,13 @@ window.qd.plotHourlyEventDiff = function (divId, myHourlyEvents, theirHourlyEven
 
     var hourlyBuildCountsData = window.utils.rotateArray(hourlyBuildCountsMondayToSunday.slice(), -1 * window.utils.timezoneDifferenceInHours);
 
-    var _generateHeatMap = function(data) {
+    var _generateHeatMap = function (data) {
         var positiveColorLegendXCood = width - 120;
         var positiveColorLegendYCood = width / 2.7;
         var negativeColorLegendXCood = width - 120;
         var negativeColorLegendYCood = width / 2.46;
 
-        var maximumEventValue = d3.max([0, d3.max(data, function(d) {
+        var maximumEventValue = d3.max([0, d3.max(data, function (d) {
             return d.value;
         })]);
         var minimumEventValue = d3.min([0, d3.min(data, function (d) {
@@ -126,7 +126,7 @@ window.qd.plotHourlyEventDiff = function (divId, myHourlyEvents, theirHourlyEven
                 .on("mouseover", tip.show)
                 .on("mouseout", tip.hide);
         };
-        
+
         if ($(window).width() < 480) {
             var svgWidth = 300;
             var svgHeight = 460;
