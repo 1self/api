@@ -79,6 +79,10 @@ window.qd.plotDailyComparison = function(divId, myDailyEvents, theirDailyEvents)
     .style("text-anchor", "end")
     .text("Push Count");
 
+  var div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
   svg.selectAll("rect")
     .data(data)
     .enter().append("rect")
@@ -96,9 +100,31 @@ window.qd.plotDailyComparison = function(divId, myDailyEvents, theirDailyEvents)
     .style("fill", function(d) {
       return color(d.dataFor);
     })
-    .on("click", tip.show)
-    .on("mouseover", tip.show)
-    .on("mouseout", tip.hide);
+    .on("click", function(d) {
+      if ($(window).width() < 768) {
+        div.transition()
+          .duration(200)
+          .style("opacity", .9);
+        div.html("<strong>" + d.value + (d.value === 1 ? " event" : " events") + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day + 1).format('ddd') + " at " + moment().hours(d.hour + 1).format('h a') + "</span>")
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY) + "px");
+      }
+
+    })
+    .on("mouseover", function(d) {
+      if ($(window).width() > 767) {
+        tip.show(d)
+      }
+    })
+    .on("mouseout", function() {
+      if ($(window).width() > 767) {
+        tip.hide();
+      } else {
+        div.transition()
+          .duration(100)
+          .style("opacity", 0)
+      }
+    });
 
   var legend = svg.selectAll(".legend")
     .data(events.slice().reverse())

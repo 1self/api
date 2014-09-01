@@ -59,6 +59,9 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 			yScale.domain([d3.min(data, yValue) - 1, d3.max(data, yValue) + 1]);
 
 			// draw dots
+			var div = d3.select("body").append("div")
+                    .attr("class", "tooltip")
+                    .style("opacity", 0);
 			svg.selectAll(".dot")
 				.data(data)
 				.enter().append("circle")
@@ -69,9 +72,31 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 				.style("fill", function(d) {
 					return (d.x === 0 || d.y === 0) ? "lightgrey" : "blue";
 				})
-				.on("click", tip.show)
-				.on("mouseover", tip.show)
-				.on("mouseout", tip.hide);
+				.on("click", function(d) {
+					if ($(window).width() < 768) {
+						div.transition()
+							.duration(200)
+							.style("opacity", .9);
+						div.html("<strong>" + d.value + (d.value === 1 ? " event" : " events") + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day + 1).format('ddd') + " at " + moment().hours(d.hour + 1).format('h a') + "</span>")
+							.style("left", (d3.event.pageX) + "px")
+							.style("top", (d3.event.pageY) + "px");
+					}
+
+				})
+				.on("mouseover", function(d) {
+					if ($(window).width() > 767) {
+						tip.show(d)
+					}
+				})
+				.on("mouseout", function() {
+					if ($(window).width() > 767) {
+						tip.hide();
+					} else {
+						div.transition()
+							.duration(100)
+							.style("opacity", 0)
+					}
+				});
 
 			// x-axis
 			svg.append("g")

@@ -61,6 +61,9 @@ window.qd.plotBuildDurationHistory = function() {
             });
 
         // Add a rect for each date.
+        var div = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
         var rect = cause.selectAll("rect")
             .data(Object)
             .enter().append("svg:rect")
@@ -75,9 +78,31 @@ window.qd.plotBuildDurationHistory = function() {
                 return y(d.y);
             })
             .attr("width", x.rangeBand())
-            .on("click", tip.show)
-            .on("mouseover", tip.show)
-            .on("mouseout", tip.hide);
+            .on("click", function(d) {
+                if ($(window).width() < 768) {
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    div.html("<strong>" + d.value + (d.value === 1 ? " event" : " events") + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day + 1).format('ddd') + " at " + moment().hours(d.hour + 1).format('h a') + "</span>")
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY) + "px");
+                }
+
+            })
+            .on("mouseover", function(d) {
+                if ($(window).width() > 767) {
+                    tip.show(d)
+                }
+            })
+            .on("mouseout", function() {
+                if ($(window).width() > 767) {
+                    tip.hide();
+                } else {
+                    div.transition()
+                        .duration(100)
+                        .style("opacity", 0)
+                }
+            });
 
         //    Add a label per date
         var label = svg.selectAll("text.month")
