@@ -37,38 +37,28 @@ var liveCountry = function() {
         return (location.hostname == "localhost") ?
             "http://localhost:5000/" :
             "https://app.quantifieddev.org/";
-    }
+    };
 
     var plotGraph = function() {
-        $.getJSON("https://geo-ip.herokuapp.com/location.json?callback=?", function(ipDetails) {
-            $.ajax({
-                url: url() + ipDetails.ip_address,
-                success: function(locationInfo) {
-                    locationInfo = $.parseJSON(locationInfo);
-                    var centerLatitude = locationInfo.latitude;
-                    var centerLongitude = locationInfo.longitude;
-                    var countryName = locationInfo.country_name;
+        $.getJSON("https://geo-ip.herokuapp.com/location.json?callback=?",  function(locationInfo) {
+            var centerLatitude = locationInfo.latitude;
+            var centerLongitude = locationInfo.longitude;
+            var countryName = locationInfo.country_name;
+            $("#country").text(countryName + "'s Events");
 
-                    $("#country").text(countryName + "'s Events");
+            var projection = d3.geo.mercator()
+                    .scale(width * 2)
+            // .clipAngle(90)
+                    .translate([width / 2, height / 2])
+                    .center([centerLongitude, centerLatitude]);
 
-                    var projection = d3.geo.mercator()
-                        .scale(width * 2)
-                        // .clipAngle(90)
-                        .translate([width / 2, height / 2])
-                        .center([centerLongitude, centerLatitude]);
+            path = d3.geo.path()
+                .projection(projection)
+                .context(context);
 
-                    path = d3.geo.path()
-                        .projection(projection)
-                        .context(context);
+            d3.select(self.frameElement).style("height", height + "px");
 
-                    d3.select(self.frameElement).style("height", height + "px");
-
-                    loadData();
-                },
-                error: function(err) {
-                    console.log("error is " + JSON.stringify(err));
-                }
-            })
+            loadData();
         });
     };
 
