@@ -2,7 +2,6 @@ var requestModule = require('request');
 var express = require("express");
 var moment = require("moment");
 var url = require('url');
-var iz = require('iz');
 
 var swig = require('swig');
 var path = require('path');
@@ -1906,18 +1905,6 @@ app.get('/eventsCount', function(req, res) {
             console.log("Err", error);
             res.status(400).send("Invalid request");
         });
-});
-
-app.get('/:ip', function(req, res) {
-    if (iz.ip(req.params.ip)) { 
-        requestModule('http://freegeoip.net/json/' + req.params.ip, function(error, response, body) {
-            if (!error && response.statusCode === 200) {
-                res.send(body);
-            }
-        });
-    } else {
-        res.send('404: Page not found', 404);
-    }
 });
 
 app.post('/stream/:id/event', postEvent);
