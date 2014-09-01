@@ -113,7 +113,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                                 .style("opacity", .9);
                             div.html("<strong>" + d.value + (d.value === 1 ? " event" : " events") + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day + 1).format('ddd') + " at " + moment().hours(d.hour + 1).format('h a') + "</span>")
                                 .style("left", (d3.event.pageX) + "px")
-                                .style("top", (d3.event.pageY - 28) + "px");
+                                .style("top", (d3.event.pageY) + "px");
                         }
 
                     })
