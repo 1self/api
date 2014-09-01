@@ -107,7 +107,6 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                     .attr("height", gridTimeSize)
                     .style("fill", baseColor)
                     .on("click", function(d) {
-
                         div.transition()
                             .duration(200)
                             .style("opacity", .9);
@@ -117,11 +116,13 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                     })
                     .on("mouseover", tip.show)
                     .on("mouseout", function() {
-                        div.transition()
-                            .duration(500)
-                            .style("opacity", 0);
-                        tip.hide;
+                        tip.hide();
+                        /*div.transition()
+                            .duration(10)
+                            .style("opacity", 0)*/
                     });
+
+
             };
             var fillDataIntoTheGraph = function() {
                 heatMap.transition().duration(1000)
