@@ -107,22 +107,26 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                     .attr("height", gridTimeSize)
                     .style("fill", baseColor)
                     .on("click", function(d) {
-                        div.transition()
-                            .duration(200)
-                            .style("opacity", .9);
-                        div.html("<strong>" + d.value + (d.value === 1 ? " event" : " events") + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day + 1).format('ddd') + " at " + moment().hours(d.hour + 1).format('h a') + "</span>")
-                            .style("left", (d3.event.pageX) + "px")
-                            .style("top", (d3.event.pageY - 28) + "px");
+                        if ($(window).width() < 768) {
+                            div.transition()
+                                .duration(200)
+                                .style("opacity", .9);
+                            div.html("<strong>" + d.value + (d.value === 1 ? " event" : " events") + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day + 1).format('ddd') + " at " + moment().hours(d.hour + 1).format('h a') + "</span>")
+                                .style("left", (d3.event.pageX) + "px")
+                                .style("top", (d3.event.pageY - 28) + "px");
+                        }
+
                     })
                     .on("mouseover", tip.show)
                     .on("mouseout", function() {
-                        tip.hide();
-                        /*div.transition()
-                            .duration(10)
-                            .style("opacity", 0)*/
+                        if ($(window).width() > 767) {
+                            tip.hide();
+                        } else {
+                            div.transition()
+                                .duration(100)
+                                .style("opacity", 0)
+                        }
                     });
-
-
             };
             var fillDataIntoTheGraph = function() {
                 heatMap.transition().duration(1000)
