@@ -1907,14 +1907,6 @@ app.get('/eventsCount', function(req, res) {
         });
 });
 
-app.get('/:ip', function(req, res) {
-    requestModule('http://freegeoip.net/json/' + req.params.ip, function(error, response, body) {
-        if (!error && response.statusCode === 200) {
-            res.send(body);
-        }
-    });
-});
-
 app.post('/stream/:id/event', postEvent);
 
 app.get('/live/devbuild/:durationMins', function(req, res) {
