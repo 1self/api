@@ -117,7 +117,10 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                         }
 
                     })
-                    .on("mouseover", tip.show)
+                    .on("mouseover", function(d) {
+                        if ($(window).width() > 767) {
+                        tip.show(d)}
+                    })
                     .on("mouseout", function() {
                         if ($(window).width() > 767) {
                             tip.hide();

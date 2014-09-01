@@ -2987,9 +2987,7 @@ a.twitter-share-button {
 html,body{
     overflow-x:hidden;
 }
-.d3-tip {
-    z-index: -1!important;
-}
+
 }
 @media screen and (min-width: 768px) {
     .panel-body {
