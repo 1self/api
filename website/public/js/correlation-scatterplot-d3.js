@@ -77,8 +77,8 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 						div.transition()
 							.duration(200)
 							.style("opacity", .9);
-						div.html("<strong>" + d.value + (d.value === 1 ? " event" : " events") + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day + 1).format('ddd') + " at " + moment().hours(d.hour + 1).format('h a') + "</span>")
-							.style("left", (d3.event.pageX) - 50 + "px")
+						div.html("<strong>Active programming duration of " + xValue(d) + " mins with " + yValue(d) + " github" + (yValue(d) === 1 ? " push" : " pushes") + "</strong> <span style='color:lightgrey'> on " + moment(d.date).format("ddd MMM DD") + "</span>")
+							.style("left", (d3.event.pageX) - 80 + "px")
 							.style("top", (d3.event.pageY) + "px");
 					}
 

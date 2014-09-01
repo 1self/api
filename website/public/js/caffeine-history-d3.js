@@ -84,7 +84,7 @@ window.qd.plotCaffeineHistory = function() {
                     div.transition()
                         .duration(200)
                         .style("opacity", .9);
-                    div.html("<strong>" + d.value + (d.value === 1 ? " event" : " events") + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day + 1).format('ddd') + " at " + moment().hours(d.hour + 1).format('h a') + "</span>")
+                    div.html("<strong>" + d.y + (d.y === 1 ? " cup" : " cups") + "</strong> <span style='color:lightgrey'> on " + moment(d.x).format("ddd MMM DD") + "</span>")
                         .style("left", (d3.event.pageX) - 50 + "px")
                         .style("top", (d3.event.pageY) + "px");
                 }
