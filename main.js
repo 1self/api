@@ -95,18 +95,6 @@ app.all('*', function(req, res, next) {
 
 require('./quantifieddevRoutes')(app);
 
-// Handle 404
-app.use(function(req, res) {
-    res.status(404);
-    res.render('404.html');
-});
-
-// Handle 500
-app.use(function(error, req, res, next) {
-    res.status(500);
-    res.render('500.html');
-});
-
 // Please keep it below inclusion of quantifieddevRoutes file.
 app.use(opbeat.middleware.express(client));
 
@@ -2181,6 +2169,18 @@ app.options('*', function(request, response) {
     response.send();
 });
 
+
+// Handle 404
+app.use(function(req, res) {
+    res.status(404);
+    res.render('404.html');
+});
+
+// Handle 500
+app.use(function(error, req, res, next) {
+    res.status(500);
+    res.render('500.html');
+});
 
 var port = process.env.PORT || 5000;
 app.listen(port, function() {
