@@ -4,8 +4,8 @@ $(function() {
         window.localStorage.theirUsername = $('#friendList').val();
     };
 
-    $('#auth-save-compare').click(function() {
-        updateLocalStorage();
+    $('#friendList').change(function() {
+        window.localStorage.theirUsername = $(this).find(":selected").val();
         window.qd.plotComparisonGraphs(window.localStorage.theirUsername);
     });
 
