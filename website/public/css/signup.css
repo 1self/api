@@ -90,6 +90,9 @@ body{
   position: relative;
   z-index: 100000;
 }
+.signup-button:hover{
+	background: #19bc98;
+}
 @media (min-width: 600px){
 	.container {
 		width: 400px;
