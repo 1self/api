@@ -1,0 +1,87 @@
+<div class="modal fade modal-overflow in" id="compare-modal" tabindex="-1" role="dialog" aria-hidden="false" style="display: none; margin-top: 0px;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" data-original-title="" title=""><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+        <h3 class="header-text text-center">Request Comparison</h3>
+      </div>
+      <div class="modal-body">
+        <div id="request-comparison" name="input">
+          <form id="request-comparision-form">
+            <div class="row">
+              <div class="col-md-5">
+                Enter your name
+              </div>
+              <div class="col-md-7">
+                <input class="form-control" type="text" id="your-name1">
+              </div>
+            </div>
+            <div class="row text-center" style="margin: 10px 0px;">
+            </div>
+            <div class="row">
+              <div class="col-md-5">
+                Enter your friend’s email
+              </div>
+              <div class="col-md-7">
+                <input class="form-control" type="email" id="friend-email">
+              </div>
+            </div>
+            <div class="top-buffer-20">
+            </div>
+            <div class="row compare_error_message" style="display:none;">
+              <div class="class-md-12 alert alert-danger" role="alert">
+                <div id="compare_error_message_text"></div>
+              </div>
+            </div>
+            <div class="row text-center">
+              <input type="button" id="submit-compare-details" class="btn btn-info" value="Next">
+            </div>
+          </form>
+        </div>
+        <div id="comparison-email" name="input" style="display:none">
+          <form id="comparision-email-form">
+            <div class="row">
+              <div class="col-md-6">
+                Your name
+              </div>
+              <div class="col-md-6">
+                <input class="form-control" type="text" id="your-name2" disabled="true">
+              </div>
+            </div>
+            <div  style="margin-top:10px;" >
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                Friend's Email Id
+              </div>
+              <div class="col-md-6">
+                <input class="form-control" type="text" id="friend-email-id" disabled="true">
+              </div>
+            </div>
+            <div class="row" style="margin-top:10px;" >
+              <div class="col-md-12">Email invite preview</div>
+            </div>
+            <div class="row" style="margin-top:15px;">
+              <div class="col-md-12">
+                <div class="well" id="email-message">
+                  
+                </div>
+              </div>
+            </div>
+            <div class="text-center">
+              <input type="button" id="send-compare-request-email" class="btn btn-info" value="Send Comparison Request">&nbsp
+              <input type="button" id="send-compare-request-back" class="btn btn-default" value="Back">
+            </div>
+          </form>
+        </div>
+        
+        <div id="compare_email_sent_success" style="display:none;">
+          <div class="class-md-12 alert alert-success" role="alert">
+            Successfully sent compare request email.
+          </div>       
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

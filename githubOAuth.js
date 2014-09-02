@@ -44,7 +44,8 @@ module.exports = function(app) {
                         githubUser.emails.push(userEmails[i]);
                     }
                     var githubUserRecord = {
-                        githubUser: githubUser
+                        githubUser: githubUser,
+                        registeredOn: new Date()
                     }
                     mongoDbConnection(function(qdDb) {
                         qdDb.collection('users').insert(githubUserRecord, function(err, insertedRecords) {

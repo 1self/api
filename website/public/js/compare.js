@@ -13,6 +13,7 @@ $(function() {
         (function(callback){
             $("#request-comparison").show();
             $("#comparison-email").hide();
+            $("#compare_email_sent_success").hide();
             $("#request-comparision-form")[0].reset();
             $("#comparision-email-form")[0].reset();
             $(".compare_error_message").hide();
@@ -40,10 +41,13 @@ $(function() {
 
     $('#submit-compare-details').on('click', function(e) {
         var friendsEmail;
+        $("#compare_error_message_text").html("");
+
 
         friendsEmail = $("#friend-email").val();
 
         if (_.isEmpty(friendsEmail)) {
+            $("#compare_error_message_text").html("Please enter valid Email Id.");
             $(".compare_error_message").show();
             return false;
         }
@@ -88,14 +92,16 @@ $(function() {
 
     var emailSuccessCallback = function() {
         $("#send-compare-request-email").removeAttr("disabled");
-        alert("Successfully sent compare request.");
-        $("#compare-modal").modal("hide");
+        $("#request-comparison").hide();
+        $("#comparison-email").hide();
+        $("#compare_email_sent_success").show();
     };
     var emailFailureCallback = function() {
         $("#send-compare-request-email").removeAttr("disabled");
         $(".compare_error_message").show();
         $("#request-comparison").show();
         $("#comparison-email").hide();
+        $("#compare_error_message_text").html("Email service down. Please try after sometime.");
     };
     $('#send-compare-request-email').on('click', function(e) {
         $("#send-compare-request-email").attr("disabled", "true");
