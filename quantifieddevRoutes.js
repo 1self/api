@@ -860,7 +860,7 @@ module.exports = function(app) {
                 res.send(200, "success");
             })
             .catch(function(error) {
-                res.status(404).send("stream not found");
+                res.status(400).send("Email service unavailable");
             });
     });
 

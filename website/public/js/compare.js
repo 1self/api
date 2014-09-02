@@ -41,10 +41,13 @@ $(function() {
 
     $('#submit-compare-details').on('click', function(e) {
         var friendsEmail;
+        $("#compare_error_message_text").html("");
+
 
         friendsEmail = $("#friend-email").val();
 
         if (_.isEmpty(friendsEmail)) {
+            $("#compare_error_message_text").html("Please enter valid Email Id.");
             $(".compare_error_message").show();
             return false;
         }
@@ -98,6 +101,7 @@ $(function() {
         $(".compare_error_message").show();
         $("#request-comparison").show();
         $("#comparison-email").hide();
+        $("#compare_error_message_text").html("Email service down. Please try after sometime.");
     };
     $('#send-compare-request-email').on('click', function(e) {
         $("#send-compare-request-email").attr("disabled", "true");
