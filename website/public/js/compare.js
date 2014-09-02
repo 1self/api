@@ -13,6 +13,7 @@ $(function() {
         (function(callback){
             $("#request-comparison").show();
             $("#comparison-email").hide();
+            $("#compare_email_sent_success").hide();
             $("#request-comparision-form")[0].reset();
             $("#comparision-email-form")[0].reset();
             $(".compare_error_message").hide();
@@ -88,8 +89,9 @@ $(function() {
 
     var emailSuccessCallback = function() {
         $("#send-compare-request-email").removeAttr("disabled");
-        alert("Successfully sent compare request.");
-        $("#compare-modal").modal("hide");
+        $("#request-comparison").hide();
+        $("#comparison-email").hide();
+        $("#compare_email_sent_success").show();
     };
     var emailFailureCallback = function() {
         $("#send-compare-request-email").removeAttr("disabled");
