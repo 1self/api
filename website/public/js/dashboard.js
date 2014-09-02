@@ -28,6 +28,7 @@ $(window).resize(function() {
 $(window).load(function() {
     //does not work in document.ready()
     if ($("#showOverlayFlag").attr("showOverlay") == 'true') {
+        $("#connect_to_github_btn").show();
         $("#noDataSourceMessage").modal("show")
     } else {
         window.qd.plotGraphs(dashboardGraphs);

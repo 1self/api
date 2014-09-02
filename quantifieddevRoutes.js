@@ -146,7 +146,7 @@ module.exports = function(app) {
                 });
         } else {
             getStreamsForUser().then(function(user) {
-                if (user.streams) {
+                if (user.streams && req.query.link_data !== "true") {
                     res.render('dashboard', {
                         username: req.session.username,
                         avatarUrl: req.session.avatarUrl
