@@ -35,7 +35,7 @@ module.exports = function(app) {
                 url: "https://api.github.com/user/emails?access_token=" + req.user.accessToken,
                 headers: {
                     "User-Agent": "Quantified Dev Localhost"
-                },
+                }
             };
             request(options, function(err, res, body) {
                 if (!err) {

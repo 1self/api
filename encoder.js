@@ -1,34 +1,25 @@
 var crypto = require('crypto');
+var Q = require('q');
 
-exports.encodeUsername = function(username, callback) {
-    var opts = {
-        plaintext: username
-    };
-    hashPassword(opts, function(err, data) {
-        var encObect = {
-            encodedUsername: data.key,
-            salt: data.salt
-        };
-        callback(null, encObect);
-    });
-};
-
-var hashPassword = function(opts, callback) {
-    if (!opts.salt) {
-        return crypto.randomBytes(8, function(err, buf) {
-            if (err) return callback(err);
-            opts.salt = buf.toString('base64');
-            return hashPassword(opts, callback);
-        });
-    }
-
-    opts.iterations = opts.iterations || 10000;
-    return crypto.pbkdf2(opts.plaintext, opts.salt, opts.iterations, 64, function(err, key) {
+var hashPassword = function (opts) {
+    var deferred = Q.defer();
+    crypto.pbkdf2(opts.plaintext, opts.salt, opts.iterations, 64, function (err, key) {
         if (err) {
-            return callback(err);
+            deferred.reject(err);
         }
         opts.key = new Buffer(key).toString('base64');
-
-        return callback(null, opts);
+        deferred.resolve({ encodedUsername: opts.key, salt: opts.salt });
     });
+    return deferred.promise;
 };
+
+exports.encodeUsername = function (username) {
+    var salt = crypto.randomBytes(8).toString('base64');
+    var opts = {
+        salt: salt,
+        plaintext: username,
+        iterations: 10000
+    };
+    return hashPassword(opts);
+};
+
