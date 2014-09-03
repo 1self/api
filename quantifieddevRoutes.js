@@ -262,27 +262,6 @@ module.exports = function (app) {
             });
     });
 
-    var getUserId = function (username) {
-        var deferred = Q.defer();
-        var user = {
-            "username": username
-        };
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection("users", function (err, collection) {
-                collection.findOne(user, function (err, data) {
-                    if (err) {
-                        console.log("DB error", err);
-                        deferred.reject(err);
-                    } else {
-                        console.log(data);
-                        deferred.resolve(data["_id"]);
-                    }
-                });
-            });
-        });
-        return deferred.promise;
-    };
-
     var getUserIdFromEun = function (eun) {
         var deferred = Q.defer();
         var user = {
