@@ -352,6 +352,16 @@ var rollupToArray = function (rollup) {
     }
     return result;
 };
+var transformDataToEvent = function (data) {
+    return _.map(data, function (valueJson, date) {
+        var keys = Object.keys(valueJson);
+        var event = {
+            "date": date
+        };
+        event[keys[0]] = valueJson[keys[0]];
+        return event;
+    });
+};
 
 var getBuildEventsFromPlatform = function (params) {
     var streams = params[0];
@@ -612,14 +622,7 @@ var getMyHydrationEventsFromPlatform = function (params) {
     var sendHydrationCount = function (error, response, body) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body)[0];
-            var hydrationEvents = _.map(result, function (valueJson, date) {
-                var keys = Object.keys(valueJson);
-                var event = {
-                    "date": date
-                };
-                event[keys[0]] = valueJson[keys[0]];
-                return event;
-            });
+            var hydrationEvents = transformDataToEvent(result);
             deferred.resolve(hydrationEvents);
         } else {
             deferred.reject(error);
@@ -693,23 +696,8 @@ var getMyCaffeineEventsFromPlatform = function (params) {
     var sendCaffeineCount = function (error, response, body) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body)[0];
-            if (_.isEmpty(result)) {
-                deferred.resolve([]);
-            } else {
-                var defaultCaffeineValues = [
-                    {
-                        key: "caffeineCount",
-                        value: 0
-                    }
-                ];
-                var caffeineIntakeByDay = generateDatesFor(defaultCaffeineValues);
-                for (var date in result) {
-                    if (caffeineIntakeByDay[date] !== undefined) {
-                        caffeineIntakeByDay[date].caffeineCount = result[date].caffeineCount;
-                    }
-                }
-                deferred.resolve(rollupToArray(caffeineIntakeByDay));
-            }
+            var caffeineEvents = transformDataToEvent(result);
+            deferred.resolve(rollupToArray(caffeineEvents));
         } else {
             deferred.reject(error);
         }
