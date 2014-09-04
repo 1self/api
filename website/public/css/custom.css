@@ -2,38 +2,47 @@
     list-style-type: none;
     border-radius: 2px;
 }
+
 .menu-side {
     color: white;
     padding-left: 18px;
 }
+
 x.axis {
     stroke-width: 1.0;
 }
+
 .domain {
     fill: none;
     stroke: black;
     stroke-width;
     1px;
 }
+
 .fixed-height {
     height: 460px;
 }
+
 .no-data-msg {
     margin: 25% 30%;
     text-align: center;
 }
+
 .top-buffer {
     margin-top: 5px;
 }
+
 .col-centered {
     float: none;
     margin: 0 auto;
 }
+
 .popover {
     max-width: none;
     width: 100%;
     word-break: break-word;
 }
+
 #last-updated-since {
     margin-left: 5%;
 }
@@ -42,76 +51,86 @@ x.axis {
     .popover {
         max-width: none;
         width: 100%;
-        border:1px solid red;
+        border: 1px solid red;
     }
 }
+
 @media screen and (max-width: 450px) {
     .fixed-height {
         height: auto;
     }
+
     .popover {
         max-width: 300px;
         width: 100%;
     }
 }
+
 @media screen and (max-width: 318px) {
     .panel-title {
         font-size: 13px;
     }
 }
-.d3-tip  {
-  line-height: 1;
-  font-weight: bold;
-  font-size:12px;
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  border-radius: 2px;
-  z-index:10;
+
+.d3-tip {
+    line-height: 1;
+    font-weight: bold;
+    font-size: 12px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border-radius: 2px;
+    z-index: 10;
 }
 
 /* Creates a small triangle extender for the tooltip */
 .d3-tip:after {
-  box-sizing: border-box;
-  display: inline;
-  font-size: 5px;
-  width: 100%;
-  line-height: 1;
-  color: rgba(0, 0, 0, 0.8);
-  content: "\25BC";
-  position: absolute;
-  text-align: center;
+    box-sizing: border-box;
+    display: inline;
+    font-size: 5px;
+    width: 100%;
+    line-height: 1;
+    color: rgba(0, 0, 0, 0.8);
+    content: "\25BC";
+    position: absolute;
+    text-align: center;
 }
 
 /* Style northward tooltips differently */
 .d3-tip.n:after {
-  margin: -1px 0 0 0;
-  top: 100%;
-  left: 0;
+    margin: -1px 0 0 0;
+    top: 100%;
+    left: 0;
 }
+
 .bar:hover, .dot:hover, .heatMapRect:hover, .dot-line:hover {
-  stroke: grey;
-  stroke-width:2;
+    stroke: grey;
+    stroke-width: 2;
 }
-div.tooltip {   
-  position: absolute;           
-  text-align: center;           
-  /*width: 60px;                  
-  height: 28px; */                
-  padding: 2px;             
-  font: 12px sans-serif;        
-  background: lightsteelblue;   
-  border: 0px;      
-  border-radius: 8px;           
-  pointer-events: none;     
 
+div.tooltip {
+    position: absolute;
+    text-align: center;
+    /*width: 60px;
+    height: 28px; */
+    padding: 2px;
+    font: 12px sans-serif;
+    background: lightsteelblue;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
 
-   line-height: 1;
-  font-weight: bold;
-  font-size:12px;
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  border-radius: 2px;
-      
+    line-height: 1;
+    font-weight: bold;
+    font-size: 12px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border-radius: 2px;
+
+}
+
+.axis path, .axis line {
+    fill: none;
+    stroke: #000;
 }

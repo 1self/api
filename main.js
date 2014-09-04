@@ -612,23 +612,15 @@ var getMyHydrationEventsFromPlatform = function (params) {
     var sendHydrationCount = function (error, response, body) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body)[0];
-            if (_.isEmpty(result)) {
-                deferred.resolve([]);
-            } else {
-                var defaultHydrationValues = [
-                    {
-                        key: "hydrationCount",
-                        value: 0
-                    }
-                ];
-                var hydrationsByDay = generateDatesFor(defaultHydrationValues);
-                for (var date in result) {
-                    if (hydrationsByDay[date] !== undefined) {
-                        hydrationsByDay[date].hydrationCount = result[date].hydrationCount;
-                    }
-                }
-                deferred.resolve(rollupToArray(hydrationsByDay));
-            }
+            var hydrationEvents = _.map(result, function (valueJson, date) {
+                var keys = Object.keys(valueJson);
+                var event = {
+                    "date": date
+                };
+                event[keys[0]] = valueJson[keys[0]];
+                return event;
+            });
+            deferred.resolve(hydrationEvents);
         } else {
             deferred.reject(error);
         }
