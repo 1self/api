@@ -239,7 +239,9 @@ var authenticateWriteToken = function (token, id, error, success) {
                 if (stream.writeToken != token) {
                     error();
                 } else {
-                    success({streamid: stream.streamid});
+                    success({
+                        streamid: stream.streamid
+                    });
                 }
             });
         });
@@ -1837,6 +1839,25 @@ app.get('/users_count', function (req, res) {
             } else {
                 res.send({
                     count: count
+                });
+            }
+        });
+    });
+});
+
+app.get('/users/active', function (req, res) {
+    var query = {
+        "lastAccess": {
+            "$gt": new Date(moment().format("MM/DD/YYYY"))
+        }
+    };
+    mongoDbConnection(function (qdDb) {
+        qdDb.collection('sessions').distinct("username", query, function (err, activeUsers) {
+            if (err) {
+                console.log("Err", err);
+            } else {
+                res.send({
+                    count: activeUsers.length
                 });
             }
         });
