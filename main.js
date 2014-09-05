@@ -21,8 +21,8 @@ var q = require('q');
 var mongoDbConnection = require('./lib/connection.js');
 var util = require('./util');
 var PasswordEncrypt = require('./lib/PasswordEncrypt');
-
-var MongoStore = require("express-session-mongo");
+var redis = require('redis');
+var RedisStore = require('connect-redis')(session);
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
@@ -46,13 +46,11 @@ swig.setDefaults({
     cache: false
 });
 var sessionSecret = process.env.SESSION_SECRET;
+var redisURL = url.parse(process.env.REDISCLOUD_URL);
+var client = redis.createClient(redisURL.port, redisURL.hostname, {no_ready_check: true});
 app.use(session({
-    store: new MongoStore({
-        db: "quantifieddev",
-        ip: process.env.DB_HOST,
-        port: process.env.DB_PORT,
-        username: process.env.DB_USERNAME,
-        password: process.env.DB_PASSWORD
+    store: new RedisStore({
+        client: client
     }),
     secret: sessionSecret,
     resave: true,
