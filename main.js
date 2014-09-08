@@ -409,6 +409,144 @@ var transformPlatformDataToQDEvents = function (result) {
     });
 };
 
+var getMyActiveDuration = function (params) {
+    var streams = params[0];
+    var streamids = _.map(streams, function (stream) {
+        return stream.streamid;
+    });
+    var deferred = q.defer();
+    var groupQuery = groupByOnParameters(streamids, "Develop");
+    var sumOfActiveEvents = {
+        "$sum": {
+            "field": {
+                "name": "properties.duration"
+            },
+            "data": groupQuery,
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "totalActiveDuration"
+            }
+        }
+    };
+    var countOfActiveEvents = countOnParameters(groupQuery,{},"activeCount");
+    var options = {
+        url: platformUri + '/rest/analytics/aggregate',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: {
+            spec: JSON.stringify([sumOfActiveEvents,
+                countOfActiveEvents
+            ]),
+            merge: true
+        },
+        method: 'GET'
+    };
+
+    function callback(error, response, body) {
+        if (!error && response.statusCode === 200) {
+            var result = JSON.parse(body);
+            if (_.isEmpty(result)) {
+                deferred.resolve([]);
+            } else {
+                var defaulActiveDurationValues = [
+                    {
+                        key: "totalActiveDuration",
+                        value: 0
+                    },
+                    {
+                        key: "inActiveCount",
+                        value: 0
+                    }
+                ];
+                var activeDurationByDay = generateDatesFor(defaulActiveDurationValues);
+                for (var date in result) {
+                    if (activeDurationByDay[date] !== undefined) {
+                        activeDurationByDay[date].totalActiveDuration = convertMillisToMinutes(result[date].totalActiveDuration);
+                        activeDurationByDay[date].inActiveCount = result[date].activeCount - 1;
+                    }
+
+                }
+                deferred.resolve(rollupToArray(activeDurationByDay));
+            }
+        } else {
+            deferred.reject(error);
+
+        }
+    }
+    requestModule(options, callback);
+    return deferred.promise;
+};
+
+var getAvgBuildDurationFromPlatform = function (params) {
+    var streams = params[0];
+    var streamids = _.map(streams, function (stream) {
+        return stream.streamid;
+    });
+    var deferred = q.defer();
+    var groupQuery = groupByOnParameters(streamids, "Finish");
+    var sumOfBuildDurationForBuildFinishEvents = {
+        "$sum": {
+            "field": {
+                "name": "properties.BuildDuration"
+            },
+            "data": groupQuery,
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "totalDuration"
+            }
+        }
+    };
+    var countBuildFinishEventsQuery = countOnParameters(groupQuery,{},"eventCount");
+    var options = {
+        url: platformUri + '/rest/analytics/aggregate',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: {
+            spec: JSON.stringify([sumOfBuildDurationForBuildFinishEvents,
+                countBuildFinishEventsQuery
+            ]),
+            merge: true
+        },
+        method: 'GET'
+    };
+    var convertMillisToSeconds = function (milliseconds) {
+        return Math.round(milliseconds / 1000 * 100) / 100;
+    };
+
+    function callback(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var result = JSON.parse(body);
+            if (_.isEmpty(result)) {
+                deferred.resolve([]);
+            } else {
+                var defaultBuildValues = [
+                    {
+                        key: "avgBuildDuration",
+                        value: 0
+                    }
+                ];
+                var buildDurationByDay = generateDatesFor(defaultBuildValues);
+                for (var date in result) {
+                    if (buildDurationByDay[date] !== undefined) {
+                        var buildDurationInMillis = result[date].totalDuration / result[date].eventCount;
+                        buildDurationByDay[date].avgBuildDuration = convertMillisToSeconds(buildDurationInMillis);
+                    }
+                }
+                deferred.resolve(rollupToArray(buildDurationByDay));
+            }
+        } else {
+            deferred.reject(error);
+        }
+    }
+
+    requestModule(options, callback);
+    return deferred.promise;
+};
+
 var getBuildEventsFromPlatform = function (params) {
     var streams = params[0];
     var streamids = _.map(streams, function (stream) {
@@ -563,76 +701,6 @@ var getMyCaffeineEventsFromPlatform = function (params) {
     return deferred.promise;
 };
 
-var getAvgBuildDurationFromPlatform = function (params) {
-    var streams = params[0];
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var deferred = q.defer();
-    var lastMonth = moment().subtract('months', 1);
-
-    var groupQuery = groupByOnParameters(streamids, "Finish");
-    var sumOfBuildDurationForBuildFinishEvents = {
-        "$sum": {
-            "field": {
-                "name": "properties.BuildDuration"
-            },
-            "data": groupQuery,
-            "filterSpec": {},
-            "projectionSpec": {
-                "resultField": "totalDuration"
-            }
-        }
-    };
-    var countBuildFinishEventsQuery = countOnParameters(groupQuery,{},"eventCount");
-    var options = {
-        url: platformUri + '/rest/analytics/aggregate',
-        auth: {
-            user: "",
-            password: encryptedPassword
-        },
-        qs: {
-            spec: JSON.stringify([sumOfBuildDurationForBuildFinishEvents,
-                countBuildFinishEventsQuery
-            ]),
-            merge: true
-        },
-        method: 'GET'
-    };
-    var convertMillisToSeconds = function (milliseconds) {
-        return Math.round(milliseconds / 1000 * 100) / 100;
-    };
-
-    function callback(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var result = JSON.parse(body);
-            if (_.isEmpty(result)) {
-                deferred.resolve([]);
-            } else {
-                var defaultBuildValues = [
-                    {
-                        key: "avgBuildDuration",
-                        value: 0
-                    }
-                ];
-                var buildDurationByDay = generateDatesFor(defaultBuildValues);
-                for (var date in result) {
-                    if (buildDurationByDay[date] !== undefined) {
-                        var buildDurationInMillis = result[date].totalDuration / result[date].eventCount;
-                        buildDurationByDay[date].avgBuildDuration = convertMillisToSeconds(buildDurationInMillis);
-                    }
-                }
-                deferred.resolve(rollupToArray(buildDurationByDay));
-            }
-        } else {
-            deferred.reject(error);
-        }
-    }
-
-    requestModule(options, callback);
-    return deferred.promise;
-};
-
 var generateHoursForWeek = function (defaultValues) {
     var result = {};
     var numberOfDaysToReportBuildsOn = 7;
@@ -674,13 +742,8 @@ var defaultEventValues = [
     }
 ];
 
-var getHourlyBuildCountFromPlatform = function (params) {
-    var streams = params[0];
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var deferred = q.defer();
-    var groupQuery = {
+var groupByForHourlyEvents= function(streamids, actionTag, objectTag) {
+    return {
         "$groupBy": {
             "fields": [
                 {
@@ -694,7 +757,8 @@ var getHourlyBuildCountFromPlatform = function (params) {
                         "in": streamids
                     }
                 },
-                "payload.actionTags": "Finish"
+                "payload.actionTags": actionTag,
+                "payload.objectTags" : objectTag
             },
             "projectionSpec": {
                 "payload.eventDateTime": "date",
@@ -703,6 +767,15 @@ var getHourlyBuildCountFromPlatform = function (params) {
             "orderSpec": {}
         }
     };
+};
+
+var getHourlyBuildCountFromPlatform = function (params) {
+    var streams = params[0];
+    var streamids = _.map(streams, function (stream) {
+        return stream.streamid;
+    });
+    var deferred = q.defer();
+    var groupQuery = groupByForHourlyEvents(streamids, "Finish");
     var hourlyBuildCount = countOnParameters(groupQuery,{},"buildCount");
     var options = {
         url: platformUri + '/rest/analytics/aggregate',
@@ -748,29 +821,7 @@ var getHourlyWtfCount = function (params) {
         return stream.streamid;
     });
     var deferred = q.defer();
-    var groupQuery = {
-        "$groupBy": {
-            "fields": [
-                {
-                    "name": "payload.eventDateTime",
-                    "format": "e HH"
-                }
-            ],
-            "filterSpec": {
-                "payload.streamid": {
-                    "$operator": {
-                        "in": streamids
-                    }
-                },
-                "payload.actionTags": "wtf"
-            },
-            "projectionSpec": {
-                "payload.eventDateTime": "date",
-                "payload.properties": "properties"
-            },
-            "orderSpec": {}
-        }
-    };
+    var groupQuery = groupByForHourlyEvents(streamids, "wtf");
     var hourlyWtfCount = countOnParameters(groupQuery,{},"wtfCount");
     var options = {
         url: platformUri + '/rest/analytics/aggregate',
@@ -815,30 +866,7 @@ var getHourlyHydrationCount = function (params) {
         return stream.streamid;
     });
     var deferred = q.defer();
-    var groupQuery = {
-        "$groupBy": {
-            "fields": [
-                {
-                    "name": "payload.eventDateTime",
-                    "format": "e HH"
-                }
-            ],
-            "filterSpec": {
-                "payload.streamid": {
-                    "$operator": {
-                        "in": streamids
-                    }
-                },
-                "payload.actionTags": "drink",
-                "payload.objectTags": "Water"
-            },
-            "projectionSpec": {
-                "payload.eventDateTime": "date",
-                "payload.properties": "properties"
-            },
-            "orderSpec": {}
-        }
-    };
+    var groupQuery = groupByForHourlyEvents(streamids, "drink", "Water");
     var hourlyHydrationCount = countOnParameters(groupQuery,{},"hydrationCount");
     var options = {
         url: platformUri + '/rest/analytics/aggregate',
@@ -883,30 +911,7 @@ var getHourlyCaffeineCount = function (params) {
         return stream.streamid;
     });
     var deferred = q.defer();
-    var groupQuery = {
-        "$groupBy": {
-            "fields": [
-                {
-                    "name": "payload.eventDateTime",
-                    "format": "e HH"
-                }
-            ],
-            "filterSpec": {
-                "payload.streamid": {
-                    "$operator": {
-                        "in": streamids
-                    }
-                },
-                "payload.actionTags": "drink",
-                "payload.objectTags": "Coffee"
-            },
-            "projectionSpec": {
-                "payload.eventDateTime": "date",
-                "payload.properties": "properties"
-            },
-            "orderSpec": {}
-        }
-    };
+    var groupQuery = groupByForHourlyEvents(streamids, "drink","Coffee");
     var hourlyCaffeineCount = countOnParameters(groupQuery,{},"caffeineCount");
     var options = {
         url: platformUri + '/rest/analytics/aggregate',
@@ -940,6 +945,47 @@ var getHourlyCaffeineCount = function (params) {
         }
     }
     requestModule(options, callback);
+    return deferred.promise;
+};
+
+var getHourlyGithubPushEventsCount = function (streamid) {
+    var deferred = q.defer();
+    var groupQuery = groupByForHourlyEvents([streamid], "Push");
+    var hourlyGithubPushEventCount = countOnParameters(groupQuery,{},"githubPushEventCount");
+    var options = {
+        url: platformUri + '/rest/analytics/aggregate',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: {
+            spec: JSON.stringify(hourlyGithubPushEventCount)
+        },
+        method: 'GET'
+    };
+
+    function callback(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var result = JSON.parse(body);
+            result = result[0];
+            if (_.isEmpty(result)) {
+                deferred.resolve([]);
+            }
+            var hourlyGithubPushEvents = generateHoursForWeek(defaultEventValues);
+            for (var date in result) {
+                if (hourlyGithubPushEvents[date] !== undefined) {
+                    hourlyGithubPushEvents[date].hourlyEventCount = result[date].githubPushEventCount;
+                }
+            }
+            deferred.resolve(rollupToArray(hourlyGithubPushEvents));
+
+        } else {
+            deferred.reject(error);
+        }
+    }
+
+    requestModule(options, callback);
+
     return deferred.promise;
 };
 
@@ -1218,68 +1264,7 @@ var getIdeActivityDurationForCompare = function (params) {
     return deferred.promise;
 };
 
-var getHourlyGithubPushEventsCount = function (streamid) {
-    var deferred = q.defer();
-    var groupQuery = {
-        "$groupBy": {
-            "fields": [
-                {
-                    "name": "payload.eventDateTime",
-                    "format": "e HH"
-                }
-            ],
-            "filterSpec": {
-                "payload.streamid": {
-                    "$operator": {
-                        "in": [streamid]
-                    }
-                },
-                "payload.actionTags": "Push"
-            },
-            "projectionSpec": {
-                "payload.eventDateTime": "date",
-                "payload.properties": "properties"
-            },
-            "orderSpec": {}
-        }
-    };
-    var hourlyGithubPushEventCount = countOnParameters(groupQuery,{},"githubPushEventCount");
-    var options = {
-        url: platformUri + '/rest/analytics/aggregate',
-        auth: {
-            user: "",
-            password: encryptedPassword
-        },
-        qs: {
-            spec: JSON.stringify(hourlyGithubPushEventCount)
-        },
-        method: 'GET'
-    };
 
-    function callback(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var result = JSON.parse(body);
-            result = result[0];
-            if (_.isEmpty(result)) {
-                deferred.resolve([]);
-            }
-            var hourlyGithubPushEvents = generateHoursForWeek(defaultEventValues);
-            for (var date in result) {
-                if (hourlyGithubPushEvents[date] !== undefined) {
-                    hourlyGithubPushEvents[date].hourlyEventCount = result[date].githubPushEventCount;
-                }
-            }
-            deferred.resolve(rollupToArray(hourlyGithubPushEvents));
-
-        } else {
-            deferred.reject(error);
-        }
-    }
-
-    requestModule(options, callback);
-
-    return deferred.promise;
-};
 var getDailyGithubPushEventsCount = function (streamid) {
     var deferred = q.defer();
     var groupQuery = {
@@ -1346,75 +1331,6 @@ var getDailyGithubPushEventsCount = function (streamid) {
 
     requestModule(options, callback);
 
-    return deferred.promise;
-};
-var getMyActiveDuration = function (params) {
-    var streams = params[0];
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var deferred = q.defer();
-    var groupQuery = groupByOnParameters(streamids, "Develop");
-    var sumOfActiveEvents = {
-        "$sum": {
-            "field": {
-                "name": "properties.duration"
-            },
-            "data": groupQuery,
-            "filterSpec": {},
-            "projectionSpec": {
-                "resultField": "totalActiveDuration"
-            }
-        }
-    };
-    var countOfActiveEvents = countOnParameters(groupQuery,{},"activeCount");
-    var options = {
-        url: platformUri + '/rest/analytics/aggregate',
-        auth: {
-            user: "",
-            password: encryptedPassword
-        },
-        qs: {
-            spec: JSON.stringify([sumOfActiveEvents,
-                countOfActiveEvents
-            ]),
-            merge: true
-        },
-        method: 'GET'
-    };
-
-    function callback(error, response, body) {
-        if (!error && response.statusCode === 200) {
-            var result = JSON.parse(body);
-            if (_.isEmpty(result)) {
-                deferred.resolve([]);
-            } else {
-                var defaulActiveDurationValues = [
-                    {
-                        key: "totalActiveDuration",
-                        value: 0
-                    },
-                    {
-                        key: "inActiveCount",
-                        value: 0
-                    }
-                ];
-                var activeDurationByDay = generateDatesFor(defaulActiveDurationValues);
-                for (var date in result) {
-                    if (activeDurationByDay[date] !== undefined) {
-                        activeDurationByDay[date].totalActiveDuration = convertMillisToMinutes(result[date].totalActiveDuration);
-                        activeDurationByDay[date].inActiveCount = result[date].activeCount - 1;
-                    }
-
-                }
-                deferred.resolve(rollupToArray(activeDurationByDay));
-            }
-        } else {
-            deferred.reject(error);
-
-        }
-    }
-    requestModule(options, callback);
     return deferred.promise;
 };
 

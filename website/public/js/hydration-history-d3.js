@@ -119,6 +119,5 @@ window.qd.plotHydrationHistory = function () {
             .attr("dy", ".71em")
             .style("text-anchor", "end")
             .text("Hydration Count");
-
     }, 1000);
 };
