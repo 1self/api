@@ -43,7 +43,7 @@ window.qd.plotBuildDurationHistory = function() {
             .append('g')
             .attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
         var tipText = function (d) {
-            return "<strong>" + d.avgBuildDuration + (d.avgBuildDuration === 1 ? " glass" : " glasses") +
+            return "<strong>" + d.avgBuildDuration + (d.avgBuildDuration === 1 ? " min" : " mins") +
                 "</strong> <span style='color:lightgrey'> on " + moment(d.date).format("ddd MMM DD") + "</span>";
         };
         var tooltipDivForMobile = d3.select("body").append("div")

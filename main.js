@@ -161,7 +161,6 @@ var getStreamIdForUsername = function (params) {
     return deferred.promise;
 };
 
-
 var getGithubStreamIdForUsername = function (params) {
     var deferred = q.defer();
     var query = null;
@@ -1264,7 +1263,6 @@ var getIdeActivityDurationForCompare = function (params) {
     return deferred.promise;
 };
 
-
 var getDailyGithubPushEventsCount = function (streamid) {
     var deferred = q.defer();
     var groupQuery = {
@@ -1485,7 +1483,6 @@ app.post('/stream', function (req, res) {
         }
     });
 });
-
 
 app.get('/stream/:id', function (req, res) {
     var readToken = req.headers.authorization;
@@ -1780,7 +1777,6 @@ app.options('*', function (request, response) {
     response.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,accept,x-requested-with,x-withio-delay');
     response.send();
 });
-
 
 // Handle 404
 app.use(function (req, res) {
