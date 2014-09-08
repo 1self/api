@@ -6,7 +6,7 @@ window.qd.plotActiveEvents = function() {
             top: 20,
             right: 30,
             bottom: 30,
-            left: 30
+            left: 37
         };
         var width = $('#active-event-history').width();
         var height = width / 1.61;
