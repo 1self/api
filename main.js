@@ -37,8 +37,8 @@ app.use(session({
         client: redisClient
     }),
     secret: sessionSecret,
-    resave: true,
-    saveUninitialized: true,
+    resave: false, // don't save session if unmodified
+    saveUninitialized: false, // don't create session until something stored
     cookie: {
         maxAge: 2 * 365 * 24 * 60 * 60 * 1000, // 2 years
         secure: false // change to true when using https
