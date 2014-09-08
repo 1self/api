@@ -2,22 +2,12 @@ var requestModule = require('request');
 var express = require("express");
 var moment = require("moment");
 var url = require('url');
-
 var swig = require('swig');
 var path = require('path');
 var _ = require("underscore");
-
 var opbeat = require('opbeat');
-var opbeatOptions = {
-    organization_id: process.env.OPBEAT_ORGANIZATION_ID,
-    app_id: process.env.OPBEAT_APP_ID,
-    secret_token: process.env.OPBEAT_SECRET_TOKEN
-};
-var client = opbeat.createClient(opbeatOptions);
-
 var session = require("express-session");
 var q = require('q');
-
 var mongoDbConnection = require('./lib/connection.js');
 var util = require('./util');
 var PasswordEncrypt = require('./lib/PasswordEncrypt');
@@ -27,24 +17,17 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 
+var opbeatOptions = {
+    organization_id: process.env.OPBEAT_ORGANIZATION_ID,
+    app_id: process.env.OPBEAT_APP_ID,
+    secret_token: process.env.OPBEAT_SECRET_TOKEN
+};
+var client = opbeat.createClient(opbeatOptions);
 
 var app = express();
+
 app.use(logger());
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
-app.use(bodyParser.json());
 app.use(cookieParser());
-
-app.engine('html', swig.renderFile);
-app.use(express.static(path.join(__dirname, 'website/public')));
-
-app.set('view engine', 'html');
-app.set('view cache', false);
-app.set('views', __dirname + '/website/views');
-swig.setDefaults({
-    cache: false
-});
 var sessionSecret = process.env.SESSION_SECRET;
 var redisURL = url.parse(process.env.REDISCLOUD_URL);
 var redisClient = redis.createClient(redisURL.port, redisURL.hostname, {no_ready_check: true});
@@ -61,6 +44,20 @@ app.use(session({
         secure: false // change to true when using https
     }
 }));
+
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+app.use(bodyParser.json());
+
+app.engine('html', swig.renderFile);
+app.use(express.static(path.join(__dirname, 'website/public')));
+app.set('views', __dirname + '/website/views');
+app.set('view engine', 'html');
+/* app.set('view cache', false);
+swig.setDefaults({
+    cache: false
+});*/
 
 // Constants
 var aDay = 24 * 60 * 60 * 1000;
