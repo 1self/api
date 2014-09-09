@@ -464,56 +464,6 @@ var transformPlatformDataToQDEvents = function (result) {
     });
 };
 
-var generateQueryForActivityEvents = function (params) {
-    var streams = params[0];
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var groupQuery = groupByOnParameters(streamids, "Develop");
-    var sumOfActiveEvents = {
-        "$sum": {
-            "field": {
-                "name": "properties.duration"
-            },
-            "data": groupQuery,
-            "filterSpec": {},
-            "projectionSpec": {
-                "resultField": "totalActiveDuration"
-            }
-        }
-    };
-    return {
-        spec: JSON.stringify(sumOfActiveEvents)
-    };
-};
-
-var generateQueryForBuildDuration = function (params) {
-    var streams = params[0];
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var groupQuery = groupByOnParameters(streamids, "Finish");
-    var sumOfBuildDurationForBuildFinishEvents = {
-        "$sum": {
-            "field": {
-                "name": "properties.BuildDuration"
-            },
-            "data": groupQuery,
-            "filterSpec": {},
-            "projectionSpec": {
-                "resultField": "totalDuration"
-            }
-        }
-    };
-    var countBuildFinishEventsQuery = countOnParameters(groupQuery, {}, "eventCount");
-    return {
-        spec: JSON.stringify([sumOfBuildDurationForBuildFinishEvents,
-            countBuildFinishEventsQuery
-        ]),
-        merge: true
-    };
-};
-
 var getBuildEventsFromPlatform = function (params) {
     var streams = params[0];
     var streamids = _.map(streams, function (stream) {
@@ -568,6 +518,56 @@ var getBuildEventsFromPlatform = function (params) {
     requestModule(options, callback);
 
     return deferred.promise;
+};
+
+var generateQueryForActivityEvents = function (params) {
+    var streams = params[0];
+    var streamids = _.map(streams, function (stream) {
+        return stream.streamid;
+    });
+    var groupQuery = groupByOnParameters(streamids, "Develop");
+    var sumOfActiveEvents = {
+        "$sum": {
+            "field": {
+                "name": "properties.duration"
+            },
+            "data": groupQuery,
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "totalActiveDuration"
+            }
+        }
+    };
+    return {
+        spec: JSON.stringify(sumOfActiveEvents)
+    };
+};
+
+var generateQueryForBuildDuration = function (params) {
+    var streams = params[0];
+    var streamids = _.map(streams, function (stream) {
+        return stream.streamid;
+    });
+    var groupQuery = groupByOnParameters(streamids, "Finish");
+    var sumOfBuildDurationForBuildFinishEvents = {
+        "$sum": {
+            "field": {
+                "name": "properties.BuildDuration"
+            },
+            "data": groupQuery,
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "totalDuration"
+            }
+        }
+    };
+    var countBuildFinishEventsQuery = countOnParameters(groupQuery, {}, "eventCount");
+    return {
+        spec: JSON.stringify([sumOfBuildDurationForBuildFinishEvents,
+            countBuildFinishEventsQuery
+        ]),
+        merge: true
+    };
 };
 
 var generateQueryForWtfEvents = function (params) {
