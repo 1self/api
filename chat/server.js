@@ -22,28 +22,27 @@ app.post("/data", function(req, res) {
   res.send("Data Received.");
 });
 
+var handleRealTimeData = function(data) {
+  console.log("sending real time data to platform : ");
+  console.log("broadcasting real time data to browser now..");
+  io.in("chinmay").emit('realTimeData', {
+    message: "real time data"
+  });
+};
+
+eventEmitter.on('realTimeData', handleRealTimeData);
+
 io.on('connection', function(socket) {
   console.log("Somebody hit the server");
-
-  var handleRealTimeData = function(data) {
-    console.log("sending real time data to platform : ");
-    console.log("broadcasting real time data to browser now..");
-    socket.emit('realTimeData', {
-      message: "real time data"
-    });
-  };
 
   socket.on('clientConnected', function(data) {
     console.log("new client logged in." + data.username);
     socket.join(data.username);
-    socket.emit('snapshot', {
+    io.in("chinmay").emit('snapshot', {
       message: "snapshot data"
     });
     console.log("Sending snapshot data ");
-    eventEmitter.on('realTimeData', handleRealTimeData);
   });
-
-
 
   socket.on('disconnect', function() {
     console.log("client logged out.")
