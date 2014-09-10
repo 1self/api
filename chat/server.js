@@ -19,11 +19,11 @@ var dataCounter = 0;
 app.post("/data", function(req, res) {
   console.log("got real time data from mobile.")
   eventEmitter.emit('realTimeData', ++dataCounter);
+  console.log("sending real time data to platform : ");
   res.send("Data Received.");
 });
 
 var handleRealTimeData = function(data) {
-  console.log("sending real time data to platform : ");
   console.log("broadcasting real time data to browser now..");
   io.in("chinmay").emit('realTimeData', {
     message: "real time data"

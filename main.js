@@ -16,6 +16,8 @@ var RedisStore = require('connect-redis')(session);
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
+var events = require('events');
+var eventEmitter = new events.EventEmitter();
 
 var opbeatOptions = {
     organization_id: process.env.OPBEAT_ORGANIZATION_ID,
@@ -1769,6 +1771,14 @@ app.get('/quantifieddev/extensions/message', function (req, res) {
         text: "To get involved, receive updates or interact with the quantifieddev community, please go to quantifieddev.org."
     };
     res.send(JSON.stringify(result));
+});
+
+app.post('/stream/:id/event/realtime', function(req, res){
+  console.log("got real time data.");
+  var noiseEvent = req.body;
+  eventEmitter.emit('realTimeData', noiseEvent);
+  console.log("sending real time data to platform : ");
+  postEvent(req, res);
 });
 
 app.options('*', function (request, response) {
