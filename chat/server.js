@@ -32,18 +32,18 @@ io.on('connection', function(socket) {
       message: "real time data"
     });
   };
-  
-  eventEmitter.on('realTimeData', handleRealTimeData);
 
   socket.on('clientConnected', function(data) {
     console.log("new client logged in." + data.username);
     socket.join(data.username);
+    socket.emit('snapshot', {
+      message: "snapshot data"
+    });
+    console.log("Sending snapshot data ");
+    eventEmitter.on('realTimeData', handleRealTimeData);
   });
 
-  socket.emit('snapshot', {
-    message: "snapshot data"
-  });
-  console.log("Sending snapshot data ");
+
 
   socket.on('disconnect', function() {
     console.log("client logged out.")
