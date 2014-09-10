@@ -1,5 +1,7 @@
 // Setup basic express server
 var express = require('express');
+var events = require('events');
+var eventEmitter = new events.EventEmitter();
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
@@ -12,30 +14,36 @@ server.listen(port, function() {
 // Routing
 app.use(express.static(__dirname + '/public'));
 
+var dataCounter = 0;
+
+app.post("/data", function(req, res) {
+  console.log("got real time data from mobile.")
+  eventEmitter.emit('realTimeData', ++dataCounter);
+  res.send("Data Received.");
+});
+
 io.on('connection', function(socket) {
   console.log("Somebody hit the server");
+
+  var handleRealTimeData = function(data) {
+    console.log("sending real time data to platform : ");
+    console.log("broadcasting real time data to browser now..");
+    socket.emit('realTimeData', {
+      message: "real time data"
+    });
+  };
+  
+  eventEmitter.on('realTimeData', handleRealTimeData);
 
   socket.on('clientConnected', function(data) {
     console.log("new client logged in." + data.username);
     socket.join(data.username);
-    /*clients[data.username] = socket.id
-    console.log("clients : ", JSON.stringify(clients));*/
   });
 
   socket.emit('snapshot', {
     message: "snapshot data"
   });
   console.log("Sending snapshot data ");
-
-
-  setInterval(function() {
-    console.log("broadcasting data every 5 sec..");
-    socket.emit('new message', {
-      message: "data"
-    });
-  }, 5000);
-
-  
 
   socket.on('disconnect', function() {
     console.log("client logged out.")

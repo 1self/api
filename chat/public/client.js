@@ -11,18 +11,18 @@ $(function() {
 
     allMessages.append(messageDiv);
   }
-/*  
+
   socket.emit('clientConnected', {
     "username": "chinmay"
-  });*/
+  });
 
   socket.on('snapshot', function(data) {
     console.info("snapshot " , data.message);
     $("h1").text(data.message);
   });
 
-   // Whenever the server emits 'new message', update the chat body
-  socket.on('new message', function(data) {
+   // Whenever the server emits 'realTimeData', update the chat body
+  socket.on('realTimeData', function(data) {
     addChatMessage(data);
   });
 
