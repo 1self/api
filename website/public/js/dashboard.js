@@ -65,24 +65,20 @@ var handleConnectToGithub = function() {
         console.log(error);
     })
 }
-$(document).ready(function(){
- 
-$(document).on('mouseup keyup', function(e){ 
+$(document).ready(function() {
+    $(document).on('mouseup keyup', function(e) {
         var e = e || event,
-         code = (e.keyCode ? e.keyCode : e.which),
-       target = e.srcElement || e.target;
+            code = (e.keyCode ? e.keyCode : e.which),
+            target = e.srcElement || e.target;
 
-        if (code==27) {
+        if (code == 27) {
             $('.helpContainer').hide();
         }
-
     });
-
 });
 var show = function(element) {
-
-   var showElement = "#" + element +" "+".helpContainer";
-   $(showElement).slideToggle();
+    var showElement = "#" + element + " " + ".helpContainer";
+    $(showElement).slideToggle();
 }
 
 
@@ -90,3 +86,21 @@ $("#connect_to_github_btn").click(handleConnectToGithub);
 $("#github-push-events-sync").click(handleConnectToGithub);
 $("#connect_to_github_link_popup_btn").click(handleConnectToGithub);
 
+$(document).ready(function() {
+    var socket = io();
+
+    socket.emit('clientConnected', {
+        "username": "chinmay"
+    });
+
+    socket.on('snapshot', function(data) {
+        console.info("snapshot ", JSON.stringify(data));
+        // $("h1").text(data.message);
+    });
+
+    // Whenever the server emits 'realTimeData', update the chat body
+    socket.on('realTimeData', function(data) {
+        console.info("real time data ", JSON.stringify(data));
+    });
+
+});

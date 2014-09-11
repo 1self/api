@@ -85,8 +85,12 @@ app.all('*', function (req, res, next) {
     }
 });
 
+var port = process.env.PORT || 5000;
+var server = app.listen(port, function () {
+    console.log("Listening on " + port);
+});
 
-require('./quantifieddevRoutes')(app);
+require('./quantifieddevRoutes')(app, eventEmitter, server);
 
 // Please keep it below inclusion of quantifieddevRoutes file.
 app.use(opbeat.middleware.express(client));
@@ -1778,7 +1782,8 @@ app.post('/stream/:id/event/realtime', function(req, res){
   var noiseEvent = req.body;
   eventEmitter.emit('realTimeData', noiseEvent);
   console.log("sending real time data to platform : ");
-  postEvent(req, res);
+  //postEvent(req, res);
+  res.send("ok");
 });
 
 app.options('*', function (request, response) {
@@ -1800,7 +1805,4 @@ app.use(function (error, req, res, next) {
     res.render('500.html');
 });
 
-var port = process.env.PORT || 5000;
-app.listen(port, function () {
-    console.log("Listening on " + port);
-});
+
