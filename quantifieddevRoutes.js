@@ -1,3 +1,4 @@
+var requestModule = require('request');
 var sessionManager = require("./sessionManagement");
 var _ = require("underscore");
 var Q = require('q');
@@ -31,14 +32,35 @@ module.exports = function(app, eventEmitter, server) {
     io.on('connection', function(socket) {
         console.log("Somebody hit the server");
 
-        socket.on('clientConnected', function(data) {
-            console.log("new client logged in." + data.username);
-            socket.join(data.username); //use eun
-            //find events for eun
-            io.in("chinmay").emit('snapshot', {
-                message: "snapshot data"
-            });
-            console.log("Sending snapshot data ");
+        var getNoiseEventsForUser = function(encodedUsername) {
+            var deferred = Q.defer();
+            var requestDetails = {
+                url: CONTEXT_URI + "/quantifieddev/mynoise",
+                headers: {
+                   "Authorization": encodedUsername
+                },
+                method: 'GET'
+            };
+            var sendNoiseData = function(error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    var noiseEvents = JSON.parse(body);
+                    deferred.resolve(noiseEvents);
+                } else {
+                    deferred.reject(error);
+                }
+            };
+            requestModule(requestDetails, sendNoiseData);
+            return deferred.promise;
+        };
+
+        socket.on('clientConnected', function(encodedUsername) {
+            console.log("new client logged in." + encodedUsername);
+            socket.join(encodedUsername);
+            getNoiseEventsForUser(encodedUsername)
+                .then(function(noiseEvents) {
+                    io.in(encodedUsername).emit('snapshot', noiseEvents);
+                    console.log("Sending snapshot data ");
+                });
         });
 
         socket.on('disconnect', function() {

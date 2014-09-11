@@ -89,9 +89,7 @@ $("#connect_to_github_link_popup_btn").click(handleConnectToGithub);
 $(document).ready(function() {
     var socket = io();
 
-    socket.emit('clientConnected', {
-        "username": "chinmay"
-    });
+    socket.emit('clientConnected', $.cookie("_eun"));
 
     socket.on('snapshot', function(data) {
         console.info("snapshot ", JSON.stringify(data));
