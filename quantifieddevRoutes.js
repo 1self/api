@@ -20,12 +20,10 @@ module.exports = function(app, eventEmitter, server) {
 
     var io = require('socket.io').listen(server);
 
-    var handleRealTimeData = function(data) {
+    var handleRealTimeData = function(noiseEvent) {
         console.log("broadcasting real time data to browser now..");
         //find eun for streamid
-        io.in("chinmay").emit('realTimeData', {
-            message: "real time data"
-        });
+        io.in("chinmay").emit('realTimeData', noiseEvent);
     };
 
     eventEmitter.on('realTimeData', handleRealTimeData);
