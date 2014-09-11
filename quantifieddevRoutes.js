@@ -21,10 +21,36 @@ module.exports = function(app, eventEmitter, server) {
 
     var io = require('socket.io').listen(server);
 
+    var getEncodedUsernameFromStreamid = function(streamid) {
+        var deferred = Q.defer();
+        var stream = {
+            "streams": {
+                "$elemMatch": {
+                    "streamid": streamid
+                }
+            }
+        };
+        mongoDbConnection(function(qdDb) {
+            qdDb.collection("users", function(err, collection) {
+                collection.findOne(stream, function(err, user) {
+                    if (err) {
+                        console.log("DB error", err);
+                        deferred.reject(err);
+                    } else {
+                        deferred.resolve(user.encodedUsername);
+                    }
+                });
+            });
+        });
+        return deferred.promise;
+    };
+
     var handleRealTimeData = function(noiseEvent) {
         console.log("broadcasting real time data to browser now..");
-        //find eun for streamid
-        io.in("chinmay").emit('realTimeData', noiseEvent);
+        getEncodedUsernameFromStreamid(noiseEvent.streamid)
+            .then(function(encodedUsername) {
+                io.in(encodedUsername).emit('realTimeData', noiseEvent);
+            });
     };
 
     eventEmitter.on('realTimeData', handleRealTimeData);
@@ -37,7 +63,7 @@ module.exports = function(app, eventEmitter, server) {
             var requestDetails = {
                 url: CONTEXT_URI + "/quantifieddev/mynoise",
                 headers: {
-                   "Authorization": encodedUsername
+                    "Authorization": encodedUsername
                 },
                 method: 'GET'
             };
