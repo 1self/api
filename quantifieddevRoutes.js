@@ -21,7 +21,7 @@ module.exports = function(app, eventEmitter, server) {
 
     var io = require('socket.io').listen(server);
 
-    var getEncodedUsernameFromStreamid = function(streamid) {
+    var getEncodedUsernameForStreamid = function(streamid) {
         var deferred = Q.defer();
         var stream = {
             "streams": {
@@ -45,11 +45,21 @@ module.exports = function(app, eventEmitter, server) {
         return deferred.promise;
     };
 
+    var transformNoiseEventToPlatformFormat = function(noiseEvent) {
+        return {
+            payload: {
+                dateTime: noiseEvent.dateTime,
+                properties: noiseEvent.properties
+            }
+        }
+    };
+
     var handleRealTimeData = function(noiseEvent) {
         console.log("broadcasting real time data to browser now..");
-        getEncodedUsernameFromStreamid(noiseEvent.streamid)
+        getEncodedUsernameForStreamid(noiseEvent.streamid)
             .then(function(encodedUsername) {
-                io.in(encodedUsername).emit('realTimeData', noiseEvent);
+                var noiseEventInPlatformFormat = transformNoiseEventToPlatformFormat(noiseEvent);
+                io.in(encodedUsername).emit('realTimeData', noiseEventInPlatformFormat);
             });
     };
 

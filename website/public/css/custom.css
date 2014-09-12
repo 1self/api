@@ -134,3 +134,9 @@ div.tooltip {
     fill: none;
     stroke: #000;
 }
+
+.realTimeLine {
+    fill: none;
+    stroke: orange;
+    stroke-width: 1px;
+}

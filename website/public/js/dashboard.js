@@ -86,19 +86,3 @@ $("#connect_to_github_btn").click(handleConnectToGithub);
 $("#github-push-events-sync").click(handleConnectToGithub);
 $("#connect_to_github_link_popup_btn").click(handleConnectToGithub);
 
-$(document).ready(function() {
-    var socket = io();
-
-    socket.emit('clientConnected', $.cookie("_eun"));
-
-    socket.on('snapshot', function(data) {
-        console.info("snapshot ", JSON.stringify(data));
-        // $("h1").text(data.message);
-    });
-
-    // Whenever the server emits 'realTimeData', update the chat body
-    socket.on('realTimeData', function(data) {
-        console.info("real time data ", JSON.stringify(data));
-    });
-
-});
