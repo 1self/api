@@ -37,6 +37,9 @@ module.exports = function(app, eventEmitter, server) {
                         console.log("DB error", err);
                         deferred.reject(err);
                     } else {
+                        if(user == null){
+                            return;
+                        }
                         deferred.resolve(user.encodedUsername);
                     }
                 });
