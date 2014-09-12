@@ -1,3 +1,4 @@
+var socket = io();
 var plotNoiseGraph = function(noiseData) {
 	$('#noise-history').empty();
 	var margin = {
@@ -9,25 +10,12 @@ var plotNoiseGraph = function(noiseData) {
 	var w = $('#noise-history').width();
 	var h = w / 1.61;
 
-	var dataset = [{
-		key: 0,
-		value: 5
-	}, {
-		key: 1,
-		value: 10
-	}, {
-		key: 2,
-		value: 13
-	}, {
-		key: 3,
-		value: 19
-	}, {
-		key: 4,
-		value: 21
-	}, {
-		key: 5,
-		value: 25
-	}];
+	var dataset = _.map(noiseData, function(d, i) {
+		return {
+			key: i,
+			value: d.payload.properties.dbspl
+		}
+	});
 
 	var xScale = d3.scale.ordinal()
 		.domain(d3.range(dataset.length))
@@ -61,7 +49,8 @@ var plotNoiseGraph = function(noiseData) {
 		.attr("y", function(d) {
 			return h - yScale(d.value);
 		})
-		.attr("width", xScale.rangeBand())
+	// .attr("width", xScale.rangeBand())
+	.attr("width", 10)
 		.attr("height", function(d) {
 			return yScale(d.value);
 		})
@@ -69,15 +58,14 @@ var plotNoiseGraph = function(noiseData) {
 			return "rgb(0, 0, " + (d.value * 10) + ")";
 		});
 
-	//On click, update with new data			
-	setInterval(function() {
-		var maxValue = 25;
-		var newNumber = Math.floor(Math.random() * maxValue);
+	socket.on('realTimeData', function(data) {
+		console.info("real time data ", JSON.stringify(data));
+
 		var lastKeyValue = dataset[dataset.length - 1].key;
 		console.log(lastKeyValue);
 		dataset.push({
 			key: lastKeyValue + 1,
-			value: newNumber
+			value: data.payload.properties.dbspl
 		});
 		dataset.shift(); //Remove one value from dataset
 
@@ -98,7 +86,7 @@ var plotNoiseGraph = function(noiseData) {
 			.attr("y", function(d) {
 				return h - yScale(d.value);
 			})
-			.attr("width", xScale.rangeBand())
+			.attr("width", 10)
 			.attr("height", function(d) {
 				return yScale(d.value);
 			})
@@ -115,7 +103,7 @@ var plotNoiseGraph = function(noiseData) {
 			.attr("y", function(d) {
 				return h - yScale(d.value);
 			})
-			.attr("width", xScale.rangeBand())
+			.attr("width", 10)
 			.attr("height", function(d) {
 				return yScale(d.value);
 			});
@@ -126,7 +114,7 @@ var plotNoiseGraph = function(noiseData) {
 			.duration(500)
 			.attr("x", -xScale.rangeBand())
 			.remove();
-	}, 1000);
+	});
 };
 
 $(document).ready(function() {
@@ -139,13 +127,5 @@ $(document).ready(function() {
 		plotNoiseGraph(noiseData);
 	});
 
-	socket.on('realTimeData', function(data) {
-		console.info("real time data ", JSON.stringify(data));
-		if (noiseData.length === 120) {
-			noiseData.shift();
-		}
-		noiseData.push(data);
-		console.info("noise Data after receiving real time data : " + JSON.stringify(noiseData));
-		// plotNoiseGraph(data);
-	});
+
 });
