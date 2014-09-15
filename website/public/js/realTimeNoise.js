@@ -16,7 +16,7 @@ var plotNoiseGraph = function(noiseData) {
 	var width = $('#noise-history').width();
 	var height = width / 1.61;
 
-	var fiveMinAgo = new Date(moment().subtract("minutes", 20));
+	var fiveMinAgo = new Date(moment().subtract("minutes", 5));
 	var now = new Date();
 	var x = d3.time.scale()
 		.domain([fiveMinAgo, now])
@@ -32,7 +32,7 @@ var plotNoiseGraph = function(noiseData) {
 	var xAxis = d3.svg.axis()
 		.scale(x)
 		.orient('bottom')
-		.ticks(d3.time.minutes, 5)
+		.ticks(d3.time.minutes, 1)
 		.tickFormat(d3.time.format('%M'))
 		.tickPadding(8);
 
@@ -141,7 +141,22 @@ var plotNoiseGraph = function(noiseData) {
 		y.domain([0, d3.max(dataset, function(d) {
 			return d.value;
 		})]);
+	});
 
+	var transition = function() {
+		fiveMinAgo = new Date(moment().subtract("minutes", 5));
+		now = new Date();
+		x = d3.time.scale()
+			.domain([fiveMinAgo, now])
+			.rangeRound([0, width - margin.left - margin.right]);
+
+		var xaxis = svg.selectAll("g.x.axis")
+			.attr('transform', 'translate(0, ' + (height - margin.top - margin.bottom) + ')')
+			.call(xAxis);
+
+		xaxis.transition()
+			.duration(500)
+			.ease("linear");
 		//Select…
 		var bars = svg.selectAll("rect")
 			.data(dataset);
@@ -207,7 +222,10 @@ var plotNoiseGraph = function(noiseData) {
 			.duration(500)
 			.attr("x", -10)
 			.remove();
-	});
+	};
+	setInterval(function() {
+		transition();
+	}, 1000);
 };
 
 $(document).ready(function() {
