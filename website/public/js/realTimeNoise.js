@@ -1,12 +1,22 @@
 var socket = io();
 var plotNoiseGraph = function(noiseData) {
-	$('#noise-history').empty();
-	var dataset = _.map(noiseData, function(d, i) {
+	var dataset = _.map(noiseData, function(d) {
 		return {
 			date: d.payload.dateTime,
 			value: d.payload.properties.dbspl
-		}
+		};
 	});
+
+	var datasetWithinRange = function(noiseData) {
+		return _.filter(noiseData, function(d) {
+			var fiveMinsAgo = moment().subtract(5, "minutes");
+			var eventDateTime = moment(d.date)
+			return eventDateTime.isAfter(fiveMinsAgo);
+		});
+	};
+	dataset = datasetWithinRange(dataset);
+	$('#noise-history').empty();
+
 	var margin = {
 		top: 20,
 		right: 30,
@@ -15,7 +25,7 @@ var plotNoiseGraph = function(noiseData) {
 	};
 	var width = $('#noise-history').width();
 	var height = width / 1.61;
-
+	var barWidth = 5;
 	var fiveMinAgo = new Date(moment().subtract("minutes", 5));
 	var now = new Date();
 	var x = d3.time.scale()
@@ -33,7 +43,7 @@ var plotNoiseGraph = function(noiseData) {
 		.scale(x)
 		.orient('bottom')
 		.ticks(d3.time.minutes, 1)
-		.tickFormat(d3.time.format('%M'))
+		.tickFormat(d3.time.format('%H:%M'))
 		.tickPadding(8);
 
 	var yAxis = d3.svg.axis()
@@ -74,7 +84,7 @@ var plotNoiseGraph = function(noiseData) {
 		.attr('y', function(d) {
 			return height - margin.top - margin.bottom - (height - margin.top - margin.bottom - y(d.value))
 		})
-		.attr('width', 10)
+		.attr('width', barWidth)
 		.attr('height', function(d) {
 			return height - margin.top - margin.bottom - y(d.value)
 		})
@@ -113,7 +123,7 @@ var plotNoiseGraph = function(noiseData) {
 		.attr("y", -10)
 		.attr("dy", ".71em")
 		.style("text-anchor", "end")
-		.text("Date");
+		.text("Time");
 
 	svg.append('g')
 		.attr('class', 'y axis')
@@ -124,14 +134,12 @@ var plotNoiseGraph = function(noiseData) {
 		.attr("y", 6)
 		.attr("dy", ".71em")
 		.style("text-anchor", "end")
-		.text("Activity Duration(mins)");
+		.text("Noise Intensity");
 
 	socket.on('realTimeData', function(data) {
 		console.info("real time data ", JSON.stringify(data));
-		var lastKeyValue = dataset[dataset.length - 1].key;
 		dataset.push({
 			date: data.payload.dateTime,
-			//date: ++lastKeyValue,
 			value: data.payload.properties.dbspl
 		});
 		if (dataset.length > 120) {
@@ -144,19 +152,38 @@ var plotNoiseGraph = function(noiseData) {
 	});
 
 	var transition = function() {
+
+		dataset = datasetWithinRange(dataset);
 		fiveMinAgo = new Date(moment().subtract("minutes", 5));
 		now = new Date();
 		x = d3.time.scale()
 			.domain([fiveMinAgo, now])
 			.rangeRound([0, width - margin.left - margin.right]);
+		maxDataValue = d3.max(dataset, function(d) {
+			return d.value;
+		});
+		y = d3.scale.linear()
+			.domain([0, maxDataValue])
+			.range([height - margin.top - margin.bottom, 0]).nice();
+		yTicks = d3.min([5, maxDataValue]);
 		xAxis = d3.svg.axis()
 			.scale(x)
 			.orient('bottom')
 			.ticks(d3.time.minutes, 1)
-			.tickFormat(d3.time.format('%M'))
+			.tickFormat(d3.time.format('%H:%M'))
 			.tickPadding(8);
+
+		yAxis = d3.svg.axis()
+			.scale(y)
+			.orient('left')
+			.ticks(yTicks)
+			.tickPadding(8);
+
 		var xaxis = svg.selectAll("g.x.axis")
 			.call(xAxis);
+
+		var yaxis = svg.selectAll("g.y.axis")
+			.call(yAxis);
 
 		xaxis.transition()
 			.duration(500)
@@ -177,7 +204,7 @@ var plotNoiseGraph = function(noiseData) {
 			.attr('y', function(d) {
 				return height - margin.top - margin.bottom - (height - margin.top - margin.bottom - y(d.value))
 			})
-			.attr('width', 10)
+			.attr('width', barWidth)
 			.attr('height', function(d) {
 				return height - margin.top - margin.bottom - y(d.value)
 			})
@@ -215,7 +242,7 @@ var plotNoiseGraph = function(noiseData) {
 			.attr("y", function(d) {
 				return height - margin.top - margin.bottom - (height - margin.top - margin.bottom - y(d.value));
 			})
-			.attr("width", 10)
+			.attr("width", barWidth)
 			.attr("height", function(d) {
 				return height - margin.top - margin.bottom - y(d.value);
 			});
