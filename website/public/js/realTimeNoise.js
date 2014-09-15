@@ -149,9 +149,13 @@ var plotNoiseGraph = function(noiseData) {
 		x = d3.time.scale()
 			.domain([fiveMinAgo, now])
 			.rangeRound([0, width - margin.left - margin.right]);
-
+		xAxis = d3.svg.axis()
+			.scale(x)
+			.orient('bottom')
+			.ticks(d3.time.minutes, 1)
+			.tickFormat(d3.time.format('%M'))
+			.tickPadding(8);
 		var xaxis = svg.selectAll("g.x.axis")
-			.attr('transform', 'translate(0, ' + (height - margin.top - margin.bottom) + ')')
 			.call(xAxis);
 
 		xaxis.transition()
