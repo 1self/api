@@ -350,7 +350,34 @@ var rollupToArray = function (rollup) {
     return result;
 };
 
-var groupByOnParameters = function (streamids, actionTag, objectTag) {
+var getQueryForStreamIdActionTagAndObjectTag = function (streamids, actionTag, objectTag) {
+    return {
+        "$groupBy": {
+            "fields": [
+                {
+                    "name": "payload.eventDateTime",
+                    "format": "MM/dd/yyyy"
+                }
+            ],
+            "filterSpec": {
+                "payload.streamid": {
+                    "$operator": {
+                        "in": streamids
+                    }
+                },
+                "payload.actionTags": actionTag,
+                "payload.objectTags": objectTag
+            },
+            "projectionSpec": {
+                "payload.eventDateTime": "date",
+                "payload.properties": "properties"
+            },
+            "orderSpec": {}
+        }
+    };
+};
+
+var groupByOnParametersForLastMonth = function (streamids, actionTag, objectTag) {
     var lastMonth = moment().subtract('months', 1);
     return {
         "$groupBy": {
@@ -414,7 +441,7 @@ var getMyActiveDuration = function (params) {
         return stream.streamid;
     });
     var deferred = q.defer();
-    var groupQuery = groupByOnParameters(streamids, "Develop");
+    var groupQuery = groupByOnParametersForLastMonth(streamids, "Develop");
     var sumOfActiveEvents = {
         "$sum": {
             "field": {
@@ -484,7 +511,7 @@ var getAvgBuildDurationFromPlatform = function (params) {
         return stream.streamid;
     });
     var deferred = q.defer();
-    var groupQuery = groupByOnParameters(streamids, "Finish");
+    var groupQuery = groupByOnParametersForLastMonth(streamids, "Finish");
     var sumOfBuildDurationForBuildFinishEvents = {
         "$sum": {
             "field": {
@@ -552,7 +579,7 @@ var getBuildEventsFromPlatform = function (params) {
         return stream.streamid;
     });
     var deferred = q.defer();
-    var groupQuery = groupByOnParameters(streamids, "Finish");
+    var groupQuery = groupByOnParametersForLastMonth(streamids, "Finish");
     var countSuccessQuery = countOnParameters(groupQuery, {"properties.Result": "Success"}, "passed");
     var countFailureQuery = countOnParameters(groupQuery, {"properties.Result": "Failure"}, "failed");
     var options = {
@@ -609,7 +636,7 @@ var getMyWTFsFromPlatform = function (params) {
         return stream.streamid;
     });
     var deferred = q.defer();
-    var groupQuery = groupByOnParameters(streamids, "wtf");
+    var groupQuery = groupByOnParametersForLastMonth(streamids, "wtf");
     var countWTFQuery = countOnParameters(groupQuery,{},"wtfCount");
     var options = {
         url: platformUri + '/rest/analytics/aggregate',
@@ -642,7 +669,7 @@ var getMyHydrationEventsFromPlatform = function (params) {
         return stream.streamid;
     });
     var deferred = q.defer();
-    var groupQuery = groupByOnParameters(streamids, "drink", "Water");
+    var groupQuery = groupByOnParametersForLastMonth(streamids, "drink", "Water");
     var countHydrationQuery = countOnParameters(groupQuery, {}, "hydrationCount");
     var requestDetails = {
         url: platformUri + '/rest/analytics/aggregate',
@@ -674,7 +701,7 @@ var getMyCaffeineEventsFromPlatform = function (params) {
         return stream.streamid;
     });
     var deferred = q.defer();
-    var groupQuery = groupByOnParameters(streamids, "drink", "Coffee");
+    var groupQuery = groupByOnParametersForLastMonth(streamids, "drink", "Coffee");
     var countCaffeineQuery = countOnParameters(groupQuery, {},"caffeineCount");
     var requestDetails = {
         url: platformUri + '/rest/analytics/aggregate',
@@ -1344,7 +1371,7 @@ var correlateGithubPushesAndIDEActivity = function (params) {
             "field": {
                 "name": "properties.duration"
             },
-            "data": groupByOnParameters(streamids, events[0]),
+            "data": getQueryForStreamIdActionTagAndObjectTag(streamids, events[0]),
             "filterSpec": {},
             "projectionSpec": {
                 "resultField": "activeTimeInMillis"
@@ -1353,7 +1380,7 @@ var correlateGithubPushesAndIDEActivity = function (params) {
     };
     var countQuery = {
         "$count": {
-            "data": groupByOnParameters(streamids, events[1]),
+            "data": getQueryForStreamIdActionTagAndObjectTag(streamids, events[1]),
             "filterSpec": {},
             "projectionSpec": {
                 "resultField": "githubPushEventCount"
