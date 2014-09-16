@@ -497,7 +497,7 @@ var getBuildEventsFromPlatform = function (params) {
         return stream.streamid;
     });
     var deferred = q.defer();
-    var groupQuery = groupByOnParameters(streamids, "Finish");
+    var groupQuery = groupByOnParametersForLastMonth(streamids, "Finish");
     var countSuccessQuery = countOnParameters(groupQuery, {"properties.Result": "Success"}, "passed");
     var countFailureQuery = countOnParameters(groupQuery, {"properties.Result": "Failure"}, "failed");
     var options = {
@@ -553,7 +553,7 @@ var getBuildEventsFromPlatform = function (params) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
-    var groupQuery = groupByOnParameters(streamids, "Develop");
+    var groupQuery = groupByOnParametersForLastMonth(streamids, "Develop");
     var sumOfActiveEvents = {
         "$sum": {
             "field": {
@@ -685,7 +685,7 @@ var generateQueryForBuildDuration = function (params) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
-    var groupQuery = groupByOnParameters(streamids, "Finish");
+    var groupQuery = groupByOnParametersForLastMonth(streamids, "Finish");
     var sumOfBuildDurationForBuildFinishEvents = {
         "$sum": {
             "field": {
@@ -712,7 +712,7 @@ var generateQueryForWtfEvents = function (params) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
-    var groupQuery = groupByOnParameters(streamids, "wtf");
+    var groupQuery = groupByOnParametersForLastMonth(streamids, "wtf");
     var countWTFQuery = countOnParameters(groupQuery, {}, "wtfCount");
     return {
         spec: JSON.stringify(countWTFQuery)
@@ -724,7 +724,7 @@ var generateQueryForHydrationEvents = function (params) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
-    var groupQuery = groupByOnParameters(streamids, "drink", "Water");
+    var groupQuery = groupByOnParametersForLastMonth(streamids, "drink", "Water");
     var countHydrationQuery = countOnParameters(groupQuery, {}, "hydrationCount");
     return {
         spec: JSON.stringify(countHydrationQuery)
@@ -736,7 +736,7 @@ var generateQueryForCaffeineEvents = function (params) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
-    var groupQuery = groupByOnParameters(streamids, "drink", "Coffee");
+    var groupQuery = groupByOnParametersForLastMonth(streamids, "drink", "Coffee");
     var countCaffeineQuery = countOnParameters(groupQuery, {}, "caffeineCount");
     return {
         spec: JSON.stringify(countCaffeineQuery)
