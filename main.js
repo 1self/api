@@ -457,7 +457,7 @@ var transformPlatformDataToQDEvents = function (result) {
         var event = {
             "date": date
         };
-        for(var i=0;i<keys.length;i++){
+        for (var i = 0; i < keys.length; i++) {
             event[keys[i]] = valueJson[keys[i]];
         }
         return event;
@@ -515,12 +515,13 @@ var getBuildEventsFromPlatform = function (params) {
             deferred.reject(error);
         }
     }
+
     requestModule(options, callback);
 
     return deferred.promise;
 };
 
-var generateQueryForActivityEvents = function (params) {
+/*var generateQueryForActivityEvents = function (params) {
     var streams = params[0];
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
@@ -541,6 +542,117 @@ var generateQueryForActivityEvents = function (params) {
     return {
         spec: JSON.stringify(sumOfActiveEvents)
     };
+};*/
+
+var getMyActiveDuration = function (params) {
+    var streams = params[0];
+    var streamids = _.map(streams, function (stream) {
+        return stream.streamid;
+    });
+    var deferred = q.defer();
+    var lastMonth = moment().subtract('months', 1);
+
+    var groupQuery = {
+        "$groupBy": {
+            "fields": [
+                {
+                    "name": "payload.eventDateTime",
+                    "format": "MM/dd/yyyy"
+                }
+            ],
+            "filterSpec": {
+                "payload.streamid": {
+                    "$operator": {
+                        "in": streamids
+                    }
+                },
+                "payload.eventDateTime": {
+                    "$operator": {
+                        ">": {
+                            "$date": moment(lastMonth).format()
+                        }
+                    }
+                },
+                "payload.actionTags": "Develop"
+            },
+            "projectionSpec": {
+                "payload.eventDateTime": "date",
+                "payload.properties": "properties"
+            },
+            "orderSpec": {}
+        }
+    };
+    var sumOfActiveEvents = {
+        "$sum": {
+            "field": {
+                "name": "properties.duration"
+            },
+            "data": groupQuery,
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "totalActiveDuration"
+            }
+        }
+    };
+    var countOfActiveEvents = {
+        "$count": {
+            "data": groupQuery,
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "activeCount"
+            }
+        }
+    };
+    var options = {
+        url: platformUri + '/rest/analytics/aggregate',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: {
+            spec: JSON.stringify([sumOfActiveEvents,
+                countOfActiveEvents
+            ]),
+            merge: true
+        },
+        method: 'GET'
+    };
+
+    function callback(error, response, body) {
+        if (!error && response.statusCode === 200) {
+            var result = JSON.parse(body);
+            if (_.isEmpty(result)) {
+                deferred.resolve([]);
+            } else {
+                var defaulActiveDurationValues = [
+                    {
+                        key: "totalActiveDuration",
+                        value: 0
+                    },
+                    {
+                        key: "inActiveCount",
+                        value: 0
+                    }
+                ];
+                var activeDurationByDay = generateDatesFor(defaulActiveDurationValues);
+                for (var date in result) {
+                    if (activeDurationByDay[date] !== undefined) {
+                        activeDurationByDay[date].totalActiveDuration = convertMillisToMinutes(result[date].totalActiveDuration);
+                        activeDurationByDay[date].inActiveCount = result[date].activeCount - 1;
+                    }
+
+                }
+                deferred.resolve(rollupToArray(activeDurationByDay));
+            }
+        } else {
+            deferred.reject(error);
+
+        }
+    }
+
+    requestModule(options, callback);
+
+    return deferred.promise;
 };
 
 var generateQueryForBuildDuration = function (params) {
@@ -1522,8 +1634,8 @@ app.get('/quantifieddev/buildDuration', function (req, res) {
         .then(generateQueryForBuildDuration)
         .then(getAggregatedEventsFromPlatform)
         .then(function (response) {
-            for(var date in response){
-                response[date].avgBuildDuration = convertMillisToSecs(response[date].totalDuration/response[date].eventCount);
+            for (var date in response) {
+                response[date].avgBuildDuration = convertMillisToSecs(response[date].totalDuration / response[date].eventCount);
             }
             var result = transformPlatformDataToQDEvents(response);
             res.send(result);
@@ -1584,15 +1696,9 @@ app.get('/quantifieddev/myActiveEvents', function (req, res) {
     var encodedUsername = req.headers.authorization;
     validEncodedUsername(encodedUsername, req.query.forUsername, [])
         .then(getStreamIdForUsername)
-        .then(generateQueryForActivityEvents)
-        .then(getAggregatedEventsFromPlatform)
+        .then(getMyActiveDuration)
         .then(function (response) {
-            response = response[0];
-            for(var date in response){
-                response[date].totalActiveDuration = convertMillisToMinutes(response[date].totalActiveDuration);
-            }
-            var result = transformPlatformDataToQDEvents(response);
-            res.send(result);
+            res.send(response);
         }).catch(function (error) {
             res.status(404).send("stream not found");
         });
@@ -1618,6 +1724,7 @@ app.get('/quantifieddev/compare/ideActivity', function (req, res) {
         .then(getTotalUsersOfQd)
         .then(getIdeActivityDurationForCompare)
         .then(function (response) {
+            console.log("Ide Activity For compare: ", JSON.stringify(response));
             res.send(response);
         }).catch(function (error) {
             res.status(404).send("stream not found");
