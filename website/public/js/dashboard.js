@@ -29,7 +29,8 @@ $(window).load(function() {
     //does not work in document.ready()
     if ($("#showOverlayFlag").attr("showOverlay") == 'true') {
         $("#connect_to_github_btn").show();
-        $("#noDataSourceMessage").modal("show")
+        $("#noDataSourceMessage").modal("show");
+        window.qd.plotGraphs(dashboardGraphs);
     } else {
         window.qd.plotGraphs(dashboardGraphs);
     }
