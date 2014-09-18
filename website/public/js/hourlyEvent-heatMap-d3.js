@@ -18,16 +18,14 @@ window.qd.plotHourlyEventMap = function (divId, hourlyEvents) {
             colors = ["#cae5fc", "#8FC7FF", "#5CADFF", "#2994FF", "#0054A8"], // alternatively colorbrewer.YlGnBu[9]
             days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
             times = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"];
-        var segmentData = [];
-        for (var i = 0; i < 24 * 7; i++) {
-            segmentData[i] = 0;
-        }
+        var segmentData = new Uint8Array(24 * 7);
 
         _.map(hourlyEvents, function (e) {
             var date = e.date.split(" ");
             var day = date[0];
             var hour = date[1];
             var index = (24 * (day-1)) + (hour - 1);
+            index = index === -1 ? 167 : index;
             segmentData[index] = e.hourlyEventCount;
         });
 
