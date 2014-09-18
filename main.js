@@ -549,27 +549,27 @@ var getBuildEventsFromPlatform = function (params) {
 };
 
 /*var generateQueryForActivityEvents = function (params) {
-    var streams = params[0];
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var groupQuery = groupByOnParametersForLastMonth(streamids, "Develop");
-    var sumOfActiveEvents = {
-        "$sum": {
-            "field": {
-                "name": "properties.duration"
-            },
-            "data": groupQuery,
-            "filterSpec": {},
-            "projectionSpec": {
-                "resultField": "totalActiveDuration"
-            }
-        }
-    };
-    return {
-        spec: JSON.stringify(sumOfActiveEvents)
-    };
-};*/
+ var streams = params[0];
+ var streamids = _.map(streams, function (stream) {
+ return stream.streamid;
+ });
+ var groupQuery = groupByOnParametersForLastMonth(streamids, "Develop");
+ var sumOfActiveEvents = {
+ "$sum": {
+ "field": {
+ "name": "properties.duration"
+ },
+ "data": groupQuery,
+ "filterSpec": {},
+ "projectionSpec": {
+ "resultField": "totalActiveDuration"
+ }
+ }
+ };
+ return {
+ spec: JSON.stringify(sumOfActiveEvents)
+ };
+ };*/
 
 var getMyActiveDuration = function (params) {
     var streams = params[0];
@@ -777,232 +777,60 @@ var generateWeek = function (defaultValues) {
     return result;
 };
 
-var defaultEventValues = [
-    {
-        key: "hourlyEventCount",
-        value: 0
-    }
-];
-
-var getHourlyBuildCountFromPlatform = function (params) {
+var generateHourlyBuildCountQuery = function (params) {
     var streams = params[0];
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
-    var deferred = q.defer();
     var groupQuery = groupByForHourlyEvents(streamids, "Finish");
-    var hourlyBuildCount = countOnParameters(groupQuery, {}, "buildCount");
-    var options = {
-        url: platformUri + '/rest/analytics/aggregate',
-        auth: {
-            user: "",
-            password: encryptedPassword
-        },
-        qs: {
-            spec: JSON.stringify(hourlyBuildCount)
-        },
-        method: 'GET'
+    var hourlyBuildCount = countOnParameters(groupQuery, {}, "hourlyEventCount");
+    return {
+        spec: JSON.stringify(hourlyBuildCount)
     };
-
-    function callback(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var result = JSON.parse(body);
-            result = result[0];
-            if (_.isEmpty(result)) {
-                deferred.resolve([]);
-            } else {
-                var hourlyBuilds = generateHoursForWeek(defaultEventValues);
-                for (var date in result) {
-                    if (hourlyBuilds[date] !== undefined) {
-                        hourlyBuilds[date].hourlyEventCount = result[date].buildCount;
-                    }
-                }
-                deferred.resolve(rollupToArray(hourlyBuilds));
-            }
-        } else {
-            deferred.reject(error);
-
-        }
-    }
-
-    requestModule(options, callback);
-
-    return deferred.promise;
 };
 
-var getHourlyWtfCount = function (params) {
+var generateHourlyWtfCountQuery = function (params) {
     var streams = params[0];
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
-    var deferred = q.defer();
     var groupQuery = groupByForHourlyEvents(streamids, "wtf");
-    var hourlyWtfCount = countOnParameters(groupQuery, {}, "wtfCount");
-    var options = {
-        url: platformUri + '/rest/analytics/aggregate',
-        auth: {
-            user: "",
-            password: encryptedPassword
-        },
-        qs: {
-            spec: JSON.stringify(hourlyWtfCount)
-        },
-        method: 'GET'
+    var hourlyWtfCount = countOnParameters(groupQuery, {}, "hourlyEventCount");
+    return {
+        spec: JSON.stringify(hourlyWtfCount)
     };
-
-    function callback(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var result = JSON.parse(body);
-            result = result[0];
-            if (_.isEmpty(result)) {
-                deferred.resolve([]);
-            } else {
-                var hourlyWtfs = generateHoursForWeek(defaultEventValues);
-                for (var date in result) {
-                    if (hourlyWtfs[date] !== undefined) {
-                        hourlyWtfs[date].hourlyEventCount = result[date].wtfCount;
-                    }
-                }
-                deferred.resolve(rollupToArray(hourlyWtfs));
-            }
-        } else {
-            deferred.reject(error);
-        }
-    }
-
-    requestModule(options, callback);
-
-    return deferred.promise;
 };
 
-var getHourlyHydrationCount = function (params) {
+var generateHourlyHydrationCountQuery = function (params) {
     var streams = params[0];
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
-    var deferred = q.defer();
     var groupQuery = groupByForHourlyEvents(streamids, "drink", "Water");
-    var hourlyHydrationCount = countOnParameters(groupQuery, {}, "hydrationCount");
-    var options = {
-        url: platformUri + '/rest/analytics/aggregate',
-        auth: {
-            user: "",
-            password: encryptedPassword
-        },
-        qs: {
-            spec: JSON.stringify(hourlyHydrationCount)
-        },
-        method: 'GET'
+    var hourlyHydrationCount = countOnParameters(groupQuery, {}, "hourlyEventCount");
+    return {
+        spec: JSON.stringify(hourlyHydrationCount)
     };
-
-    function callback(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var result = JSON.parse(body);
-            result = result[0];
-            if (_.isEmpty(result)) {
-                deferred.resolve([]);
-            } else {
-                var hourlyHydration = generateHoursForWeek(defaultEventValues);
-                for (var date in result) {
-                    if (hourlyHydration[date] !== undefined) {
-                        hourlyHydration[date].hourlyEventCount = result[date].hydrationCount;
-                    }
-                }
-                deferred.resolve(rollupToArray(hourlyHydration));
-            }
-        } else {
-            deferred.reject(error);
-        }
-    }
-
-    requestModule(options, callback);
-
-    return deferred.promise;
 };
 
-var getHourlyCaffeineCount = function (params) {
+var generateHourlyCaffeineCountQuery = function (params) {
     var streams = params[0];
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
-    var deferred = q.defer();
     var groupQuery = groupByForHourlyEvents(streamids, "drink", "Coffee");
-    var hourlyCaffeineCount = countOnParameters(groupQuery, {}, "caffeineCount");
-    var options = {
-        url: platformUri + '/rest/analytics/aggregate',
-        auth: {
-            user: "",
-            password: encryptedPassword
-        },
-        qs: {
-            spec: JSON.stringify(hourlyCaffeineCount)
-        },
-        method: 'GET'
+    var hourlyCaffeineCount = countOnParameters(groupQuery, {}, "hourlyEventCount");
+    return {
+        spec: JSON.stringify(hourlyCaffeineCount)
     };
-
-    function callback(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var result = JSON.parse(body);
-            result = result[0];
-            if (_.isEmpty(result)) {
-                deferred.resolve([]);
-            } else {
-                var hourlyCaffeine = generateHoursForWeek(defaultEventValues);
-                for (var date in result) {
-                    if (hourlyCaffeine[date] !== undefined) {
-                        hourlyCaffeine[date].hourlyEventCount = result[date].caffeineCount;
-                    }
-                }
-                deferred.resolve(rollupToArray(hourlyCaffeine));
-            }
-        } else {
-            deferred.reject(error);
-        }
-    }
-
-    requestModule(options, callback);
-    return deferred.promise;
 };
 
-var getHourlyGithubPushEventsCount = function (streamid) {
-    var deferred = q.defer();
+var generateHourlyGithubPushEventsCountQuery = function (streamid) {
     var groupQuery = groupByForHourlyEvents([streamid], "Push");
-    var hourlyGithubPushEventCount = countOnParameters(groupQuery, {}, "githubPushEventCount");
-    var options = {
-        url: platformUri + '/rest/analytics/aggregate',
-        auth: {
-            user: "",
-            password: encryptedPassword
-        },
-        qs: {
-            spec: JSON.stringify(hourlyGithubPushEventCount)
-        },
-        method: 'GET'
+    var hourlyGithubPushEventCount = countOnParameters(groupQuery, {}, "hourlyEventCount");
+    return {
+        spec: JSON.stringify(hourlyGithubPushEventCount)
     };
-
-    function callback(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var result = JSON.parse(body);
-            result = result[0];
-            if (_.isEmpty(result)) {
-                deferred.resolve([]);
-            }
-            var hourlyGithubPushEvents = generateHoursForWeek(defaultEventValues);
-            for (var date in result) {
-                if (hourlyGithubPushEvents[date] !== undefined) {
-                    hourlyGithubPushEvents[date].hourlyEventCount = result[date].githubPushEventCount;
-                }
-            }
-            deferred.resolve(rollupToArray(hourlyGithubPushEvents));
-
-        } else {
-            deferred.reject(error);
-        }
-    }
-
-    requestModule(options, callback);
-
-    return deferred.promise;
 };
 
 var getTotalGithubUsersOfQd = function (params) {
@@ -1391,6 +1219,7 @@ var correlateGithubPushesAndIDEActivity = function (params) {
         },
         method: 'GET'
     };
+
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
@@ -1413,6 +1242,7 @@ var correlateGithubPushesAndIDEActivity = function (params) {
             deferred.reject(error);
         }
     }
+
     requestModule(options, callback);
     return deferred.promise;
 };
@@ -1671,9 +1501,11 @@ app.get('/quantifieddev/hourlyBuildCount', function (req, res) {
     var encodedUsername = req.headers.authorization;
     validEncodedUsername(encodedUsername, req.query.forUsername, [])
         .then(getStreamIdForUsername)
-        .then(getHourlyBuildCountFromPlatform)
+        .then(generateHourlyBuildCountQuery)
+        .then(getAggregatedEventsFromPlatform)
         .then(function (response) {
-            res.send(response);
+            var result = transformPlatformDataToQDEvents(response[0]);
+            res.send(result);
         }).catch(function (error) {
             res.status(404).send("stream not found");
         });
@@ -1683,9 +1515,11 @@ app.get('/quantifieddev/hourlyWtfCount', function (req, res) {
     var encodedUsername = req.headers.authorization;
     validEncodedUsername(encodedUsername, req.query.forUsername, [])
         .then(getStreamIdForUsername)
-        .then(getHourlyWtfCount)
+        .then(generateHourlyWtfCountQuery)
+        .then(getAggregatedEventsFromPlatform)
         .then(function (response) {
-            res.send(response);
+            var result = transformPlatformDataToQDEvents(response[0]);
+            res.send(result);
         }).catch(function (error) {
             res.status(404).send("stream not found");
         });
@@ -1695,9 +1529,11 @@ app.get('/quantifieddev/hourlyHydrationCount', function (req, res) {
     var encodedUsername = req.headers.authorization;
     validEncodedUsername(encodedUsername, req.query.forUsername, [])
         .then(getStreamIdForUsername)
-        .then(getHourlyHydrationCount)
+        .then(generateHourlyHydrationCountQuery)
+        .then(getAggregatedEventsFromPlatform)
         .then(function (response) {
-            res.send(response);
+            var result = transformPlatformDataToQDEvents(response[0]);
+            res.send(result);
         }).catch(function (error) {
             res.status(404).send("stream not found");
         });
@@ -1707,9 +1543,11 @@ app.get('/quantifieddev/hourlyCaffeineCount', function (req, res) {
     var encodedUsername = req.headers.authorization;
     validEncodedUsername(encodedUsername, req.query.forUsername, [])
         .then(getStreamIdForUsername)
-        .then(getHourlyCaffeineCount)
+        .then(generateHourlyCaffeineCountQuery)
+        .then(getAggregatedEventsFromPlatform)
         .then(function (response) {
-            res.send(response);
+            var result = transformPlatformDataToQDEvents(response[0]);
+            res.send(result);
         }).catch(function (error) {
             res.status(404).send("stream not found");
         });
@@ -1758,9 +1596,11 @@ app.get('/quantifieddev/hourlyGithubPushEvents', function (req, res) {
     var encodedUsername = req.headers.authorization;
     validEncodedUsername(encodedUsername, req.query.forUsername, [])
         .then(getGithubStreamIdForUsername)
-        .then(getHourlyGithubPushEventsCount)
+        .then(generateHourlyGithubPushEventsCountQuery)
+        .then(getAggregatedEventsFromPlatform)
         .then(function (response) {
-            res.send(response);
+            var result = transformPlatformDataToQDEvents(response[0]);
+            res.send(result);
         }).catch(function (error) {
             console.log("Error is", error);
             res.status(404).send("stream not found");
