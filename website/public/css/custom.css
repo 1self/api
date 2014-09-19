@@ -115,3 +115,15 @@ div.tooltip {
   border-radius: 2px;
       
 }
+
+
+@media screen and (min-width:1700px) {
+    body{
+        background: #ccc;
+
+    }
+    #sb-site{
+        width: 1600px;
+        margin: 0 auto;
+    }
+}
