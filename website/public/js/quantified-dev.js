@@ -6,7 +6,7 @@ var qd = function() {
         var difference = todaysEvents - yesterdayEvents;
         var percentChange = (difference / yesterdayEvents) * 100;
         return Math.ceil(percentChange);
-    }
+    };
     var plotBuildEvents = function(buildEvents) {
             result.buildEvents = buildEvents;
             result.plotGraphWith('buildEvents', buildEvents, "#build-history-parent");
@@ -34,10 +34,10 @@ var qd = function() {
             result.passedBuildComparison = compare(todaysBuild.passed, yesterdaysBuild.passed);
             result.failedBuildComparison = compare(todaysBuild.failed, yesterdaysBuild.failed);
         }
-    }
+    };
     result.updateBuildModel = function() {
         postAjax("mydev", plotBuildEvents)
-    }
+    };
     var charts = {
         buildEvents: function() {
             result.plotBuildHistory();
@@ -74,14 +74,14 @@ var qd = function() {
     var plotWtfEvents = function(wtfEvents) {
         result.wtfEvents = wtfEvents;
         result.plotGraphWith('wtfEvents', wtfEvents, "#wtf-history-parent")
-    }
+    };
     result.updateWTFModel = function() {
         postAjax("mywtf", plotWtfEvents)
     };
     var plotHydrationEvents = function(hydrationEvents) {
         result.hydrationEvents = hydrationEvents;
         result.plotGraphWith('hydrationEvents', hydrationEvents, "#hydration-history-parent");
-    }
+    };
     result.updateHydrationModel = function() {
         postAjax("myhydration", plotHydrationEvents)
     };
@@ -102,14 +102,14 @@ var qd = function() {
     var plotHourlyBuildEvents = function(hourlyBuildEvents) {
         result.hourlyBuildEvents = hourlyBuildEvents;
         result.plotHeatmapWith("#hourlyBuild-heat-map-parent", '#hourlyBuild-heat-map', hourlyBuildEvents);
-    }
+    };
     result.updateHourlyBuildHeatMap = function() {
         postAjax("hourlyBuildCount", plotHourlyBuildEvents)
     };
     var plotHourlyWtfEvents = function(hourlyWtfEvents) {
         result.hourlyWtfEvents = hourlyWtfEvents;
         result.plotHeatmapWith("#hourlyWtf-heat-map-parent", '#hourlyWtf-heat-map', hourlyWtfEvents);
-    }
+    };
     result.updateHourlyWtfHeatMap = function() {
         postAjax("hourlyWtfCount", plotHourlyWtfEvents)
     };
@@ -130,7 +130,7 @@ var qd = function() {
     var plotActivity = function(activeEvents) {
         result.activeEvents = activeEvents;
         result.plotGraphWith('activeEvents', activeEvents, "#active-event-history-parent");
-    }
+    };
     result.updateActiveEvents = function() {
         postAjax("myActiveEvents", plotActivity)
     };
@@ -148,7 +148,7 @@ var qd = function() {
     var plotCorrelationData = function(correlationData) {
         result.correlationData = correlationData;
         result.plotScatterPlot('#correlate-events', correlationData);
-    }
+    };
     result.updateCorrelationData = function() {
         postAjax("correlate?firstEvent=Develop&secondEvent=Push", plotCorrelationData);
     };
@@ -160,7 +160,7 @@ var qd = function() {
 
     result.registerForBuildModelUpdates = function(callback) {
         modelUpdateCallbacks.push(callback);
-    }
+    };
 
     result.tweetBuildSparkline = function() {
         if (result.buildEvents === undefined) {
@@ -320,7 +320,7 @@ var qd = function() {
         if (eventsExist(myDailyGithubPushCount[0]) || eventsExist(theirDailyGithubPushCount[0])) {
             result.plotDailyComparison('#daily-github-event-compare', myDailyGithubPushCount[0], theirDailyGithubPushCount[0]);
         }
-    }
+    };
     var compareIdeActivityEventsSuccessCallback = function(ideActivityEventForCompare) {
         result.plotComparisonAgainstAvgOfRestOfTheWorld("#compare-ide-activity", ideActivityEventForCompare);
     };
@@ -337,8 +337,7 @@ var qd = function() {
     var handlePlotComparisonGraphsSuccess = function(myBuildEvents, theirBuildEvents) {
         $("#compare-username-errors").text("");
         result.compareBuildHistories(myBuildEvents, theirBuildEvents)
-    }
-
+    };
     result.plotComparisonGraphs = function(theirUsername) {
         var myUsername = $.cookie("_eun");
         if (!(_.isEmpty(theirUsername)) && (theirUsername !== 'undefined')) {
@@ -379,6 +378,6 @@ var qd = function() {
     };
 
     return result;
-}
+};
 
 window.qd = qd();

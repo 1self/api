@@ -1,0 +1,26 @@
+{
+	"id": "c57c66c1-ad31-5337-f921-a3b438aacc0f",
+	"name": "Local",
+	"values": [{
+		"key": "url",
+		"value": "http://localhost:5000",
+		"type": "text"
+	}, {
+		"key": "streamId",
+		"value": "INSERT_YOUR_STREAM_ID_HERE",
+		"type": "text"
+	}, {
+		"key": "readToken",
+		"value": "READ_TOKEN_FOR_YOUR_STREAM_ID",
+		"type": "text"
+	}, {
+		"key": "writeToken",
+		"value": "WRITE_TOKEN_FOR_YOUR_STREAM_ID",
+		"type": "text"
+	}, {
+		"key": "eun",
+		"value": "YOUR_ENCODED_USERNAME",
+		"type": "text"
+	}],
+	"timestamp": 1408945473190
+}

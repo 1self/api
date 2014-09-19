@@ -1,6 +1,6 @@
-window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
+window.qd.plotHourlyEventMap = function (divId, hourlyEvents) {
 
-    setTimeout(function() {
+    setTimeout(function () {
         $(divId).html("");
         var baseColor = "#EEEEEE"
         var margin = {
@@ -18,14 +18,18 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
             colors = ["#cae5fc", "#8FC7FF", "#5CADFF", "#2994FF", "#0054A8"], // alternatively colorbrewer.YlGnBu[9]
             days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
             times = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"];
-        var segmentData = [];
+        var segmentData = new Uint8Array(24 * 7);
 
-        for (var hour = 0; hour < 24 * 7; hour++) {
-            var buildCountForAnHour = hourlyEvents[hour].hourlyEventCount;
-            segmentData[hour] = buildCountForAnHour;
-        };
+        _.map(hourlyEvents, function (e) {
+            var date = e.date.split(" ");
+            var day = date[0];
+            var hour = date[1];
+            var index = (24 * (day-1)) + (hour - 1);
+            index = index === -1 ? 167 : index;
+            segmentData[index] = e.hourlyEventCount;
+        });
 
-        var daywiseHourlyBuildCountsSundayToMonday = _.toArray(_.groupBy(segmentData, function(element, index) {
+        var daywiseHourlyBuildCountsSundayToMonday = _.toArray(_.groupBy(segmentData, function (element, index) {
             return Math.floor(index / 24);
         }));
 
@@ -33,17 +37,17 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 
         var hourlyBuildCountsData = window.utils.rotateArray(hourlyBuildCountsMondayToSunday.slice(), -1 * window.utils.timezoneDifferenceInHours);
 
-        var _generateHeatMap = function(data) {
+        var _generateHeatMap = function (data) {
             var legendXCood;
             var legendYCood;
 
-            var maximumEventValue = d3.max([1, d3.max(data, function(d) {
+            var maximumEventValue = d3.max([1, d3.max(data, function (d) {
                 return d.value;
             })]);
             var colorScale = d3.scale.quantile()
                 .domain([1, maximumEventValue])
                 .range(colors);
-            var createSvg = function(width, height) {
+            var createSvg = function (width, height) {
                 d3.select(divId).selectAll("svg").remove();
                 return d3.select(divId).append("svg")
                     .attr("width", width)
@@ -51,52 +55,52 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                     .append("g")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
             };
-            var createDayLabels = function(svg, constantAxis, changingAxis, changingAxisAdjustment, gridSize, transformAttribute) {
+            var createDayLabels = function (svg, constantAxis, changingAxis, changingAxisAdjustment, gridSize, transformAttribute) {
                 return svg.selectAll(".dayLabel")
                     .data(days)
                     .enter().append("text")
-                    .text(function(d) {
+                    .text(function (d) {
                         return d;
                     })
                     .attr(constantAxis, 0)
-                    .attr(changingAxis, function(d, i) {
+                    .attr(changingAxis, function (d, i) {
                         return (i * gridSize) - changingAxisAdjustment;
                     })
                     .style("text-anchor", "end")
                     .attr("transform", transformAttribute)
-                    .attr("class", function(d, i) {
+                    .attr("class", function (d, i) {
                         return ((i >= 0 && i <= 4) ? "dayLabel mono axis axis-workweek" : "dayLabel mono axis");
                     });
             };
-            var createTimeLabels = function(svg, constantAxis, changingAxis, constantAxisAdjustment, gridSize, transformAttribute) {
+            var createTimeLabels = function (svg, constantAxis, changingAxis, constantAxisAdjustment, gridSize, transformAttribute) {
                 return svg.selectAll(".timeLabel")
                     .data(times)
                     .enter().append("text")
-                    .text(function(d) {
+                    .text(function (d) {
                         return d;
                     })
                     .attr(constantAxis, constantAxisAdjustment)
-                    .attr(changingAxis, function(d, i) {
+                    .attr(changingAxis, function (d, i) {
                         return (i * gridSize);
                     })
                     .attr("font-size", "10px")
                     .style("text-anchor", "middle")
                     .attr("transform", transformAttribute)
-                    .attr("class", function(d, i) {
+                    .attr("class", function (d, i) {
                         return ((i >= 7 && i <= 16) ? "timeLabel mono axis axis-worktime" : "timeLabel mono axis");
                     });
             };
-            var createHeatMap = function(svg, timeAxis, dayAxis, timeAxisAdjustment, dayAxisAdjustment, gridDaySize, gridTimeSize) {
+            var createHeatMap = function (svg, timeAxis, dayAxis, timeAxisAdjustment, dayAxisAdjustment, gridDaySize, gridTimeSize) {
                 var div = d3.select("body").append("div")
                     .attr("class", "tooltip")
                     .style("opacity", 0);
                 return svg.selectAll(".hour")
                     .data(data)
                     .enter().append("rect")
-                    .attr(timeAxis, function(d) {
+                    .attr(timeAxis, function (d) {
                         return ((d.hour) * gridTimeSize) - timeAxisAdjustment;
                     })
-                    .attr(dayAxis, function(d) {
+                    .attr(dayAxis, function (d) {
                         return ((d.day) * gridDaySize) - dayAxisAdjustment;
                     })
                     .attr("stroke", "white")
@@ -106,7 +110,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                     .attr("width", gridDaySize)
                     .attr("height", gridTimeSize)
                     .style("fill", baseColor)
-                    .on("click", function(d) {
+                    .on("click", function (d) {
                         if ($(window).width() < 768) {
                             div.transition()
                                 .duration(200)
@@ -117,11 +121,12 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                         }
 
                     })
-                    .on("mouseover", function(d) {
+                    .on("mouseover", function (d) {
                         if ($(window).width() > 767) {
-                        tip.show(d)}
+                            tip.show(d)
+                        }
                     })
-                    .on("mouseout", function() {
+                    .on("mouseout", function () {
                         if ($(window).width() > 767) {
                             tip.hide();
                         } else {
@@ -131,9 +136,9 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                         }
                     });
             };
-            var fillDataIntoTheGraph = function() {
+            var fillDataIntoTheGraph = function () {
                 heatMap.transition().duration(1000)
-                    .style("fill", function(d) {
+                    .style("fill", function (d) {
                         if (d.value === 0) {
                             return baseColor;
                         } else {
@@ -154,7 +159,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                 var tip = d3.tip()
                     .attr('class', 'd3-tip')
                     .offset([-10, 0])
-                    .html(function(d) {
+                    .html(function (d) {
                         return "<strong>" + d.value + (d.value === 1 ? " event" : " events") + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day + 1).format('ddd') + " at " + moment().hours(d.hour + 1).format('h a') + "</span>";
                     });
                 svg.call(tip);
@@ -172,7 +177,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
                 var tip = d3.tip()
                     .attr('class', 'd3-tip')
                     .offset([-10, 0])
-                    .html(function(d) {
+                    .html(function (d) {
                         return "<strong>" + d.value + (d.value === 1 ? " event" : " events") + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day + 1).format('ddd') + " at " + moment().hours(d.hour + 1).format('h a') + "</span>";
                     });
                 svg.call(tip);
@@ -186,7 +191,7 @@ window.qd.plotHourlyEventMap = function(divId, hourlyEvents) {
 
         };
 
-        var _generateHourlyBuildEventsData = function() {
+        var _generateHourlyBuildEventsData = function () {
             var index = 0;
             var data = [];
             for (var day = 0; day < 7; day++) {

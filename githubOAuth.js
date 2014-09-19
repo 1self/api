@@ -8,36 +8,36 @@ var CONTEXT_URI = process.env.CONTEXT_URI;
 var mongoDbConnection = require('./lib/connection.js');
 
 
-module.exports = function(app) {
+module.exports = function (app) {
 
-    var setSession = function(req, user) {
+    var setSession = function (req, user) {
         req.session.username = user.username;
         req.session.encodedUsername = user.encodedUsername;
-        req.session.githubUsername = user.githubUser.username;    
-        req.session.avatarUrl = user.githubUser._json.avatar_url; 
+        req.session.githubUsername = user.githubUser.username;
+        req.session.avatarUrl = user.githubUser._json.avatar_url;
     };
 
-    var handleGithubCallback = function(req, res) {
+    var handleGithubCallback = function (req, res) {
         var githubUser = req.user.profile;
         req.session.githubAccessToken = req.user.accessToken;
 
-        var isNewUser = function(user) {
+        var isNewUser = function (user) {
             return !user;
         };
-        var isUserRegisteredWithOneself = function(user) {
+        var isUserRegisteredWithOneself = function (user) {
             return user && user.username;
         };
-        var redirect = function(user, url) {
+        var redirect = function (user, url) {
             res.redirect(CONTEXT_URI + url + "?username=" + user.username);
         };
-        var insertGithubProfileInDb = function() {
+        var insertGithubProfileInDb = function () {
             var options = {
                 url: "https://api.github.com/user/emails?access_token=" + req.user.accessToken,
                 headers: {
                     "User-Agent": "Quantified Dev Localhost"
-                },
+                }
             };
-            request(options, function(err, res, body) {
+            request(options, function (err, res, body) {
                 if (!err) {
                     var userEmails = JSON.parse(body);
                     for (var i in userEmails) {
@@ -47,8 +47,8 @@ module.exports = function(app) {
                         githubUser: githubUser,
                         registeredOn: new Date()
                     }
-                    mongoDbConnection(function(qdDb) {
-                        qdDb.collection('users').insert(githubUserRecord, function(err, insertedRecords) {
+                    mongoDbConnection(function (qdDb) {
+                        qdDb.collection('users').insert(githubUserRecord, function (err, insertedRecords) {
                             if (err) {
                                 res.status(500).send("Database error");
                             } else {
@@ -67,8 +67,8 @@ module.exports = function(app) {
         var byGitHubUsername = {
             "githubUser.username": githubUser.username
         };
-        mongoDbConnection(function(qdDb) {
-            qdDb.collection('users').findOne(byGitHubUsername, function(err, user) {
+        mongoDbConnection(function (qdDb) {
+            qdDb.collection('users').findOne(byGitHubUsername, function (err, user) {
                 if (isNewUser(user)) {
                     insertGithubProfileInDb();
                 } else if (isUserRegisteredWithOneself(user)) {
@@ -85,31 +85,31 @@ module.exports = function(app) {
                     req.session.avatarUrl = user.githubUser._json.avatar_url;
                     redirect(githubUser, "/claimUsername");
                 }
-            }) 
+            })
         });
     };
 
-    passport.serializeUser(function(user, done) {
+    passport.serializeUser(function (user, done) {
         done(null, user);
     });
 
-    passport.deserializeUser(function(obj, done) {
+    passport.deserializeUser(function (obj, done) {
         done(null, obj);
     });
 
     passport.use(new githubStrategy({
-        clientID: GITHUB_CLIENT_ID,
-        clientSecret: GITHUB_CLIENT_SECRET,
-        callbackURL: CONTEXT_URI + "/auth/github/callback"
-    },
-                                    function(accessToken, refreshToken, profile, done) {
-                                        var githubProfile = {
-                                            profile: profile,
-                                            accessToken: accessToken
-                                        };
-                                        return done(null, githubProfile);
-                                    }
-                                   ));
+            clientID: GITHUB_CLIENT_ID,
+            clientSecret: GITHUB_CLIENT_SECRET,
+            callbackURL: CONTEXT_URI + "/auth/github/callback"
+        },
+        function (accessToken, refreshToken, profile, done) {
+            var githubProfile = {
+                profile: profile,
+                accessToken: accessToken
+            };
+            return done(null, githubProfile);
+        }
+    ));
     app.use(passport.initialize());
     app.use(passport.session());
 
@@ -118,6 +118,6 @@ module.exports = function(app) {
     }));
 
     app.get('/auth/github/callback', passport.authenticate('github', {
-        failureRedirect: CONTEXT_URI +'/signup'
+        failureRedirect: CONTEXT_URI + '/signup'
     }), handleGithubCallback);
 };
