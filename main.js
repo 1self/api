@@ -743,25 +743,6 @@ var generateQueryForCaffeineEvents = function (params) {
     };
 };
 
-var generateHoursForWeek = function (defaultValues) {
-    var result = {};
-    var numberOfDaysToReportBuildsOn = 7;
-    for (var i = 1; i <= numberOfDaysToReportBuildsOn; i++) {
-        for (var j = 1; j <= 24; j++) {
-            if (j < 10) {
-                j = '0' + j;
-            }
-            var hourOfDay = i + " " + j;
-            result[hourOfDay] = {
-                day: hourOfDay
-            };
-            for (var index in defaultValues) {
-                result[hourOfDay][defaultValues[index].key] = defaultValues[index].value;
-            }
-        }
-    }
-    return result;
-};
 var generateWeek = function (defaultValues) {
     var result = {};
     var numberOfDaysToReportBuildsOn = 7;
@@ -1251,17 +1232,8 @@ app.get('/', function (request, response) {
     response.redirect('/dashboard');
 });
 
-app.post('/echo', function (request, response) {
-    console.log(request.body);
-    response.send(request.body);
-});
-
 app.get('/health', function (request, response) {
     response.send("I'm alive");
-});
-
-app.get('/demo', function (request, response) {
-    response.send("This is a demo");
 });
 
 app.get('/users_count', function (req, res) {
@@ -1272,25 +1244,6 @@ app.get('/users_count', function (req, res) {
             } else {
                 res.send({
                     count: count
-                });
-            }
-        });
-    });
-});
-
-app.get('/users/active', function (req, res) {
-    var query = {
-        "lastAccess": {
-            "$gt": new Date(moment().format("MM/DD/YYYY"))
-        }
-    };
-    mongoDbConnection(function (qdDb) {
-        qdDb.collection('sessions').distinct("username", query, function (err, activeUsers) {
-            if (err) {
-                console.log("Err", err);
-            } else {
-                res.send({
-                    count: activeUsers.length
                 });
             }
         });
