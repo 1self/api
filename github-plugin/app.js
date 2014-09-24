@@ -10,6 +10,8 @@ var mongoClient = require('mongodb').MongoClient;
 
 var GithubEvents = require("./githubEvents");
 var MongoRepository = require('./mongoRepository');
+var GithubOAuth = require("./githubOAuth");
+var QdService = require("./qdService");
 
 var app = express();
 app.use(logger());
@@ -34,11 +36,11 @@ app.engine('html', swig.renderFile);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'html');
 
-var githubOAuth = require("./githubOAuth")(app);
-
+var qdService = new QdService();
 var mongoUri = process.env.DBURI;
 var mongoRepository;
 var githubEvents;
+var githubOAuth;
 mongoClient.connect(mongoUri, function (err, databaseConnection) {
     if (err) {
         console.error("Could not connect to Mongodb with URI : " + mongoUri);
@@ -48,6 +50,7 @@ mongoClient.connect(mongoUri, function (err, databaseConnection) {
         console.log("connected to mongo : ", mongoUri);
         mongoRepository = new MongoRepository(databaseConnection);
         githubEvents = new GithubEvents(mongoRepository);
+        githubOAuth = new GithubOAuth(app, mongoRepository, qdService);
     }
 });
 
@@ -58,7 +61,7 @@ app.get("/", function (req, res) {
 app.get("/authSuccess", function (req, res) {
     var githubUsername = req.session.githubUsername;
     var accessToken = req.session.accessToken;
-    githubEvents.getGithubEvents(githubUsername, accessToken)
+    githubEvents.sendGithubEvents(githubUsername, accessToken)
         .then(function (data) {
             res.render('success', data);
         });
