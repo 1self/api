@@ -123,6 +123,9 @@ div.tooltip {
         width: 1600px;
         margin: 0 auto;
     }
+    
+}
+@media screen and (min-width: 1550px){
     .fixed-height {
         height: 540px;
     }
