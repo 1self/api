@@ -17,24 +17,30 @@ module.exports = function (app, mongoRepository, qdService) {
         req.session.githubUsername = githubUsername;
         console.log("github User is : " + JSON.stringify(githubUser));
 
+        var insertStreamInDb = function (streamDetails) {
+            console.log("StreamDetails: " + JSON.stringify(streamDetails));
+            var document = {
+                githubUsername: githubUsername,
+                streamid: streamDetails.streamid,
+                writeToken: streamDetails.writeToken
+            };
+            mongoRepository.insert(document);
+        };
+        var registerStreamForNewUser = function () {
+            return qdService.registerStream()
+                .then(insertStreamInDb);
+        };
         mongoRepository.findByGithubUsername(githubUsername)
             .then(function (user) {
-                console.log("User is: " + JSON.stringify(user));
                 if (_.isEmpty(user)) {
-                    qdService.registerStream()
-                        .then(function (streamDetails) {
-                            console.log("StreamDetails: "+JSON.stringify(streamDetails));
-                            var document = {
-                                githubUsername : githubUsername,
-                                streamid: streamDetails.streamid,
-                                writeToken: streamDetails.writeToken
-                            };
-                            mongoRepository.insert(document);
-                        });
+                    registerStreamForNewUser();
                 }
+            })
+            .then(function () {
                 res.redirect("/authSuccess");
-            }).catch(function (error) {
-
+            })
+            .catch(function (error) {
+                console.error("Error in github callback: ", error);
             });
     };
 
@@ -69,4 +75,5 @@ module.exports = function (app, mongoRepository, qdService) {
     app.get('/auth/github/callback', passport.authenticate('github', {
         failureRedirect: CONTEXT_URI + '/signup'
     }), handleGithubCallback);
-};
+}
+;

@@ -13,7 +13,7 @@ module.exports = function (mongoConnection) {
         var query = {
             githubUsername: username
         };
-        mongoConnection.collection('users').findOne(query, function (error, user) {
+        mongoConnection.collection('account').findOne(query, function (error, user) {
             if (error) {
                 deferred.reject(error);
             } else {
@@ -26,7 +26,7 @@ module.exports = function (mongoConnection) {
     this.insert = function (document) {
         var deferred = Q.defer();
 
-        mongoConnection.collection('users').insert(document, function (error, numberOfDocsInserted) {
+        mongoConnection.collection('account').insert(document, function (error, numberOfDocsInserted) {
             if (error) {
                 deferred.reject(error);
             } else {

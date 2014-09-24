@@ -1,42 +1,60 @@
 //var _ = require("underscore");
 //var github = require('octonode');
-var q = require('q');
 
+var Q = require('q');
 module.exports = function (mongoRepository) {
-    this.mongoRepository = mongoRepository;
 
-    var fetchUserDetails = function (githubUsername) {
-        var deferred = q.defer();
-        mongoRepository.findByGithubUsername(githubUsername)
-            .then(function(userRecord){
-                if(userRecord){
-                    deferred.resolve(userRecord);
-                }
-                else {
-                    registerStream()
-                        .then(function(streamDetails){
-                            mongoRepository.insert(githubUsername, streamDetails)
-                        })
-                }
-            });
+    var fetchUserDetails = function (githubUsername, accessToken) {
+        return mongoRepository.findByGithubUsername(githubUsername)
+            .then(function (user) {
+                return {user: user, accessToken: accessToken};
+            })
     };
-    var fetchGithubPushEvents = function (githubUsername) {
+    var getGithubPushEventsPerPage = function (page, user) {
+        var githubUsername = user.githubUsername;
+
+        var user_api_url = "/users/" + githubUsername;
+        var client = github.client(githubAccessToken);
+        client.get(user_api_url, {}, function (err, status, body, headers) {
+        });
+        var ghuser = client.user(githubUsername);
+
+        var deferred = Q.defer();
+        ghuser.events(page, ['PushEvent'], function (err, pushEvents) {
+            if (err) {
+                console.log("err " + err);
+                deferred.reject(err);
+            } else {
+                deferred.resolve(pushEvents);
+            }
+        });
+        return deferred.promise;
+    };
+    var fetchGithubPushEvents = function (user) {
+        var deferred = Q.defer();
+        var pages = _.range(1, 11);
+        var promiseArray = _.map(pages, function (page) {
+            return getGithubPushEventsPerPage(page, user);
+        });
+        deferred.resolve(_.flatten(Q.all(promiseArray)));
+        return deferred.promise;
     };
     var filterEventsToBeSent = function (githubUsername) {
     };
     var convertEventsToQDFormat = function (githubUsername) {
     };
+
     var sendEventsToQD = function (githubUsername) {
     };
-
     this.sendGithubEvents = function (githubUsername, accessToken) {
-        /*fetchUserDetails(githubUsername)
+
+        fetchUserDetails(githubUsername, accessToken)
             .then(fetchGithubPushEvents)
             .then(filterEventsToBeSent)
             .then(convertEventsToQDFormat)
-            .then(sendEventsToQD);*/
+            .then(sendEventsToQD);
 
-        var deferred = q.defer();
+        var deferred = Q.defer();
         console.log("Got mongo repo in github events :  " + this.mongoRepository);
         deferred.resolve({githubUsername: githubUsername, accessToken: accessToken});
         return deferred.promise;
