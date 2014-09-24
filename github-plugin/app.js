@@ -6,7 +6,10 @@ var q = require('q');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
-var sessionSecret = process.env.SESSION_SECRET;
+var mongoClient = require('mongodb').MongoClient;
+
+var GithubEvents = require("./githubEvents");
+var MongoRepository = require('./mongoRepository');
 
 var app = express();
 app.use(logger());
@@ -14,6 +17,8 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+
+var sessionSecret = process.env.SESSION_SECRET;
 app.use(session({
     secret: sessionSecret,
     cookie: {
@@ -30,7 +35,21 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'html');
 
 var githubOAuth = require("./githubOAuth")(app);
-var githubEvents = require("./githubEvents");
+
+var mongoUri = process.env.DBURI;
+var mongoRepository;
+var githubEvents;
+mongoClient.connect(mongoUri, function (err, databaseConnection) {
+    if (err) {
+        console.error("Could not connect to Mongodb with URI : " + mongoUri);
+        console.error(err);
+        process.exit(1);
+    } else {
+        console.log("connected to mongo : ", mongoUri);
+        mongoRepository = new MongoRepository(databaseConnection);
+        githubEvents = new GithubEvents(mongoRepository);
+    }
+});
 
 app.get("/", function (req, res) {
     res.render('index');

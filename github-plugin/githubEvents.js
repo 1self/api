@@ -1,10 +1,15 @@
 //var _ = require("underscore");
 //var github = require('octonode');
-var mongo
 var q = require('q');
 
-exports.getGithubEvents = function (githubUsername, accessToken) {
-    var deferred = q.defer();
-    deferred.resolve({githubUsername: githubUsername, accessToken: accessToken});
-    return deferred.promise;
+module.exports = function (mongoRepository) {
+    this.mongoRepository = mongoRepository;
+
+    this.getGithubEvents = function (githubUsername, accessToken) {
+        var deferred = q.defer();
+        console.log("Got mongo repo in github events :  " + this.mongoRepository);
+        deferred.resolve({githubUsername: githubUsername, accessToken: accessToken});
+        return deferred.promise;
+    };
+
 };
