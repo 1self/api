@@ -18,5 +18,12 @@ module.exports = function () {
             }
         });
         return deferred.promise;
-    }
+    };
+
+    this.sendBatchEvents = function (pushEvents, writeToken) {
+        var deferred = Q.defer();
+        console.log("Events to send: ", pushEvents);
+        deferred.resolve(pushEvents);
+        return deferred.promise;
+    };
 };

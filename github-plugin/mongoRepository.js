@@ -13,7 +13,7 @@ module.exports = function (mongoConnection) {
         var query = {
             githubUsername: username
         };
-        mongoConnection.collection('account').findOne(query, function (error, user) {
+        mongoConnection.collection('users').findOne(query, function (error, user) {
             if (error) {
                 deferred.reject(error);
             } else {
@@ -25,8 +25,7 @@ module.exports = function (mongoConnection) {
 
     this.insert = function (document) {
         var deferred = Q.defer();
-
-        mongoConnection.collection('account').insert(document, function (error, numberOfDocsInserted) {
+        mongoConnection.collection('users').insert(document, function (error, numberOfDocsInserted) {
             if (error) {
                 deferred.reject(error);
             } else {
@@ -34,6 +33,24 @@ module.exports = function (mongoConnection) {
             }
         });
         return deferred.promise;
-    }
+    };
+
+    this.update = function (findQuery, updateQuery) {
+        var deferred = Q.defer();
+        mongoConnection.collection('users', function (err, collection) {
+            collection.update(findQuery, {
+                $set: updateQuery
+            }, {
+                upsert: true
+            }, function (error, data) {
+                if (error) {
+                    deferred.reject(error);
+                } else {
+                    deferred.resolve(data);
+                }
+            });
+        });
+        return deferred.promise;
+    };
 
 };

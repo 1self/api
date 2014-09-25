@@ -2,11 +2,11 @@ var request = require("request");
 var passport = require('passport');
 var githubStrategy = require('passport-github').Strategy;
 var _ = require('underscore');
+var moment = require('moment');
 
 var GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 var GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 var CONTEXT_URI = process.env.CONTEXT_URI;
-
 
 module.exports = function (app, mongoRepository, qdService) {
 
@@ -22,7 +22,8 @@ module.exports = function (app, mongoRepository, qdService) {
             var document = {
                 githubUsername: githubUsername,
                 streamid: streamDetails.streamid,
-                writeToken: streamDetails.writeToken
+                writeToken: streamDetails.writeToken,
+                lastGithubSyncDate: moment.unix(0).toDate()
             };
             mongoRepository.insert(document);
         };

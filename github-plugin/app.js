@@ -49,7 +49,7 @@ mongoClient.connect(mongoUri, function (err, databaseConnection) {
     } else {
         console.log("connected to mongo : ", mongoUri);
         mongoRepository = new MongoRepository(databaseConnection);
-        githubEvents = new GithubEvents(mongoRepository);
+        githubEvents = new GithubEvents(mongoRepository, qdService);
         githubOAuth = new GithubOAuth(app, mongoRepository, qdService);
     }
 });
