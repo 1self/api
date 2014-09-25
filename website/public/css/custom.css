@@ -37,6 +37,11 @@ x.axis {
 #last-updated-since {
     margin-left: 5%;
 }
+.helpContainer .close {
+    opacity: 0.3;
+    font-size: 30px;
+    font-weight: normal;
+}
 @media screen and (min-width: 769px) {
     .popover {
         max-width: none;
@@ -123,16 +128,15 @@ div.tooltip {
         width: 1600px;
         margin: 0 auto;
     }
-    
 }
-@media screen and (min-width: 1550px){
+@media screen and (min-width: 1550px) {
     .fixed-height {
         height: 540px;
     }
 }
-.menuLink{
+.menuLink {
     opacity: 1;
 }
-.apply-left{
+.apply-left {
     opacity: 0;
 }
