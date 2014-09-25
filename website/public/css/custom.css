@@ -130,3 +130,9 @@ div.tooltip {
         height: 540px;
     }
 }
+.menuLink{
+    opacity: 1;
+}
+.apply-left{
+    opacity: 0;
+}
