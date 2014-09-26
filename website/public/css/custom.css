@@ -122,9 +122,10 @@ div.tooltip {
     stroke:#797878;
     
 }
-.dayLabel,.timeLabel,.tick,.label  {
+.dayLabel,.timeLabel,.tick,.label,.ruleForX,.rule,.legend,.axis-text,.text-color  {
    fill: #797878;
 }
+
 @media screen and (min-width: 1700px) {
     body {
         background: #ccc;

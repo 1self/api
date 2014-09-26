@@ -113,6 +113,7 @@ window.qd.plotBuildHistory = function() {
             .attr("x", function(d) {
                 return x(d) + x.rangeBand() / 2;
             })
+            .attr("class", "text-color")
             .attr("y", 6)
             .attr("text-anchor", "middle")
             .attr("dy", ".71em")
@@ -133,6 +134,7 @@ window.qd.plotBuildHistory = function() {
             .attr("x", function(d) {
                 return x(d) + x.rangeBand() / 2;
             })
+             .attr("class", "text-color")
             .attr("y", 19)
             .attr("text-anchor", "middle")
             .attr("dy", ".71em")
@@ -150,7 +152,7 @@ window.qd.plotBuildHistory = function() {
         rule.append("svg:line")
             .attr("x2", w - p[1] - p[3])
             .style("stroke", function(d) {
-                return d ? "#fff" : "#000";
+                return d ? "#fff" : "#797878";
             })
             .style("stroke-opacity", function(d) {
                 return d ? .7 : null;
@@ -192,7 +194,7 @@ window.qd.plotBuildHistory = function() {
             })
             .attr("y2", -(h - p[2] - p[0] + 10))
             .style("stroke", function(d) {
-                return d !== 0 ? "#fff" : "#000";
+                return d !== 0 ? "#fff" : "#797878";
             })
             .style("stroke-opacity", function(d) {
                 return d !== 0 ? 0 : .7;
@@ -244,7 +246,7 @@ window.qd.plotBuildHistory = function() {
                     .attr("y", 40 + 8)
                     .attr("height", 30)
                     .attr("width", 100)
-                    .style("fill", "black")
+                    .attr("class", "text-color")
                     .text(legendColours[i][0]);
             });
     }, 1000);
