@@ -62,8 +62,10 @@ app.get("/authSuccess", function (req, res) {
     var githubUsername = req.session.githubUsername;
     var accessToken = req.session.accessToken;
     githubEvents.sendGithubEvents(githubUsername, accessToken)
-        .then(function (data) {
-            res.render('success', data);
+        .then(function () {
+            res.render('success', {data: "Data Synced up!!!"});
+        }, function () {
+            res.render('success', {data: "Data already Up-to-Date!!!"});
         });
 });
 

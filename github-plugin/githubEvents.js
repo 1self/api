@@ -83,6 +83,11 @@ module.exports = function (mongoRepository, qdService) {
         return userInfo;
     };
     var sendEventsToQD = function (userInfo) {
+        var deferred = Q.defer();
+        if (_.isEmpty(userInfo.pushEvents)) {
+            deferred.reject();
+            return deferred.promise;
+        }
         return qdService.sendBatchEvents(userInfo.pushEvents, userInfo.user.writeToken)
             .then(function () {
                 return userInfo;
@@ -90,19 +95,16 @@ module.exports = function (mongoRepository, qdService) {
     };
 
     var updateLastGithubSyncDate = function (userInfo) {
-        if (userInfo.pushEvents.length !== 0) {
-            var sortedPushEvents = _.chain(userInfo.pushEvents).sortBy(function (event) {
-                return event.eventDateTime["$date"];
-            }).reverse().value();
-            var findQuery = {
-                githubUsername: userInfo.user.githubUsername
-            };
-            var updateQuery = {
-                "lastGithubSyncDate": moment(sortedPushEvents[0].eventDateTime["$date"]).toDate()
-            };
-            return mongoRepository.update(findQuery, updateQuery);
-        }
-        return 1;
+        var sortedPushEvents = _.chain(userInfo.pushEvents).sortBy(function (event) {
+            return event.eventDateTime["$date"];
+        }).reverse().value();
+        var findQuery = {
+            githubUsername: userInfo.user.githubUsername
+        };
+        var updateQuery = {
+            "lastGithubSyncDate": moment(sortedPushEvents[0].eventDateTime["$date"]).toDate()
+        };
+        return mongoRepository.update(findQuery, updateQuery);
     };
 
     this.sendGithubEvents = function (githubUsername, accessToken) {

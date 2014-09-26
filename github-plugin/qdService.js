@@ -23,6 +23,7 @@ module.exports = function () {
     this.sendBatchEvents = function (pushEvents, writeToken) {
         var deferred = Q.defer();
         console.log("Events to send: ", pushEvents);
+        //TODO: Implement bulk api in QD to accept batch events
         deferred.resolve(pushEvents);
         return deferred.promise;
     };

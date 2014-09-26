@@ -25,7 +25,7 @@ module.exports = function (app, mongoRepository, qdService) {
                 writeToken: streamDetails.writeToken,
                 lastGithubSyncDate: moment.unix(0).toDate()
             };
-            mongoRepository.insert(document);
+            return mongoRepository.insert(document);
         };
         var registerStreamForNewUser = function () {
             return qdService.registerStream()
@@ -34,7 +34,7 @@ module.exports = function (app, mongoRepository, qdService) {
         mongoRepository.findByGithubUsername(githubUsername)
             .then(function (user) {
                 if (_.isEmpty(user)) {
-                    registerStreamForNewUser();
+                    return registerStreamForNewUser();
                 }
             })
             .then(function () {
