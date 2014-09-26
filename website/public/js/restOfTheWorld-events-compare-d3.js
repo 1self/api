@@ -128,6 +128,7 @@ window.qd.plotComparisonAgainstAvgOfRestOfTheWorld = function(divId, events) {
 				return x(d) + x.rangeBand() / 2;
 			})
 			.attr("y", 6)
+			.attr("class", "text-color")
 			.attr("text-anchor", "middle")
 			.attr("dy", ".71em")
 			.text(function(d, i) {
@@ -148,6 +149,7 @@ window.qd.plotComparisonAgainstAvgOfRestOfTheWorld = function(divId, events) {
 				return x(d) + x.rangeBand() / 2;
 			})
 			.attr("y", 19)
+			.attr("class", "text-color")
 			.attr("text-anchor", "middle")
 			.attr("dy", ".71em")
 			.text(filterFormat);
@@ -197,7 +199,7 @@ window.qd.plotComparisonAgainstAvgOfRestOfTheWorld = function(divId, events) {
 			})
 			.attr("y2", -(h - p[2] - p[0] + 10))
 			.style("stroke", function(d) {
-				return d !== 0 ? "#fff" : "#000";
+				return d !== 0 ? "#fff" : "#797878";
 			})
 			.style("stroke-opacity", function(d) {
 				return d !== 0 ? 0 : .7;
@@ -262,7 +264,7 @@ window.qd.plotComparisonAgainstAvgOfRestOfTheWorld = function(divId, events) {
 					.attr("y", yOffset + 8)
 					.attr("height", 30)
 					.attr("width", 100)
-					.style("fill", "black")
+					.attr("class","text-color")
 					.text(legendConfig[i][0]);
 
 				xOffset = xOffset + 110;
