@@ -166,7 +166,7 @@ window.qd.plotComparisonAgainstAvgOfRestOfTheWorld = function(divId, events) {
 		rule.append("svg:line")
 			.attr("x2", w - p[1] - p[3])
 			.style("stroke", function(d) {
-				return d ? "#fff" : "#000";
+				return d ? "#fff" : "#797878";
 			})
 			.style("stroke-opacity", function(d) {
 				return d ? .7 : null;
