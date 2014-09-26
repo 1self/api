@@ -97,6 +97,7 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 			.attr("y", 6)
 			.attr("text-anchor", "middle")
 			.attr("dy", ".71em")
+			.attr("class", "text-color")
 			.text(function(d, i) {
 				return (i % 7) ? null : formatMonth(d);
 			});
@@ -117,6 +118,7 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 			.attr("y", 19)
 			.attr("text-anchor", "middle")
 			.attr("dy", ".71em")
+			.attr("class", "text-color")
 			.text(filterFormat);
 
 		// Add y-axis rules.
@@ -173,7 +175,7 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 			})
 			.attr("y2", -(h - p[2] - p[0] + 10))
 			.style("stroke", function(d) {
-				return d !== 0 ? "#fff" : "#000";
+				return d !== 0 ? "#fff" : "#797878";
 			})
 			.style("stroke-opacity", function(d) {
 				return d !== 0 ? 0 : .7;
@@ -241,7 +243,7 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 					.attr("y", yOffset + 8)
 					.attr("height", 30)
 					.attr("width", 100)
-					.style("fill", "black")
+					.style("fill", "#797878")
 					.text(legendConfig[i][0]);
 
 				xOffset = xOffset + 110;

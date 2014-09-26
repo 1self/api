@@ -151,7 +151,7 @@ window.qd.plotComparisonForActiveEvents = function(divId, myActiveEvents, theirA
 		rule.append("svg:line")
 			.attr("x2", w - p[1] - p[3])
 			.style("stroke", function(d) {
-				return d ? "#fff" : "#000";
+				return d ? "#fff" : "#797878";
 			})
 			.style("stroke-opacity", function(d) {
 				return d ? .7 : null;
@@ -193,7 +193,7 @@ window.qd.plotComparisonForActiveEvents = function(divId, myActiveEvents, theirA
 			})
 			.attr("y2", -(h - p[2] - p[0] + 10))
 			.style("stroke", function(d) {
-				return d !== 0 ? "#fff" : "#000";
+				return d !== 0 ? "#fff" : "#797878";
 			})
 			.style("stroke-opacity", function(d) {
 				return d !== 0 ? 0 : .7;
@@ -258,7 +258,7 @@ window.qd.plotComparisonForActiveEvents = function(divId, myActiveEvents, theirA
 					.attr("y", yOffset + 8)
 					.attr("height", 30)
 					.attr("width", 100)
-					.style("fill", "black")
+					.attr("class","text-color")
 					.text(legendConfig[i][0]);
 
 				xOffset = xOffset + 110;
