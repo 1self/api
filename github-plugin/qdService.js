@@ -20,10 +20,24 @@ module.exports = function () {
         return deferred.promise;
     };
 
-    this.sendBatchEvents = function (pushEvents, writeToken) {
+    this.sendBatchEvents = function (pushEvents, streamid, writeToken) {
         var deferred = Q.defer();
         console.log("Events to send: ", pushEvents);
-        //TODO: Implement bulk api in QD to accept batch events
+        var options = {
+            url: qdUri + '/stream/' + streamid + '/batch',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': writeToken
+            },
+            json: pushEvents
+        };
+        requestModule.post(options, function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                deferred.resolve(JSON.parse(body));
+            } else {
+                deferred.reject(error);
+            }
+        });
         deferred.resolve(pushEvents);
         return deferred.promise;
     };
