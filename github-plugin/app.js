@@ -8,12 +8,12 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var mongoClient = require('mongodb').MongoClient;
 
-var GithubEvents = require("./githubEvents");
-var MongoRepository = require('./mongoRepository');
-var GithubOAuth = require("./githubOAuth");
-var QdService = require("./qdService");
-
+var GithubEvents = require("./routes/githubEvents");
+var MongoRepository = require('./routes/mongoRepository');
+var GithubOAuth = require("./routes/githubOAuth");
+var QdService = require("./routes/qdService");
 var app = express();
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(logger());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({
