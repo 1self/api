@@ -141,6 +141,7 @@ var qd = function() {
     var plotHourlyGithubPushEvents = function(hourlyGithubPushEvents) {
         result.hourlyGithubPushEvents = hourlyGithubPushEvents;
         result.plotHeatmapWith('#hourlyGithubPush-heat-map-parent', '#hourlyGithubPush-heat-map', hourlyGithubPushEvents);
+        $('#totalEventCount').html("Total Event Count: " + window.localStorage.eventCount);
     };
     result.updateHourlyGithubPushHeatMap = function() {
         postAjax("hourlyGithubPushEvents", plotHourlyGithubPushEvents, hourlyGithubErrorCallback);

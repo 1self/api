@@ -37,7 +37,6 @@ $(window).load(function() {
 });
 
 $('#last-updated-since').html("Last Updated: " + moment(window.localStorage.lastUpdatedOn).fromNow());
-
 var handleConnectToGithub = function() {
     var button = $("#github-push-events-sync");
     $('#noDataSourceMessage').modal('hide');
@@ -84,7 +83,7 @@ var show = function(element) {
 
    var showElement = "#" + element +" "+".helpContainer";
    $(showElement).slideToggle();
-}
+};
 
 
 $("#connect_to_github_btn").click(handleConnectToGithub);
