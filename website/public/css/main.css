@@ -2860,20 +2860,19 @@ ul#mini-nav-right li.list-box, ul#mini-nav-right li.list-box a, ul#mini-nav-righ
 .github-push-events-sync {
     background: url("../img/reload.png") no-repeat;
     background-size: 17px 17px;
+}
+.github-push-events-sync ,.help-btn{
     width: 20px;
-    height: 30px;
+    height: 24px;    
     border: none;
 }
 .help-btn {
     color: #333;
     font-size: 19px;
     background: transparent;
-    border: none;
     margin-top: -1px;
     background: url("../img/help.png") no-repeat;
     background-size: 19px 19px;
-    width: 20px;
-    height: 30px;
     margin-left: 5px;
 }
 .help-btn:focus, .github-push-events-sync:focus {
@@ -2958,6 +2957,9 @@ a.twitter-share-button {
     }
     .mobile-margin-bottom-five{
        margin-bottom: 5px;   
+   }
+   .ex-sm-margin-top-five{
+        margin-bottom: 5px;   
    }
    .ex-sm-margin-top-ten {
     margin-top: 10px;

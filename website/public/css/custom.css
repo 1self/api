@@ -34,9 +34,7 @@ x.axis {
     width: 100%;
     word-break: break-word;
 }
-#last-updated-since {
-    margin-left: 5%;
-}
+
 .helpContainer .close {
     opacity: 0.3;
     font-size: 30px;
