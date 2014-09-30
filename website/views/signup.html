@@ -1,51 +1,83 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Quantified Dev {ALPHA}</title>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1">
-		<meta name="description" content="Quantified Dev Dashboard" />
-		<meta name="keywords" content="Quantified Dev Development QuantifiedSelf Quantified Self" />
-		<meta name="author" content="Quantified Dev" />
-		<link rel="shortcut icon" href="/img/quantified-dev-favicon.ico">
-		<link href="/css/bootstrap.min.css" rel="stylesheet">
-		<link href="/css/signup.css" rel="stylesheet">
-		<link href="/css/animate.css" rel="stylesheet">
-		<link href="/fonts/font-awesome.css" rel="stylesheet">
-	</head>
-	<body class="animated fadeInDown">
-		<div class="top-bar" style="background: #373737">
-			<a href="http://www.quantifieddev.org" target="_blank" class="logo">QuantifiedDev</a>
-		</div>
-		<div class="jumbotron white-background">
-			<div class="container">
-				<div class="row">
-					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-						<h2 class="header-text">Signup</h2>
-					</div>
-					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-						<h6 class="pull-right signup-details step-heading">Step 1 of 2</h6>
-					</div>
-				</div>
-				<div class="row margin-top-five">
-					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-						<a class="btn btn-lg signup-button" href="/auth/github">Signup with GitHub</a>
-					</div>
-				</div>
-				<div class="row login-link-container">
-					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-						<span class="signup-details">Already have an account?</span>
-						<a href="/auth/github">Log in</a>
-					</div>
-				</div>
-				<div class="row signup-message">
-						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							<span class="signup-details">We'll use your GitHub email address to talk to you when important things happen. We'll never share it or use it to spam you.</span>
-						</div>
-				</div>
-			</div>
-		</div>
-		<script src="js/jquery.js"></script>
-		<script src="js/jquery-ui-v1.10.3.js"></script>
-	</body>
+  <head>
+    <title>Quantified Dev Beta</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1">
+    <meta name="description" content="Quantified Dev Dashboard" />
+    <meta name="keywords" content="Quantified Dev Development QuantifiedSelf Quantified Self" />
+    <meta name="author" content="Quantified Dev" />
+    <link rel="shortcut icon" href="/img/quantified-dev-favicon.ico">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/signup.css" rel="stylesheet">
+    <link href="/css/animate.css" rel="stylesheet">
+    <link href="/fonts/font-awesome.css" rel="stylesheet">
+    <script src="js/jquery.js"></script>
+    <script src="js/jquery-ui-v1.10.3.js"></script>
+
+    <script>
+     (function(i, s, o, g, r, a, m) {
+       i['GoogleAnalyticsObject'] = r;
+       i[r] = i[r] || function() {
+         (i[r].q = i[r].q || []).push(arguments)
+       }, i[r].l = 1 * new Date();
+       a = s.createElement(o),
+       m = s.getElementsByTagName(o)[0];
+       a.async = 1;
+       a.src = g;
+       m.parentNode.insertBefore(a, m)
+     })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+     ga('create', 'UA-49828181-1', 'quantifieddev.org');
+     ga('send', 'pageview');
+    </script>
+
+  </head>
+  <body class="animated fadeInDown">
+    <div class="top-bar" style="background: #373737">
+      <a href="http://www.quantifieddev.org" target="_blank" class="logo">QuantifiedDev</a>
+    </div>
+    <div class="jumbotron white-background">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+            <h2 class="header-text">Signup</h2>
+          </div>
+          <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+            <h6 class="pull-right signup-details step-heading">Step 1 of 2</h6>
+          </div>
+        </div>
+        <div class="row margin-top-five">
+          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <a class="btn btn-lg signup-button" id="signup_with_github" href="/auth/github">Signup with GitHub</a>
+          </div>
+        </div>
+        <div class="row login-link-container">
+          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <span class="signup-details">Already have an account?</span>
+            <a id="login_with_github" href="/auth/github">Log in</a>
+          </div>
+        </div>
+        <div class="row signup-message">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+              <span class="signup-details">We'll use your GitHub email address to talk to you when important things happen. We'll never share it or use it to spam you.</span>
+            </div>
+        </div>
+      </div>
+    </div>
+
+
+    <script>
+
+     $(document).ready(function() {
+       $("#signup_with_github").click(function(){
+         ga('send', 'event', 'signup', 'signup_with_github');
+       })
+       $("#login_with_github").click(function(){
+         ga('send', 'event', 'login', 'login_with_github');
+       })
+     });
+
+    </script>
+
+  </body>
 </html>
