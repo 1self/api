@@ -74,7 +74,7 @@ module.exports = function (app, mongoRepository, qdService) {
     }));
 
     app.get('/auth/github/callback', passport.authenticate('github', {
-        failureRedirect: CONTEXT_URI + '/signup'
+        failureRedirect: CONTEXT_URI
     }), handleGithubCallback);
 }
 ;

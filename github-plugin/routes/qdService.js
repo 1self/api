@@ -22,7 +22,6 @@ module.exports = function () {
 
     this.sendBatchEvents = function (pushEvents, streamid, writeToken) {
         var deferred = Q.defer();
-        console.log("Events to send: ", pushEvents);
         var options = {
             url: qdUri + '/stream/' + streamid + '/batch',
             headers: {
@@ -33,7 +32,7 @@ module.exports = function () {
         };
         requestModule.post(options, function (error, response, body) {
             if (!error && response.statusCode == 200) {
-                deferred.resolve(JSON.parse(body));
+                deferred.resolve(body);
             } else {
                 deferred.reject(error);
             }

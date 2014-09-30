@@ -36,6 +36,20 @@ app.engine('html', swig.renderFile);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'html');
 
+var port = process.env.PORT || 5001;
+var server = app.listen(port, function () {
+    console.log("Listening on " + port);
+});
+
+var io = require('socket.io')(server);
+io.on('connection', function (socket) {
+    console.log("client connected..............");
+    socket.on('clientConnected', function (githubUsername) {
+        console.log("new client logged in." + githubUsername);
+        socket.join(githubUsername);
+    });
+});
+
 var qdService = new QdService();
 var mongoUri = process.env.DBURI;
 var mongoRepository;
@@ -63,13 +77,13 @@ app.get("/authSuccess", function (req, res) {
     var accessToken = req.session.accessToken;
     githubEvents.sendGithubEvents(githubUsername, accessToken)
         .then(function () {
-            res.render('success', {data: "Data Synced up!!!"});
-        }, function () {
-            res.render('success', {data: "Data already Up-to-Date!!!"});
+            io.in(githubUsername).emit('status',"Synced GitHub Push Events.");
+        },function(){
+            io.in(githubUsername).emit('status',"No data to sync up!");
         });
+    res.redirect("/status?githubUsername=" + githubUsername);
 });
 
-var port = process.env.PORT || 5001;
-app.listen(port, function () {
-    console.log("Listening on " + port);
+app.get("/status", function (req, res) {
+    res.render("status");
 });
