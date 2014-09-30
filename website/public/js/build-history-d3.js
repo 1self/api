@@ -5,6 +5,12 @@ window.qd.plotBuildHistory = function() {
 
         var w = $("#build-history").width() * 1;
         var h = w / 1.61;
+        if ($(window).width() >645 &&  $(window).width() < 1030) {
+                h = (w / 2.5);
+            }
+            if ($(window).width() < 345) {
+                h = (w / 1);
+            }
         var p = [h * 0.05, w * 0.1, h * 0.35, w * 0.05],
             x = d3.scale.ordinal().rangeRoundBands([0, w - p[1] - p[3]]),
             xLinear = d3.scale.linear().range([0, w - p[1] - p[3]]);

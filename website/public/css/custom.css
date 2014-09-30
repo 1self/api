@@ -48,10 +48,13 @@ x.axis {
         border: 1px solid red;
     }
 }
-@media screen and (max-width: 450px) {
-    .fixed-height {
+@media screen and (max-width: 498px) {
+     .fixed-height {
         height: auto;
     }
+}
+
+@media screen and (max-width: 450px) {
     .popover {
         max-width: 300px;
         width: 100%;
@@ -143,4 +146,14 @@ div.tooltip {
 }
 .apply-left {
     opacity: 0;
+}
+@media screen and (max-width: 1030px) {
+        .graph-container-row .col-md-6{
+            width: 100%;
+        }
+}
+@media screen and (max-width: 1030px) and (min-width:955px) {
+    .compare-graph-container-row .fixed-height{
+        height: 500px;
+    }
 }

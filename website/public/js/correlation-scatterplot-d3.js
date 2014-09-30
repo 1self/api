@@ -10,6 +10,12 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 			},
 			width = $(divId).width() - margin.left - margin.right,
 			height = (width / 1.61) - margin.top - margin.bottom;
+			if ($(window).width() >650 &&  $(window).width() < 1030) {
+				height = (width / 2.5) - margin.top - margin.bottom;
+			}
+			if ($(window).width() < 345) {
+				height = (width / 1) - margin.top - margin.bottom;
+			}
 
 		var _groupCorrelateEvents = function(events) {
 			return _.map(events, function(event) {

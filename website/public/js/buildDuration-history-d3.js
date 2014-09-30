@@ -10,6 +10,12 @@ window.qd.plotBuildDurationHistory = function() {
         };
         var width = $('#buildDuration-history').width();
         var height = width / 1.61;
+        if ($(window).width() >645 &&  $(window).width() < 1030) {
+                height = (width / 2.5);
+            }
+            if ($(window).width() < 345) {
+                height = (width / 1);
+            }
         var oneMonthAgo = new Date(moment().subtract("month", 1).format("MM/DD/YYYY"));
         var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
         var x = d3.time.scale()
@@ -103,6 +109,7 @@ window.qd.plotBuildDurationHistory = function() {
             .call(xAxis)
             .append("text")
             .attr("class", "label")
+            .attr("font-size", "2px")
             .attr("x", width - margin.left - margin.right)
             .attr("y", -10)
             .attr("dy", ".71em")
