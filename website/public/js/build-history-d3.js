@@ -6,7 +6,7 @@ window.qd.plotBuildHistory = function() {
         var w = $("#build-history").width() * 1;
         var h = w / 1.61;
         if ($(window).width() >645 &&  $(window).width() < 1030) {
-                h = (w / 2.5);
+                h = (w / 2.7);
             }
             if ($(window).width() < 345) {
                 h = (w / 1);

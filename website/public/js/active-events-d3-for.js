@@ -12,7 +12,12 @@ window.qd.plotActiveEventsFor = function(activeEvents, divId) {
     parse = d3.time.format("%m/%d/%Y").parse,
     format = d3.time.format("%d");
     formatMonth = d3.time.format("%b");
-
+    if ($(window).width() >645 &&  $(window).width() < 1030) {
+                h = (w / 2.5);
+            }
+    if ($(window).width() < 345) {
+                h = (w / 1);
+            }
     var svg = d3.select(divId).append("svg:svg")
         .attr("width", w)
         .attr("height", h)
