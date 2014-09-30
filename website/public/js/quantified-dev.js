@@ -219,7 +219,7 @@ var qd = function() {
         var tweetText = sparkBar + " my hydration levels over the last 2 weeks. See yours at quantifieddev.org";
         var hashTags = ['hydrate', 'coding'].join(',');
         $('#tweetMyHydration').attr('href', "https://twitter.com/share?url=''&hashtags=" + hashTags + "&text=" + tweetText);
-        ga('send', 'event', 'tweet_click', 'Hourly Water Intake');
+        ga('send', 'event', 'tweet_click', 'Water Intake History');
     };
 
     result.tweetCaffeineSparkline = function() {
@@ -239,7 +239,7 @@ var qd = function() {
         var tweetText = sparkBar + " my caffeine levels over the last 2 weeks. See yours at quantifieddev.org";
         var hashTags = ['coffee', 'coding'].join(',');
         $('#tweetMyCaffeine').attr('href', "https://twitter.com/share?url=''&hashtags=" + hashTags + "&text=" + tweetText);
-        ga('send', 'event', 'tweet_click', 'Hourly Caffeine Intake');
+        ga('send', 'event', 'tweet_click', 'Caffeine Intake History');
     };
 
     result.tweetBuildDurationSparkline = function() {
