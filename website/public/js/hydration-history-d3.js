@@ -10,6 +10,12 @@ window.qd.plotHydrationHistory = function () {
         };
         var width = $("#hydration-history").width();
         var height = width / 1.61;
+        if ($(window).width() >645 &&  $(window).width() < 1030) {
+                height = (width / 2.7);
+            }
+        if ($(window).width() < 345) {
+                height = (width / 1);
+            }
         var oneMonthAgo = new Date(moment().subtract("month", 1).format("MM/DD/YYYY"));
         var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
         var x = d3.time.scale()
