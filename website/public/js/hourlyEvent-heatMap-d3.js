@@ -1,7 +1,6 @@
 window.qd.plotHourlyEventMap = function (divId, hourlyEvents) {
     setTimeout(function () {
         $(divId).html("");
-        var eventCount = 0;
         var baseColor = "#EEEEEE";
         var margin = {
                 top: 50,
@@ -27,9 +26,7 @@ window.qd.plotHourlyEventMap = function (divId, hourlyEvents) {
             var index = (24 * (day-1)) + (hour - 1);
             index = index === -1 ? 167 : index;
             segmentData[index] = e.hourlyEventCount;
-           eventCount += e.hourlyEventCount;
         });
-        window.localStorage.eventCount = eventCount;
 
         var daywiseHourlyBuildCountsSundayToMonday = _.toArray(_.groupBy(segmentData, function (element, index) {
             return Math.floor(index / 24);
