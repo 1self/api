@@ -73,15 +73,19 @@ app.get("/", function (req, res) {
 });
 
 app.get("/authSuccess", function (req, res) {
-    var githubUsername = req.session.githubUsername;
-    var accessToken = req.session.accessToken;
-    githubEvents.sendGithubEvents(githubUsername, accessToken)
-        .then(function () {
-            io.in(githubUsername).emit('status',"Synced GitHub Push Events.");
-        },function(){
-            io.in(githubUsername).emit('status',"No data to sync up!");
-        });
-    res.redirect("/status?githubUsername=" + githubUsername);
+    if (req.session.githubUsername && req.session.accessToken) {
+        var githubUsername = req.session.githubUsername;
+        var accessToken = req.session.accessToken;
+        githubEvents.sendGithubEvents(githubUsername, accessToken)
+            .then(function () {
+                io.in(githubUsername).emit('status', "Synced GitHub Push Events.");
+            }, function () {
+                io.in(githubUsername).emit('status', "No data to sync up!");
+            });
+        res.redirect("/status?githubUsername=" + githubUsername);
+    } else {
+        res.redirect("/");
+    }
 });
 
 app.get("/status", function (req, res) {
