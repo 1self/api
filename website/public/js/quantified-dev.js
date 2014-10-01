@@ -99,15 +99,29 @@ var qd = function () {
     result.updateBuildDurationModel = function () {
         postAjax("buildDuration", plotBuildDurationEvents)
     };
+
+    var getEventCountForHourlyEvents = function(events){
+        return _.reduce(_.map(events, function (event) {
+            return event.hourlyEventCount;
+        }), function (totalEventCount, eventCount) {
+            return totalEventCount + eventCount;
+        }, 0);
+    };
+
     var plotHourlyBuildEvents = function (hourlyBuildEvents) {
         result.hourlyBuildEvents = hourlyBuildEvents;
+        var eventCount = getEventCountForHourlyEvents(hourlyBuildEvents);
+        $('#totalBuildCount').html("Total No of Build Events : " + eventCount);
         result.plotHeatmapWith("#hourlyBuild-heat-map-parent", '#hourlyBuild-heat-map', hourlyBuildEvents);
     };
+
     result.updateHourlyBuildHeatMap = function () {
         postAjax("hourlyBuildCount", plotHourlyBuildEvents)
     };
     var plotHourlyWtfEvents = function (hourlyWtfEvents) {
         result.hourlyWtfEvents = hourlyWtfEvents;
+        var eventCount = getEventCountForHourlyEvents(hourlyWtfEvents);
+        $('#totalWtfCount').html("Total No of WTF Events : " + eventCount);
         result.plotHeatmapWith("#hourlyWtf-heat-map-parent", '#hourlyWtf-heat-map', hourlyWtfEvents);
     };
     result.updateHourlyWtfHeatMap = function () {
@@ -115,6 +129,8 @@ var qd = function () {
     };
     var plotHourlyHydrationEvents = function (hourlyHydrationEvents) {
         result.hourlyHydrationEvents = hourlyHydrationEvents;
+        var eventCount = getEventCountForHourlyEvents(hourlyHydrationEvents);
+        $('#totalHydrationCount').html("Total glasses of Water : " + eventCount);
         result.plotHeatmapWith("#hourlyHydration-heat-map-parent", '#hourlyHydration-heat-map', hourlyHydrationEvents);
     };
     result.updateHourlyHydrationHeatMap = function () {
@@ -122,6 +138,8 @@ var qd = function () {
     };
     var plotHourlyCaffeineEvents = function (hourlyCaffeineEvents) {
         result.hourlyCaffeineEvents = hourlyCaffeineEvents;
+        var eventCount = getEventCountForHourlyEvents(hourlyCaffeineEvents);
+        $('#totalCaffeineCount').html("Total cups of Coffee : " + eventCount);
         result.plotHeatmapWith('#hourlyCaffeine-heat-map-parent', '#hourlyCaffeine-heat-map', hourlyCaffeineEvents);
     };
     result.updateHourlyCaffeineHeatMap = function () {
@@ -140,12 +158,8 @@ var qd = function () {
     };
     var plotHourlyGithubPushEvents = function (hourlyGithubPushEvents) {
         result.hourlyGithubPushEvents = hourlyGithubPushEvents;
-        var eventCount = _.reduce(_.map(hourlyGithubPushEvents, function (event) {
-            return event.hourlyEventCount;
-        }), function (totalEventCount, eventCount) {
-            return totalEventCount + eventCount;
-        }, 0);
-        $('#totalEventCount').html("Total No of Push Events : " + eventCount);
+        var eventCount = getEventCountForHourlyEvents(hourlyGithubPushEvents);
+        $('#totalPushCount').html("Total No of Push Events : " + eventCount);
         result.plotHeatmapWith('#hourlyGithubPush-heat-map-parent', '#hourlyGithubPush-heat-map', hourlyGithubPushEvents);
     };
     result.updateHourlyGithubPushHeatMap = function () {

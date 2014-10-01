@@ -190,7 +190,7 @@
                                     <div class="col-sm-8 col-xs-12">
                                         <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly GitHub Push Events</h3>
                                         <br>
-                                        
+
 
                                     </div>
                                     <div class="col-sm-4 col-xs-12 ex-sm-margin-top-five">
@@ -200,9 +200,9 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 col-sm-6 col-xs-12 mobile-margin-bottom-five"><span id="last-updated-since"></span></div>
-                                    <div class="col-md-6 col-sm-6 col-xs-12"><span id="totalEventCount" class="pull-right pull-xs-left"></span></div>
+                                    <div class="col-md-6 col-sm-6 col-xs-12"><span id="totalPushCount" class="pull-right pull-xs-left"></span></div>
                                 </div>
-                                
+
                             </div>
                             <div class="panel-body">
                                 <div id="hourlyGithubPush-heat-map" class="hourlyHeatMapContainer">
@@ -355,7 +355,7 @@
                     <div id="buildDuration-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
                         <div class="panel panel-secondary fixed-height">
                             <div class="panel-heading">
-                               
+
                                 <div class="row">
                                     <div class="col-sm-8 col-xs-12 ">
                                         <h3 class="panel-title"><i class="icon-bar-chart"></i>Build Duration History</h3>
@@ -431,11 +431,9 @@
                                         <button id="hourlyGithubPush-heat-map-help" class="pull-right pull-xs-left help-btn" onclick=show("hourlyBuild-heat-map-parent")></button>
                                     </div>
                                 </div>
-                                 <!-- <div class="row">
-                                    <div class="col-md-6 col-sm-6 col-xs-12 mobile-margin-bottom-five  pull-right">
-                                        <span id="totalBuildCount" class="pull-right pull-xs-left"></span>
-                                    </div>
-                                </div> -->
+                                <div class="row">
+                                    <div class="col-lg-offset-6 col-lg-6 col-md-offset-6 col-md-12 col-sm-12 col-xs-12"><span id="totalBuildCount" class="pull-right pull-xs-left"></span></div>
+                                </div>
                             </div>
                             <div class="panel-body">
                                 <div id="hourlyBuild-heat-map" class="hourlyHeatMapContainer"></div>
@@ -445,7 +443,7 @@
                     <div id="build-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
                         <div class="panel panel-secondary fixed-height">
                             <div class="helpContainer">
-                                <div class="row"><a class="close pull-right" onclick=show("build-history-parent")>×</a></div>    
+                                <div class="row"><a class="close pull-right" onclick=show("build-history-parent")>×</a></div>
                                 <div class="row">
                                     <h4 class="heading">Help - Build History</h4>
                                     <div class="help-description">
@@ -472,7 +470,7 @@
                                         <h4>Can I collect data from multiple IDEs? From work? Home?
                                         </h4>
                                         <p>Absolutely! Our goal at QuantifedDev is to give you a complete picture of your development life, that includes all of the IDEs and all of the computers that you use. Simply install our plugins on all your IDEs, across all of your computers.
-                                        
+
                                         </p>
                                     </div>
                                     <div class="help-description">
@@ -514,7 +512,7 @@
                     <div id="hourlyWtf-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
                         <div class="panel panel-secondary fixed-height">
                             <div class="helpContainer">
-                                 <div class="row"><a class="close pull-right" onclick=show("hourlyWtf-heat-map-parent")>×</a></div>   
+                                 <div class="row"><a class="close pull-right" onclick=show("hourlyWtf-heat-map-parent")>×</a></div>
                                 <div class="row">
                                     <h4 class="heading">Help - Hourly WTFs</h4>
                                     <div class="help-description">
@@ -566,17 +564,18 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="panel-heading">
                                 <div class="row">
                                     <div class="col-sm-8 col-xs-12 ">
                                         <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Wtfs</h3>
                                     </div>
                                     <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
-                                        
                                         <button id="hourlyGithubPush-heat-map-help" class="pull-right pull-xs-left help-btn" onclick=show("hourlyWtf-heat-map-parent")></button>
-                                        
                                     </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-offset-6 col-lg-6 col-md-offset-6 col-md-12 col-sm-12 col-xs-12"><span id="totalWtfCount" class="pull-right pull-xs-left"></span></div>
                                 </div>
                             </div>
                             <div class="panel-body">
@@ -586,7 +585,7 @@
                     </div>
                     <div id="wtf-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
                         <div class="panel panel-secondary fixed-height">
-                            
+
                             <div class="panel-heading">
                                  <div class="row"><a class="close pull-right" onclick=show("wtf-history-parent")>×</a></div>
                                 <div class="row">
@@ -594,9 +593,9 @@
                                         <h3 class="panel-title"><i class="icon-bar-chart"></i>WTF History</h3>
                                     </div>
                                     <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
-                                        
+
                                         <a id="tweetMyWtfs" class="twitter-share-button pull-right pull-xs-left" target="_blank" onclick="qd.tweetWtfSparkline()">Tweet</a>
-                                        
+
                                     </div>
                                 </div>
                             </div>
@@ -608,7 +607,7 @@
                     <div id="hourlyHydration-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
                         <div class="panel panel-secondary fixed-height">
                             <div class="helpContainer">
-                               <div class="row"><a class="close pull-right" onclick=show("hourlyHydration-heat-map-parent")>×</a></div> 
+                               <div class="row"><a class="close pull-right" onclick=show("hourlyHydration-heat-map-parent")>×</a></div>
                                 <div class="row">
                                     <h4 class="heading">Help - Hourly Water Intake</h4>
                                     <div class="help-description">
@@ -667,7 +666,9 @@
                                         <button id="hourlyGithubPush-heat-map-help" class="pull-right pull-xs-left help-btn" onclick=show("hourlyHydration-heat-map-parent")></button>
                                     </div>
                                 </div>
-                                
+                                <div class="row">
+                                    <div class="col-lg-offset-6 col-lg-6 col-md-offset-6 col-md-12 col-sm-12 col-xs-12"><span id="totalHydrationCount" class="pull-right pull-xs-left"></span></div>
+                                </div>
                             </div>
                             <div class="panel-body">
                                 <div id="hourlyHydration-heat-map" class="hourlyHeatMapContainer"></div>
@@ -677,7 +678,7 @@
                     <div id="hydration-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
                         <div class="panel panel-secondary fixed-height">
                             <div class="helpContainer">
-                                <div class="row"><a class="close pull-right" onclick=show("hydration-history-parent")>×</a></div> 
+                                <div class="row"><a class="close pull-right" onclick=show("hydration-history-parent")>×</a></div>
                                 <div class="row">
                                     <h4 class="heading">Help - Water History</h4>
                                     <div class="help-description">
@@ -715,7 +716,7 @@
                                         <p>Sip on a long cool glass of iced water and chill. It’s automatic. As long as you are logging those waters it’s available immediately in your visualisation.
                                         </p>
                                     </div>
-                                    
+
                                     <div class="help-description">
                                         <h4>See something interesting?
                                         </h4>
@@ -780,7 +781,7 @@
                                         <p>Make yourself a nice earl grey. It’s automatic. As long as you are logging your cuppait’s available immediately in your visualisation.
                                         </p>
                                     </div>
-                                    
+
                                     <div class="help-description">
                                         <h4>See something interesting?
                                         </h4>
@@ -796,8 +797,10 @@
                                     </div>
                                     <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten">
                                         <button id="hourlyGithubPush-heat-map-help" class="pull-right pull-xs-left help-btn" onclick=show("hourlyCaffeine-heat-map-parent")></button>
-                                        
                                     </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-offset-6 col-lg-6 col-md-offset-6 col-md-12 col-sm-12 col-xs-12"><span id="totalCaffeineCount" class="pull-right pull-xs-left"></span></div>
                                 </div>
                             </div>
                             <div class="panel-body">
@@ -847,7 +850,7 @@
                                         <p>Go grab yourself a skinny mochacino with a squirt of vanilla syrup. It’s automatic. As long as you are logging that mocha frotha it’s available immediately in your visualisation.
                                         </p>
                                     </div>
-                                    
+
                                     <div class="help-description">
                                         <h4>See something interesting?
                                         </h4>
@@ -932,7 +935,7 @@
         <script src="/js/dashboard.js"></script>
         <script src="/js/link-datasource.js"></script>
         <script src="/js/menu-for-high-resolution.js"></script>
-        
+
         <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     </body>
 </html>
