@@ -1,6 +1,6 @@
 var socket = io();
 
-var getURLParameter = function(name) {
+var getURLParameter = function (name) {
     return decodeURIComponent(
         (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [, null])[1]
     );
@@ -13,7 +13,11 @@ $(document).ready(function () {
 });
 
 socket.on('status', function (data) {
-    document.getElementById('status').innerHTML = data;
+    var dashboardLocation = "http://localhost:5000/dashboard?streamId="+data.streamid+"&readToken="+data.readToken;
+    document.getElementById('status').innerHTML = data.status;
+    setTimeout(function(){
+        window.location = dashboardLocation;
+    }, 5000);
 });
 
 

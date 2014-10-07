@@ -23,6 +23,7 @@ module.exports = function (app, mongoRepository, qdService) {
                 githubUsername: githubUsername,
                 streamid: streamDetails.streamid,
                 writeToken: streamDetails.writeToken,
+                readToken: streamDetails.readToken,
                 lastGithubSyncDate: moment.unix(0).toDate()
             };
             return mongoRepository.insert(document);

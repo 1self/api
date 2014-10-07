@@ -77,10 +77,18 @@ app.get("/authSuccess", function (req, res) {
         var githubUsername = req.session.githubUsername;
         var accessToken = req.session.accessToken;
         githubEvents.sendGithubEvents(githubUsername, accessToken)
-            .then(function () {
-                io.in(githubUsername).emit('status', "Synced GitHub Push Events.");
-            }, function () {
-                io.in(githubUsername).emit('status', "No data to sync up!");
+            .then(function (user) {
+                io.in(githubUsername).emit('status',
+                    {"status": "Synced GitHub Push Events.",
+                        "streamid": user.streamid,
+                        "readToken": user.readToken
+                    });
+            }, function (user) {
+                io.in(githubUsername).emit('status',
+                    {"status": "No data to sync up!",
+                        "streamid": user.streamid,
+                        "readToken": user.readToken
+                    });
             });
         res.redirect("/status?githubUsername=" + githubUsername);
     } else {

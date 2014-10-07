@@ -85,7 +85,7 @@ module.exports = function (mongoRepository, qdService) {
     var sendEventsToQD = function (userInfo) {
         var deferred = Q.defer();
         if (_.isEmpty(userInfo.pushEvents)) {
-            deferred.reject();
+            deferred.reject(userInfo.user);
             return deferred.promise;
         }
         return qdService.sendBatchEvents(userInfo.pushEvents, userInfo.user.streamid, userInfo.user.writeToken)
@@ -104,7 +104,10 @@ module.exports = function (mongoRepository, qdService) {
         var updateQuery = {
             "lastGithubSyncDate": moment(sortedPushEvents[0].eventDateTime["$date"]).toDate()
         };
-        return mongoRepository.update(findQuery, updateQuery);
+        return mongoRepository.update(findQuery, updateQuery)
+            .then(function(){
+                return userInfo.user;
+            });
     };
 
     this.sendGithubEvents = function (githubUsername, accessToken) {

@@ -150,6 +150,7 @@ var getStreamIdForUsername = function (params) {
                 if (!user) {
                     deferred.reject("user not found");
                 } else if (user.streams) {
+                    console.log("Streams: " + JSON.stringify(user.streams));
                     var paramsToPassOn = [user.streams, params[1]];
                     deferred.resolve(paramsToPassOn);
                 } else {
@@ -319,6 +320,7 @@ var getEventsCount = function () {
 };
 
 var getAggregatedEventsFromPlatform = function (queryString) {
+    console.log("Query string: " + JSON.stringify(queryString));
     var deferred = q.defer();
     var requestDetails = {
         url: platformUri + '/rest/analytics/aggregate',
@@ -806,8 +808,12 @@ var generateHourlyCaffeineCountQuery = function (params) {
     };
 };
 
-var generateHourlyGithubPushEventsCountQuery = function (streamid) {
-    var groupQuery = groupByForHourlyEvents([streamid], "Push");
+var generateHourlyGithubPushEventsCountQuery = function (params) {
+    var streams = params[0];
+    var streamids = _.map(streams, function (stream) {
+        return stream.streamid;
+    });
+    var groupQuery = groupByForHourlyEvents(streamids, "Push");
     var hourlyGithubPushEventCount = countOnParameters(groupQuery, {}, "hourlyEventCount");
     return {
         spec: JSON.stringify(hourlyGithubPushEventCount)
@@ -1585,7 +1591,7 @@ app.get('/quantifieddev/compare/ideActivity', function (req, res) {
 app.get('/quantifieddev/hourlyGithubPushEvents', function (req, res) {
     var encodedUsername = req.headers.authorization;
     validEncodedUsername(encodedUsername, req.query.forUsername, [])
-        .then(getGithubStreamIdForUsername)
+        .then(getStreamIdForUsername)
         .then(generateHourlyGithubPushEventsCountQuery)
         .then(getAggregatedEventsFromPlatform)
         .then(function (response) {
