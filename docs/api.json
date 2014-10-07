@@ -1,0 +1,7 @@
+{
+  "endpoints": [
+    "GET    /events",
+    "GET    /event_counts",
+    "GET    /health"
+  ]
+}
