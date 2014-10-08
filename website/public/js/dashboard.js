@@ -35,29 +35,15 @@ $('#last-updated-since').html("Last Updated: " + moment(window.localStorage.last
 var handleConnectToGithub = function () {
     var button = $("#github-push-events-sync");
     $('#noDataSourceMessage').modal('hide');
-    var showGitHubEvents = function (data) {
-        var hourlyGithubErrorCallback = function () {
-            alert("Github events error");
-        };
-        var hourlyGithubSuccessCallback = function (hourlyGithubPushEvents) {
-            button.prop("disabled", false);
-            var lastUpdatedSince = $('#last-updated-since');
-            lastUpdatedSince.html("");
-            window.localStorage.lastUpdatedOn = new Date();
-            lastUpdatedSince.html("Last Updated: " + moment(window.localStorage.lastUpdatedOn).fromNow());
-            window.qd.hourlyGithubPushEvents = hourlyGithubPushEvents;
-            window.qd.plotHeatmapWith('#hourlyGithubPush-heat-map-parent', '#hourlyGithubPush-heat-map', hourlyGithubPushEvents);
-        };
-        postAjax("hourlyGithubPushEvents", hourlyGithubSuccessCallback, hourlyGithubErrorCallback);
-    };
+    var lastUpdatedSince = $('#last-updated-since');
+    lastUpdatedSince.html("");
+    window.localStorage.lastUpdatedOn = new Date();
+    lastUpdatedSince.html("Last Updated: " + moment(window.localStorage.lastUpdatedOn).fromNow());
     button.prop("disabled", true);
     var githubHeatMap = $("#hourlyGithubPush-heat-map");
     githubHeatMap.html("");
     var html_data = '<div class="githubPushEvents text-center grid" ><div  class="grid-row"><div  class="grid-cell" ><img src="/img/loading.gif"></div></div></div>'
     githubHeatMap.html(html_data);
-    /*postQDRouteAjax("connect_to_github?callback=?", showGitHubEvents, function (error) {
-     console.log(error);
-     })*/
     window.location = "http://gitplugin.com:5001/authSuccess";
 };
 $(document).ready(function () {
@@ -74,7 +60,6 @@ var show = function (element) {
     var showElement = "#" + element + " " + ".helpContainer";
     $(showElement).slideToggle();
 };
-$("#connect_to_github_btn").click(handleConnectToGithub);
 $("#github-push-events-sync").click(handleConnectToGithub);
 $("#connect_to_github_link_popup_btn").click(handleConnectToGithub);
 
