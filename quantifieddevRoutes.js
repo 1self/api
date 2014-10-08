@@ -2,7 +2,6 @@ var sessionManager = require("./sessionManagement");
 var _ = require("underscore");
 var Q = require('q');
 var encoder = require("./encoder");
-var githubEvents = require("./githubEvents");
 var CONTEXT_URI = process.env.CONTEXT_URI;
 var sendgrid = require('sendgrid')(process.env.SENDGRID_USERNAME, process.env.SENDGRID_PASSWORD);
 var util = require("./util");
@@ -171,7 +170,6 @@ module.exports = function (app) {
             res.redirect(CONTEXT_URI + "/dashboard");
         }
     });
-
 
     app.post("/claimUsername", function (req, res) {
         console.log("Req in claimUsername is : ", req.user);
@@ -512,95 +510,6 @@ module.exports = function (app) {
                         res.redirect("/");
                     });
             });
-    });
-
-    var doesGitHubStreamIdExist = function (username) {
-        var deferred = Q.defer();
-        var usernameQuery = {
-            "username": username.toLowerCase()
-        };
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection('users').findOne(usernameQuery, function (err, user) {
-                if (err) {
-                    console.log("DB Error : ", err);
-                    deferred.reject(err);
-                } else {
-                    if (user.githubUser.githubStreamId !== undefined) {
-                        deferred.resolve(user.githubUser.githubStreamId);
-                    } else {
-                        deferred.resolve(false);
-                    }
-
-                }
-            });
-        });
-        return deferred.promise;
-    };
-    var linkGithubStreamToUser = function (username, stream) {
-        var deferred = Q.defer();
-        var query = {
-            "username": username.toLowerCase()
-        };
-        var updateQuery = {
-            $set: {
-                "githubUser.githubStreamId": stream.streamid
-            },
-            $push: {
-                "streams": {
-                    "streamid": stream.streamid,
-                    "readToken": stream.readToken
-                }
-            }
-        };
-
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection('users').update(query, updateQuery, {
-                    upsert: true
-                },
-                function (err, user) {
-                    if (err) {
-                        console.log("Error", err);
-                        deferred.reject(err);
-                    } else {
-                        deferred.resolve(stream.streamid);
-                    }
-                });
-
-        });
-        return deferred.promise;
-    };
-
-    app.get("/connect_to_github", sessionManager.requiresSession, function (req, res) {
-
-        var githubAccessToken = req.session.githubAccessToken;
-
-        doesGitHubStreamIdExist(req.session.username).then(function (githubStreamId) {
-            if (githubStreamId) {
-                githubEvents.getGithubPushEvents(githubStreamId, githubAccessToken)
-                    .then(function () {
-                        res.send({
-                            status: "ok"
-                        });
-                    });
-            } else {
-                util.createStream(function (err, stream) {
-                    if (err) {
-                        console.log(err);
-                        res.status(500).send("Database error");
-                    } else {
-                        linkGithubStreamToUser(req.session.username, stream)
-                            .then(function (streamid) {
-                                return githubEvents.getGithubPushEvents(streamid, githubAccessToken);
-                            })
-                            .then(function () {
-                                res.send({
-                                    status: "ok"
-                                });
-                            });
-                    }
-                });
-            }
-        });
     });
 
     app.get("/community", function (req, res) {
