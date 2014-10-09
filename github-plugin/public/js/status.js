@@ -13,10 +13,9 @@ $(document).ready(function () {
 });
 
 socket.on('status', function (data) {
-    var dashboardLocation = "http://localhost:5000/dashboard?streamId="+data.streamid+"&readToken="+data.readToken;
     document.getElementById('status').innerHTML = data.status;
     setTimeout(function(){
-        window.location = dashboardLocation;
+        window.location = data.redirectUrl;
     }, 5000);
 });
 
