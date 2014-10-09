@@ -1,6 +1,5 @@
 var qd = function () {
     var result = {};
-    var modelUpdateCallbacks = [];
 
     var compare = function (todaysEvents, yesterdayEvents) {
         var difference = todaysEvents - yesterdayEvents;
@@ -10,31 +9,13 @@ var qd = function () {
     var plotBuildEvents = function (buildEvents) {
         result.buildEvents = buildEvents;
         result.plotGraphWith('buildEvents', buildEvents, "#build-history-parent");
-        populateBuildTilesData(buildEvents);
-        modelUpdateCallbacks.forEach(function (c) {
-            c();
-        });
-    }
+    };
     /*   var failureCallbackForComparison = function(divId, msg) {
      return function() {
      if ($("#friendList").length > 0)
      $(divId).text(msg);
      }
      }*/
-    var populateBuildTilesData = function (buildEvents) {
-        if (buildEvents.length > 0) {
-            var todaysBuild = buildEvents[buildEvents.length - 1]; // last record
-            var yesterdaysBuild = buildEvents[buildEvents.length - 2];
-            var totalBuildsForToday = todaysBuild.passed + todaysBuild.failed;
-            var totalBuildsForYesterday = yesterdaysBuild.passed + yesterdaysBuild.failed;
-            result.todaysPassedBuildCount = todaysBuild.passed;
-            result.todaysFailedBuildCount = todaysBuild.failed;
-            result.todaysTotalBuildCount = totalBuildsForToday;
-            result.totalBuildComparison = compare(totalBuildsForToday, totalBuildsForYesterday);
-            result.passedBuildComparison = compare(todaysBuild.passed, yesterdaysBuild.passed);
-            result.failedBuildComparison = compare(todaysBuild.failed, yesterdaysBuild.failed);
-        }
-    };
     result.updateBuildModel = function () {
         postAjax("mydev", plotBuildEvents)
     };
@@ -178,10 +159,6 @@ var qd = function () {
         })
     };
 
-    result.registerForBuildModelUpdates = function (callback) {
-        modelUpdateCallbacks.push(callback);
-    };
-
     result.tweetBuildSparkline = function () {
         if (result.buildEvents === undefined) {
             return;
@@ -265,13 +242,11 @@ var qd = function () {
         if (result.buildDurationEvents === undefined) {
             return;
         }
-
         var totalBuildDuration = [];
         var sparkbarDataForDays = 14;
         result.buildDurationEvents.map(function (buildDurationEvent) {
             totalBuildDuration.push(buildDurationEvent.avgBuildDuration);
         });
-
         totalBuildDuration = totalBuildDuration.slice(totalBuildDuration.length - sparkbarDataForDays, totalBuildDuration.length);
         console.log("sparking totalBuildDuration:", totalBuildDuration)
         var sparkBar = window.oneSelf.toSparkBars(totalBuildDuration);

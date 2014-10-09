@@ -1,23 +1,4 @@
 var dashboardGraphs = ['updateBuildModel', 'updateWTFModel', 'updateHydrationModel', 'updateCaffeineModel', 'updateBuildDurationModel', 'updateHourlyBuildHeatMap', 'updateHourlyWtfHeatMap', 'updateHourlyHydrationHeatMap', 'updateHourlyCaffeineHeatMap', 'updateActiveEvents', 'updateHourlyGithubPushHeatMap', 'updateCorrelationData'];
-$("#builds-x").ready(function () {
-    window.qd.registerForBuildModelUpdates(function () {
-        var displayBuildCountAndBuildComparison = function (buildCount, buildCountElementId, comparisonValue, comparisonElementId) {
-            $(buildCountElementId).text(buildCount);
-            var buildComparison = Math.abs(comparisonValue);
-            if (buildComparison && buildComparison !== Infinity) {
-                $(comparisonElementId).text(buildComparison + "%");
-                if (comparisonValue < 0) {
-                    $(comparisonElementId).addClass("icon-caret-down");
-                } else if (comparisonValue > 0) {
-                    $(comparisonElementId).addClass("icon-caret-up");
-                }
-            }
-        };
-        displayBuildCountAndBuildComparison(window.qd.todaysTotalBuildCount, "#builds-x", window.qd.totalBuildComparison, "#total-build-comparison");
-        displayBuildCountAndBuildComparison(window.qd.todaysPassedBuildCount, "#passed-x", window.qd.passedBuildComparison, "#passed-build-comparison");
-        displayBuildCountAndBuildComparison(window.qd.todaysFailedBuildCount, "#failed-x", window.qd.failedBuildComparison, "#failed-build-comparison");
-    });
-});
 $(window).resize(function () {
     window.qd.replotGraphs();
 });
@@ -45,6 +26,7 @@ var handleConnectToGithub = function () {
     var html_data = '<div class="githubPushEvents text-center grid" ><div  class="grid-row"><div  class="grid-cell" ><img src="/img/loading.gif"></div></div></div>'
     githubHeatMap.html(html_data);
     //If you want the github datasource to run locally, change the window.location
+//    window.location = "http://gitplugin.com:5001/authSuccess";
     window.location = "http://github-datasource.herokuapp.com/authSuccess";
 };
 $(document).ready(function () {
