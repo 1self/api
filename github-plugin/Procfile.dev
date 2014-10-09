@@ -1,2 +1,0 @@
-web: supervisor app.js
-
