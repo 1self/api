@@ -150,6 +150,7 @@ var getStreamIdForUsername = function (params) {
                 if (!user) {
                     deferred.reject("user not found");
                 } else if (user.streams) {
+                    console.log("Streams: " + JSON.stringify(user.streams));
                     var paramsToPassOn = [user.streams, params[1]];
                     deferred.resolve(paramsToPassOn);
                 } else {
@@ -319,6 +320,7 @@ var getEventsCount = function () {
 };
 
 var getAggregatedEventsFromPlatform = function (queryString) {
+    console.log("Query string: " + JSON.stringify(queryString));
     var deferred = q.defer();
     var requestDetails = {
         url: platformUri + '/rest/analytics/aggregate',
@@ -806,8 +808,12 @@ var generateHourlyCaffeineCountQuery = function (params) {
     };
 };
 
-var generateHourlyGithubPushEventsCountQuery = function (streamid) {
-    var groupQuery = groupByForHourlyEvents([streamid], "Push");
+var generateHourlyGithubPushEventsCountQuery = function (params) {
+    var streams = params[0];
+    var streamids = _.map(streams, function (stream) {
+        return stream.streamid;
+    });
+    var groupQuery = groupByForHourlyEvents(streamids, "Push");
     var hourlyGithubPushEventCount = countOnParameters(groupQuery, {}, "hourlyEventCount");
     return {
         spec: JSON.stringify(hourlyGithubPushEventCount)
@@ -1330,7 +1336,44 @@ app.get('/eventsCount', function (req, res) {
 });
 
 app.post('/stream/:id/event', postEvent);
+var saveBatchEvents = function (myEvents, stream, res) {
+    var myEventsWithPayload = [];
+    _.each(myEvents, function (myEvent) {
+        myEventsWithPayload.push({
+            'payload': myEvent
+        });
+    });
+    var options = {
+        url: platformUri + '/rest/events/batch',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        json: myEventsWithPayload
+    };
+    requestModule.post(options,
+        function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                res.send(body);
+            } else {
+                res.status(500).send("Database error");
+            }
+        });
+};
 
+var postEvents = function (req, res) {
+    var writeToken = req.headers.authorization;
+    authenticateWriteToken(writeToken, req.params.id,
+        function () {
+            res.status(404).send("stream not found");
+        },
+        function (stream) {
+            saveBatchEvents(req.body, stream, res);
+        }
+    );
+
+};
+app.post('/stream/:id/batch', postEvents);
 app.get('/live/devbuild/:durationMins', function (req, res) {
     var durationMins = req.params.durationMins;
     var selectedEventType = req.query.eventType;
@@ -1548,7 +1591,7 @@ app.get('/quantifieddev/compare/ideActivity', function (req, res) {
 app.get('/quantifieddev/hourlyGithubPushEvents', function (req, res) {
     var encodedUsername = req.headers.authorization;
     validEncodedUsername(encodedUsername, req.query.forUsername, [])
-        .then(getGithubStreamIdForUsername)
+        .then(getStreamIdForUsername)
         .then(generateHourlyGithubPushEventsCountQuery)
         .then(getAggregatedEventsFromPlatform)
         .then(function (response) {

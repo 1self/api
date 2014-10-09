@@ -23,7 +23,7 @@
         $.ajax({
             url: url("", urlParam),
             headers: {
-                "Accept": "application/json",
+                "Accept": "application/json"
             },
             success: successCallback,
             error: function(xhr, error) {
