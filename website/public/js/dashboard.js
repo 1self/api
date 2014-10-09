@@ -44,7 +44,8 @@ var handleConnectToGithub = function () {
     githubHeatMap.html("");
     var html_data = '<div class="githubPushEvents text-center grid" ><div  class="grid-row"><div  class="grid-cell" ><img src="/img/loading.gif"></div></div></div>'
     githubHeatMap.html(html_data);
-    window.location = "http://gitplugin.com:5001/authSuccess";
+    //If you want the github datasource to run locally, change the window.location
+    window.location = "http://github-datasource.herokuapp.com/authSuccess";
 };
 $(document).ready(function () {
     $(document).on('mouseup keyup', function (e) {
