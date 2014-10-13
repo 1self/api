@@ -81,7 +81,7 @@ var qd = function () {
         postAjax("buildDuration", plotBuildDurationEvents)
     };
 
-    var getEventCountForHourlyEvents = function(events){
+    var getEventCountForHourlyEvents = function (events) {
         return _.reduce(_.map(events, function (event) {
             return event.hourlyEventCount;
         }), function (totalEventCount, eventCount) {
@@ -141,7 +141,11 @@ var qd = function () {
         result.hourlyGithubPushEvents = hourlyGithubPushEvents;
         var eventCount = getEventCountForHourlyEvents(hourlyGithubPushEvents);
         $('#totalPushCount').html("Total No of Push Events : " + eventCount);
-        result.plotHeatmapWith('#hourlyGithubPush-heat-map-parent', '#hourlyGithubPush-heat-map', hourlyGithubPushEvents);
+        if (eventCount === 0) {
+            $("#connect_to_github_btn").show();
+        } else {
+            result.plotHeatmapWith('#hourlyGithubPush-heat-map-parent', '#hourlyGithubPush-heat-map', hourlyGithubPushEvents);
+        }
     };
     result.updateHourlyGithubPushHeatMap = function () {
         postAjax("hourlyGithubPushEvents", plotHourlyGithubPushEvents, hourlyGithubErrorCallback);
