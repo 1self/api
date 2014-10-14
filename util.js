@@ -3,7 +3,7 @@ var mongoDbConnection = require('./lib/connection.js');
 
 var Util = function() {}
 
-Util.prototype.createStream =  function(callback) {
+Util.prototype.createStream =  function(clientId, callback) {
     crypto.randomBytes(16, function(ex, buf) {
         if (ex) throw ex;
 
@@ -19,7 +19,8 @@ Util.prototype.createStream =  function(callback) {
         var stream = {
             streamid: streamid.join(''),
             writeToken: writeToken,
-            readToken: readToken
+            readToken: readToken,
+            clientId: clientId
         };
 
         mongoDbConnection(function(qdDb) {

@@ -1281,6 +1281,8 @@ app.get('/recent_signups', function (req, res) {
     });
 });
 
+
+// Validates whether Client Id is is valid.
 var validateClient = function(clientId, clientSecret){
     var deferred = q.defer();
 
@@ -1311,6 +1313,30 @@ app.post('/stream', function (req, res) {
             res.send(data);
         }
     });
+    return deferred.promise;
+};
+
+
+app.post('/v1/streams', function (req, res) {
+    var auth = req.headers.authorization;
+
+    if (auth === undefined){
+        res.send(401, "Unauthorized request. Please pass valid clientId and clientSecret")
+    }
+    var clientId = auth.split(":")[0];
+    var clientSecret = auth.split(":")[1];
+
+    validateClient(clientId, clientSecret).then(function(){
+        util.createStream(clientId, function (err, data) {
+            if (err) {
+                res.status(500).send("Database error");
+            } else {
+                res.send(data);
+            }
+        });
+    }).catch(function(){
+        res.send(401);
+    })
 });
 app.post('/v1/streams', function (req, res) {
     var auth = req.headers.authorization;
