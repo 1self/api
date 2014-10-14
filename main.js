@@ -1348,28 +1348,6 @@ app.post('/v1/streams', function (req, res) {
 });
 
 
-app.get('/stream/:id', function (req, res) {
-    var readToken = req.headers.authorization;
-    var spec = {
-        streamid: req.params.id
-    };
-    mongoDbConnection(function (qdDb) {
-        qdDb.collection('stream').find(spec, function (err, docs) {
-            docs.toArray(function (err, streamArray) {
-                var stream = streamArray[0] || {};
-                if (stream.readToken !== readToken) {
-                    res.status(404).send("stream not found");
-                } else {
-                    var response = {
-                        streamid: stream.streamid
-                    };
-                    res.send(JSON.stringify(response));
-                }
-            });
-        });
-    });
-});
-
 app.get('/event', function (req, res) {
     var encodedUsername = req.headers.authorization;
     validEncodedUsername(encodedUsername, req.query.forUsername, [])
