@@ -248,19 +248,6 @@ var authenticateWriteToken = function (token, id, error, success) {
     });
 };
 
-var postEvent = function (req, res) {
-    var writeToken = req.headers.authorization;
-    authenticateWriteToken(
-        writeToken,
-        req.params.id,
-        function () {
-            res.status(404).send("stream not found");
-        },
-        function (stream) {
-            saveEvent_driver(req.body, stream, moment(new Date()).format(), res, requestModule);
-        }
-    );
-};
 
 var getEventsForStreams = function (params) {
     var streams = params[0];
@@ -1409,6 +1396,20 @@ app.post('/stream/:id/event', postEvent);
 
 app.post('/v1/streams/:id/events', postEvent);
 
+var postEvent = function (req, res) {
+    var writeToken = req.headers.authorization;
+    authenticateWriteToken(
+        writeToken,
+        req.params.streamId,
+        function () {
+            res.status(404).send("stream not found");
+        },
+        function (stream) {
+            saveEvent_driver(req.body, stream, moment(new Date()).format(), res, requestModule);
+        }
+    );
+};
+
 var saveBatchEvents = function (myEvents, stream, res) {
     var myEventsWithPayload = [];
     _.each(myEvents, function (myEvent) {
@@ -1436,7 +1437,7 @@ var saveBatchEvents = function (myEvents, stream, res) {
 
 var postEvents = function (req, res) {
     var writeToken = req.headers.authorization;
-    authenticateWriteToken(writeToken, req.params.id,
+    authenticateWriteToken(writeToken, req.params.streamId,
         function () {
             res.status(404).send("stream not found");
         },
@@ -1446,9 +1447,11 @@ var postEvents = function (req, res) {
     );
 
 };
+
 app.post('/stream/:id/batch', postEvents);
 
 app.post('/v1/streams/:id/events/batch', postEvents);
+
 
 app.get('/live/devbuild/:durationMins', function (req, res) {
     var durationMins = req.params.durationMins;
