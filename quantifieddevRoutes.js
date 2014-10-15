@@ -772,4 +772,10 @@ module.exports = function (app) {
             });
     });
 
+    //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
+    app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:property/:period/:renderType", 
+            function(req, res){
+                res.status(200).send("Okay");
+            });
+
 };
