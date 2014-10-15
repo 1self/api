@@ -1281,6 +1281,28 @@ app.get('/recent_signups', function (req, res) {
     });
 });
 
+var validateClient = function(clientId, clientSecret){
+    var deferred = q.defer();
+
+    var query = {
+        clientId: clientId,
+        clientSecret: clientSecret
+    };
+
+    mongoDbConnection(function(qdDb){
+        qdDb.collection('registeredApps').findOne(query, function (err, result) {
+            if(err){
+                deferred.reject();
+            } else if (!result){
+                deferred.reject();
+            } else {
+                deferred.resolve();
+            }
+        });
+    });
+    return deferred.promise;
+};
+
 app.post('/stream', function (req, res) {
     util.createStream(function (err, data) {
         if (err) {
@@ -1290,6 +1312,28 @@ app.post('/stream', function (req, res) {
         }
     });
 });
+app.post('/v1/streams', function (req, res) {
+    var auth = req.headers.authorization;
+
+    if (auth === undefined){
+        res.send(401, "Unauthorized request. Please pass valid clientId and clientSecret")
+    }
+    var clientId = auth.split(":")[0];
+    var clientSecret = auth.split(":")[1];
+
+    validateClient(clientId, clientSecret).then(function(){
+        util.createV1Stream(clientId, function (err, data) {
+            if (err) {
+                res.status(500).send("Database error");
+            } else {
+                res.send(data);
+            }
+        });
+    }).catch(function(){
+        res.send(401);
+    })
+});
+
 
 app.get('/stream/:id', function (req, res) {
     var readToken = req.headers.authorization;
@@ -1336,6 +1380,9 @@ app.get('/eventsCount', function (req, res) {
 });
 
 app.post('/stream/:id/event', postEvent);
+
+app.post('/v1/streams/:id/events', postEvent);
+
 var saveBatchEvents = function (myEvents, stream, res) {
     var myEventsWithPayload = [];
     _.each(myEvents, function (myEvent) {
@@ -1374,6 +1421,9 @@ var postEvents = function (req, res) {
 
 };
 app.post('/stream/:id/batch', postEvents);
+
+app.post('/v1/streams/:id/events/batch', postEvents);
+
 app.get('/live/devbuild/:durationMins', function (req, res) {
     var durationMins = req.params.durationMins;
     var selectedEventType = req.query.eventType;
