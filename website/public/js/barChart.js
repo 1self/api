@@ -5,34 +5,40 @@ var plotBarChart = function (divId, events, fromTime, tillTime) {
             top: 20,
             right: 30,
             bottom: 30,
-            left: 30
+            left: 80
         };
         var width = $(divId).width();
         var height = width / 1.61;
         var oneMonthAgo = new Date(moment().subtract("month", 1).format("MM/DD/YYYY"));
         var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
-        var x = d3.time.scale()
+        var dateRange = d3.range(31);
+        var yHeight = d3.scale.ordinal()
+            .domain(dateRange)
+            .rangeRoundBands([0, height - margin.top - margin.bottom]);
+        var y = d3.time.scale()
             .domain([oneMonthAgo , tomorrow])
-            .rangeRound([0, width - margin.left - margin.right])
-            .nice(4);
+            .rangeRound([height - margin.top - margin.bottom, 0])
+            .nice();
+
         var maxDataValue = d3.max(events, function (d) {
             return d.eventCount;
         });
-        var y = d3.scale.linear()
+        var x = d3.scale.linear()
             .domain([0, maxDataValue])
-            .range([height - margin.top - margin.bottom, 0]).nice();
-        var yTicks = d3.min([5, maxDataValue]);
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient('bottom')
-            .ticks(d3.time.weeks, 1)
-            .tickFormat(d3.time.format('%b %d'))
-            .tickPadding(8);
+            .range([0, width - margin.left - margin.right]).nice(4);
+        var xTicks = d3.min([5, maxDataValue]);
 
         var yAxis = d3.svg.axis()
             .scale(y)
             .orient('left')
-            .ticks(yTicks)
+            .ticks(d3.time.weeks, 1)
+            .tickFormat(d3.time.format('%b %d'))
+            .tickPadding(8);
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient('bottom')
+            .ticks(xTicks)
             .tickPadding(8);
 
         var svg = d3.select(divId).append('svg')
@@ -55,21 +61,34 @@ var plotBarChart = function (divId, events, fromTime, tillTime) {
                 return tipText(d);
             });
         svg.call(tip);
+        var gradient = svg.append("svg:defs")
+            .append("svg:linearGradient")
+            .attr("id", "gradient")
+            .attr("x1", "0%")
+            .attr("x2", "100%")
+            .attr("spreadMethod", "pad");
+
+        gradient.append("svg:stop")
+            .attr("offset", "0%")
+            .attr("stop-color", "#fff")
+            .attr("stop-opacity", 0.3);
+
+        gradient.append("svg:stop")
+            .attr("offset", "100%")
+            .attr("stop-color", "#fff")
+            .attr("stop-opacity", 1);
         svg.selectAll('.chart')
             .data(events)
             .enter().append('rect')
             .attr('class', 'bar')
-            .style("fill", "lightpink")
-            .style("stroke", d3.rgb("lightpink").darker())
-            .attr('x', function (d) {
-                return x(new Date(d.date));
-            })
+            .style("fill", "url(#gradient)")
             .attr('y', function (d) {
-                return height - margin.top - margin.bottom - (height - margin.top - margin.bottom - y(d.eventCount))
+                return y(new Date(d.date));
             })
-            .attr('width', 10)
-            .attr('height', function (d) {
-                return height - margin.top - margin.bottom - y(d.eventCount)
+            .attr('x', 0)
+            .attr('height', yHeight.rangeBand())
+            .attr('width', function (d) {
+                return x(d.eventCount)
             })
             .on("click", function (d) {
                 if ($(window).width() < 768) {
@@ -103,10 +122,10 @@ var plotBarChart = function (divId, events, fromTime, tillTime) {
             .append("text")
             .attr("class", "label")
             .attr("x", width - margin.left - margin.right)
-            .attr("y", -10)
+            .attr("y", -15)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text("Date");
+            .text("Event Count");
 
         svg.append('g')
             .attr('class', 'y axis')
@@ -117,14 +136,14 @@ var plotBarChart = function (divId, events, fromTime, tillTime) {
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text("Event Count");
+            .text("Date");
     }, 1000);
 };
 
 var events = [
     {date: "10/17/2014", eventCount: 4},
     {date: "10/18/2014", eventCount: 10},
-    {date: "10/19/2014", eventCount: 3},
+    {date: "10/19/2014", eventCount: 1},
     {date: "10/20/2014", eventCount: 7}
 ];
 
