@@ -144,7 +144,7 @@ module.exports = function (app) {
                     });
                 });
         } else {
-            getStreamsForUser().then(function(user) {
+            getStreamsForUser().then(function (user) {
                 if (user.streams && req.query.link_data !== "true") {
                     res.render('dashboard', {
                         username: req.session.username,
@@ -241,7 +241,7 @@ module.exports = function (app) {
             return deferred.promise;
         };
 
-        var redirectToClaimUsernameWithError = function(error){
+        var redirectToClaimUsernameWithError = function (error) {
             res.render('claimUsername', {
                 username: req.body.username,
                 githubUsername: req.session.githubUsername,
@@ -767,15 +767,17 @@ module.exports = function (app) {
             .then(function () {
                 res.send(200, "success");
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 res.status(400).send("Email service unavailable");
             });
     });
 
     //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
-    app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:property/:period/:renderType", 
-            function(req, res){
-                res.status(200).send("Okay");
-            });
+    app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:property/:period/:renderType", function (req, res) {
+        res.status(200).send("Okay");
+    });
 
+    app.get("/barChart", function (req, res) {
+        res.render('barChart');
+    });
 };
