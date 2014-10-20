@@ -1687,6 +1687,89 @@ app.get('/quantifieddev/extensions/message', function (req, res) {
     res.send(JSON.stringify(result));
 });
 
+var getQueryForVisualizationAPI = function(params){
+    console.log(params);
+    var lastMonth = moment().subtract('months', 1);
+    actionTags = params.actionTags.split(','),
+    objectTags = params.objectTags.split(','),
+
+    groupQuery = {
+        "$groupBy": {
+            "fields": [{
+                "name": "payload.eventDateTime",
+                "format": "MM/dd/yyyy"
+            }],
+            "filterSpec": {
+                "payload.streamid": params.streamId,
+                "payload.eventDateTime": {
+                    "$operator": {
+                        ">": {
+                            "$date": moment(lastMonth).format()
+                        }
+                    }
+                },
+                "payload.actionTags": {
+                    "$operator": {
+                        "all": actionTags
+                    }
+                },
+                "payload.objectTags": {
+                    "$operator": {
+                        "all": objectTags
+                    }
+                }
+            },
+            "projectionSpec": {
+                "payload.eventDateTime": "date",
+                "payload.properties": "properties"
+            },
+            "orderSpec": {}
+        }
+    },
+
+    operation_string = params.operation.split('('),
+    operation = operation_string[0],
+    query = {};
+
+    if("count" == operation){
+        query["$count"] = {
+            "data": groupQuery,
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "count"
+            }
+        }
+    }
+    else{
+        var operation_on = operation_string[1].slice(0,-1);
+        query["$" + operation] = {
+            "field": {
+                "name": "properties." + operation_on
+            },
+            "data": groupQuery,
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": operation_on
+            }
+        }
+    }
+
+    return query;
+};
+
+//v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}({{:property}})/daily/{{barchart/json}}
+app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/json", 
+        function(req, res){
+            var query = getQueryForVisualizationAPI(req.params);
+            getAggregatedEventsFromPlatform(query)
+                .then(function (response) {
+                    res.send(response);
+                }).catch(function (error) {
+                    res.status(404).send("Oops! Some error occurred.");
+                });
+        });
+
+
 app.options('*', function (request, response) {
     response.header('Access-Control-Allow-Origin', '*');
     response.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
