@@ -10,12 +10,6 @@ window.qd.plotWTFHistory = function() {
         };
         var width = $('#wtf-history').width();
         var height = width / 1.61;
-         if ($(window).width() >645 &&  $(window).width() < 1030) {
-                h = (w / 2.5);
-            }
-         if ($(window).width() < 345) {
-                h = (w / 1);
-            }
         var oneMonthAgo = new Date(moment().subtract("month", 1).format("MM/DD/YYYY"));
         var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
         var x = d3.time.scale()
@@ -64,7 +58,8 @@ window.qd.plotWTFHistory = function() {
         svg.call(tip);
         svg.selectAll('.chart')
             .data(data)
-            .enter().append('rect')
+            .enter()
+            .append('rect')
             .attr('class', 'bar')
             .style("fill", "lightpink")
             .style("stroke", d3.rgb("lightpink").darker())
