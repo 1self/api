@@ -784,13 +784,4 @@ module.exports = function (app) {
         });
     });
 
-    app.get("/barChart", function (req, res) {
-        var events = [
-            {date: "10/17/2014", count: 4},
-            {date: "10/18/2014", count: 10},
-            {date: "10/19/2014", count: 1},
-            {date: "10/20/2014", count: 7}
-        ];
-        res.render('barChart', {events: events});
-    });
 };
