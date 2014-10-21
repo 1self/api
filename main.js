@@ -700,7 +700,7 @@ var generateQueryForBuildDuration = function (params) {
             }
         }
     };
-    var countBuildFinishEventsQuery = countOnParameters(groupQuery, {}, "eventCount");
+    var countBuildFinishEventsQuery = countOnParameters(groupQuery, {}, "count");
     return {
         spec: JSON.stringify([sumOfBuildDurationForBuildFinishEvents,
             countBuildFinishEventsQuery
@@ -1534,7 +1534,7 @@ app.get('/quantifieddev/buildDuration', function (req, res) {
         .then(getAggregatedEventsFromPlatform)
         .then(function (response) {
             for (var date in response) {
-                response[date].avgBuildDuration = convertMillisToSecs(response[date].totalDuration / response[date].eventCount);
+                response[date].avgBuildDuration = convertMillisToSecs(response[date].totalDuration / response[date].count);
             }
             var result = transformPlatformDataToQDEvents(response);
             res.send(result);
@@ -1757,12 +1757,12 @@ var getQueryForVisualizationAPI = function(params){
 };
 
 //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}({{:property}})/daily/{{barchart/json}}
-app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/json", 
+    app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/type/json",
         function(req, res){
             var query = getQueryForVisualizationAPI(req.params);
             getAggregatedEventsFromPlatform(query)
                 .then(function (response) {
-                    res.send(response);
+                    res.send(transformPlatformDataToQDEvents(response[0]));
                 }).catch(function (error) {
                     res.status(404).send("Oops! Some error occurred.");
                 });

@@ -21,7 +21,7 @@ var plotBarChart = function (divId, events, fromTime, tillTime) {
             .nice();
 
         var maxDataValue = d3.max(events, function (d) {
-            return d.eventCount;
+            return d.count;
         });
         var x = d3.scale.linear()
             .domain([0, maxDataValue])
@@ -48,7 +48,7 @@ var plotBarChart = function (divId, events, fromTime, tillTime) {
             .append('g')
             .attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
         var tipText = function (d) {
-            return "<strong>" + d.eventCount + (d.eventCount === 1 ? " event" : " events") +
+            return "<strong>" + d.count + (d.count === 1 ? " event" : " events") +
                 "</strong> <span style='color:lightgrey'> on " + moment(d.date).format("ddd MMM DD") + "</span>";
         };
         var tooltipDivForMobile = d3.select("body").append("div")
@@ -88,7 +88,7 @@ var plotBarChart = function (divId, events, fromTime, tillTime) {
             .attr('x', 0)
             .attr('height', yHeight.rangeBand())
             .attr('width', function (d) {
-                return x(d.eventCount)
+                return x(d.count)
             })
             .on("click", function (d) {
                 if ($(window).width() < 768) {
@@ -141,14 +141,14 @@ var plotBarChart = function (divId, events, fromTime, tillTime) {
 };
 //
 //var events = [
-//    {date: "10/17/2014", eventCount: 4},
-//    {date: "10/18/2014", eventCount: 10},
-//    {date: "10/19/2014", eventCount: 1},
-//    {date: "10/20/2014", eventCount: 7}
+//    {date: "10/17/2014", count: 4},
+//    {date: "10/18/2014", count: 10},
+//    {date: "10/19/2014", count: 1},
+//    {date: "10/20/2014", count: 7}
 //];
 var getEventsFor = function () {
     return $.ajax({
-        url: "/v1/streams/" + streamId + "/events/" + objectTags + "/" + actionTags + "/" + operation + "/" + period + "/" + "json",
+        url: "/v1/streams/" + streamId + "/events/" + objectTags + "/" + actionTags + "/" + operation + "/" + period + "/" + "type/json",
         headers: {
             "Accept": "application/json"
         }
@@ -158,6 +158,8 @@ var getEventsFor = function () {
 $(document).ready(function () {
     console.log("", streamId);
     $.when(getEventsFor(streamId, objectTags, actionTags, operation, property, period, renderType))
-        .done(plotBarChart("#barChart", events, null, null))
+        .done(function(events){
+            plotBarChart("#barChart", events, null, null)
+        })
         .fail();
 });
