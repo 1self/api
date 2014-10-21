@@ -139,14 +139,25 @@ var plotBarChart = function (divId, events, fromTime, tillTime) {
             .text("Date");
     }, 1000);
 };
-
-var events = [
-    {date: "10/17/2014", eventCount: 4},
-    {date: "10/18/2014", eventCount: 10},
-    {date: "10/19/2014", eventCount: 1},
-    {date: "10/20/2014", eventCount: 7}
-];
+//
+//var events = [
+//    {date: "10/17/2014", eventCount: 4},
+//    {date: "10/18/2014", eventCount: 10},
+//    {date: "10/19/2014", eventCount: 1},
+//    {date: "10/20/2014", eventCount: 7}
+//];
+var getEventsFor = function () {
+    return $.ajax({
+        url: "/v1/streams/" + streamId + "/events/" + objectTags + "/" + actionTags + "/" + operation + "/" + period + "/" + "json",
+        headers: {
+            "Accept": "application/json"
+        }
+    });
+};
 
 $(document).ready(function () {
-    plotBarChart("#barChart", events, null, null);
+    console.log("", streamId);
+    $.when(getEventsFor(streamId, objectTags, actionTags, operation, property, period, renderType))
+        .done(plotBarChart("#barChart", events, null, null))
+        .fail();
 });

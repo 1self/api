@@ -773,11 +773,24 @@ module.exports = function (app) {
     });
 
     //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
-    app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:property/:period/:renderType", function (req, res) {
-        res.status(200).send("Okay");
+    app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/:renderType", function (req, res) {
+        res.render('barChart',{
+            streamId: req.param("streamId"),
+            objectTags: req.param("objectTags"),
+            actionTags: req.param("actionTags"),
+            operation: req.param("operation"),
+            period: req.param("period"),
+            renderType: req.param("renderType")
+        });
     });
 
     app.get("/barChart", function (req, res) {
-        res.render('barChart');
+        var events = [
+            {date: "10/17/2014", eventCount: 4},
+            {date: "10/18/2014", eventCount: 10},
+            {date: "10/19/2014", eventCount: 1},
+            {date: "10/20/2014", eventCount: 7}
+        ];
+        res.render('barChart', {events: events});
     });
 };

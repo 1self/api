@@ -5,3 +5,40 @@
     background-color: rgba(255,255,255)
     background: linear-gradient(to right, rgba(255, 255, 255, 0),  rgba(255, 255, 255, 1));
 }
+.axis path, .axis line {
+    fill: none;
+    stroke:#fff;
+}
+text {
+    fill: #fff;
+}
+.d3-tip {
+     line-height: 1;
+     font-weight: bold;
+     font-size: 12px;
+     padding: 12px;
+     background: rgba(0, 0, 0, 0.8);
+     color: #fff;
+     border-radius: 2px;
+     z-index: 10;
+ }
+.d3-tip:after {
+     box-sizing: border-box;
+     display: inline;
+     font-size: 5px;
+     width: 100%;
+     line-height: 1;
+     color: rgba(0, 0, 0, 0.8);
+     content: "\25BC";
+     position: absolute;
+     text-align: center;
+ }
+.d3-tip.n:after {
+    margin: -1px 0 0 0;
+    top: 100%;
+    left: 0;
+}
+.bar:hover, .dot:hover, .heatMapRect:hover, .dot-line:hover {
+    stroke: black;
+    stroke-width: 3;
+}
