@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link href="/css/barChart.css" rel="stylesheet" media="screen">
+    <script src="/js/jquery.js"></script>
+    <script src="/js/jquery.cookie.js"></script>
+    <script>
+        var streamId = "{{streamId}}";
+        var objectTags = "{{objectTags}}";
+        var actionTags = "{{actionTags}}";
+        var operation = "{{operation}}";
+        var property = "{{property}}";
+        var period = "{{period}}";
+        var renderType = "{{renderType}}";
+    </script>
+</head>
+<body>
+<div id="barChart" class="barChart">
+
+</div>
+<script src="/js/daterange/moment.js"></script>
+<script src="/packages/d3/d3.js"></script>
+<script src="/js/d3.tip.v0.6.3.js"></script>
+<script src="/packages/d3/d3.geo.projection.v0.min.js"></script>
+<script src="/js/barChart.js"></script>
+</body>
+</html>
