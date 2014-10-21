@@ -16,6 +16,8 @@ var RedisStore = require('connect-redis')(session);
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
+var fs = require('fs')
+
 
 var opbeatOptions = {
     organization_id: process.env.OPBEAT_ORGANIZATION_ID,
@@ -1759,6 +1761,19 @@ var getQueryForVisualizationAPI = function(params){
                     res.status(404).send("Oops! Some error occurred.");
                 });
         });
+
+
+app.get("/helptext/:topic", function(req, res){
+    var topic = req.param("topic");
+    var filepath = "helptexts/" + topic + ".txt";
+
+    fs.readFile(filepath, 'utf8', function (err,data) {
+        if (err) {
+            res.send(400, "Error occurred")
+        }
+        res.send(data)
+    });
+})
 
 
 app.options('*', function (request, response) {
