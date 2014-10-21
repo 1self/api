@@ -1728,30 +1728,22 @@ var getQueryForVisualizationAPI = function(params){
 
     operation_string = params.operation.split('('),
     operation = operation_string[0],
-    query = {};
+    query = {},
+    query["$" + operation] = {};
 
-    if("count" == operation){
-        query["$count"] = {
-            "data": groupQuery,
-            "filterSpec": {},
-            "projectionSpec": {
-                "resultField": "count"
-            }
-        }
+    //FIXME(in platform), ordering of the hash matters :(
+    if("count" != operation){
+        var operation_field = operation_string[1].slice(0,-1);
+        query["$" + operation]["field"] = {
+            "name": "properties." + operation_field
+        };
     }
-    else{
-        var operation_on = operation_string[1].slice(0,-1);
-        query["$" + operation] = {
-            "field": {
-                "name": "properties." + operation_on
-            },
-            "data": groupQuery,
-            "filterSpec": {},
-            "projectionSpec": {
-                "resultField": operation_on
-            }
-        }
-    }
+
+    query["$" + operation]["data"] = groupQuery;
+    query["$" + operation]["filterSpec"] = {};
+    query["$" + operation]["projectionSpec"] =  {
+        "resultField": "value"
+    };
 
     return {spec: JSON.stringify(query)}
 };
