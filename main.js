@@ -1688,7 +1688,6 @@ app.get('/quantifieddev/extensions/message', function (req, res) {
 });
 
 var getQueryForVisualizationAPI = function(params){
-    console.log(params);
     var lastMonth = moment().subtract('months', 1);
     actionTags = params.actionTags.split(','),
     objectTags = params.objectTags.split(','),
@@ -1754,7 +1753,7 @@ var getQueryForVisualizationAPI = function(params){
         }
     }
 
-    return query;
+    return {spec: JSON.stringify(query)}
 };
 
 //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}({{:property}})/daily/{{barchart/json}}
