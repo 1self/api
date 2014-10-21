@@ -700,7 +700,7 @@ var generateQueryForBuildDuration = function (params) {
             }
         }
     };
-    var countBuildFinishEventsQuery = countOnParameters(groupQuery, {}, "count");
+    var countBuildFinishEventsQuery = countOnParameters(groupQuery, {}, "eventCount");
     return {
         spec: JSON.stringify([sumOfBuildDurationForBuildFinishEvents,
             countBuildFinishEventsQuery
@@ -1534,7 +1534,7 @@ app.get('/quantifieddev/buildDuration', function (req, res) {
         .then(getAggregatedEventsFromPlatform)
         .then(function (response) {
             for (var date in response) {
-                response[date].avgBuildDuration = convertMillisToSecs(response[date].totalDuration / response[date].count);
+                response[date].avgBuildDuration = convertMillisToSecs(response[date].totalDuration / response[date].eventCount);
             }
             var result = transformPlatformDataToQDEvents(response);
             res.send(result);
