@@ -1,7 +1,11 @@
 body {
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
 }
-
+.apiUrl {
+    background-color : forestgreen;
+    color : #fff;
+    font-size: 27px;
+}
 .barChart {
     background-color: #4CBB62;
 }
