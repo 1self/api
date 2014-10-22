@@ -48,7 +48,7 @@ var plotBarChart = function (divId, events, fromTime, tillTime) {
             .append('g')
             .attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
         var tipText = function (d) {
-            return "<strong>" + d.value + (d.value === 1 ? " event" : " events") +
+            return "<strong>" + operation+" "+ d.value +
                 "</strong> <span style='color:lightgrey'> on " + moment(d.date).format("ddd MMM DD") + "</span>";
         };
         var tooltipDivForMobile = d3.select("body").append("div")
@@ -126,7 +126,7 @@ var plotBarChart = function (divId, events, fromTime, tillTime) {
             .attr("y", -15)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text("Event Count");
+            .text("Event "+ operation);
 
         svg.append('g')
             .attr('class', 'y axis')
