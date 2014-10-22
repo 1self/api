@@ -7,8 +7,8 @@ var plotBarChart = function (divId, events, fromTime, tillTime) {
             bottom: 30,
             left: 80
         };
-        var width = $(divId).width();
-        var height = width / 1.61;
+        var width = window.innerWidth;
+        var height = window.innerHeight;
         var oneMonthAgo = new Date(moment().subtract("month", 1).format("MM/DD/YYYY"));
         var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
         var dateRange = d3.range(31);
