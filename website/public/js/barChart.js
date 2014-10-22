@@ -4,8 +4,8 @@ var plotBarChart = function (divId, events, fromTime, tillTime) {
         var margin = {
             top: 20,
             right: 30,
-            bottom: 30,
-            left: 80
+            bottom: 0,
+            left: 0
         };
         var width = window.innerWidth;
         var height = window.innerHeight;
@@ -30,14 +30,14 @@ var plotBarChart = function (divId, events, fromTime, tillTime) {
 
         var yAxis = d3.svg.axis()
             .scale(y)
-            .orient('left')
+            .orient('right')
             .ticks(d3.time.weeks, 1)
             .tickFormat(d3.time.format('%b %d'))
             .tickPadding(8);
 
         var xAxis = d3.svg.axis()
             .scale(x)
-            .orient('bottom')
+            .orient('top')
             .ticks(xTicks)
             .tickPadding(8);
 
@@ -123,7 +123,7 @@ var plotBarChart = function (divId, events, fromTime, tillTime) {
             .append("text")
             .attr("class", "label")
             .attr("x", width - margin.left - margin.right)
-            .attr("y", -15)
+            .attr("y", -30)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
             .text("Event "+ operation);

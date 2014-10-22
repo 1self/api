@@ -15,11 +15,12 @@ body {
 }
 text {
     fill: #fff;
+    font-size: 40px;
 }
-.d3-tip {
+.d3-tip, .tooltip {
      line-height: 1;
      font-weight: bold;
-     font-size: 12px;
+     font-size: 30px;
      padding: 12px;
      background: rgba(0, 0, 0, 0.8);
      color: #fff;
