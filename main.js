@@ -1763,7 +1763,7 @@ var getQueryForVisualizationAPI = function(params){
         });
 
 
-app.get("/helptext/:topic", function(req, res){
+app.get("/v1/helptext/:topic", function(req, res){
     var topic = req.param("topic");
     var filepath = "helptexts/" + topic + ".txt";
 
@@ -1771,7 +1771,7 @@ app.get("/helptext/:topic", function(req, res){
         if (err) {
             res.send(400, "Error occurred")
         }
-        res.send(data)
+        res.send({helptext: data})
     });
 })
 
