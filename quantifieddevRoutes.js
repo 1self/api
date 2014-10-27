@@ -774,7 +774,7 @@ module.exports = function (app) {
 
     //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
     app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/:renderType", function (req, res) {
-        res.render('barChart',{
+        res.render('chart',{
             streamId: req.param("streamId"),
             objectTags: req.param("objectTags"),
             actionTags: req.param("actionTags"),

@@ -1,4 +1,6 @@
-var plotBarChart = function (divId, events, fromTime, tillTime) {
+window.charts = window.charts || {};
+
+charts.plotBarChart = function (divId, events, fromTime, tillTime) {
     setTimeout(function () {
         $(divId).empty();
         var margin = {
@@ -127,22 +129,3 @@ var plotBarChart = function (divId, events, fromTime, tillTime) {
     }, 1000);
 };
 
-var getEventsFor = function (streamId, objectTags, actionTags, operation, period) {
-    return $.ajax({
-        url: "/v1/streams/" + streamId + "/events/" + objectTags + "/" + actionTags + "/" + operation + "/" + period + "/" + "type/json",
-        headers: {
-            "Accept": "application/json"
-        }
-    });
-};
-
-$(document).ready(function () {
-    console.log("", streamId);
-    $.when(getEventsFor(streamId, objectTags, actionTags, operation, period))
-        .done(function(events){
-            if(renderType === "barChart"){
-                plotBarChart("#barChart", events, null, null)
-            }
-        })
-        .fail();
-});
