@@ -127,7 +127,7 @@ var plotBarChart = function (divId, events, fromTime, tillTime) {
     }, 1000);
 };
 
-var getEventsFor = function () {
+var getEventsFor = function (streamId, objectTags, actionTags, operation, period) {
     return $.ajax({
         url: "/v1/streams/" + streamId + "/events/" + objectTags + "/" + actionTags + "/" + operation + "/" + period + "/" + "type/json",
         headers: {
@@ -138,9 +138,11 @@ var getEventsFor = function () {
 
 $(document).ready(function () {
     console.log("", streamId);
-    $.when(getEventsFor(streamId, objectTags, actionTags, operation, property, period, renderType))
+    $.when(getEventsFor(streamId, objectTags, actionTags, operation, period))
         .done(function(events){
-            plotBarChart("#barChart", events, null, null)
+            if(renderType === "barChart"){
+                plotBarChart("#barChart", events, null, null)
+            }
         })
         .fail();
 });
