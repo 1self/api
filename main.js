@@ -1689,10 +1689,7 @@ app.get('/quantifieddev/extensions/message', function (req, res) {
     res.send(JSON.stringify(result));
 });
 
-var getQueryForVisualizationAPI = function (streams, params) {
-    var streamIds = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
+var getQueryForVisualizationAPI = function (streamIds, params) {
     var lastMonth = moment().subtract('months', 1);
     var actionTags = params.actionTags.split(',');
     var objectTags = params.objectTags.split(',');
@@ -1777,7 +1774,10 @@ app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/t
         validEncodedUsername(encodedUsername, req.query.forUsername, [])
             .then(getStreamIdForUsername)
             .then(function (params) {
-                var streamIds = params[0];
+                var streams = params[0];
+                var streamIds = _.map(streams, function (stream) {
+                    return stream.streamid;
+                });
                 return getQueryForVisualizationAPI(streamIds, req.params);
             })
             .then(getAggregatedEventsFromPlatform)
