@@ -1,21 +1,33 @@
 window.charts = window.charts || {};
 
-var getEventsFor = function (streamId, objectTags, actionTags, operation, period) {
+var getEventsFor = function (type, typeId, objectTags, actionTags, operation, period) {
     return $.ajax({
-        url: "/v1/streams/" + streamId + "/events/" + objectTags + "/" + actionTags + "/" + operation + "/" + period + "/" + "type/json",
+        url: "/v1/"+ type +"/"+ typeId + "/events/" + objectTags + "/" + actionTags + "/" + operation + "/" + period + "/" + "type/json",
         headers: {
-            "Accept": "application/json"
+            "Accept": "application/json",
+            "Authorization": $.cookie("_eun")
         }
     });
 };
 
+var plotChart = function (events) {
+    if (renderType === "barchart") {
+        charts.plotBarChart("#chart", events, null, null);
+    }
+};
+
 $(document).ready(function () {
-    console.log("", streamId);
-    $.when(getEventsFor(streamId, objectTags, actionTags, operation, period))
-        .done(function (events) {
-            if (renderType === "barChart") {
-                charts.plotBarChart("#chart", events, null, null);
-            }
-        })
-        .fail();
+    if (isUserLoggedIn === "true") {
+        $(".apiUrl").html("/v1/users/" + username + "/events/" + objectTags + "/" + actionTags + "/" + operation
+            + "/" + period + "/" + renderType);
+        $.when(getEventsFor("users", username, objectTags, actionTags, operation, period))
+            .done(plotChart)
+            .fail();   }
+    else {
+        $(".apiUrl").html("/v1/streams/" + streamId + "/events/" + objectTags + "/" + actionTags + "/" + operation
+            + "/" + period + "/" + renderType);
+        $.when(getEventsFor("streams", streamId, objectTags, actionTags, operation, period))
+            .done(plotChart)
+            .fail();
+    }
 });

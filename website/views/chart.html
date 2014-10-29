@@ -7,7 +7,12 @@
     <script src="/js/jquery.js"></script>
     <script src="/js/jquery.cookie.js"></script>
     <script>
-        var streamId = "{{streamId}}";
+        var isUserLoggedIn = "{{isUserLoggedIn}}";
+        if (isUserLoggedIn === "true") {
+            var username = "{{username}}";
+        } else {
+            var streamId = "{{streamId}}";
+        }
         var objectTags = "{{objectTags}}";
         var actionTags = "{{actionTags}}";
         var operation = "{{operation}}";
@@ -17,8 +22,11 @@
     </script>
 </head>
 <body>
-<div class="apiUrl">/v1/streams/{{streamId}}/events/{{objectTags}}/{{actionTags}}/{{operation}}/{{period}}/{{renderType}}</div>
+<div class="apiUrl"></div>
 <div id="chart" class="chart">
+</div>
+<div>
+    <a id="login" href="/auth/github">Login to 1self with GitHub</a>
 </div>
 <script src="/js/daterange/moment.js"></script>
 <script src="/packages/d3/d3.js"></script>

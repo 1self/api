@@ -76,6 +76,12 @@ module.exports = function (app) {
                     if (req.session.redirectUrl) {
                         var redirectUrl = req.session.redirectUrl;
                         delete req.session.redirectUrl;
+                        if(redirectUrl.match("/v1/streams")) {
+                            var tokenisedUrl = redirectUrl.split("/");
+                            tokenisedUrl[2] = "users";
+                            tokenisedUrl[3] = req.session.username;
+                            redirectUrl = tokenisedUrl.join("/");
+                        }
                         res.redirect(redirectUrl);
                     } else {
                         redirect(user, "/dashboard");

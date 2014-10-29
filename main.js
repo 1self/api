@@ -1283,7 +1283,7 @@ app.get('/recent_signups', function (req, res) {
     });
 });
 
-var validateClient = function(clientId, clientSecret){
+var validateClient = function (clientId, clientSecret) {
     var deferred = q.defer();
 
     var query = {
@@ -1291,11 +1291,11 @@ var validateClient = function(clientId, clientSecret){
         clientSecret: clientSecret
     };
 
-    mongoDbConnection(function(qdDb){
+    mongoDbConnection(function (qdDb) {
         qdDb.collection('registeredApps').findOne(query, function (err, result) {
-            if(err){
+            if (err) {
                 deferred.reject();
-            } else if (!result){
+            } else if (!result) {
                 deferred.reject();
             } else {
                 deferred.resolve();
@@ -1317,13 +1317,13 @@ app.post('/stream', function (req, res) {
 app.post('/v1/streams', function (req, res) {
     var auth = req.headers.authorization;
 
-    if (auth === undefined){
+    if (auth === undefined) {
         res.send(401, "Unauthorized request. Please pass valid clientId and clientSecret")
     }
     var clientId = auth.split(":")[0];
     var clientSecret = auth.split(":")[1];
 
-    validateClient(clientId, clientSecret).then(function(){
+    validateClient(clientId, clientSecret).then(function () {
         util.createV1Stream(clientId, function (err, data) {
             if (err) {
                 res.status(500).send("Database error");
@@ -1331,7 +1331,7 @@ app.post('/v1/streams', function (req, res) {
                 res.send(data);
             }
         });
-    }).catch(function(){
+    }).catch(function () {
         res.send(401);
     })
 });
@@ -1689,19 +1689,28 @@ app.get('/quantifieddev/extensions/message', function (req, res) {
     res.send(JSON.stringify(result));
 });
 
-var getQueryForVisualizationAPI = function(params){
+var getQueryForVisualizationAPI = function (streams, params) {
+    var streamIds = _.map(streams, function (stream) {
+        return stream.streamid;
+    });
     var lastMonth = moment().subtract('months', 1);
-    actionTags = params.actionTags.split(','),
-    objectTags = params.objectTags.split(','),
+    var actionTags = params.actionTags.split(',');
+    var objectTags = params.objectTags.split(',');
 
-    groupQuery = {
+    var groupQuery = {
         "$groupBy": {
-            "fields": [{
-                "name": "payload.eventDateTime",
-                "format": "MM/dd/yyyy"
-            }],
+            "fields": [
+                {
+                    "name": "payload.eventDateTime",
+                    "format": "MM/dd/yyyy"
+                }
+            ],
             "filterSpec": {
-                "payload.streamid": params.streamId,
+                "payload.streamid": {
+                    "$operator": {
+                        "in": streamIds
+                    }
+                },
                 "payload.eventDateTime": {
                     "$operator": {
                         ">": {
@@ -1726,16 +1735,16 @@ var getQueryForVisualizationAPI = function(params){
             },
             "orderSpec": {}
         }
-    },
+    };
 
-    operation_string = params.operation.split('('),
-    operation = operation_string[0],
-    query = {},
+    var operation_string = params.operation.split('(');
+    var operation = operation_string[0];
+    var query = {};
     query["$" + operation] = {};
 
     //FIXME(in platform), ordering of the hash matters :(
-    if("count" != operation){
-        var operation_field = operation_string[1].slice(0,-1);
+    if ("count" != operation) {
+        var operation_field = operation_string[1].slice(0, -1);
         query["$" + operation]["field"] = {
             "name": "properties." + operation_field
         };
@@ -1743,7 +1752,7 @@ var getQueryForVisualizationAPI = function(params){
 
     query["$" + operation]["data"] = groupQuery;
     query["$" + operation]["filterSpec"] = {};
-    query["$" + operation]["projectionSpec"] =  {
+    query["$" + operation]["projectionSpec"] = {
         "resultField": "value"
     };
 
@@ -1751,29 +1760,46 @@ var getQueryForVisualizationAPI = function(params){
 };
 
 //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}({{:property}})/daily/{{barchart/json}}
-    app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/type/json",
-        function(req, res){
-            var query = getQueryForVisualizationAPI(req.params);
-            getAggregatedEventsFromPlatform(query)
-                .then(function (response) {
-                    res.send(transformPlatformDataToQDEvents(response[0]));
-                }).catch(function (error) {
-                    res.status(404).send("Oops! Some error occurred.");
-                });
-        });
+app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/type/json",
+    function (req, res) {
+        var query = getQueryForVisualizationAPI([req.params.streamId], req.params);
+        getAggregatedEventsFromPlatform(query)
+            .then(function (response) {
+                res.send(transformPlatformDataToQDEvents(response[0]));
+            }).catch(function (error) {
+                res.status(404).send("Oops! Some error occurred.");
+            });
+    });
+
+app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/type/json",
+    function (req, res) {
+        var encodedUsername = req.headers.authorization;
+        validEncodedUsername(encodedUsername, req.query.forUsername, [])
+            .then(getStreamIdForUsername)
+            .then(function (params) {
+                var streamIds = params[0];
+                return getQueryForVisualizationAPI(streamIds, req.params);
+            })
+            .then(getAggregatedEventsFromPlatform)
+            .then(function (response) {
+                res.send(transformPlatformDataToQDEvents(response[0]));
+            }).catch(function (error) {
+                res.status(404).send("Oops! Some error occurred.");
+            });
+    });
 
 
-app.get("/v1/helptext/:topic", function(req, res){
+app.get("/v1/helptext/:topic", function (req, res) {
     var topic = req.param("topic");
     var filepath = "helptexts/" + topic + ".txt";
 
-    fs.readFile(filepath, 'utf8', function (err,data) {
+    fs.readFile(filepath, 'utf8', function (err, data) {
         if (err) {
             res.send(400, "Error occurred")
         }
         res.send({helptext: data})
     });
-})
+});
 
 
 app.options('*', function (request, response) {

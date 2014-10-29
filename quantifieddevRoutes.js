@@ -42,93 +42,95 @@ module.exports = function (app) {
         res.render('embeddableGlobe');
     });
 
-    app.get("/dashboard", sessionManager.requiresSession, function (req, res) {
-        var streamid = req.query.streamId ? req.query.streamId : "";
-        var readToken = req.query.readToken ? req.query.readToken : "";
+    var isStreamAlreadyLinkedToUser = function (streamid, user) {
+        return _.where(user.streams, {
+            "streamid": streamid
+        }).length > 0;
+    };
 
-        var isStreamAlreadyLinkedToUser = function (streamid, user) {
-            return _.where(user.streams, {
-                "streamid": streamid
-            }).length > 0;
+    var streamExists = function (streamid) {
+        var byStreamId = {
+            "streamid": streamid
         };
+        var deferred = Q.defer();
 
-        var streamExists = function (streamid) {
-            var byStreamId = {
-                "streamid": streamid
-            };
-            var deferred = Q.defer();
-
-            mongoDbConnection(function (qdDb) {
-                qdDb.collection('stream').findOne(byStreamId, function (err, stream) {
-                    if (!err && stream) {
-                        deferred.resolve();
-                    } else {
-                        deferred.reject(err);
-                    }
-                });
-            });
-            return deferred.promise;
-        };
-
-        var getStreamsForUser = function () {
-            var oneselfUsername = req.session.username;
-            var streamidUsernameMapping = {
-                "username": oneselfUsername.toLowerCase()
-            };
-            var deferred = Q.defer();
-
-            mongoDbConnection(function (qdDb) {
-                qdDb.collection('users').findOne(streamidUsernameMapping, {
-                    "streams": 1
-                }, function (err, user) {
-                    if (err) {
-                        deferred.reject(err);
-                    } else {
-                        deferred.resolve(user);
-                    }
-                });
-            });
-            return deferred.promise;
-        };
-
-        if (streamid && readToken) {
-            var insertStreamForUser = function (user, streamid) {
-                var deferred = Q.defer();
-                mongoDbConnection(function (qdDb) {
-                    var mappingToInsert = {
-                        "$push": {
-                            "streams": {
-                                "streamid": streamid,
-                                "readToken": readToken
-                            }
-                        }
-                    };
-                    qdDb.collection('users').update({
-                        "username": req.session.username.toLowerCase()
-                    }, mappingToInsert, function (err, user) {
-                        if (user) {
-                            deferred.resolve(true);
-                        } else {
-                            deferred.reject(err);
-                        }
-                    });
-                });
-                return deferred.promise;
-            };
-
-            var linkStreamToUser = function (user) {
-                var deferred = Q.defer();
-                if (isStreamAlreadyLinkedToUser(streamid, user)) {
-                    deferred.resolve(false);
+        mongoDbConnection(function (qdDb) {
+            qdDb.collection('stream').findOne(byStreamId, function (err, stream) {
+                if (!err && stream) {
+                    deferred.resolve();
                 } else {
-                    return insertStreamForUser(user, streamid);
+                    deferred.reject(err);
                 }
-                return deferred.promise;
-            };
+            });
+        });
+        return deferred.promise;
+    };
 
-            streamExists(streamid)
-                .then(getStreamsForUser)
-                .then(linkStreamToUser)
+    var getStreamsForUser = function (oneselfUsername) {
+        var streamidUsernameMapping = {
+            "username": oneselfUsername.toLowerCase()
+        };
+        var deferred = Q.defer();
+
+        mongoDbConnection(function (qdDb) {
+            qdDb.collection('users').findOne(streamidUsernameMapping, {
+                "streams": 1,
+                "username": 1
+            }, function (err, user) {
+                if (err) {
+                    deferred.reject(err);
+                } else {
+                    deferred.resolve(user);
+                }
+            });
+        });
+        return deferred.promise;
+    };
+
+    var insertStreamForUser = function (user, streamid) {
+        var deferred = Q.defer();
+        mongoDbConnection(function (qdDb) {
+            var mappingToInsert = {
+                "$push": {
+                    "streams": {
+                        "streamid": streamid
+                    }
+                }
+            };
+            qdDb.collection('users').update({
+                "username": user.username.toLowerCase()
+            }, mappingToInsert, function (err, user) {
+                if (user) {
+                    deferred.resolve(true);
+                } else {
+                    deferred.reject(err);
+                }
+            });
+        });
+        return deferred.promise;
+    };
+
+    var linkStreamToUser = function (user, streamId) {
+        var deferred = Q.defer();
+        if (isStreamAlreadyLinkedToUser(streamId, user)) {
+            deferred.resolve(false);
+        } else {
+            return insertStreamForUser(user, streamId);
+        }
+        return deferred.promise;
+    };
+
+    app.get("/dashboard", sessionManager.requiresSession, function (req, res) {
+        var streamId = req.query.streamId ? req.query.streamId : "";
+
+        if (streamId) {
+            streamExists(streamId)
+                .then(function () {
+                    return getStreamsForUser(req.session.username)
+                })
+                .then(function (user) {
+                    return linkStreamToUser(user, streamId);
+                })
                 .then(function (isStreamLinked) {
                     res.render('dashboard', {
                         streamLinked: (isStreamLinked ? "yes" : ""),
@@ -144,7 +146,7 @@ module.exports = function (app) {
                     });
                 });
         } else {
-            getStreamsForUser().then(function (user) {
+            getStreamsForUser(req.session.username).then(function (user) {
                 if (user.streams && req.query.link_data !== "true") {
                     res.render('dashboard', {
                         username: req.session.username,
@@ -214,6 +216,12 @@ module.exports = function (app) {
             if (req.session.redirectUrl) {
                 var redirectUrl = req.session.redirectUrl;
                 delete req.session.redirectUrl;
+                if (redirectUrl.match("/v1/streams")) {
+                    var tokenizedUrl = redirectUrl.split("/");
+                    tokenizedUrl[2] = "users";
+                    tokenizedUrl[3] = req.session.username;
+                    redirectUrl = tokenizedUrl.join("/");
+                }
                 res.redirect(redirectUrl);
             } else {
                 res.redirect(CONTEXT_URI + '/dashboard');
@@ -774,13 +782,9 @@ module.exports = function (app) {
 
     //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
     app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/:renderType", function (req, res) {
-        var chartTypesAvailable = ["barChart"];
-
-        if(-1 == chartTypesAvailable.indexOf(req.param('renderType'))){
-            res.status(400).send("Chart types available: " + chartTypesAvailable.join(','));
-        }
-
-        res.render('chart',{
+        req.session.redirectUrl = req.originalUrl + "?streamId=" + req.param('streamId');
+        res.render('chart', {
+            isUserLoggedIn: false,
             streamId: req.param("streamId"),
             objectTags: req.param("objectTags"),
             actionTags: req.param("actionTags"),
@@ -788,6 +792,35 @@ module.exports = function (app) {
             period: req.param("period"),
             renderType: req.param("renderType")
         });
+    });
+
+    //v1/users/{{edsykes}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
+    app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/:renderType", sessionManager.requiresSession, function (req, res) {
+        var streamId = req.query.streamId;
+        console.log("straemid: " + streamId);
+
+        streamExists(streamId)
+            .then(function () {
+                return getStreamsForUser(req.session.username)
+            })
+            .then(function (user) {
+                return linkStreamToUser(user, streamId);
+            })
+            .then(function () {
+                res.render('chart', {
+                    isUserLoggedIn: true,
+                    username: req.param("username"),
+                    objectTags: req.param("objectTags"),
+                    actionTags: req.param("actionTags"),
+                    operation: req.param("operation"),
+                    period: req.param("period"),
+                    renderType: req.param("renderType")
+                });
+            }).catch(function (error) {
+                console.error("error during linking stream to user ", error);
+                res.status(500).send("Internal server error.");
+            });
+
     });
 
 };
