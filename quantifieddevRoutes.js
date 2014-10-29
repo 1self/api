@@ -774,6 +774,12 @@ module.exports = function (app) {
 
     //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
     app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/:renderType", function (req, res) {
+        var chartTypesAvailable = ["barChart"];
+
+        if(-1 == chartTypesAvailable.indexOf(req.param('renderType'))){
+            res.status(400).send("Chart types available: " + chartTypesAvailable.join(','));
+        }
+
         res.render('chart',{
             streamId: req.param("streamId"),
             objectTags: req.param("objectTags"),
