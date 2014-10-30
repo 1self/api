@@ -57,9 +57,9 @@ module.exports = function (app) {
         mongoDbConnection(function (qdDb) {
             qdDb.collection('stream').findOne(byStreamId, function (err, stream) {
                 if (!err && stream) {
-                    deferred.resolve();
+                    deferred.resolve(true);
                 } else {
-                    deferred.reject(err);
+                    deferred.resolve(false);
                 }
             });
         });
@@ -126,7 +126,7 @@ module.exports = function (app) {
         if (streamId) {
             streamExists(streamId)
                 .then(function () {
-                    return getStreamsForUser(req.session.username)
+                    return getStreamsForUser(req.session.username);
                 })
                 .then(function (user) {
                     return linkStreamToUser(user, streamId);
@@ -798,29 +798,32 @@ module.exports = function (app) {
     app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/:renderType", sessionManager.requiresSession, function (req, res) {
         var streamId = req.query.streamId;
         console.log("straemid: " + streamId);
-
+        var renderChart = function() {
+            var deferred = Q.defer();
+            deferred.resolve();
+            res.render('chart', {
+                isUserLoggedIn: true,
+                username: req.param("username"),
+                objectTags: req.param("objectTags"),
+                actionTags: req.param("actionTags"),
+                operation: req.param("operation"),
+                period: req.param("period"),
+                renderType: req.param("renderType")
+            });            
+        };
         streamExists(streamId)
-            .then(function () {
-                return getStreamsForUser(req.session.username)
-            })
-            .then(function (user) {
-                return linkStreamToUser(user, streamId);
-            })
-            .then(function () {
-                res.render('chart', {
-                    isUserLoggedIn: true,
-                    username: req.param("username"),
-                    objectTags: req.param("objectTags"),
-                    actionTags: req.param("actionTags"),
-                    operation: req.param("operation"),
-                    period: req.param("period"),
-                    renderType: req.param("renderType")
-                });
-            }).catch(function (error) {
-                console.error("error during linking stream to user ", error);
-                res.status(500).send("Internal server error.");
+            .then(function (exists) {
+                if (exists) {
+                    getStreamsForUser(req.session.username) .then(function (user) {
+                        return linkStreamToUser(user, streamId);
+                    }).then(renderChart).catch(function (error) {
+                        console.error("error during linking stream to user ", error);
+                        res.status(500).send("Internal server error.");
+                    });
+                }else {
+                    renderChart();
+                }
             });
-
     });
 
 };
