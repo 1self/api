@@ -1,48 +1,14 @@
-(function($) {
+(function ($) {
 
-    var url = function(base, resource) {
-        var result = "";
-        if (location.hostname == "localhost") {
-            if (base.length > 0) {
-                result = "http://" + location.hostname + ":5000/" + base + "/" + resource;
-            } else {
-                result = "http://" + location.hostname + ":5000/" + resource;
-            }
-
-        } else {
-            if(base.length > 0){
-                result = "https://app.quantifieddev.org/"+base+"/" + resource;
-            }else {
-                result = "https://app.quantifieddev.org/"+ resource;
-            }
-        }
-        return result;
-    };
-
-    var postQDRouteAjax = function(urlParam, successCallback, failureCallback) {
+    var postAjax = function (urlParam, successCallback, failureCallback) {
         $.ajax({
-            url: url("", urlParam),
-            headers: {
-                "Accept": "application/json"
-            },
-            success: successCallback,
-            error: function(xhr, error) {
-                console.log("Error occurred for ", urlParam);
-                if (failureCallback)
-                    failureCallback(error);
-            }
-        });
-    };
-
-    var postAjax = function(urlParam, successCallback, failureCallback) {
-        $.ajax({
-            url: url("quantifieddev", urlParam),
+            url: "/quantifieddev/" + urlParam,
             headers: {
                 "Accept": "application/json",
                 "Authorization": $.cookie("_eun")
             },
             success: successCallback,
-            error: function(xhr, error) {
+            error: function (xhr, error) {
                 console.log("Error occurred for ", urlParam);
                 if (failureCallback)
                     failureCallback(error);
@@ -50,16 +16,16 @@
         });
     };
 
-    var postAjaxWithData = function(urlParam, data, successCallback, failureCallback) {
+    var postAjaxWithData = function (url, data, successCallback, failureCallback) {
         $.ajax({
-            url: url("", urlParam),
+            url: url,
             headers: {
-                "Accept": "application/json",
+                "Accept": "application/json"
             },
             data: data,
             success: successCallback,
-            error: function(xhr, error) {
-                console.log("Error occurred for ", urlParam);
+            error: function (xhr, error) {
+                console.log("Error occurred for ", url);
                 if (failureCallback)
                     failureCallback(error);
             }
@@ -67,6 +33,4 @@
     };
     window.postAjaxWithData = postAjaxWithData;
     window.postAjax = postAjax;
-    window.postQDRouteAjax = postQDRouteAjax;
-    window.url = url;
 })(jQuery);

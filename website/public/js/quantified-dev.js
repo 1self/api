@@ -282,7 +282,7 @@ var qd = function () {
     };
     result.getEventsFor = function (encodedUsername, resource) {
         return $.ajax({
-            url: url("quantifieddev", resource),
+            url: "/quantifieddev/" + resource,
             headers: {
                 "Accept": "application/json",
                 "Authorization": encodedUsername
@@ -291,10 +291,10 @@ var qd = function () {
     };
     result.getTheirEventsFor = function (encodedUsername, forUsername, resource) {
         return $.ajax({
+            url: "/quantifieddev/" + resource,
             data: {
                 forUsername: forUsername
             },
-            url: url("quantifieddev", resource),
             headers: {
                 "Accept": "application/json",
                 "Authorization": encodedUsername

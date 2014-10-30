@@ -113,7 +113,7 @@ $(function() {
                 'friendsEmail': friendsEmail,
                 'myName': myName
             };
-            postAjaxWithData("request_to_compare_with_email", data, emailSuccessCallback, emailFailureCallback);
+            postAjaxWithData("/request_to_compare_with_email", data, emailSuccessCallback, emailFailureCallback);
         }
     });
 
