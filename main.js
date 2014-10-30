@@ -1841,12 +1841,39 @@ var updateChartComment = function (chartComment) {
     return deferred.promise;
 };
 
+var getCommentsForChart = function(graphUrl) {
+    var deferred = q.defer();
+    mongoDbConnection(function (qdDb) {
+        qdDb.collection('comments').find({
+            graphUrl: graphUrl
+        }, function (err, comments) {
+            if (err) {
+                deferred.reject("Error occured for getCommentsForChart");
+            }else{
+                comments.toArray(function (err, commentsArray) {
+                    deferred.resolve(commentsArray);
+                });
+            }
+        });
+    });
+    return deferred.promise;
+};
+
+// Get comments for the graph url
+app.get("/v1/comments", function(req, res){
+    var graphUrl = req.query.graphUrl;
+    getCommentsForChart(graphUrl).then(function(comments){
+        res.send(comments);
+    });
+});
+
+
 app.post("/v1/comments", function (req, res) {
     var encodedUsername = req.headers.authorization;
     var chartComment = req.body;
     validEncodedUsername(encodedUsername, "", [])
         .then(function () {
-            return findGraphUrl(chartComment.graphUrl)
+            return findGraphUrl(chartComment.graphUrl);
         })
         .then(function (chartComments) {
             if (_.isEmpty(chartComments)) {
