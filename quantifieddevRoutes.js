@@ -125,26 +125,29 @@ module.exports = function (app) {
 
         if (streamId) {
             streamExists(streamId)
-                .then(function () {
-                    return getStreamsForUser(req.session.username);
-                })
-                .then(function (user) {
-                    return linkStreamToUser(user, streamId);
-                })
-                .then(function (isStreamLinked) {
-                    res.render('dashboard', {
-                        streamLinked: (isStreamLinked ? "yes" : ""),
-                        username: req.session.username,
-                        avatarUrl: req.session.avatarUrl
-                    });
-                }).catch(function (error) {
-                    console.log("error during linking stream to user ", error);
-                    res.render('dashboard', {
-                        streamLinked: "no",
-                        username: req.session.username,
-                        avatarUrl: req.session.avatarUrl
-                    });
+                .then(function (exists) {
+                    if (exists){
+                        getStreamsForUser(req.session.username).then(function (user) {
+                            return linkStreamToUser(user, streamId);
+                        })
+                            .then(function (isStreamLinked) {
+                                res.render('dashboard', {
+                                    streamLinked: (isStreamLinked ? "yes" : ""),
+                                    username: req.session.username,
+                                    avatarUrl: req.session.avatarUrl
+                                });
+                            });
+                    } else {
+                        console.log("error during linking stream to user ");
+                        res.render('dashboard', {
+                            streamLinked: "no",
+                            username: req.session.username,
+                            avatarUrl: req.session.avatarUrl
+                        });
+                        
+                    }
                 });
+
         } else {
             getStreamsForUser(req.session.username).then(function (user) {
                 if (user.streams && req.query.link_data !== "true") {
