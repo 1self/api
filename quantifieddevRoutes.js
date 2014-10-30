@@ -798,7 +798,7 @@ module.exports = function (app) {
     app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/:renderType", sessionManager.requiresSession, function (req, res) {
         var streamId = req.query.streamId;
         console.log("straemid: " + streamId);
-        var renderChart = function() {
+        var renderChart = function () {
             res.render('chart', {
                 isUserLoggedIn: true,
                 graphOwner: req.param("username"),
@@ -808,20 +808,21 @@ module.exports = function (app) {
                 operation: req.param("operation"),
                 period: req.param("period"),
                 renderType: req.param("renderType")
-            });            
+            });
         };
+
         streamExists(streamId)
             .then(function (exists) {
                 if (exists) {
-                    getStreamsForUser(req.param('username')) 
+                    getStreamsForUser(req.param('username'))
                         .then(function (user) {
-                        return linkStreamToUser(user, streamId);
-                    }).then(renderChart)
+                            return linkStreamToUser(user, streamId);
+                        }).then(renderChart)
                         .catch(function (error) {
-                        console.error("error during linking stream to user ", error);
-                        res.status(500).send("Internal server error.");
-                    });
-                }else {
+                            console.error("error during linking stream to user ", error);
+                            res.status(500).send("Internal server error.");
+                        });
+                } else {
                     renderChart();
                 }
             });
