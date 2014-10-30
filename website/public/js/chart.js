@@ -16,6 +16,38 @@ var plotChart = function (events) {
     }
 };
 
+var addComment = function () {
+    var commentText = $("#commentText").val();
+    var graphUrl = window.location.href.split(window.location.origin)[1]; // /v1/users/...
+    var commentData = {
+        text: commentText,
+        timestamp: new Date(),
+        user: username
+    };
+    var graph = {
+        graphUrl: graphUrl,
+        username: graphOwner,
+        objectTags: objectTags,
+        actionTags: actionTags,
+        operation: operation,
+        period: period,
+        renderType: renderType,
+        comment: commentData
+    };
+    $.ajax({
+        url: "/v1/comments",
+        method: "POST",
+        data: graph,
+        headers: {
+            "Accept": "application/json",
+            "Authorization": $.cookie("_eun")
+        }
+    }).done(function (data) {
+        $("#addCommentModal").modal({show: false});
+        console.info("awesome. comment added." + JSON.stringify(commentData));
+    });
+};
+
 var handleAddComment = function () {
     if (isUserLoggedIn) {
         $("#addCommentModal").modal({show: true});
@@ -27,9 +59,9 @@ var handleAddComment = function () {
 
 $(document).ready(function () {
     if (isUserLoggedIn) {
-        $(".apiUrl").html("/v1/users/" + username + "/events/" + objectTags + "/" + actionTags + "/" + operation
+        $(".apiUrl").html("/v1/users/" + graphOwner + "/events/" + objectTags + "/" + actionTags + "/" + operation
             + "/" + period + "/" + renderType);
-        $.when(getEventsFor("users", username, objectTags, actionTags, operation, period))
+        $.when(getEventsFor("users", graphOwner, objectTags, actionTags, operation, period))
             .done(plotChart)
             .fail();
     }

@@ -799,11 +799,10 @@ module.exports = function (app) {
         var streamId = req.query.streamId;
         console.log("straemid: " + streamId);
         var renderChart = function() {
-            var deferred = Q.defer();
-            deferred.resolve();
             res.render('chart', {
                 isUserLoggedIn: true,
-                username: req.param("username"),
+                graphOwner: req.param("username"),
+                username: req.session.username,
                 objectTags: req.param("objectTags"),
                 actionTags: req.param("actionTags"),
                 operation: req.param("operation"),
@@ -814,9 +813,11 @@ module.exports = function (app) {
         streamExists(streamId)
             .then(function (exists) {
                 if (exists) {
-                    getStreamsForUser(req.session.username) .then(function (user) {
+                    getStreamsForUser(req.param('username')) 
+                        .then(function (user) {
                         return linkStreamToUser(user, streamId);
-                    }).then(renderChart).catch(function (error) {
+                    }).then(renderChart)
+                        .catch(function (error) {
                         console.error("error during linking stream to user ", error);
                         res.status(500).send("Internal server error.");
                     });

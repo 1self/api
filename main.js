@@ -1739,8 +1739,8 @@ var getQueryForVisualizationAPI = function (streamIds, params) {
     var query = {};
     query["$" + operation] = {};
 
-    //FIXME(in platform), ordering of the hash matters :(
-    if ("count" != operation) {
+    //Todo: FIXME(in platform), ordering of the hash matters :(
+    if ("count" !== operation) {
         var operation_field = operation_string[1].slice(0, -1);
         query["$" + operation]["field"] = {
             "name": "properties." + operation_field
@@ -1788,6 +1788,84 @@ app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/t
             });
     });
 
+var findGraphUrl = function (graphUrl) {
+    var deferred = q.defer();
+    var query = {graphUrl: graphUrl};
+    mongoDbConnection(function (qdDb) {
+        qdDb.collection('comments').findOne(query, function (err, chartComments) {
+            if (err) {
+                deferred.reject(err);
+            } else {
+                if (chartComments) {
+                    deferred.resolve(chartComments);
+                } else {
+                    deferred.resolve();
+                }
+            }
+        });
+    });
+    return deferred.promise;
+};
+
+var createChartComment = function (chartComment) {
+    var deferred = q.defer();
+    mongoDbConnection(function (qdDb) {
+        qdDb.collection('comments').insert(chartComment, function (err, recordsInserted) {
+            if (err) {
+                deferred.reject(err);
+            } else {
+                deferred.resolve();
+            }
+        });
+    });
+    return deferred.promise;
+};
+
+var updateChartComment = function (chartComment) {
+    var deferred = q.defer();
+    mongoDbConnection(function (qdDb) {
+        var query = {graphUrl: chartComment.graphUrl};
+        var commentToInsert = {
+            "$push": {
+                "comments": chartComment.comment
+            }
+        };
+        qdDb.collection('comments').update(query, commentToInsert, function (err, recordsUpdated) {
+            if (err) {
+                deferred.reject(err);
+            } else {
+                deferred.resolve();
+            }
+        });
+    });
+    return deferred.promise;
+};
+
+app.post("/v1/comments", function (req, res) {
+    var encodedUsername = req.headers.authorization;
+    var chartComment = req.body;
+    validEncodedUsername(encodedUsername, "", [])
+        .then(function () {
+            return findGraphUrl(chartComment.graphUrl)
+        })
+        .then(function (chartComments) {
+            if (_.isEmpty(chartComments)) {
+                chartComment.comments = [chartComment.comment];
+                delete chartComment.comment;
+                return createChartComment(chartComment);
+            }
+            else {
+                return updateChartComment(chartComment);
+            }
+        })
+        .then(function () {
+            res.status(200).send("ok");
+        })
+        .catch(function (err) {
+            console.error("Error in post comment", err);
+            res.status(500).send("Internal server error");
+        });
+});
 
 app.get("/v1/helptext/:topic", function (req, res) {
     var topic = req.param("topic");

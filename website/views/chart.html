@@ -10,6 +10,7 @@
     <script src="/js/jquery.cookie.js"></script>
     <script>
         var isUserLoggedIn = ("{{isUserLoggedIn}}" == "true");
+        var graphOwner = "{{graphOwner}}";
         if (isUserLoggedIn) {
             var username = "{{username}}";
         } else {
@@ -63,12 +64,12 @@
                 <div class="modal-body">
                     <label>
                         {{username}} :
-                        <input type="text" name="comment"/>
+                        <input id="commentText" type="text" name="comment"/>
                     </label>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <a href="/auth/github" class="btn btn-primary">Add Comment</a>
+                    <button type="button" class="btn btn-primary" onclick="addComment()">Add Comment</button>
                 </div>
             </div>
         </div>
