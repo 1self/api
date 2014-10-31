@@ -1841,18 +1841,16 @@ var updateChartComment = function (chartComment) {
     return deferred.promise;
 };
 
-var getCommentsForChart = function(graphUrl) {
+var getCommentsForChart = function (graphUrl) {
     var deferred = q.defer();
     mongoDbConnection(function (qdDb) {
-        qdDb.collection('comments').find({
+        qdDb.collection('comments').findOne({
             graphUrl: graphUrl
-        }, function (err, comments) {
+        }, {comments: 1}, function (err, chartComments) {
             if (err) {
-                deferred.reject("Error occured for getCommentsForChart");
-            }else{
-                comments.toArray(function (err, commentsArray) {
-                    deferred.resolve(commentsArray);
-                });
+                deferred.reject("Error occurred for getCommentsForChart");
+            } else {
+                deferred.resolve(chartComments.comments);
             }
         });
     });
@@ -1860,13 +1858,12 @@ var getCommentsForChart = function(graphUrl) {
 };
 
 // Get comments for the graph url
-app.get("/v1/comments", function(req, res){
+app.get("/v1/comments", function (req, res) {
     var graphUrl = req.query.graphUrl;
-    getCommentsForChart(graphUrl).then(function(comments){
+    getCommentsForChart(graphUrl).then(function (comments) {
         res.send(comments);
     });
 });
-
 
 app.post("/v1/comments", function (req, res) {
     var encodedUsername = req.headers.authorization;
