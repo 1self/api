@@ -11,14 +11,14 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
         };
         var width = window.innerWidth;
         var height = window.innerHeight;
-        var oneMonthAgo = new Date(moment().subtract("month", 1).format("MM/DD/YYYY"));
+        var twoWeeksAgo = new Date(moment().subtract("days", 13).format("MM/DD/YYYY"));
         var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
         var dateRange = d3.range(31);
         var yHeight = d3.scale.ordinal()
             .domain(dateRange)
             .rangeRoundBands([0, height - margin.top - margin.bottom]);
         var y = d3.time.scale()
-            .domain([oneMonthAgo , tomorrow])
+            .domain([twoWeeksAgo , tomorrow])
             .rangeRound([height - margin.top - margin.bottom, 0])
             .nice();
 
