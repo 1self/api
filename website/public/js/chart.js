@@ -18,7 +18,7 @@ var plotChart = function (events) {
 
 var addComment = function () {
     var commentText = $("#commentText").val();
-    var graphUrl = window.location.href.split(window.location.origin)[1]; // /v1/users/...
+    var graphUrl = window.location.href.split(window.location.origin)[1].split("?")[0]; // /v1/users/... without query params
     var commentData = {
         text: commentText,
         timestamp: new Date(),
