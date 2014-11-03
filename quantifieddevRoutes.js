@@ -529,7 +529,7 @@ module.exports = function (app) {
 
     var generateToken = function () {
         var deferred = Q.defer();
-        require('crypto').randomBytes(48, function (ex, buf) {
+        require('crypto').randomBytes(32, function (ex, buf) {
             var token = buf.toString('hex');
             deferred.resolve(token);
         });
@@ -782,6 +782,103 @@ module.exports = function (app) {
                 res.status(400).send("Email service unavailable");
             });
     });
+    
+    app.get('/v1/share_graph', sessionManager.requiresSession, function (req, res) {
+        var toEmailId = req.query.toEmailId;
+        var graphUrl = req.query.graphUrl;
+
+        var graphShareObject = {
+            "graphUrl": graphUrl
+        };
+        var fromUsername = req.session.username;
+        getPrimaryEmailId(fromUsername).then(function(fromEmailId) {
+            checkGraphAlreadyShared(graphShareObject).then(function(result){
+                if(result === null) {
+                    insertGraphShareEntryInDb(graphShareObject).then(function(graphEntry){
+                        return sendGraphShareEmail(graphEntry, fromEmailId, toEmailId);
+                    }).then(function(){
+                        res.send(200, {"message":"Graph url shared successfully."});
+                    });
+                } else {
+                    sendGraphShareEmail(graphShareObject, fromEmailId, toEmailId).then(function(){
+                        res.send(200, {"message": "Graph url shared successfully."});
+                    });
+                }
+            });
+        });
+    });
+    
+    var checkGraphAlreadyShared = function(graphShareObject){
+        var deferred = Q.defer();
+
+        mongoDbConnection(function (qdDb) {
+            qdDb.collection('graphShares').findOne(graphShareObject, function (err, graphShareObject) {
+                if (!err && graphShareObject){
+                    deferred.resolve(graphShareObject);
+                } else if (!err && !graphShareObject){
+                    deferred.resolve(null);
+                } else {
+                    deferred.reject(err);
+                }
+            });
+        });
+        return deferred.promise;
+    };
+
+    var insertGraphShareEntryInDb = function (graphEntry) {
+        var createEntry = function (token) {
+            var deferred = Q.defer();
+            graphEntry.shareToken = token;
+            mongoDbConnection(function (qdDb) {
+                qdDb.collection("graphShares", function (err, collection) {
+                    collection.update(graphEntry, {
+                        $set: graphEntry
+                    }, {
+                        upsert: true
+                    }, function (error, data) {
+                        if (error) {
+                            console.log("DB error", error);
+                            deferred.reject(error);
+                        } else {
+                            deferred.resolve(graphEntry);
+                        }
+                    });
+                });
+            });
+            return deferred.promise;
+        };
+
+        return generateToken().then(createEntry);
+    };
+
+    var sendGraphShareEmail = function (graphShareEntry, fromEmailId, toEmailId) {
+        var deferred = Q.defer();
+        var graphUrl = CONTEXT_URI + "/" + graphShareEntry.graphUrl;
+
+        emailTemplates(emailConfigOptions, function (err, emailRender) {
+            var context = {
+                graphUrl: graphUrl,
+                fromEmailId: fromEmailId
+            };
+            emailRender('graphShare.eml.html', context, function (err, html, text) {
+                sendgrid.send({
+                    to: toEmailId,
+                    from: QD_EMAIL,
+                    subject: fromEmailId + ' wants to share their graph data',
+                    html: html
+                }, function (err, json) {
+                    if (err) {
+                        console.error(err);
+                        deferred.reject(err);
+                    } else {
+                        console.log("Compare request email successfully sent to ", graphShareEntry.toEmailId);
+                        deferred.resolve();
+                    }
+                });
+            });
+        });
+        return deferred.promise;
+    };
 
     //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
     app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/:renderType", function (req, res) {
