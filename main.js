@@ -1849,8 +1849,10 @@ var getCommentsForChart = function (graphUrl) {
         }, {comments: 1}, function (err, chartComments) {
             if (err) {
                 deferred.reject("Error occurred for getCommentsForChart");
-            } else {
+            } else if(chartComments) {
                 deferred.resolve(chartComments.comments);
+            } else {
+                deferred.resolve([]);
             }
         });
     });

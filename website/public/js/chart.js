@@ -1,5 +1,7 @@
 window.charts = window.charts || {};
 
+var graphUrl = window.location.href.split(window.location.origin)[1].split("?")[0]; // /v1/users/... without query params
+
 var getEventsFor = function (type, typeId, objectTags, actionTags, operation, period) {
     return $.ajax({
         url: "/v1/" + type + "/" + typeId + "/events/" + objectTags + "/" + actionTags + "/" + operation + "/" + period + "/" + "type/json",
@@ -18,8 +20,7 @@ var plotChart = function (events) {
 
 var addComment = function () {
     var commentText = $("#commentText").val();
-    var graphUrl = window.location.href.split(window.location.origin)[1].split("?")[0]; // /v1/users/... without query params
-    var commentData = {
+    var comment = {
         text: commentText,
         timestamp: new Date(),
         user: username
@@ -32,7 +33,7 @@ var addComment = function () {
         operation: operation,
         period: period,
         renderType: renderType,
-        comment: commentData
+        comment: comment
     };
     $.ajax({
         url: "/v1/comments",
@@ -44,7 +45,8 @@ var addComment = function () {
         }
     }).done(function (data) {
         $("#addCommentModal").modal({show: false});
-        console.info("awesome. comment added." + JSON.stringify(commentData));
+        $("#comments").append("<p>" + comment.user + ": " + comment.text + "</p>")
+        console.info("awesome. comment added." + JSON.stringify(comment));
     });
 };
 
@@ -57,7 +59,7 @@ var handleAddComment = function () {
     }
 };
 
-$(document).ready(function () {
+var showChartTitle = function () {
     if (isUserLoggedIn) {
         $(".apiUrl").html("/v1/users/" + graphOwner + "/events/" + objectTags + "/" + actionTags + "/" + operation
             + "/" + period + "/" + renderType);
@@ -72,4 +74,26 @@ $(document).ready(function () {
             .done(plotChart)
             .fail();
     }
+};
+
+var showComments = function () {
+    $.ajax({
+        url: "/v1/comments?graphUrl=" + graphUrl,
+        headers: {
+            "Accept": "application/json",
+            "Authorization": $.cookie("_eun")
+        }
+    }).done(function (comments) {
+        var commentsDiv = $("#comments");
+        comments.forEach(function (comment) {
+            commentsDiv.append("<p>" + comment.user + ": " + comment.text + "</p>")
+        });
+
+        $("#addCommentModal").modal('hide');
+    });
+};
+
+$(document).ready(function () {
+    showChartTitle();
+    showComments();
 });
