@@ -126,7 +126,7 @@ module.exports = function (app) {
         if (streamId) {
             streamExists(streamId)
                 .then(function (exists) {
-                    if (exists){
+                    if (exists) {
                         getStreamsForUser(req.session.username).then(function (user) {
                             return linkStreamToUser(user, streamId);
                         })
@@ -144,7 +144,7 @@ module.exports = function (app) {
                             username: req.session.username,
                             avatarUrl: req.session.avatarUrl
                         });
-                        
+
                     }
                 });
 
@@ -785,16 +785,23 @@ module.exports = function (app) {
 
     //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
     app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/:renderType", function (req, res) {
-        req.session.redirectUrl = req.originalUrl + "?streamId=" + req.param('streamId');
-        res.render('chart', {
-            isUserLoggedIn: false,
-            streamId: req.param("streamId"),
-            objectTags: req.param("objectTags"),
-            actionTags: req.param("actionTags"),
-            operation: req.param("operation"),
-            period: req.param("period"),
-            renderType: req.param("renderType")
-        });
+        if (req.session.username) {
+            var redirectUrl = "/v1/users/" + req.session.username + "/events/" +
+                req.param("objectTags") + "/" + req.param("actionTags") + "/" +
+                req.param("operation") + "/" + req.param("period") + "/barchart";
+            res.redirect(redirectUrl);
+        } else {
+            req.session.redirectUrl = req.originalUrl + "?streamId=" + req.param('streamId');
+            res.render('chart', {
+                isUserLoggedIn: false,
+                streamId: req.param("streamId"),
+                objectTags: req.param("objectTags"),
+                actionTags: req.param("actionTags"),
+                operation: req.param("operation"),
+                period: req.param("period"),
+                renderType: req.param("renderType")
+            });
+        }
     });
 
     //v1/users/{{edsykes}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
