@@ -91,7 +91,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             .attr('x', 0)
             .attr('height', yHeight.rangeBand())
             .attr('width', function (d) {
-                return x(d.value)
+                return x(d.value);
             })
             .on("click", function (d) {
                 $(".addCommentButton").show();
@@ -112,7 +112,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 } else {
                     tooltipDivForMobile.transition()
                         .duration(100)
-                        .style("opacity", 0)
+                        .style("opacity", 0);
                 }
             });
 
