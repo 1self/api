@@ -783,7 +783,7 @@ module.exports = function (app) {
             });
     });
     
-    app.get('/v1/share_graph', sessionManager.requiresSession, function (req, res) {
+    app.post('/v1/share_graph', sessionManager.requiresSession, function (req, res) {
         var toEmailId = req.query.toEmailId;
         var graphUrl = req.query.graphUrl;
 
@@ -871,7 +871,7 @@ module.exports = function (app) {
                         console.error(err);
                         deferred.reject(err);
                     } else {
-                        console.log("Compare request email successfully sent to ", graphShareEntry.toEmailId);
+                        console.log("Graph share email successfully sent to ", graphShareEntry.toEmailId);
                         deferred.resolve();
                     }
                 });
@@ -901,8 +901,44 @@ module.exports = function (app) {
         }
     });
 
+    var checkShareTokenAndGraphUrlExists = function(shareToken, graphUrl) {
+        var deferred = Q.defer();
+
+        var tokenGraphUrlQuery = {
+            "graphUrl": graphUrl,
+            "shareToken": shareToken
+        };
+
+        mongoDbConnection(function (qdDb) {
+            qdDb.collection('graphShares').findOne(tokenGraphUrlQuery, function (err, entry) {
+                if (!err && entry) {
+                    deferred.resolve(true);
+                } else {
+                    console.log("Error is", err);
+                    deferred.resolve(false);
+                }
+            });
+        });
+        return deferred.promise;
+    };
+
+    var validateShareToken = function(req, res, next) {
+        var shareToken = req.query.shareToken;
+        var graphUrl = "/v1/users/" + req.param("username") + "/" +  req.param("objectTags") + "/" + req.param("actionTags") + "/" + req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType");
+
+        console.log("Graph Url is", graphUrl);
+
+        checkShareTokenAndGraphUrlExists(shareToken, graphUrl).then(function(status){
+            if(status) {
+                next();
+            } else {
+                sessionManager.requiresSession(req, res, next);
+            }
+        });
+    };
+
     //v1/users/{{edsykes}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
-    app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/:renderType", sessionManager.requiresSession, function (req, res) {
+    app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/:renderType", validateShareToken, function (req, res) {
         var streamId = req.query.streamId;
         console.log("straemid: " + streamId);
         var renderChart = function () {
@@ -936,3 +972,4 @@ module.exports = function (app) {
     });
 
 };
+
