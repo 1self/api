@@ -1,0 +1,36 @@
+.addCommentButton {
+    background: none !important;
+    border: none;
+    padding: 0 !important;
+
+    /*optional*/
+    font-family: arial, sans-serif; /*input has OS specific font-family*/
+    color: #069;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.commentList {
+    padding: 0;
+    list-style: none;
+    overflow: hidden;
+}
+
+.commentList li {
+    margin: 0;
+    margin-top: 10px;
+}
+
+.commentList li > div {
+    display: table-cell;
+}
+
+.commenter {
+    margin-right: 5px;
+    height: 100%;
+    float: left;
+}
+
+.commentText p {
+    margin: 0;
+}
