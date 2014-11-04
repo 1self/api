@@ -36,6 +36,10 @@
 
             </ul>
         </div>
+        <div id="addCommentInput" class="input-group input-group-lg" style="display:none">
+            <span class="input-group-addon">{{username}}</span>
+            <input id="commentText" type="text" class="form-control" placeholder="Add Comment">
+        </div>
         <button type="button" class="addCommentButton" onclick="handleAddComment()">
             Add a Comment
         </button>
@@ -57,29 +61,6 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <a href="/auth/github" class="btn btn-primary">Login to 1self</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="addCommentModal" tabindex="-1" role="dialog" aria-labelledby="addCommentLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span
-                            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <h4 class="modal-title" id="addCommentLabel">Add a Comment</h4>
-                </div>
-                <div class="modal-body">
-                    <label>
-                        {{username}} :
-                        <input id="commentText" type="text" name="comment"/>
-                    </label>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="addComment()">Add Comment</button>
                 </div>
             </div>
         </div>

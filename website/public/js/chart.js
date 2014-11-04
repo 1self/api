@@ -44,17 +44,24 @@ var addComment = function () {
             "Authorization": $.cookie("_eun")
         }
     }).done(function (data) {
-        $("#addCommentModal").modal({show: false});
         $(".commentList").append("<li><div class='commenter'>"+comment.user+"</div>"+
         "<div class='commentText'><p>"+comment.text+"</p>"+
         "<sub><span class='commentTimestamp'>"+moment(comment.timestamp).format("DD MMM YYYY HH:mm")+"</span></sub></div></li>");
         console.info("awesome. comment added." + JSON.stringify(comment));
+        $("#addCommentInput").hide();
     });
 };
 
+$("#addCommentInput").keyup(function (e) {
+    if (e.keyCode == 13) {
+        addComment();
+
+    }
+});
+
 var handleAddComment = function () {
     if (isUserLoggedIn) {
-        $("#addCommentModal").modal({show: true});
+        $("#addCommentInput").show();
     }
     else {
         $("#loginModal").modal({show: true});
@@ -92,8 +99,6 @@ var showComments = function () {
             "<div class='commentText'><p>"+comment.text+"</p>"+
                 "<sub><span class='commentTimestamp'>"+moment(comment.timestamp).format("DD MMM YYYY HH:mm")+"</span></sub></div></li>");
         });
-
-        $("#addCommentModal").modal('hide');
     });
 };
 
