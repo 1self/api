@@ -94,9 +94,20 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 return x(d.value);
             })
             .on("click", function (d) {
+                svg.selectAll('.bar')
+                    .style("stroke", function (data) {
+                        if (d === data) {
+                            return "black";
+                        }
+                    })
+                    .style("stroke-width", function (data) {
+                        if (d === data) {
+                            return 3;
+                        }
+                    });
                 $(".addCommentButton").show();
                 var day = moment(d.date).format("DD");
-                var month = moment(d.date).format("MMM");
+                var month = moment(d.date).format("MM");
                 var year = moment(d.date).format("YYYY");
                 charts.graphUrl = window.location.href.split(window.location.origin)[1].split("?")[0] + "/" + year + "/" + month + "/" + day;
                 charts.showComments();
