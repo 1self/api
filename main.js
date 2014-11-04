@@ -209,7 +209,7 @@ var getGithubStreamIdForUsername = function (params) {
 var saveEvent_driver = function (myEvent, stream, res, rm) {
     myEvent.streamid = stream.streamid;
     myEvent.eventDateTime = {
-        "$date": myEvent.datetime || moment(new Date()).format()
+        "$date": formatEventDateTime(myEvent.dateTime)
     };
     var options = {
         url: platformUri + '/rest/events/',
@@ -1385,12 +1385,20 @@ app.post('/stream/:id/event', postEvent);
 
 app.post('/v1/streams/:id/events', postEvent);
 
+var formatEventDateTime = function(datetime){
+    if(typeof datetime !== 'undefined'){
+        return moment(datetime).format();
+    }else{
+        return moment(new Date()).format();
+    }
+};
+
 var saveBatchEvents = function (myEvents, stream, res) {
     var myEventsWithPayload = [];
     _.each(myEvents, function (myEvent) {
         myEvent.streamid = stream.streamid;
         myEvent.eventDateTime = {
-            "$date": myEvent.datetime || moment(new Date()).format()
+            "$date": formatEventDateTime(myEvent.dateTime)
         };
 
         myEventsWithPayload.push({
@@ -1577,7 +1585,6 @@ app.get('/quantifieddev/hourlyWtfCount', function (req, res) {
             res.status(404).send("stream not found");
         });
 });
-
 app.get('/quantifieddev/hourlyHydrationCount', function (req, res) {
     var encodedUsername = req.headers.authorization;
     validEncodedUsername(encodedUsername, req.query.forUsername, [])
