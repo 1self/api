@@ -50,7 +50,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             .append('g')
             .attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
         var tipText = function (d) {
-            return "<strong>" + operation+" "+ d.value +
+            return "<strong>" + operation + " " + d.value +
                 "</strong> <span style='color:lightgrey'> on " + moment(d.date).format("ddd MMM DD") + "</span>";
         };
         var tooltipDivForMobile = d3.select("body").append("div")
@@ -94,14 +94,12 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 return x(d.value)
             })
             .on("click", function (d) {
-                if ($(window).width() < 768) {
-                    tooltipDivForMobile.transition()
-                        .duration(200)
-                        .style("opacity", .9);
-                    tooltipDivForMobile.html(tipText(d))
-                        .style("left", (d3.event.pageX) - 50 + "px")
-                        .style("top", (d3.event.pageY) + "px");
-                }
+                $(".addCommentButton").show();
+                var day = moment(d.date).format("DD");
+                var month = moment(d.date).format("MMM");
+                var year = moment(d.date).format("YYYY");
+                charts.graphUrl = window.location.href.split(window.location.origin)[1].split("?")[0] + "/" + year + "/" + month + "/" + day;
+                charts.showComments();
             })
             .on("mouseover", function (d) {
                 if ($(window).width() > 767) {

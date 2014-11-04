@@ -1,6 +1,6 @@
 window.charts = window.charts || {};
 
-var graphUrl = window.location.href.split(window.location.origin)[1].split("?")[0]; // /v1/users/... without query params
+charts.graphUrl; // /v1/users/... without query params
 
 var getEventsFor = function (type, typeId, objectTags, actionTags, operation, period) {
     return $.ajax({
@@ -18,7 +18,7 @@ var plotChart = function (events) {
     }
 };
 
-var addComment = function () {
+charts.addComment = function () {
     var commentText = $("#commentText").val();
     var comment = {
         text: commentText,
@@ -26,7 +26,7 @@ var addComment = function () {
         user: username
     };
     var graph = {
-        graphUrl: graphUrl,
+        graphUrl: charts.graphUrl,
         username: graphOwner,
         objectTags: objectTags,
         actionTags: actionTags,
@@ -48,14 +48,14 @@ var addComment = function () {
         "<div class='commentText'><p>"+comment.text+"</p>"+
         "<sub><span class='commentTimestamp'>"+moment(comment.timestamp).format("DD MMM YYYY HH:mm")+"</span></sub></div></li>");
         console.info("awesome. comment added." + JSON.stringify(comment));
+        $("#commentText").val("");
         $("#addCommentInput").hide();
     });
 };
 
 $("#addCommentInput").keyup(function (e) {
     if (e.keyCode == 13) {
-        addComment();
-
+        charts.addComment();
     }
 });
 
@@ -85,15 +85,16 @@ var showChartTitle = function () {
     }
 };
 
-var showComments = function () {
+charts.showComments = function () {
     $.ajax({
-        url: "/v1/comments?graphUrl=" + graphUrl,
+        url: "/v1/comments?graphUrl=" + charts.graphUrl,
         headers: {
             "Accept": "application/json",
             "Authorization": $.cookie("_eun")
         }
     }).done(function (comments) {
         var commentsDiv = $(".commentList");
+        commentsDiv.empty();
         comments.forEach(function (comment) {
             commentsDiv.append("<li><div class='commenter'>"+comment.user+"</div>"+
             "<div class='commentText'><p>"+comment.text+"</p>"+
@@ -104,5 +105,4 @@ var showComments = function () {
 
 $(document).ready(function () {
     showChartTitle();
-    showComments();
 });
