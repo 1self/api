@@ -2,9 +2,12 @@ window.charts = window.charts || {};
 
 charts.graphUrl; // /v1/users/... without query params
 
-var getEventsFor = function (type, typeId, objectTags, actionTags, operation, period) {
+var getEventsFor = function (type, typeId, objectTags, actionTags, operation, period, shareToken) {
     return $.ajax({
         url: "/v1/" + type + "/" + typeId + "/events/" + objectTags + "/" + actionTags + "/" + operation + "/" + period + "/" + "type/json",
+        data: {
+            shareToken: shareToken
+        },
         headers: {
             "Accept": "application/json",
             "Authorization": $.cookie("_eun")
@@ -72,14 +75,14 @@ var showChartTitle = function () {
     if (isUserLoggedIn) {
         $(".apiUrl").html("/v1/users/" + graphOwner + "/events/" + objectTags + "/" + actionTags + "/" + operation
             + "/" + period + "/" + renderType);
-        $.when(getEventsFor("users", graphOwner, objectTags, actionTags, operation, period))
+        $.when(getEventsFor("users", graphOwner, objectTags, actionTags, operation, period, shareToken))
             .done(plotChart)
             .fail();
     }
     else {
         $(".apiUrl").html("/v1/streams/" + streamId + "/events/" + objectTags + "/" + actionTags + "/" + operation
             + "/" + period + "/" + renderType);
-        $.when(getEventsFor("streams", streamId, objectTags, actionTags, operation, period))
+        $.when(getEventsFor("streams", streamId, objectTags, actionTags, operation, period, shareToken))
             .done(plotChart)
             .fail();
     }

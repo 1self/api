@@ -126,6 +126,46 @@ var validEncodedUsername = function (encodedUsername, forUsername, params) {
     return deferred.promise;
 };
 
+var validateShareTokenAndGraphUrl = function(forUsername, shareToken, graphUrl) {
+    var deferred = q.defer();
+
+    var graphShareObject = {"graphUrl": graphUrl, "shareToken": shareToken};
+
+    var usernames = ["", forUsername];
+    var paramsToPassOn = [usernames, []];
+
+    checkGraphAlreadyShared(graphShareObject).then(function(graphShareObject){
+        if (graphShareObject) {
+            deferred.resolve(paramsToPassOn);
+        } else {
+            deferred.reject("Invalid input"); 
+        }
+    }).catch(function(err) {
+        console.log("Error is", err);       
+        deferred.reject(err);
+    });
+    
+    return deferred.promise;
+};
+
+var checkGraphAlreadyShared = function(graphShareObject){
+    var deferred = q.defer();
+
+    mongoDbConnection(function (qdDb) {
+        qdDb.collection('graphShares').findOne(graphShareObject, function (err, graphShareObject) {
+            if (!err && graphShareObject){
+                deferred.resolve(graphShareObject);
+            } else if (!err && !graphShareObject){
+                deferred.resolve(null);
+            } else {
+                deferred.reject(err);
+            }
+        });
+    });
+    return deferred.promise;
+};
+
+
 var getStreamIdForUsername = function (params) {
     var deferred = q.defer();
     var query = null;
@@ -1780,11 +1820,36 @@ app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period
             });
     });
 
-app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/type/json",
-    function (req, res) {
-        var encodedUsername = req.headers.authorization;
-        validEncodedUsername(encodedUsername, req.query.forUsername, [])
-            .then(getStreamIdForUsername)
+
+var authorizeUser = function(req, res, next) {
+    
+    var encodedUsername = req.headers.authorization;
+    if (encodedUsername) {
+        validEncodedUsername(encodedUsername, req.query.forUsername, []).then(function(paramsToPassOn){
+            req.paramsToPassOn = paramsToPassOn;
+            next();
+        });
+    } else {
+        var shareToken = req.query.shareToken;
+
+        // TODO remove barchart hardcoded renderType
+        var graphUrl = "/v1/users/" + req.param("username") + "/events/" +
+                req.param("objectTags") + "/" + req.param("actionTags") + "/" +
+                req.param("operation") + "/" + req.param("period") + "/barchart";
+        
+        validateShareTokenAndGraphUrl(req.param("username"), req.query.shareToken, graphUrl).then(function(paramsToPassOn) {
+            req.paramsToPassOn = paramsToPassOn;
+            next();
+        }).catch(function(err){
+            console.log("Error is", err);
+            res.send(400, "Invalid input");           
+        });
+    }
+};
+
+app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/type/json", authorizeUser, function (req, res) {
+    
+        getStreamIdForUsername(req.paramsToPassOn)
             .then(function (params) {
                 var streams = params[0];
                 var streamIds = _.map(streams, function (stream) {
@@ -1796,6 +1861,7 @@ app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/t
             .then(function (response) {
                 res.send(transformPlatformDataToQDEvents(response[0]));
             }).catch(function (error) {
+                console.log("Error is", error);
                 res.status(404).send("Oops! Some error occurred.");
             });
     });
