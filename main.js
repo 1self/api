@@ -206,10 +206,10 @@ var getGithubStreamIdForUsername = function (params) {
     return deferred.promise;
 };
 
-var saveEvent_driver = function (myEvent, stream, eventDateTime, res, rm) {
+var saveEvent_driver = function (myEvent, stream, res, rm) {
     myEvent.streamid = stream.streamid;
     myEvent.eventDateTime = {
-        "$date": eventDateTime
+        "$date": myEvent.datetime || moment(new Date()).format()
     };
     var options = {
         url: platformUri + '/rest/events/',
@@ -259,7 +259,7 @@ var postEvent = function (req, res) {
             res.status(404).send("stream not found");
         },
         function (stream) {
-            saveEvent_driver(req.body, stream, moment(new Date()).format(), res, requestModule);
+            saveEvent_driver(req.body, stream, res, requestModule);
         }
     );
 };
@@ -1385,12 +1385,12 @@ app.post('/stream/:id/event', postEvent);
 
 app.post('/v1/streams/:id/events', postEvent);
 
-var saveBatchEvents = function (myEvents, stream, res, eventDateTime) {
+var saveBatchEvents = function (myEvents, stream, res) {
     var myEventsWithPayload = [];
     _.each(myEvents, function (myEvent) {
         myEvent.streamid = stream.streamid;
         myEvent.eventDateTime = {
-            "$date": eventDateTime
+            "$date": myEvent.datetime || moment(new Date()).format()
         };
 
         myEventsWithPayload.push({
@@ -1422,7 +1422,7 @@ var postEvents = function (req, res) {
             res.status(404).send("stream not found");
         },
         function (stream) {
-            saveBatchEvents(req.body, stream, res, moment(new Date()).format());
+            saveBatchEvents(req.body, stream, res);
         }
     );
 
