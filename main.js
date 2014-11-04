@@ -1318,7 +1318,7 @@ app.post('/v1/streams', function (req, res) {
     var auth = req.headers.authorization;
 
     if (auth === undefined) {
-        res.send(401, "Unauthorized request. Please pass valid clientId and clientSecret")
+        res.send(401, "Unauthorized request. Please pass valid clientId and clientSecret");
     }
     var clientId = auth.split(":")[0];
     var clientSecret = auth.split(":")[1];
@@ -1333,7 +1333,7 @@ app.post('/v1/streams', function (req, res) {
         });
     }).catch(function () {
         res.send(401);
-    })
+    });
 });
 
 
