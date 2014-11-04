@@ -126,6 +126,12 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                         .style("opacity", 0);
                 }
             });
+        var getLatestDataPointDate = function () {
+            var datesForDataPoints = _.map(events, function (event) {
+                return moment(event.date);
+            })
+            return new Date(Math.max.apply(null, datesForDataPoints));
+        };
 
         svg.append('g')
             .attr('class', 'x axis')
@@ -135,6 +141,29 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
         svg.append('g')
             .attr('class', 'y axis')
             .call(yAxis);
+
+        var highlightLatestDataPointDate = function () {
+            var date = getLatestDataPointDate();
+            svg.selectAll('.bar')
+                .style("stroke", function (data) {
+                    if (moment(date).format("DD MM YYYY") == moment(data.date).format("DD MM YYYY")) {
+                        return "black";
+                    }
+                })
+                .style("stroke-width", function (data) {
+                    if (moment(date).format("DD MM YYYY") == moment(data.date).format("DD MM YYYY")) {
+                        return 3;
+                    }
+                });
+            $(".addCommentButton").show();
+            var day = moment(date).format("DD");
+            var month = moment(date).format("MM");
+            var year = moment(date).format("YYYY");
+            charts.graphUrl = window.location.href.split(window.location.origin)[1].split("?")[0] + "/" + year + "/" + month + "/" + day;
+            charts.showComments();
+        };
+
+        highlightLatestDataPointDate();
     }, 1000);
 };
 
