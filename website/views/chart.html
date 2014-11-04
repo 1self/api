@@ -12,6 +12,8 @@
     <script>
         var isUserLoggedIn = ("{{isUserLoggedIn}}" == "true");
         var graphOwner = "{{graphOwner}}";
+        var chartTitle = "{{title}}";
+        var measurement = "{{measurement}}";
         if (isUserLoggedIn) {
             var username = "{{username}}";
         } else {
@@ -27,7 +29,7 @@
     </script>
 </head>
 <body>
-<div class="apiUrl"></div>
+<div id="chartTitle" class="apiUrl"></div>
 <div id="chart" class="chart">
 </div>
 <div class="container">

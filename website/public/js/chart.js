@@ -47,9 +47,9 @@ charts.addComment = function () {
             "Authorization": $.cookie("_eun")
         }
     }).done(function (data) {
-        $(".commentList").append("<li><div class='commenter'>"+comment.user+"</div>"+
-        "<div class='commentText'><p>"+comment.text+"</p>"+
-        "<sub><span class='commentTimestamp'>"+moment(comment.timestamp).format("DD MMM YYYY HH:mm")+"</span></sub></div></li>");
+        $(".commentList").append("<li><div class='commenter'>" + comment.user + "</div>" +
+            "<div class='commentText'><p>" + comment.text + "</p>" +
+            "<sub><span class='commentTimestamp'>" + moment(comment.timestamp).format("DD MMM YYYY HH:mm") + "</span></sub></div></li>");
         console.info("awesome. comment added." + JSON.stringify(comment));
         $("#commentText").val("");
         $("#addCommentInput").hide();
@@ -73,15 +73,13 @@ var handleAddComment = function () {
 
 var showChartTitle = function () {
     if (isUserLoggedIn) {
-        $(".apiUrl").html("/v1/users/" + graphOwner + "/events/" + objectTags + "/" + actionTags + "/" + operation
-            + "/" + period + "/" + renderType);
+        $("#chartTitle").html(chartTitle);
         $.when(getEventsFor("users", graphOwner, objectTags, actionTags, operation, period, shareToken))
             .done(plotChart)
             .fail();
     }
     else {
-        $(".apiUrl").html("/v1/streams/" + streamId + "/events/" + objectTags + "/" + actionTags + "/" + operation
-            + "/" + period + "/" + renderType);
+        $("#chartTitle").html(chartTitle);
         $.when(getEventsFor("streams", streamId, objectTags, actionTags, operation, period, shareToken))
             .done(plotChart)
             .fail();
@@ -99,9 +97,9 @@ charts.showComments = function () {
         var commentsDiv = $(".commentList");
         commentsDiv.empty();
         comments.forEach(function (comment) {
-            commentsDiv.append("<li><div class='commenter'>"+comment.user+"</div>"+
-            "<div class='commentText'><p>"+comment.text+"</p>"+
-                "<sub><span class='commentTimestamp'>"+moment(comment.timestamp).format("DD MMM YYYY HH:mm")+"</span></sub></div></li>");
+            commentsDiv.append("<li><div class='commenter'>" + comment.user + "</div>" +
+                "<div class='commentText'><p>" + comment.text + "</p>" +
+                "<sub><span class='commentTimestamp'>" + moment(comment.timestamp).format("DD MMM YYYY HH:mm") + "</span></sub></div></li>");
         });
     });
 };

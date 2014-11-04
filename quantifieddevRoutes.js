@@ -782,7 +782,7 @@ module.exports = function (app) {
                 res.status(400).send("Email service unavailable");
             });
     });
-    
+
     app.post('/v1/share_graph', sessionManager.requiresSession, function (req, res) {
         var toEmailId = req.query.toEmailId;
         var graphUrl = req.query.graphUrl;
@@ -791,31 +791,31 @@ module.exports = function (app) {
             "graphUrl": graphUrl
         };
         var fromUsername = req.session.username;
-        getPrimaryEmailId(fromUsername).then(function(fromEmailId) {
-            checkGraphAlreadyShared(graphShareObject).then(function(result){
-                if(result === null) {
-                    insertGraphShareEntryInDb(graphShareObject).then(function(graphEntry){
+        getPrimaryEmailId(fromUsername).then(function (fromEmailId) {
+            checkGraphAlreadyShared(graphShareObject).then(function (result) {
+                if (result === null) {
+                    insertGraphShareEntryInDb(graphShareObject).then(function (graphEntry) {
                         return sendGraphShareEmail(graphEntry, fromEmailId, toEmailId);
-                    }).then(function(){
-                        res.send(200, {"message":"Graph url shared successfully."});
+                    }).then(function () {
+                        res.send(200, {"message": "Graph url shared successfully."});
                     });
                 } else {
-                    sendGraphShareEmail(graphShareObject, fromEmailId, toEmailId).then(function(){
+                    sendGraphShareEmail(graphShareObject, fromEmailId, toEmailId).then(function () {
                         res.send(200, {"message": "Graph url shared successfully."});
                     });
                 }
             });
         });
     });
-    
-    var checkGraphAlreadyShared = function(graphShareObject){
+
+    var checkGraphAlreadyShared = function (graphShareObject) {
         var deferred = Q.defer();
 
         mongoDbConnection(function (qdDb) {
             qdDb.collection('graphShares').findOne(graphShareObject, function (err, graphShareObject) {
-                if (!err && graphShareObject){
+                if (!err && graphShareObject) {
                     deferred.resolve(graphShareObject);
-                } else if (!err && !graphShareObject){
+                } else if (!err && !graphShareObject) {
                     deferred.resolve(null);
                 } else {
                     deferred.reject(err);
@@ -880,20 +880,48 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
+    var getGraphInfo = function (url, username) {
+        var title = "";
+        var measurement = "";
+        if (url.search("ambient") !== -1) { // noise app
+            title = (url.search("streams") !== -1) ? "average noise by day logged by 1self noise" : "average noise by day logged by " + username;
+            measurement = "decibels";
+        } else if (url.search("meditate") !== -1) { // timer app events
+            title = (url.search("streams") !== -1) ? "meditating time by day logged by 1self duration" : "meditating time by day logged by " + username;
+        } else if (url.search("exercise") !== -1) {
+            title = (url.search("streams") !== -1) ? "exercising time by day logged by 1self duration" : "exercising time by day logged by " + username;
+        } else if (url.search("meet") !== -1) {
+            title = (url.search("streams") !== -1) ? "meeting time by day logged by 1self duration" : "meeting time by day logged by " + username;
+        } else if (url.search("brush") !== -1) {
+            title = (url.search("streams") !== -1) ? "tooth brushing time by day logged by 1self duration" : "tooth brushing time by day logged by " + username;
+        } else if (url.search("sleep") !== -1) {
+            title = (url.search("streams") !== -1) ? "sleeping time by day logged by 1self duration" : "sleeping time by day logged by " + username;
+        } else if (url.search("code") !== -1) {
+            title = (url.search("streams") !== -1) ? "coding time by day logged by 1self duration" : "coding time by day logged by " + username;
+        }
+        return {
+            title: title,
+            unitMeasurement: measurement
+        };
+    };
+
     //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
     app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/:renderType", function (req, res) {
         if (req.session.username) {
             var redirectUrl = "/v1/users/" + req.session.username + "/events/" +
-                    req.param("objectTags") + "/" + req.param("actionTags") + "/" +
-                    req.param("operation") + "/" + req.param("period") + req.param("renderType");
-            if(req.query.shareToken !== undefined) {
+                req.param("objectTags") + "/" + req.param("actionTags") + "/" +
+                req.param("operation") + "/" + req.param("period") + req.param("renderType");
+            if (req.query.shareToken !== undefined) {
                 redirectUrl = redirectUrl + "?" + req.query.shareToken;
             }
             res.redirect(redirectUrl);
         } else {
             req.session.redirectUrl = req.originalUrl + "?streamId=" + req.param('streamId');
+            var graphInfo = getGraphInfo(req.originalUrl);
             res.render('chart', {
                 isUserLoggedIn: false,
+                title: graphInfo.title,
+                measurement: graphInfo.measurement,
                 streamId: req.param("streamId"),
                 objectTags: req.param("objectTags"),
                 actionTags: req.param("actionTags"),
@@ -905,7 +933,7 @@ module.exports = function (app) {
         }
     });
 
-    var checkShareTokenAndGraphUrlExists = function(shareToken, graphUrl) {
+    var checkShareTokenAndGraphUrlExists = function (shareToken, graphUrl) {
         var deferred = Q.defer();
 
         var tokenGraphUrlQuery = {
@@ -926,14 +954,15 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    var validateShareToken = function(req, res, next) {
+    var validateShareToken = function (req, res, next) {
         var shareToken = req.query.shareToken;
-        var graphUrl = "/v1/users/" + req.param("username") + "/events/" +  req.param("objectTags") + "/" + req.param("actionTags") + "/" + req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType");
+//        var graphUrl = "/v1/users/" + req.param("username") + "/events/" +  req.param("objectTags") + "/" + req.param("actionTags") + "/" + req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType");
+        var graphUrl = "/v1/users/" + req.param("username") + "/" + req.param("objectTags") + "/" + req.param("actionTags") + "/" + req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType");
 
         console.log("Graph Url is", graphUrl);
 
-        checkShareTokenAndGraphUrlExists(shareToken, graphUrl).then(function(status){
-            if(status) {
+        checkShareTokenAndGraphUrlExists(shareToken, graphUrl).then(function (status) {
+            if (status) {
                 next();
             } else {
                 sessionManager.requiresSession(req, res, next);
@@ -945,10 +974,12 @@ module.exports = function (app) {
     app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/:renderType", validateShareToken, function (req, res) {
         var streamId = req.query.streamId;
         var shareToken = req.query.shareToken;
-        console.log("straemid: " + streamId);
         var renderChart = function () {
+            var graphInfo = getGraphInfo(req.originalUrl, req.param("username"));
             res.render('chart', {
                 isUserLoggedIn: true,
+                title: graphInfo.title,
+                measurement: graphInfo.measurement,
                 graphOwner: req.param("username"),
                 username: req.session.username,
                 objectTags: req.param("objectTags"),
