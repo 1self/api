@@ -1385,9 +1385,14 @@ app.post('/stream/:id/event', postEvent);
 
 app.post('/v1/streams/:id/events', postEvent);
 
-var saveBatchEvents = function (myEvents, stream, res) {
+var saveBatchEvents = function (myEvents, stream, res, eventDateTime) {
     var myEventsWithPayload = [];
     _.each(myEvents, function (myEvent) {
+        myEvent.streamid = stream.streamid;
+        myEvent.eventDateTime = {
+            "$date": eventDateTime
+        };
+
         myEventsWithPayload.push({
             'payload': myEvent
         });
@@ -1417,7 +1422,7 @@ var postEvents = function (req, res) {
             res.status(404).send("stream not found");
         },
         function (stream) {
-            saveBatchEvents(req.body, stream, res);
+            saveBatchEvents(req.body, stream, res, moment(new Date()).format());
         }
     );
 
