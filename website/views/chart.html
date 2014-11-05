@@ -46,8 +46,8 @@
         <button type="button" class="addCommentButton" onclick="handleAddComment()" style="display:none">
             Add a Comment
         </button>
+        <button type="button" class="shareGraphButton" onclick="handleShareGraph()">Share</button>
     </div>
-
 
     <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginLabel"
          aria-hidden="true">
@@ -64,6 +64,28 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <a href="/auth/github" class="btn btn-primary">Login to 1self</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="shareModal" tabindex="-1" role="dialog" aria-labelledby="shareLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span
+                            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="shareLabel">Share your graph with friends</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Enter email id to whom you want to share your graph.</p>
+                    <label>Email
+                        <input type="text" name="email"/>
+                    </label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Share</button>
                 </div>
             </div>
         </div>

@@ -71,9 +71,13 @@ var handleAddComment = function () {
     }
 };
 
+var handleShareGraph = function () {
+    $("#shareModal").modal({show: true});
+};
+
 var showChartTitle = function () {
     $("#chartTitle").html(chartTitle);
-    if (isUserLoggedIn || (!isUserLoggedIn && (shareToken !== undefined))) {
+    if (isUserLoggedIn || (!isUserLoggedIn && !(_.isEmpty(shareToken)))) {
         $.when(getEventsFor("users", graphOwner, objectTags, actionTags, operation, period, shareToken))
             .done(plotChart)
             .fail();
