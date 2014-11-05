@@ -1824,7 +1824,7 @@ app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period
 var authorizeUser = function(req, res, next) {
     
     var encodedUsername = req.headers.authorization;
-    if (encodedUsername) {
+    if (encodedUsername && encodedUsername !== 'undefined') {
         validEncodedUsername(encodedUsername, req.query.forUsername, []).then(function(paramsToPassOn){
             req.paramsToPassOn = paramsToPassOn;
             next();

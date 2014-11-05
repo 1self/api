@@ -910,10 +910,7 @@ module.exports = function (app) {
         if (req.session.username) {
             var redirectUrl = "/v1/users/" + req.session.username + "/events/" +
                 req.param("objectTags") + "/" + req.param("actionTags") + "/" +
-                req.param("operation") + "/" + req.param("period") + req.param("renderType");
-            if (req.query.shareToken !== undefined) {
-                redirectUrl = redirectUrl + "?" + req.query.shareToken;
-            }
+                req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType");
             res.redirect(redirectUrl);
         } else {
             req.session.redirectUrl = req.originalUrl + "?streamId=" + req.param('streamId');
@@ -927,7 +924,6 @@ module.exports = function (app) {
                 actionTags: req.param("actionTags"),
                 operation: req.param("operation"),
                 period: req.param("period"),
-                shareToken: req.query("shareToken"),
                 renderType: req.param("renderType")
             });
         }
@@ -957,7 +953,9 @@ module.exports = function (app) {
     var validateShareToken = function (req, res, next) {
         var shareToken = req.query.shareToken;
 //        var graphUrl = "/v1/users/" + req.param("username") + "/events/" +  req.param("objectTags") + "/" + req.param("actionTags") + "/" + req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType");
-        var graphUrl = "/v1/users/" + req.param("username") + "/" + req.param("objectTags") + "/" + req.param("actionTags") + "/" + req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType");
+        var graphUrl = "/v1/users/" + req.param("username") + "/" +
+            req.param("objectTags") + "/" + req.param("actionTags") + "/"
+            + req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType");
 
         console.log("Graph Url is", graphUrl);
 
@@ -971,9 +969,11 @@ module.exports = function (app) {
     };
 
     //v1/users/{{edsykes}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
-    app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/:renderType", validateShareToken, function (req, res) {
+    app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/:renderType",
+        validateShareToken, function (req, res) {
+
         var streamId = req.query.streamId;
-        var shareToken = req.query.shareToken;
+//        var shareToken = req.query.shareToken;
         var renderChart = function () {
             var graphInfo = getGraphInfo(req.originalUrl, req.param("username"));
             res.render('chart', {
