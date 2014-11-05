@@ -126,7 +126,7 @@ var validEncodedUsername = function (encodedUsername, forUsername, params) {
     return deferred.promise;
 };
 
-var validateShareTokenAndGraphUrl = function(forUsername, shareToken, graphUrl) {
+var validateShareTokenAndGraphUrl = function (forUsername, shareToken, graphUrl) {
     var deferred = q.defer();
 
     var graphShareObject = {"graphUrl": graphUrl, "shareToken": shareToken};
@@ -134,28 +134,28 @@ var validateShareTokenAndGraphUrl = function(forUsername, shareToken, graphUrl) 
     var usernames = ["", forUsername];
     var paramsToPassOn = [usernames, []];
 
-    checkGraphAlreadyShared(graphShareObject).then(function(graphShareObject){
+    checkGraphAlreadyShared(graphShareObject).then(function (graphShareObject) {
         if (graphShareObject) {
             deferred.resolve(paramsToPassOn);
         } else {
-            deferred.reject("Invalid input"); 
+            deferred.reject("Invalid input");
         }
-    }).catch(function(err) {
-        console.log("Error is", err);       
+    }).catch(function (err) {
+        console.log("Error is", err);
         deferred.reject(err);
     });
-    
+
     return deferred.promise;
 };
 
-var checkGraphAlreadyShared = function(graphShareObject){
+var checkGraphAlreadyShared = function (graphShareObject) {
     var deferred = q.defer();
 
     mongoDbConnection(function (qdDb) {
         qdDb.collection('graphShares').findOne(graphShareObject, function (err, graphShareObject) {
-            if (!err && graphShareObject){
+            if (!err && graphShareObject) {
                 deferred.resolve(graphShareObject);
-            } else if (!err && !graphShareObject){
+            } else if (!err && !graphShareObject) {
                 deferred.resolve(null);
             } else {
                 deferred.reject(err);
@@ -1425,10 +1425,10 @@ app.post('/stream/:id/event', postEvent);
 
 app.post('/v1/streams/:id/events', postEvent);
 
-var formatEventDateTime = function(datetime){
-    if(typeof datetime !== 'undefined'){
+var formatEventDateTime = function (datetime) {
+    if (typeof datetime !== 'undefined') {
         return moment(datetime).format();
-    }else{
+    } else {
         return moment(new Date()).format();
     }
 };
@@ -1821,50 +1821,47 @@ app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period
     });
 
 
-var authorizeUser = function(req, res, next) {
-    
+var authorizeUser = function (req, res, next) {
     var encodedUsername = req.headers.authorization;
     if (encodedUsername && encodedUsername !== 'undefined') {
-        validEncodedUsername(encodedUsername, req.query.forUsername, []).then(function(paramsToPassOn){
+        validEncodedUsername(encodedUsername, req.query.forUsername, []).then(function (paramsToPassOn) {
             req.paramsToPassOn = paramsToPassOn;
             next();
         });
     } else {
         var shareToken = req.query.shareToken;
-
         // TODO remove barchart hardcoded renderType
         var graphUrl = "/v1/users/" + req.param("username") + "/events/" +
-                req.param("objectTags") + "/" + req.param("actionTags") + "/" +
-                req.param("operation") + "/" + req.param("period") + "/barchart";
-        
-        validateShareTokenAndGraphUrl(req.param("username"), req.query.shareToken, graphUrl).then(function(paramsToPassOn) {
+            req.param("objectTags") + "/" + req.param("actionTags") + "/" +
+            req.param("operation") + "/" + req.param("period") + "/barchart";
+
+        validateShareTokenAndGraphUrl(req.param("username"), req.query.shareToken, graphUrl).then(function (paramsToPassOn) {
             req.paramsToPassOn = paramsToPassOn;
             next();
-        }).catch(function(err){
+        }).catch(function (err) {
             console.log("Error is", err);
-            res.send(400, "Invalid input");           
+            res.send(400, "Invalid input");
         });
     }
 };
 
 app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/type/json", authorizeUser, function (req, res) {
-    
-        getStreamIdForUsername(req.paramsToPassOn)
-            .then(function (params) {
-                var streams = params[0];
-                var streamIds = _.map(streams, function (stream) {
-                    return stream.streamid;
-                });
-                return getQueryForVisualizationAPI(streamIds, req.params);
-            })
-            .then(getAggregatedEventsFromPlatform)
-            .then(function (response) {
-                res.send(transformPlatformDataToQDEvents(response[0]));
-            }).catch(function (error) {
-                console.log("Error is", error);
-                res.status(404).send("Oops! Some error occurred.");
+    getStreamIdForUsername(req.paramsToPassOn)
+        .then(function (params) {
+            var streams = params[0];
+            var streamIds = _.map(streams, function (stream) {
+                return stream.streamid;
             });
-    });
+            return getQueryForVisualizationAPI(streamIds, req.params);
+        })
+        .then(getAggregatedEventsFromPlatform)
+        .then(function (response) {
+            res.send(transformPlatformDataToQDEvents(response[0]));
+        }).catch(function (error) {
+            console.log("Error is", error);
+            res.status(404).send("Oops! Some error occurred.");
+        });
+});
 
 var findGraphUrl = function (graphUrl) {
     var deferred = q.defer();
@@ -1927,7 +1924,7 @@ var getCommentsForChart = function (graphUrl) {
         }, {comments: 1}, function (err, chartComments) {
             if (err) {
                 deferred.reject("Error occurred for getCommentsForChart");
-            } else if(chartComments) {
+            } else if (chartComments) {
                 deferred.resolve(chartComments.comments);
             } else {
                 deferred.resolve([]);

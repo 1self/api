@@ -72,14 +72,12 @@ var handleAddComment = function () {
 };
 
 var showChartTitle = function () {
-    if (isUserLoggedIn) {
-        $("#chartTitle").html(chartTitle);
+    $("#chartTitle").html(chartTitle);
+    if (isUserLoggedIn || (!isUserLoggedIn && (shareToken !== undefined))) {
         $.when(getEventsFor("users", graphOwner, objectTags, actionTags, operation, period, shareToken))
             .done(plotChart)
             .fail();
-    }
-    else {
-        $("#chartTitle").html(chartTitle);
+    } else {
         $.when(getEventsFor("streams", streamId, objectTags, actionTags, operation, period, shareToken))
             .done(plotChart)
             .fail();

@@ -853,7 +853,7 @@ module.exports = function (app) {
 
     var sendGraphShareEmail = function (graphShareEntry, fromEmailId, toEmailId) {
         var deferred = Q.defer();
-        var graphUrl = CONTEXT_URI + "/" + graphShareEntry.graphUrl;
+        var graphUrl = CONTEXT_URI + graphShareEntry.graphUrl + "?shareToken=" + graphShareEntry.shareToken;
 
         emailTemplates(emailConfigOptions, function (err, emailRender) {
             var context = {
@@ -952,10 +952,9 @@ module.exports = function (app) {
 
     var validateShareToken = function (req, res, next) {
         var shareToken = req.query.shareToken;
-//        var graphUrl = "/v1/users/" + req.param("username") + "/events/" +  req.param("objectTags") + "/" + req.param("actionTags") + "/" + req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType");
-        var graphUrl = "/v1/users/" + req.param("username") + "/" +
-            req.param("objectTags") + "/" + req.param("actionTags") + "/"
-            + req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType");
+        var graphUrl = "/v1/users/" + req.param("username") + "/events/" +
+            req.param("objectTags") + "/" + req.param("actionTags") + "/" +
+            req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType");
 
         console.log("Graph Url is", graphUrl);
 
@@ -972,41 +971,42 @@ module.exports = function (app) {
     app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/:renderType",
         validateShareToken, function (req, res) {
 
-        var streamId = req.query.streamId;
+            var streamId = req.query.streamId;
 //        var shareToken = req.query.shareToken;
-        var renderChart = function () {
-            var graphInfo = getGraphInfo(req.originalUrl, req.param("username"));
-            res.render('chart', {
-                isUserLoggedIn: true,
-                title: graphInfo.title,
-                measurement: graphInfo.measurement,
-                graphOwner: req.param("username"),
-                username: req.session.username,
-                objectTags: req.param("objectTags"),
-                actionTags: req.param("actionTags"),
-                operation: req.param("operation"),
-                period: req.param("period"),
-                shareToken: req.query.shareToken,
-                renderType: req.param("renderType")
-            });
-        };
+            var renderChart = function () {
+                var graphInfo = getGraphInfo(req.originalUrl, req.param("username"));
+                var isUserLoggedIn = (req.session.username !== undefined);
+                res.render('chart', {
+                    isUserLoggedIn: isUserLoggedIn,
+                    title: graphInfo.title,
+                    measurement: graphInfo.measurement,
+                    graphOwner: req.param("username"),
+                    username: req.session.username,
+                    objectTags: req.param("objectTags"),
+                    actionTags: req.param("actionTags"),
+                    operation: req.param("operation"),
+                    period: req.param("period"),
+                    shareToken: req.query.shareToken,
+                    renderType: req.param("renderType")
+                });
+            };
 
-        streamExists(streamId)
-            .then(function (exists) {
-                if (exists) {
-                    getStreamsForUser(req.param('username'))
-                        .then(function (user) {
-                            return linkStreamToUser(user, streamId);
-                        }).then(renderChart)
-                        .catch(function (error) {
-                            console.error("error during linking stream to user ", error);
-                            res.status(500).send("Internal server error.");
-                        });
-                } else {
-                    renderChart();
-                }
-            });
-    });
+            streamExists(streamId)
+                .then(function (exists) {
+                    if (exists) {
+                        getStreamsForUser(req.param('username'))
+                            .then(function (user) {
+                                return linkStreamToUser(user, streamId);
+                            }).then(renderChart)
+                            .catch(function (error) {
+                                console.error("error during linking stream to user ", error);
+                                res.status(500).send("Internal server error.");
+                            });
+                    } else {
+                        renderChart();
+                    }
+                });
+        });
 
 };
 
