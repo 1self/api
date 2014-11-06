@@ -89,6 +89,25 @@ var showChartTitle = function () {
     }
 };
 
+var submitShare = function () {
+    var emailId = $("#emailId").val();
+    var graphShare = {
+        toEmailId: emailId,
+        graphUrl: window.location.pathname
+    };
+    $.ajax({
+        url: "/v1/share_graph",
+        method: "POST",
+        data: graphShare,
+        success: function () {
+            alert("Graph shared successfully.");
+        },
+        error: function () {
+            alert("some problem. Please try again later.");
+        }
+    });
+};
+
 charts.showComments = function () {
     $.ajax({
         url: "/v1/comments?graphUrl=" + charts.graphUrl,
@@ -107,14 +126,15 @@ charts.showComments = function () {
     });
 };
 
-var next = function() {
+var next = function () {
     charts.next(charts.date);
 };
 
-var previous = function() {
+var previous = function () {
     charts.previous(charts.date);
 };
 
 $(document).ready(function () {
     showChartTitle();
+    $("#shareSubmit").click(submitShare);
 });

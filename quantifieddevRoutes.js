@@ -784,35 +784,45 @@ module.exports = function (app) {
     });
 
     app.post('/v1/share_graph', sessionManager.requiresSession, function (req, res) {
-        var toEmailId = req.query.toEmailId;
-        var graphUrl = req.query.graphUrl;
-
-        var graphShareObject = {
-            "graphUrl": graphUrl
-        };
+        var toEmailId = req.body.toEmailId;
+        var graphUrl = req.body.graphUrl;
         var fromUsername = req.session.username;
-        getPrimaryEmailId(fromUsername).then(function (fromEmailId) {
-            checkGraphAlreadyShared(graphShareObject).then(function (result) {
-                if (result === null) {
-                    insertGraphShareEntryInDb(graphShareObject).then(function (graphEntry) {
-                        return sendGraphShareEmail(graphEntry, fromEmailId, toEmailId);
-                    }).then(function () {
-                        res.send(200, {"message": "Graph url shared successfully."});
-                    });
+
+        var sendEmail = function (graphShareObject) {
+            return getPrimaryEmailId(fromUsername)
+                .then(function (fromEmailId) {
+                    return sendGraphShareEmail(graphShareObject, fromEmailId, toEmailId)
+                        .then(function () {
+                            res.send(200, {"message": "Graph url shared successfully."});
+                        });
+                });
+        };
+
+        getAlreadySharedGraphObject(graphUrl)
+            .then(function (graphShareObject) {
+                if (graphShareObject) {
+                    sendEmail(graphShareObject);
                 } else {
-                    sendGraphShareEmail(graphShareObject, fromEmailId, toEmailId).then(function () {
-                        res.send(200, {"message": "Graph url shared successfully."});
-                    });
+                    generateToken()
+                        .then(function (token) {
+                            var graphShareObject = {
+                                shareToken: token,
+                                graphUrl: graphUrl
+                            };
+                            return insertGraphShareEntryInDb(graphShareObject)
+                                .then(sendEmail);
+                        });
                 }
             });
-        });
     });
 
-    var checkGraphAlreadyShared = function (graphShareObject) {
+    var getAlreadySharedGraphObject = function (graphUrl) {
         var deferred = Q.defer();
-
+        var byGraphUrl = {
+            "graphUrl": graphUrl
+        };
         mongoDbConnection(function (qdDb) {
-            qdDb.collection('graphShares').findOne(graphShareObject, function (err, graphShareObject) {
+            qdDb.collection('graphShares').findOne(byGraphUrl, function (err, graphShareObject) {
                 if (!err && graphShareObject) {
                     deferred.resolve(graphShareObject);
                 } else if (!err && !graphShareObject) {
@@ -825,30 +835,21 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    var insertGraphShareEntryInDb = function (graphEntry) {
-        var createEntry = function (token) {
-            var deferred = Q.defer();
-            graphEntry.shareToken = token;
-            mongoDbConnection(function (qdDb) {
-                qdDb.collection("graphShares", function (err, collection) {
-                    collection.update(graphEntry, {
-                        $set: graphEntry
-                    }, {
-                        upsert: true
-                    }, function (error, data) {
-                        if (error) {
-                            console.log("DB error", error);
-                            deferred.reject(error);
-                        } else {
-                            deferred.resolve(graphEntry);
-                        }
-                    });
+    var insertGraphShareEntryInDb = function (graphShareObject) {
+        var deferred = Q.defer();
+        mongoDbConnection(function (qdDb) {
+            qdDb.collection("graphShares", function (err, collection) {
+                collection.insert(graphShareObject, function (error, data) {
+                    if (error) {
+                        console.log("DB error", error);
+                        deferred.reject(error);
+                    } else {
+                        deferred.resolve(graphShareObject);
+                    }
                 });
             });
-            return deferred.promise;
-        };
-
-        return generateToken().then(createEntry);
+        });
+        return deferred.promise;
     };
 
     var sendGraphShareEmail = function (graphShareEntry, fromEmailId, toEmailId) {
