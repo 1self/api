@@ -10,7 +10,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             left: 0
         };
         var width = window.innerWidth;
-        var height = window.innerHeight;
+        var height = window.innerHeight * 0.7;
         var twoWeeksAgo = new Date(moment().subtract("days", 13).format("MM/DD/YYYY"));
         var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
         var dateRange = d3.range(31);
@@ -161,7 +161,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 .style("stroke", function (data) {
                     if (moment(date).format("DD MM YYYY") == moment(data.date).format("DD MM YYYY")) {
                         eventValue = data.value;
-                        return "black";
+                        return "#38A0BA";
                     }
                 })
                 .style("stroke-width", function (data) {
@@ -182,6 +182,8 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
         var highlightLatestDataPointDate = function () {
             var date = getLatestDataPointDate();
             charts.date = date;
+            showDetailsForDate(date);
+            showDetailsForDate(date);
             showDetailsForDate(date);
         };
 

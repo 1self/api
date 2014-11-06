@@ -1,15 +1,12 @@
-body {
-  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-    background-color: #4CBB62;
-}
 .apiUrl {
     background-color : forestgreen;
     color : #fff;
     font-size: 27px;
 }
-.barChart {
+.chart {
     background-color: #4CBB62;
 }
+
 .bar {
     background-color: rgba(255,255,255)
     background: linear-gradient(to right, rgba(255, 255, 255, 0),  rgba(255, 255, 255, 1));
