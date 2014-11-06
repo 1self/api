@@ -126,12 +126,6 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                         .style("opacity", 0);
                 }
             });
-        var getLatestDataPointDate = function () {
-            var datesForDataPoints = _.map(events, function (event) {
-                return moment(event.date);
-            })
-            return new Date(Math.max.apply(null, datesForDataPoints));
-        };
 
         svg.append('g')
             .attr('class', 'x axis')
@@ -142,11 +136,31 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             .attr('class', 'y axis')
             .call(yAxis);
 
-        var highlightLatestDataPointDate = function () {
-            var date = getLatestDataPointDate();
+        var getDatesForEvents = function () {
+            return _.map(events, function (event) {
+                return moment(event.date);
+            });
+        };
+
+        var getLatestDataPointDate = function () {
+            var datesForDataPoints = getDatesForEvents();
+            console.log("Dates: " + datesForDataPoints);
+            return new Date(Math.max.apply(null, datesForDataPoints));
+        };
+
+        var sortDatesInMillisForDataPointsInAscendingOrder = function (dates) {
+            var datesInMillis = _.map(dates, function (date) {
+                return new Date(date).getTime();
+            });
+            return datesInMillis.sort();
+        };
+
+        var showDetailsForDate = function (date) {
+            var eventValue;
             svg.selectAll('.bar')
                 .style("stroke", function (data) {
                     if (moment(date).format("DD MM YYYY") == moment(data.date).format("DD MM YYYY")) {
+                        eventValue = data.value;
                         return "black";
                     }
                 })
@@ -156,6 +170,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                     }
                 });
             $(".addCommentButton").show();
+            $("#eventValue").html(eventValue);
             var day = moment(date).format("DD");
             var month = moment(date).format("MM");
             var year = moment(date).format("YYYY");
@@ -163,7 +178,43 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             charts.showComments();
         };
 
+        var highlightLatestDataPointDate = function () {
+            var date = getLatestDataPointDate();
+            charts.date = date;
+            showDetailsForDate(date);
+        };
+
         highlightLatestDataPointDate();
+
+        var datesForDataPoints = getDatesForEvents();
+        var sortedDatesInMillis = sortDatesInMillisForDataPointsInAscendingOrder(datesForDataPoints);
+
+        charts.next = function (date) {
+            console.log(date);
+            var indexOfSelectedDate = sortedDatesInMillis.indexOf(date.getTime());
+            var nextDate = sortedDatesInMillis[indexOfSelectedDate + 1];
+            if (nextDate !== undefined) {
+                charts.date  = new Date(nextDate);
+                showDetailsForDate(charts.date);
+            }
+            else {
+                showDetailsForDate(date);
+            }
+        };
+
+        charts.previous = function (date) {
+            console.log(date);
+            var indexOfSelectedDate = sortedDatesInMillis.indexOf(date.getTime());
+            var previousDate = sortedDatesInMillis[indexOfSelectedDate - 1];
+            if (previousDate !== undefined) {
+                charts.date = new Date(previousDate);
+                showDetailsForDate(charts.date);
+            } else {
+                showDetailsForDate(date);
+            }
+        };
+
+
     }, 1000);
 };
 

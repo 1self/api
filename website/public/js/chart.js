@@ -1,6 +1,7 @@
 window.charts = window.charts || {};
 
 charts.graphUrl; // /v1/users/... without query params
+charts.date;
 
 var getEventsFor = function (type, typeId, objectTags, actionTags, operation, period, shareToken) {
     return $.ajax({
@@ -104,6 +105,14 @@ charts.showComments = function () {
                 "<sub><span class='commentTimestamp'>" + moment(comment.timestamp).format("DD MMM YYYY HH:mm") + "</span></sub></div></li>");
         });
     });
+};
+
+var next = function() {
+    charts.next(charts.date);
+};
+
+var previous = function() {
+    charts.previous(charts.date);
 };
 
 $(document).ready(function () {
