@@ -1742,7 +1742,7 @@ app.get('/quantifieddev/extensions/message', function (req, res) {
 });
 
 var getQueryForVisualizationAPI = function (streamIds, params) {
-    var lastMonth = moment().subtract('months', 1);
+    var lastTwoWeeks = moment().subtract('days', 13);
     var actionTags = params.actionTags.split(',');
     var objectTags = params.objectTags.split(',');
 
@@ -1763,7 +1763,7 @@ var getQueryForVisualizationAPI = function (streamIds, params) {
                 "payload.eventDateTime": {
                     "$operator": {
                         ">": {
-                            "$date": moment(lastMonth).format()
+                            "$date": moment(lastTwoWeeks).format()
                         }
                     }
                 },
