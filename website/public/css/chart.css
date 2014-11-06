@@ -1,3 +1,19 @@
+.previousButton {
+    float:left;
+}
+
+.nextButton {
+    float: right;
+}
+
+#date {
+    margin: 0 39%;
+}
+
+.graphInfo {
+    margin-top: 2%;
+}
+
 .addCommentButton {
     background: none !important;
     border: none;

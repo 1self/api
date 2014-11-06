@@ -34,15 +34,18 @@
 </div>
 <div class="container">
     <div>
-        <button type="button" class="nextButton" onclick="next()">
-            Next
-        </button>
-        <span id="eventValue"></span>
         <button type="button" class="previousButton" onclick="previous()">
+            <!--<img src="/img/arrow_left.png">-->
             Previous
         </button>
+        <span id="date"></span>
+        <button type="button" class="nextButton" onclick="next()">
+            <!--<img src="/img/arrow_right.png">-->
+            Next
+        </button>
     </div>
-    <div>
+    <div class="graphInfo">
+        <span id="eventValue"></span> {{measurement}}
         <div id="comments">
             <ul class="commentList">
 
