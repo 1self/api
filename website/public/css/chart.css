@@ -1,13 +1,20 @@
-.previousButton {
+.navigation {
+    background: none !important;
+    border: none;
+    padding: 0 !important;
+    color:white;
+}
+
+.previous {
     float:left;
 }
 
-.nextButton {
+.next {
     float: right;
 }
 
 #date {
-    margin: 0 39%;
+    margin: 0 43%;
 }
 
 .graphInfo {
