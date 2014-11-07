@@ -107,7 +107,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                     });
                 $(".addCommentButton").show();
                 $("#date").html(moment(d.date).format("dddd, Do MMMM"));
-                $("#eventValue").html(d.value);
+                $("#eventValue").html(d.value + " " + measurement);
                 var day = moment(d.date).format("DD");
                 var month = moment(d.date).format("MM");
                 var year = moment(d.date).format("YYYY");
@@ -165,7 +165,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 });
             $(".addCommentButton").show();
             $("#date").html(moment(date).format("DD/MM/YY dddd"));
-            $("#eventValue").html(eventValue);
+            $("#eventValue").html(eventValue + " " + measurement);
             var day = moment(date).format("DD");
             var month = moment(date).format("MM");
             var year = moment(date).format("YYYY");

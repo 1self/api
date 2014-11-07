@@ -1,6 +1,7 @@
 body {
     font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     background-color: #94D6A1;
+    margin: 1% 0%;
 }
 
 .center {
@@ -37,7 +38,9 @@ body {
 }
 
 .shareGraphButton {
-    float: right;
+    position: absolute;
+    right: 10px;
+    top: 5px;
     font-size: 40px;
 }
 
