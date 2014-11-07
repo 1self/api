@@ -34,10 +34,11 @@
 <div id="chart" class="chart">
 </div>
 <div class="detailsSection">
-    <hr>
-    <span id="date"></span>
-    <hr>
-    <span id="eventValue"></span> {{measurement}}
+    <div id="date" class="center"></div>
+    <div>
+        <span id="eventValue">
+        </span> {{measurement}}
+    </div>
     <div id="comments">
         <ul class="commentList">
         </ul>
@@ -46,7 +47,7 @@
         <span>{{username}}</span>
         <input id="commentText" type="text" placeholder="Add Comment">
     </div>
-    <button type="button" class="addCommentButton" onclick="handleAddComment()" style="display:none">
+    <button type="button" class="btn btn-info addCommentButton" onclick="handleAddComment()" style="display:none">
         ADD YOUR COMMENT
     </button>
 

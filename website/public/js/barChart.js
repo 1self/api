@@ -10,7 +10,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             left: 0
         };
         var width = window.innerWidth;
-        var height = window.innerHeight * 0.7;
+        var height = window.innerHeight * 0.8;
         var twoWeeksAgo = new Date(moment().subtract("days", 13).format("MM/DD/YYYY"));
         var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
         var dateRange = d3.range(15);
@@ -147,7 +147,6 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
 
         var getLatestDataPointDate = function () {
             var datesForDataPoints = getDatesForEvents();
-            console.log("Dates: " + datesForDataPoints);
             return new Date(Math.max.apply(null, datesForDataPoints));
         };
 

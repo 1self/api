@@ -1,46 +1,19 @@
 body {
     font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     background-color: #94D6A1;
-    font-size: 16px;
+}
+
+.center {
+    margin-left: 35%;
+    width: 70%;
 }
 
 .detailsSection {
-background-color: #94D6A1;
-}
-
-.navigation {
-    background: none !important;
-    border: none;
-    padding: 0 !important;
-    color:white;
-}
-
-.previous {
-    float:left;
-}
-
-.next {
-    float: right;
-}
-
-#date {
-    margin: 0 42%;
+    background-color: #94D6A1;
 }
 
 .graphInfo {
     margin-top: 2%;
-}
-
-.addCommentButton {
-    background: none !important;
-    border: none;
-    padding: 0 !important;
-
-    /*optional*/
-    font-family: arial, sans-serif; /*input has OS specific font-family*/
-    color: #069;
-    text-decoration: underline;
-    cursor: pointer;
 }
 
 .commentList {
@@ -49,9 +22,15 @@ background-color: #94D6A1;
     overflow: hidden;
 }
 
-.commentList li {
-    margin: 0;
-    margin-top: 10px;
+#date {
+    font-size: 40px;
+}
+
+.commentList li, #addCommentInput, .addCommentButton, #eventValue {
+    margin-left: 3%;
+    margin-top: 1%;
+    width: 100%;
+    font-size: 40px;
 }
 
 .commentList li > div {
@@ -64,6 +43,11 @@ background-color: #94D6A1;
     float: left;
 }
 
-.commentText p {
-    margin: 0;
+#commentText {
+    margin-left: 40px;
+}
+
+.commentText p, .commentTimestamp {
+    width: 100%;
+    margin-left: 40px;
 }
