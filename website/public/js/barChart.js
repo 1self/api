@@ -19,7 +19,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             .rangeRoundBands([0, width - margin.left - margin.right]);
         var x = d3.time.scale()
             .domain([twoWeeksAgo , tomorrow])
-            .rangeRound([width - margin.left - margin.right, 0])
+            .rangeRound([0, width - margin.left - margin.right])
             .nice();
 
         var maxDataValue = d3.max(events, function (d) {
@@ -106,7 +106,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                         }
                     });
                 $(".addCommentButton").show();
-                $("#date").html(moment(d.date).format("dddd, Do MMMM"));
+                $("#date").html(moment(d.date).format("DD/MM/YY dddd"));
                 $("#eventValue").html(d.value + " " + measurement);
                 var day = moment(d.date).format("DD");
                 var month = moment(d.date).format("MM");
@@ -114,20 +114,20 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 charts.graphUrl = window.location.href.split(window.location.origin)[1].split("?")[0] + "/" + year + "/" + month + "/" + day;
                 charts.showComments();
             });
-            /*.on("mouseover", function (d) {
-                if ($(window).width() > 767) {
-                    tip.show(d)
-                }
-            })
-            .on("mouseout", function () {
-                if ($(window).width() > 767) {
-                    tip.hide();
-                } else {
-                    tooltipDivForMobile.transition()
-                        .duration(100)
-                        .style("opacity", 0);
-                }
-            });*/
+        /*.on("mouseover", function (d) {
+         if ($(window).width() > 767) {
+         tip.show(d)
+         }
+         })
+         .on("mouseout", function () {
+         if ($(window).width() > 767) {
+         tip.hide();
+         } else {
+         tooltipDivForMobile.transition()
+         .duration(100)
+         .style("opacity", 0);
+         }
+         });*/
 
         svg.append('g')
             .attr('class', 'y axis')
