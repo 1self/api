@@ -8,17 +8,19 @@ body {
     font-size: 40px;
 }
 
-.modal-dialog {
-    margin-top: 40%;
-    font-size: 40px !important;
-}
+@media screen and (max-width: 1200px) {
+    .modal-dialog {
+        margin-top: 40%;
+        font-size: 40px !important;
+    }
 
-.font-size {
-    font-size: 30px !important;
-}
+    .font-size {
+        font-size: 30px !important;
+    }
 
-button, a {
-    font-size: 30px;
+    button, a {
+        font-size: 30px;
+    }
 }
 
 .center {

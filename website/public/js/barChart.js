@@ -10,15 +10,13 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             left: 0
         };
         var width = window.innerWidth;
-        var height = window.innerHeight * 0.8;
-        var twoWeeksAgo = new Date(moment().subtract("days", 13).format("MM/DD/YYYY"));
+        var height = width;
+        var weekAgo = new Date(moment().subtract("days", 7).format("MM/DD/YYYY"));
         var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
-        var dateRange = d3.range(15);
-        var xWidth = d3.scale.ordinal()
-            .domain(dateRange)
-            .rangeRoundBands([0, width - margin.left - margin.right]);
+        var dateRange = d3.range(7);
+        var xWidth = width/8;
         var x = d3.time.scale()
-            .domain([twoWeeksAgo , tomorrow])
+            .domain([weekAgo , tomorrow])
             .rangeRound([0, width - margin.left - margin.right])
             .nice();
 
@@ -89,7 +87,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             .attr('y', function (d) {
                 return height - margin.top - margin.bottom - (height - margin.top - margin.bottom - y(d.value))
             })
-            .attr('width', xWidth.rangeBand())
+            .attr('width', xWidth)
             .attr('height', function (d) {
                 return height - margin.top - margin.bottom - y(d.value)
             })
