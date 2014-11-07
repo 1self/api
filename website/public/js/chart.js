@@ -27,7 +27,8 @@ charts.addComment = function () {
     var comment = {
         text: commentText,
         timestamp: new Date(),
-        user: username
+        user: username,
+        avatarUrl: avatarUrl
     };
     var graph = {
         graphUrl: charts.graphUrl,
@@ -48,7 +49,7 @@ charts.addComment = function () {
             "Authorization": $.cookie("_eun")
         }
     }).done(function (data) {
-        $(".commentList").append("<li><div class='commenter'>" + comment.user + "</div>" +
+        $(".commentList").append("<li><div class='commenter'><img src='" + comment.avatarUrl + "'&size=100' width='100' height='100'/></div>" +
             "<div class='commentText'><p>" + comment.text + "</p>" +
             "<sub><span class='commentTimestamp'>" + moment(comment.timestamp).format("DD MMM YYYY HH:mm") + "</span></sub></div></li>");
         console.info("awesome. comment added." + JSON.stringify(comment));
@@ -129,7 +130,7 @@ charts.showComments = function () {
         var commentsDiv = $(".commentList");
         commentsDiv.empty();
         comments.forEach(function (comment) {
-            commentsDiv.append("<li><div class='commenter'>" + comment.user + "</div>" +
+            commentsDiv.append("<li><div class='commenter'><img src='" + comment.avatarUrl + "'&size=100' width='100' height='100'/></div>" +
                 "<div class='commentText'><p>" + comment.text + "</p>" +
                 "<sub><span class='commentTimestamp'>" + moment(comment.timestamp).format("DD MMM YYYY HH:mm") + "</span></sub></div></li><hr>");
         });
