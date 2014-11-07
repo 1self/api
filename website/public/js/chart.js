@@ -49,7 +49,7 @@ charts.addComment = function () {
             "Authorization": $.cookie("_eun")
         }
     }).done(function (data) {
-        $(".commentList").append("<li><div class='commenter'><img src='" + comment.avatarUrl + "'&size=100' width='100' height='100'/></div>" +
+        $(".commentList").append("<li><div class='commenter'><img src='" + comment.avatarUrl + "' width='100' height='100'/></div>" +
             "<div class='commentText'><p>" + comment.text + "</p>" +
             "<sub><span class='commentTimestamp'>" + moment(comment.timestamp).format("DD MMM YYYY HH:mm") + "</span></sub></div></li>");
         console.info("awesome. comment added." + JSON.stringify(comment));
@@ -100,7 +100,7 @@ var handleShareGraph = function () {
 var showChartTitle = function () {
     $("#chartTitle").html(chartTitle);
     if (isUserLoggedIn || (!isUserLoggedIn && !(_.isEmpty(shareToken)))) {
-        $(".avatar").html("<span><img src='" + avatarUrl + "&size=100' width='100' height='100'/></span>");
+        $(".avatar").html("<span><img src='" + avatarUrl + "' width='100' height='100'/></span>");
         $.when(getEventsFor("users", graphOwner, objectTags, actionTags, operation, period, shareToken))
             .done(plotChart)
             .fail();
@@ -141,7 +141,7 @@ charts.showComments = function () {
         var commentsDiv = $(".commentList");
         commentsDiv.empty();
         comments.forEach(function (comment) {
-            commentsDiv.append("<li><div class='commenter'><img src='" + comment.avatarUrl + "'&size=100' width='100' height='100'/></div>" +
+            commentsDiv.append("<li><div class='commenter'><img src='" + comment.avatarUrl + "' width='100' height='100'/></div>" +
                 "<div class='commentText'><p>" + comment.text + "</p>" +
                 "<sub><span class='commentTimestamp'>" + moment(comment.timestamp).format("DD MMM YYYY HH:mm") + "</span></sub></div></li><hr>");
         });
