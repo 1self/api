@@ -126,14 +126,6 @@ charts.showComments = function () {
     });
 };
 
-var next = function () {
-    charts.next(charts.date);
-};
-
-var previous = function () {
-    charts.previous(charts.date);
-};
-
 $(document).ready(function () {
     showChartTitle();
     $("#shareSubmit").click(submitShare);

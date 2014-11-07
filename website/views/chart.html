@@ -30,35 +30,25 @@
 </head>
 <body>
 <div id="chartTitle" class="apiUrl"></div>
+<button type="button" class="shareGraphButton" onclick="handleShareGraph()">SHARE</button>
 <div id="chart" class="chart">
 </div>
 <div class="detailsSection">
-    <div class="container">
-        <button type="button" class="glyphicon glyphicon-chevron-left previous navigation" onclick="previous()">
-            <!--<img src="/img/arrow_left.png">-->
-        </button>
-        <span id="date"></span>
-        <button type="button" class="glyphicon glyphicon-chevron-right next navigation" onclick="next()">
-            <!--<img src="/img/arrow_right.png">-->
-        </button>
-    </div>
     <hr>
-    <div class="graphInfo container">
-        <span id="eventValue"></span> {{measurement}}
-        <div id="comments">
-            <ul class="commentList">
-
-            </ul>
-        </div>
-        <div id="addCommentInput" style="display:none">
-            <span>{{username}}</span>
-            <input id="commentText" type="text" placeholder="Add Comment">
-        </div>
-        <button type="button" class="addCommentButton" onclick="handleAddComment()" style="display:none">
-            Add a Comment
-        </button>
-        <button type="button" class="shareGraphButton" onclick="handleShareGraph()">Share</button>
+    <span id="date"></span>
+    <hr>
+    <span id="eventValue"></span> {{measurement}}
+    <div id="comments">
+        <ul class="commentList">
+        </ul>
     </div>
+    <div id="addCommentInput" style="display:none">
+        <span>{{username}}</span>
+        <input id="commentText" type="text" placeholder="Add Comment">
+    </div>
+    <button type="button" class="addCommentButton" onclick="handleAddComment()" style="display:none">
+        ADD YOUR COMMENT
+    </button>
 
     <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginLabel"
          aria-hidden="true">

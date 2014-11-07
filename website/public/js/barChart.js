@@ -13,34 +13,32 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
         var height = window.innerHeight * 0.7;
         var twoWeeksAgo = new Date(moment().subtract("days", 13).format("MM/DD/YYYY"));
         var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
-        var dateRange = d3.range(31);
-        var yHeight = d3.scale.ordinal()
+        var dateRange = d3.range(15);
+        var xWidth = d3.scale.ordinal()
             .domain(dateRange)
-            .rangeRoundBands([0, height - margin.top - margin.bottom]);
-        var y = d3.time.scale()
+            .rangeRoundBands([0, width - margin.left - margin.right]);
+        var x = d3.time.scale()
             .domain([twoWeeksAgo , tomorrow])
-            .rangeRound([height - margin.top - margin.bottom, 0])
+            .rangeRound([width - margin.left - margin.right, 0])
             .nice();
 
         var maxDataValue = d3.max(events, function (d) {
             return d.value;
         });
-        var x = d3.scale.linear()
+        var y = d3.scale.linear()
             .domain([0, maxDataValue])
-            .range([0, width - margin.left - margin.right]).nice(4);
-        var xTicks = d3.min([5, maxDataValue]);
+            .range([height - margin.top - margin.bottom, 0])
+            .nice(4);
+        var yTicks = d3.min([5, maxDataValue]);
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .tickFormat('');
 
         var yAxis = d3.svg.axis()
             .scale(y)
             .orient('right')
-            .ticks(d3.time.weeks, 1)
-            .tickFormat(d3.time.format('%b %d'))
-            .tickPadding(8);
-
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient('top')
-            .ticks(xTicks)
+            .ticks(yTicks)
             .tickPadding(8);
 
         var svg = d3.select(divId).append('svg')
@@ -80,24 +78,27 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             .attr("offset", "100%")
             .attr("stop-color", "#fff")
             .attr("stop-opacity", 1);
+
         svg.selectAll('.chart')
             .data(events)
             .enter().append('rect')
             .attr('class', 'bar')
             .style("fill", "url(#gradient)")
-            .attr('y', function (d) {
-                return y(new Date(d.date));
+            .attr('x', function (d) {
+                return x(new Date(d.date));
             })
-            .attr('x', 0)
-            .attr('height', yHeight.rangeBand())
-            .attr('width', function (d) {
-                return x(d.value);
+            .attr('y', function (d) {
+                return height - margin.top - margin.bottom - (height - margin.top - margin.bottom - y(d.value))
+            })
+            .attr('width', xWidth.rangeBand())
+            .attr('height', function (d) {
+                return height - margin.top - margin.bottom - y(d.value)
             })
             .on("click", function (d) {
                 svg.selectAll('.bar')
                     .style("stroke", function (data) {
                         if (d === data) {
-                            return "black";
+                            return "#38A0BA";
                         }
                     })
                     .style("stroke-width", function (data) {
@@ -106,13 +107,15 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                         }
                     });
                 $(".addCommentButton").show();
+                $("#date").html(moment(d.date).format("dddd, Do MMMM"));
+                $("#eventValue").html(d.value);
                 var day = moment(d.date).format("DD");
                 var month = moment(d.date).format("MM");
                 var year = moment(d.date).format("YYYY");
                 charts.graphUrl = window.location.href.split(window.location.origin)[1].split("?")[0] + "/" + year + "/" + month + "/" + day;
                 charts.showComments();
-            })
-            .on("mouseover", function (d) {
+            });
+            /*.on("mouseover", function (d) {
                 if ($(window).width() > 767) {
                     tip.show(d)
                 }
@@ -125,16 +128,16 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                         .duration(100)
                         .style("opacity", 0);
                 }
-            });
+            });*/
+
+        svg.append('g')
+            .attr('class', 'y axis')
+            .call(yAxis);
 
         svg.append('g')
             .attr('class', 'x axis')
             .attr('transform', 'translate(0, ' + (height - margin.top - margin.bottom) + ')')
             .call(xAxis);
-
-        svg.append('g')
-            .attr('class', 'y axis')
-            .call(yAxis);
 
         var getDatesForEvents = function () {
             return _.map(events, function (event) {
@@ -146,13 +149,6 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             var datesForDataPoints = getDatesForEvents();
             console.log("Dates: " + datesForDataPoints);
             return new Date(Math.max.apply(null, datesForDataPoints));
-        };
-
-        var sortDatesInMillisForDataPointsInAscendingOrder = function (dates) {
-            var datesInMillis = _.map(dates, function (date) {
-                return new Date(date).getTime();
-            });
-            return datesInMillis.sort();
         };
 
         var showDetailsForDate = function (date) {
@@ -183,40 +179,9 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             var date = getLatestDataPointDate();
             charts.date = date;
             showDetailsForDate(date);
-            showDetailsForDate(date);
-            showDetailsForDate(date);
         };
 
         highlightLatestDataPointDate();
-
-        var datesForDataPoints = getDatesForEvents();
-        var sortedDatesInMillis = sortDatesInMillisForDataPointsInAscendingOrder(datesForDataPoints);
-
-        charts.next = function (date) {
-            console.log(date);
-            var indexOfSelectedDate = sortedDatesInMillis.indexOf(date.getTime());
-            var nextDate = sortedDatesInMillis[indexOfSelectedDate + 1];
-            if (nextDate !== undefined) {
-                charts.date  = new Date(nextDate);
-                showDetailsForDate(charts.date);
-            }
-            else {
-                showDetailsForDate(date);
-            }
-        };
-
-        charts.previous = function (date) {
-            console.log(date);
-            var indexOfSelectedDate = sortedDatesInMillis.indexOf(date.getTime());
-            var previousDate = sortedDatesInMillis[indexOfSelectedDate - 1];
-            if (previousDate !== undefined) {
-                charts.date = new Date(previousDate);
-                showDetailsForDate(charts.date);
-            } else {
-                showDetailsForDate(date);
-            }
-        };
-
 
     }, 1000);
 };
