@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
@@ -62,14 +62,15 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span
                             aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <h4 class="modal-title" id="loginLabel">Add a Comment</h4>
+                    <h2 class="modal-title" id="loginLabel">Add a Comment</h2>
                 </div>
                 <div class="modal-body">
                     <p>To add a comment, please login to 1self.</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <a href="/auth/github" class="btn btn-primary">Login to 1self</a>
+                    <button type="button" class="btn btn-lg btn-default" data-dismiss="modal"><span class="font-size">Close</span>
+                    </button>
+                    <a href="/auth/github" class="btn btn-lg btn-primary"><span class="font-size">Login to 1self</span></a>
                 </div>
             </div>
         </div>
@@ -82,14 +83,15 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span
                             aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <h4 class="modal-title" id="shareLoginLabel">Share your graph</h4>
+                    <h2 class="modal-title" id="shareLoginLabel">Share your graph</h2>
                 </div>
                 <div class="modal-body">
                     <p>To share your graph, please login to 1self.</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <a href="/auth/github" class="btn btn-primary">Login to 1self</a>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><span
+                            class="font-size">Close</span></button>
+                    <a href="/auth/github" class="btn btn-primary"><span class="font-size">Login to 1self</span></a>
                 </div>
             </div>
         </div>
@@ -97,8 +99,8 @@
 
     <div class="modal fade" id="shareModal" tabindex="-1" role="dialog" aria-labelledby="shareLabel"
          aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
+        <div class="modal-content">
+            <div class="modal-dialog modal-sm">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span
                             aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -111,8 +113,8 @@
                     </label>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button id="shareSubmit" type="button" class="btn btn-primary">Share</button>
+                    <button type="button" class="btn btn-default font-size" data-dismiss="modal">Close</button>
+                    <button id="shareSubmit" type="button" class="btn btn-primary font-size">Share</button>
                 </div>
             </div>
         </div>

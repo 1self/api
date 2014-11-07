@@ -4,34 +4,23 @@ body {
     margin: 1% 0%;
 }
 
-.apiUrl{
+.apiUrl {
     font-size: 40px;
 }
 
 .modal-dialog {
-    width: 600px;
-    height: 300px;
-    font-size: 40px;
+    margin-top: 40%;
+    font-size: 40px !important;
 }
 
-.modal-header {
-    font-size:40px;
+.font-size {
+    font-size: 30px !important;
 }
-.modal-header button {
-    font-size:30px;
-}
-
-.modal-body {
-    overflow-y: hidden;
-    height: 100%;
-    max-height:190px;
-}
-
-
 
 button, a {
     font-size: 30px;
 }
+
 .center {
     margin-left: 35%;
     width: 70%;
