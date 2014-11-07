@@ -121,7 +121,7 @@ charts.showComments = function () {
         comments.forEach(function (comment) {
             commentsDiv.append("<li><div class='commenter'>" + comment.user + "</div>" +
                 "<div class='commentText'><p>" + comment.text + "</p>" +
-                "<sub><span class='commentTimestamp'>" + moment(comment.timestamp).format("DD MMM YYYY HH:mm") + "</span></sub></div></li>");
+                "<sub><span class='commentTimestamp'>" + moment(comment.timestamp).format("DD MMM YYYY HH:mm") + "</span></sub></div></li><hr>");
         });
     });
 };

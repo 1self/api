@@ -164,7 +164,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                     }
                 });
             $(".addCommentButton").show();
-            $("#date").html(moment(date).format("dddd, Do MMMM"));
+            $("#date").html(moment(date).format("DD/MM/YY dddd"));
             $("#eventValue").html(eventValue);
             var day = moment(date).format("DD");
             var month = moment(date).format("MM");

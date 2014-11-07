@@ -27,7 +27,6 @@ body {
 }
 
 .commentList li, #addCommentInput, .addCommentButton, #eventValue {
-    margin-left: 3%;
     margin-top: 1%;
     width: 100%;
     font-size: 40px;
