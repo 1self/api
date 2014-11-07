@@ -87,3 +87,12 @@ body {
     width: 100%;
     margin-left: 40px;
 }
+
+#graphShareLink {
+    margin: 5px;
+    background-color: #ccc;
+}
+
+.shareEmailNoticeMessage{
+    color: green;
+}

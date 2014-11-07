@@ -808,38 +808,22 @@ module.exports = function (app) {
             });
     });
 
-    /*app.post('/v1/share_graph', sessionManager.requiresSession, function (req, res) {
-     var toEmailId = req.body.toEmailId;
-     var graphUrl = req.body.graphUrl;
-     var fromUsername = req.session.username;
+    app.post('/v1/share_graph', sessionManager.requiresSession, function (req, res) {
+        var toEmailId = req.body.toEmailId;
+        var graphShareUrl = req.body.graphShareUrl;
+        var fromUsername = req.session.username;
 
-     var sendEmail = function (graphShareObject) {
-     return getPrimaryEmailId(fromUsername)
-     .then(function (fromEmailId) {
-     return sendGraphShareEmail(graphShareObject, fromEmailId, toEmailId)
-     .then(function () {
-     res.send(200, {"message": "Graph url shared successfully."});
-     });
-     });
-     };
-
-     getAlreadySharedGraphObject(graphUrl)
-     .then(function (graphShareObject) {
-     if (graphShareObject) {
-     sendEmail(graphShareObject);
-     } else {
-     generateToken()
-     .then(function (token) {
-     var graphShareObject = {
-     shareToken: token,
-     graphUrl: graphUrl
-     };
-     return insertGraphShareEntryInDb(graphShareObject)
-     .then(sendEmail);
-     });
-     }
-     });
-     });*/
+        var sendEmail = function (graphShareUrl) {
+            return getPrimaryEmailId(fromUsername)
+                .then(function (fromEmailId) {
+                    return sendGraphShareEmail(graphShareUrl, fromEmailId, toEmailId)
+                        .then(function () {
+                            res.send(200, {"message": "Graph url shared successfully."});
+                        });
+                });
+        };
+        sendEmail(graphShareUrl);
+    });
 
     var getAlreadySharedGraphObject = function (graphUrl) {
         var deferred = Q.defer();
@@ -877,9 +861,9 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    var sendGraphShareEmail = function (graphShareEntry, fromEmailId, toEmailId) {
+    var sendGraphShareEmail = function (graphShareUrl, fromEmailId, toEmailId) {
         var deferred = Q.defer();
-        var graphUrl = CONTEXT_URI + graphShareEntry.graphUrl + "?shareToken=" + graphShareEntry.shareToken;
+        var graphUrl = graphShareUrl;
 
         emailTemplates(emailConfigOptions, function (err, emailRender) {
             var context = {
@@ -897,7 +881,7 @@ module.exports = function (app) {
                         console.error(err);
                         deferred.reject(err);
                     } else {
-                        console.log("Graph share email successfully sent to ", graphShareEntry.toEmailId);
+                        console.log("Graph share email successfully sent to ", toEmailId);
                         deferred.resolve();
                     }
                 });
@@ -1007,7 +991,7 @@ module.exports = function (app) {
                     title: graphInfo.title,
                     measurement: graphInfo.measurement,
                     graphOwner: req.param("username"),
-                    username: req.session.username,
+                    username: req.param("username"),
                     avatarUrl: req.session.avatarUrl,
                     objectTags: req.param("objectTags"),
                     actionTags: req.param("actionTags"),

@@ -75,11 +75,22 @@ var handleAddComment = function () {
 
 var handleShareGraph = function () {
     var unregisteredUserOnStreamsPage = function () {
-        return !isUserLoggedIn && (window.location.pathname.search("streams") !== -1)
+        return !isUserLoggedIn && (window.location.pathname.search("streams") !== -1);
     };
 
     if (isUserLoggedIn) {
-        $("#shareModal").modal({show: true});
+        $.ajax({
+            url: "/v1/graph/share?graphUrl=" + window.location.pathname,
+            success: function (data) {
+                $("#shareModal").modal({show: true});
+                $("#loadingDiv").hide();
+                $("#graphShareLink").html(window.location.origin + data.graphShareUrl);
+                $("#shareModal").modal({show: true});
+            },
+            error: function () {
+                alert("some problem. Please try again later.");
+            }
+        });
     } else if (unregisteredUserOnStreamsPage()) {
         $("#shareLoginModal").modal({show: true});
     } else {
@@ -113,16 +124,14 @@ var showChartTitle = function () {
 
 var submitShare = function () {
     var emailId = $("#emailId").val();
-    var graphShare = {
-        toEmailId: emailId,
-        graphUrl: window.location.pathname
-    };
+    var graphShareUrl = $("#graphShareLink").html();
+
     $.ajax({
         url: "/v1/share_graph",
         method: "POST",
-        data: graphShare,
+        data: { graphShareUrl: graphShareUrl, toEmailId: emailId },
         success: function () {
-            alert("Graph shared successfully.");
+            $(".shareEmailNoticeMessage").html("Graph link emailed successfully");
         },
         error: function () {
             alert("some problem. Please try again later.");
