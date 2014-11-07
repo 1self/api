@@ -783,25 +783,14 @@ module.exports = function (app) {
             });
     });
 
-    app.post('/v1/share_graph', sessionManager.requiresSession, function (req, res) {
-        var toEmailId = req.body.toEmailId;
-        var graphUrl = req.body.graphUrl;
-        var fromUsername = req.session.username;
-
-        var sendEmail = function (graphShareObject) {
-            return getPrimaryEmailId(fromUsername)
-                .then(function (fromEmailId) {
-                    return sendGraphShareEmail(graphShareObject, fromEmailId, toEmailId)
-                        .then(function () {
-                            res.send(200, {"message": "Graph url shared successfully."});
-                        });
-                });
-        };
+    app.get('/v1/graph/share', function (req, res) {
+        var graphUrl = req.query.graphUrl;
 
         getAlreadySharedGraphObject(graphUrl)
             .then(function (graphShareObject) {
                 if (graphShareObject) {
-                    sendEmail(graphShareObject);
+                    var graphShareUrl = graphShareObject.graphUrl + "?shareToken=" + graphShareObject.shareToken;
+                    res.send({graphShareUrl: graphShareUrl});
                 } else {
                     generateToken()
                         .then(function (token) {
@@ -810,11 +799,47 @@ module.exports = function (app) {
                                 graphUrl: graphUrl
                             };
                             return insertGraphShareEntryInDb(graphShareObject)
-                                .then(sendEmail);
+                                .then(function () {
+                                    var graphShareUrl = graphShareObject.graphUrl + "?shareToken=" + graphShareObject.shareToken;
+                                    res.send({graphShareUrl: graphShareUrl});
+                                });
                         });
                 }
             });
     });
+
+    /*app.post('/v1/share_graph', sessionManager.requiresSession, function (req, res) {
+     var toEmailId = req.body.toEmailId;
+     var graphUrl = req.body.graphUrl;
+     var fromUsername = req.session.username;
+
+     var sendEmail = function (graphShareObject) {
+     return getPrimaryEmailId(fromUsername)
+     .then(function (fromEmailId) {
+     return sendGraphShareEmail(graphShareObject, fromEmailId, toEmailId)
+     .then(function () {
+     res.send(200, {"message": "Graph url shared successfully."});
+     });
+     });
+     };
+
+     getAlreadySharedGraphObject(graphUrl)
+     .then(function (graphShareObject) {
+     if (graphShareObject) {
+     sendEmail(graphShareObject);
+     } else {
+     generateToken()
+     .then(function (token) {
+     var graphShareObject = {
+     shareToken: token,
+     graphUrl: graphUrl
+     };
+     return insertGraphShareEntryInDb(graphShareObject)
+     .then(sendEmail);
+     });
+     }
+     });
+     });*/
 
     var getAlreadySharedGraphObject = function (graphUrl) {
         var deferred = Q.defer();

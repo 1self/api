@@ -83,7 +83,17 @@ var handleShareGraph = function () {
     } else if (unregisteredUserOnStreamsPage()) {
         $("#shareLoginModal").modal({show: true});
     } else {
-        $("#loginModal").modal({show: true});
+        $.ajax({
+            url: "/v1/graph/share?graphUrl=" + window.location.pathname,
+            success: function (data) {
+                $("#shareModal").modal({show: true});
+                $("#loadingDiv").hide();
+                $("#graphShareLink").html(window.location.origin + data.graphShareUrl);
+            },
+            error: function () {
+                alert("some problem. Please try again later.");
+            }
+        });
     }
 };
 

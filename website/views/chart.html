@@ -111,10 +111,22 @@
                     <h4 class="modal-title" id="shareLabel">Share your graph with friends</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Enter email id to whom you want to share your graph.</p>
-                    <label>Email
-                        <input id="emailId" type="email" name="email" required/>
-                    </label>
+                    <div id="loadingDiv">Loading ...</div>
+                    <div id="shareContentDiv">
+                        <div id="shareLinkDiv">
+                            <p>Copy the url below and share it with your friends. They will be able to access this
+                                graph.</p>
+                            <p id="graphShareLink"></p>
+                        </div>
+                        {% if isUserLoggedIn %}
+                        <div id="shareLinkWithEmailDiv">
+                            <p>Enter email id with whom you want to share your graph.</p>
+                            <label>Email
+                                <input id="emailId" type="email" name="email" required/>
+                            </label>
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default font-size" data-dismiss="modal">Close</button>
