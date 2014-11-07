@@ -902,7 +902,7 @@ module.exports = function (app) {
         }
         return {
             title: title,
-            unitMeasurement: measurement
+            measurement: measurement
         };
     };
 
