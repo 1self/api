@@ -73,7 +73,17 @@ var handleAddComment = function () {
 };
 
 var handleShareGraph = function () {
-    $("#shareModal").modal({show: true});
+    var unregisteredUserOnStreamsPage = function () {
+        return !isUserLoggedIn && (window.location.pathname.search("streams") !== -1)
+    };
+
+    if (isUserLoggedIn) {
+        $("#shareModal").modal({show: true});
+    } else if (unregisteredUserOnStreamsPage()) {
+        $("#shareLoginModal").modal({show: true});
+    } else {
+        $("#loginModal").modal({show: true});
+    }
 };
 
 var showChartTitle = function () {
