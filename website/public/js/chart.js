@@ -100,6 +100,7 @@ var handleShareGraph = function () {
 var showChartTitle = function () {
     $("#chartTitle").html(chartTitle);
     if (isUserLoggedIn || (!isUserLoggedIn && !(_.isEmpty(shareToken)))) {
+        $(".avatar").html("<span><img src='" + avatarUrl + "&size=100' width='100' height='100'/></span>");
         $.when(getEventsFor("users", graphOwner, objectTags, actionTags, operation, period, shareToken))
             .done(plotChart)
             .fail();
