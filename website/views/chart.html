@@ -16,6 +16,7 @@
         var measurement = "{{measurement}}";
         if (isUserLoggedIn) {
             var username = "{{username}}";
+            var avatarUrl = "{{avatarUrl}}";
         } else {
             var streamId = "{{streamId}}";
         }
@@ -30,6 +31,9 @@
 </head>
 <body>
 <div id="chartTitle" class="apiUrl"></div>
+<div class="avatar">
+    <span><img src="{{avatarUrl}}&size=100" width="100" height="100"/></span>
+</div>
 <div>
     <button type="button" class="btn btn-info shareGraphButton" onclick="handleShareGraph()">SHARE</button>
 </div>
@@ -48,7 +52,7 @@
         </ul>
     </div>
     <div id="addCommentInput" style="display:none">
-        <span>{{username}}</span>
+        <span><img src="{{avatarUrl}}&size=100" width="100" height="100"/></span>
         <input id="commentText" type="text" placeholder="Add Comment">
     </div>
     <button type="button" class="btn btn-info addCommentButton" onclick="handleAddComment()" style="display:none">

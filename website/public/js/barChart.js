@@ -4,7 +4,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
     setTimeout(function () {
         $(divId).empty();
         var margin = {
-            top: 20,
+            top: 120,
             right: 30,
             bottom: 0,
             left: 0
@@ -13,7 +13,6 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
         var height = width;
         var weekAgo = new Date(moment().subtract("days", 7).format("MM/DD/YYYY"));
         var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
-        var dateRange = d3.range(7);
         var xWidth = width/8;
         var x = d3.time.scale()
             .domain([weekAgo , tomorrow])

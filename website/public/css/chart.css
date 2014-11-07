@@ -4,6 +4,12 @@ body {
     margin: 1% 0%;
 }
 
+.avatar {
+    position: absolute;
+    right: 10px;
+    top: 0px;
+}
+
 .apiUrl {
     font-size: 40px;
 }
@@ -59,7 +65,7 @@ body {
 .shareGraphButton {
     position: absolute;
     right: 10px;
-    top: 5px;
+    top: 100px;
     font-size: 40px;
 }
 

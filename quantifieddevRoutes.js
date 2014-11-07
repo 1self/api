@@ -983,6 +983,7 @@ module.exports = function (app) {
                     measurement: graphInfo.measurement,
                     graphOwner: req.param("username"),
                     username: req.session.username,
+                    avatarUrl: req.session.avatarUrl,
                     objectTags: req.param("objectTags"),
                     actionTags: req.param("actionTags"),
                     operation: req.param("operation"),
