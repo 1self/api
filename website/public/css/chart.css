@@ -32,6 +32,15 @@ body {
     font-size: 40px;
 }
 
+.addCommentButton, .shareGraphButton {
+    box-shadow: 10px 10px 5px #888888;
+}
+
+.shareGraphButton {
+    float: right;
+    font-size: 40px;
+}
+
 .commentList li > div {
     display: table-cell;
 }
