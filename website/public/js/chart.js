@@ -110,8 +110,10 @@ var handleShareGraph = function () {
 
 var showChartTitle = function () {
     $("#chartTitle").html(chartTitle);
-    if (isUserLoggedIn || (!isUserLoggedIn && !(_.isEmpty(shareToken)))) {
+    if (isUserLoggedIn) {
         $(".avatar").html("<span><img src='" + avatarUrl + "' width='100' height='100'/></span>");
+    }
+    if (isUserLoggedIn || (!isUserLoggedIn && !(_.isEmpty(shareToken)))) {
         $.when(getEventsFor("users", graphOwner, objectTags, actionTags, operation, period, shareToken))
             .done(plotChart)
             .fail();
