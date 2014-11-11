@@ -2,40 +2,55 @@ body {
     font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     font-size: 14px;
     background: #94D6A1;
-    margin:0;
+    margin: 0;
     padding: 0;
 }
+
 svg, img {
     max-width: 100%;
 }
+
+#date, #eventValue {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.shareGraphButton, #date, #eventValue {
+    font-size: 1.24em;
+}
+
 .header {
     background: forestgreen;
     border: 2px solid rgb(1, 102, 1);
     width: 100%;
 }
+
 .page-title {
     padding: 7px;
     vertical-align: middle;
     font-size: 1.3em;
-    color : #ffffff;
+    color: #ffffff;
     min-height: 80px;
 }
-.avatar img{
+
+.avatar img {
     border-radius: 4px;
 }
+
 .avatar {
     width: 65px;
     padding: 2px;
     vertical-align: middle;
 }
-.share-button-container{
+
+.share-button-container {
     padding: 4px;
     background: #4CBB62;
-    text-align:right;
-    clear:right;
+    text-align: right;
+    clear: right;
 }
+
 .shareGraphButton {
-    font-size: 1.24em;
     padding: 5px 11px;
     min-width: 90px;
     border: 1px solid #2CA4C7;
@@ -43,12 +58,26 @@ svg, img {
     background-color: #5bc0de;
     border-radius: 4px;
 }
+
 .shareGraphButton:hover {
     color: #fff;
     background-color: #39b3d7;
     border-color: #269abc;
 }
 
+.grid-desktop {
+    display: table;
+    width: 100%;
+}
+
+.grid-desktop div {
+    display: table-row;
+}
+
+.grid-desktop div span {
+    display: table-cell;
+    vertical-align: middle;
+}
 
 .center {
     text-align: center;
@@ -68,11 +97,7 @@ svg, img {
     overflow: hidden;
 }
 
-#date {
-    font-size: 40px;
-}
-
-.commentList li, #addCommentInput, .addCommentButton, #eventValue {
+.commentList li, #addCommentInput, .addCommentButton {
     margin-top: 1%;
     width: 100%;
     font-size: 40px;
@@ -81,7 +106,6 @@ svg, img {
 .addCommentButton {
     box-shadow: 10px 10px 5px #888888;
 }
-
 
 .commentList li > div {
     display: table-cell;
@@ -107,13 +131,17 @@ svg, img {
     background-color: #ccc;
 }
 
-.shareEmailNoticeMessage{
+.shareEmailNoticeMessage {
     color: green;
 }
 
-
-
 /*Media queries  threshhold resolutions  480 800 1100*/
+@media (max-width: 355px) {
+
+    .grid-desktop, .grid-desktop div, .grid-desktop div span {
+        display: block;
+    }
+}
 
 @media (max-width: 1200px) {
     .modal-dialog {
