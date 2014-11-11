@@ -1036,6 +1036,7 @@ module.exports = function (app) {
     app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/:renderType",
         validateShareToken, function (req, res) {
 
+            req.session.redirectUrl = req.originalUrl;
             var streamId = req.query.streamId;
 //        var shareToken = req.query.shareToken;
             var renderChart = function () {
