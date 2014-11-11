@@ -111,7 +111,7 @@ var handleShareGraph = function () {
 var showChartTitle = function () {
     $("#chartTitle").html(chartTitle);
     if (isUserLoggedIn) {
-        $(".avatar").html("<span><img src='" + avatarUrl + "' width='100' height='100'/></span>");
+        $("#avatar").html("<img src='" + avatarUrl + "' />").addClass('avatar');
     }
     if (isUserLoggedIn || (!isUserLoggedIn && !(_.isEmpty(shareToken)))) {
         $.when(getEventsFor("users", graphOwner, objectTags, actionTags, operation, period, shareToken))

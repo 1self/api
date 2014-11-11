@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/html">
 <head lang="en">
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no"/>
     <meta charset="UTF-8">
     <title></title>
     <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
@@ -31,11 +32,17 @@
     </script>
 </head>
 <body>
-<div id="chartTitle" class="apiUrl"></div>
-<div class="avatar">
-</div>
-<div>
-    <button type="button" class="btn btn-info shareGraphButton" onclick="handleShareGraph()">SHARE</button>
+<table class="header">
+    <tr>
+        <td id="chartTitle" class="page-title"></td>
+        <!--<td id="" class="avatar"><img src="/img/avatar.png"></td>-->
+        <td id="avatar"></td>
+    </tr>
+</table>
+
+
+<div class="share-button-container">
+    <button type="button" class="shareGraphButton" onclick="handleShareGraph()">SHARE</button>
 </div>
 <div id="chart" class="chart">
 </div>
@@ -116,6 +123,7 @@
                         <div id="shareLinkDiv">
                             <p>Copy the url below and share it with your friends. They will be able to access this
                                 graph.</p>
+
                             <p id="graphShareLink"></p>
                         </div>
                         {% if isUserLoggedIn %}
@@ -124,6 +132,7 @@
                             <label>Email
                                 <input id="emailId" type="email" name="email" required/>
                             </label>
+
                             <div class="shareEmailNoticeMessage"></div>
                         </div>
                         <button id="shareSubmit" type="button" class="btn btn-primary font-size">Share</button>

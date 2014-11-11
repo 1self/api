@@ -1,8 +1,4 @@
-.apiUrl {
-    background-color : forestgreen;
-    color : #fff;
-    font-size: 27px;
-}
+
 .chart {
     background-color: #4CBB62;
 }
@@ -17,7 +13,7 @@
 }
 text {
     fill: #fff;
-    font-size: 40px;
+    font-size: 1.5em;
 }
 .d3-tip, .tooltip {
      line-height: 1;

@@ -1,37 +1,57 @@
 body {
     font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-    background-color: #94D6A1;
-    margin: 1% 0%;
+    font-size: 14px;
+    background: #94D6A1;
+    margin:0;
+    padding: 0;
 }
-
+svg, img {
+    max-width: 100%;
+}
+.header {
+    background: forestgreen;
+    border: 2px solid rgb(1, 102, 1);
+    width: 100%;
+}
+.page-title {
+    padding: 7px;
+    vertical-align: middle;
+    font-size: 1.3em;
+    color : #ffffff;
+    min-height: 80px;
+}
+.avatar img{
+    border-radius: 4px;
+}
 .avatar {
-    position: absolute;
-    right: 10px;
-    top: 0px;
+    width: 65px;
+    padding: 2px;
+    vertical-align: middle;
+}
+.share-button-container{
+    padding: 4px;
+    background: #4CBB62;
+    text-align:right;
+    clear:right;
+}
+.shareGraphButton {
+    font-size: 1.24em;
+    padding: 5px 11px;
+    min-width: 90px;
+    border: 1px solid #2CA4C7;
+    color: #fff;
+    background-color: #5bc0de;
+    border-radius: 4px;
+}
+.shareGraphButton:hover {
+    color: #fff;
+    background-color: #39b3d7;
+    border-color: #269abc;
 }
 
-.apiUrl {
-    font-size: 40px;
-}
-
-@media screen and (max-width: 1200px) {
-    .modal-dialog {
-        margin-top: 40%;
-        font-size: 40px !important;
-    }
-
-    .font-size {
-        font-size: 30px !important;
-    }
-
-    button, a {
-        font-size: 30px;
-    }
-}
 
 .center {
-    margin-left: 35%;
-    width: 70%;
+    text-align: center;
 }
 
 .detailsSection {
@@ -58,16 +78,10 @@ body {
     font-size: 40px;
 }
 
-.addCommentButton, .shareGraphButton {
+.addCommentButton {
     box-shadow: 10px 10px 5px #888888;
 }
 
-.shareGraphButton {
-    position: absolute;
-    right: 10px;
-    top: 100px;
-    font-size: 40px;
-}
 
 .commentList li > div {
     display: table-cell;
@@ -95,4 +109,23 @@ body {
 
 .shareEmailNoticeMessage{
     color: green;
+}
+
+
+
+/*Media queries  threshhold resolutions  480 800 1100*/
+
+@media (max-width: 1200px) {
+    .modal-dialog {
+        margin-top: 40%;
+        font-size: 40px !important;
+    }
+
+    .font-size {
+        font-size: 30px !important;
+    }
+
+    button, a {
+        font-size: 30px;
+    }
 }
