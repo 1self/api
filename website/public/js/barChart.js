@@ -84,11 +84,11 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 return x(new Date(d.date));
             })
             .attr('y', function (d) {
-                return height - margin.top - margin.bottom - (height - margin.top - margin.bottom - y(d.value))
+                return height - margin.top - margin.bottom - (height - margin.top - margin.bottom - y(d.value));
             })
             .attr('width', xWidth)
             .attr('height', function (d) {
-                return height - margin.top - margin.bottom - y(d.value)
+                return height - margin.top - margin.bottom - y(d.value);
             })
             .on("click", function (d) {
                 svg.selectAll('.bar')
@@ -104,7 +104,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                     });
                 $(".addCommentButton").show();
                 $("#date").html(moment(d.date).format("DD/MM/YY dddd"));
-                $("#eventValue").html(d.value + " " + measurement);
+                $("#eventValue").html(getDataPointDescription(d.value));
                 var day = moment(d.date).format("DD");
                 var month = moment(d.date).format("MM");
                 var year = moment(d.date).format("YYYY");
@@ -146,6 +146,14 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             return new Date(Math.max.apply(null, datesForDataPoints));
         };
 
+        var getDataPointDescription = function(eventValue) {
+            if(measurement === "time") {
+                return humanizeDuration(eventValue * 1000)
+            } else {
+                return eventValue + " " + "decibels";
+            }
+        };
+
         var showDetailsForDate = function (date) {
             var eventValue;
             svg.selectAll('.bar')
@@ -162,7 +170,10 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 });
             $(".addCommentButton").show();
             $("#date").html(moment(date).format("DD/MM/YY dddd"));
-            $("#eventValue").html(eventValue + " " + measurement);
+
+            $("#eventValue").html(getDataPointDescription(eventValue));
+
+
             var day = moment(date).format("DD");
             var month = moment(date).format("MM");
             var year = moment(date).format("YYYY");

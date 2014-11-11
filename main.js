@@ -1805,7 +1805,7 @@ var getQueryForVisualizationAPI = function (streamIds, params) {
         "resultField": "value"
     };
 
-    return {spec: JSON.stringify(query)}
+    return {spec: JSON.stringify(query)};
 };
 
 //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}({{:property}})/daily/{{barchart/json}}

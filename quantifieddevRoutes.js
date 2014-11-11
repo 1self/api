@@ -898,55 +898,71 @@ module.exports = function (app) {
             measurement = "decibels";
         } else if (url.search("meditate") !== -1) { // timer app events
             title = (url.search("streams") !== -1) ? "meditating time by day logged by 1self duration" : "meditating time by day logged by " + username;
+            measurement = "time";
         } else if (url.search("exercise") !== -1) {
             title = (url.search("streams") !== -1) ? "exercising time by day logged by 1self duration" : "exercising time by day logged by " + username;
+            measurement = "time";
         } else if (url.search("commute") !== -1) {
             title = (url.search("streams") !== -1) ? "commuting time by day logged by 1self duration" : "commuting time by day logged by " + username;
-
+            measurement = "time";
         } else if (url.search("cook") !== -1) {
             title = (url.search("streams") !== -1) ? "cooking time by day logged by 1self duration" : "cooking time by day logged by " + username;
-
+            measurement = "time";
         } else if (url.search("party") !== -1) {
             title = (url.search("streams") !== -1) ? "partying time by day logged by 1self duration" : "partying time by day logged by " + username;
-
+            measurement = "time";
         } else if (url.search("instrument") !== -1) {
             title = (url.search("streams") !== -1) ? "playing instrument time by day logged by 1self duration" : "playing time by day logged by " + username;
+            measurement = "time";
         } else if (url.search("computer") !== -1) {
             title = (url.search("streams") !== -1) ? "playing computer game time by day logged by 1self duration" : "playing time by day logged by " + username;
+            measurement = "time";
 
         } else if (url.search("read") !== -1) {
             title = (url.search("streams") !== -1) ? "reading time by day logged by 1self duration" : "reading time by day logged by " + username;
+            measurement = "time";
 
         } else if (url.search("sit") !== -1) {
             title = (url.search("streams") !== -1) ? "sitting time by day logged by 1self duration" : "sitting time by day logged by " + username;
+            measurement = "time";
 
         } else if (url.search("stand") !== -1) {
             title = (url.search("streams") !== -1) ? "standing time by day logged by 1self duration" : "standing time by day logged by " + username;
+            measurement = "time";
 
         } else if (url.search("study") !== -1) {
             title = (url.search("streams") !== -1) ? "studying time by day logged by 1self duration" : "studying time by day logged by " + username;
+            measurement = "time";
 
         } else if (url.search("floss") !== -1) {
             title = (url.search("streams") !== -1) ? "flossing time by day logged by 1self duration" : "flossing time by day logged by " + username;
+            measurement = "time";
 
         } else if (url.search("watching") !== -1) {
             title = (url.search("streams") !== -1) ? "watching time by day logged by 1self duration" : "watching time by day logged by " + username;
+            measurement = "time";
 
         } else if (url.search("work") !== -1) {
             title = (url.search("streams") !== -1) ? "working time by day logged by 1self duration" : "working time by day logged by " + username;
+            measurement = "time";
 
         } else if (url.search("write") !== -1) {
             title = (url.search("streams") !== -1) ? "writing time by day logged by 1self duration" : "writing time by day logged by " + username;
+            measurement = "time";
 
         } else if (url.search("meet") !== -1) {
             title = (url.search("streams") !== -1) ? "meeting time by day logged by 1self duration" : "meeting time by day logged by " + username;
+            measurement = "time";
         } else if (url.search("brush") !== -1) {
             title = (url.search("streams") !== -1) ? "tooth brushing time by day logged by 1self duration" : "tooth brushing time by day logged by " + username;
+            measurement = "time";
         } else if (url.search("sleep") !== -1) {
             title = (url.search("streams") !== -1) ? "sleeping time by day logged by 1self duration" : "sleeping time by day logged by " + username;
+            measurement = "time";
 
         } else if (url.search("code") !== -1) {
             title = (url.search("streams") !== -1) ? "coding time by day logged by 1self duration" : "coding time by day logged by " + username;
+            measurement = "time";
         }
         return {
             title: title,
