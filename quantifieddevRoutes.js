@@ -874,7 +874,7 @@ module.exports = function (app) {
                 sendgrid.send({
                     to: toEmailId,
                     from: QD_EMAIL,
-                    subject: fromEmailId + ' wants to share their graph data',
+                    subject: fromEmailId + ' wants to share 1self activity',
                     html: html
                 }, function (err, json) {
                     if (err) {

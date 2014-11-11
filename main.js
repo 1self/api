@@ -1822,14 +1822,9 @@ app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period
 
 
 var authorizeUser = function (req, res, next) {
+    var shareToken = req.query.shareToken;
     var encodedUsername = req.headers.authorization;
-    if (encodedUsername && encodedUsername !== 'undefined') {
-        validEncodedUsername(encodedUsername, req.query.forUsername, []).then(function (paramsToPassOn) {
-            req.paramsToPassOn = paramsToPassOn;
-            next();
-        });
-    } else {
-        var shareToken = req.query.shareToken;
+    if (shareToken && shareToken !== 'undefined') {
         // TODO remove barchart hardcoded renderType
         var graphUrl = "/v1/users/" + req.param("username") + "/events/" +
             req.param("objectTags") + "/" + req.param("actionTags") + "/" +
@@ -1842,6 +1837,14 @@ var authorizeUser = function (req, res, next) {
             console.log("Error is", err);
             res.send(400, "Invalid input");
         });
+    } else if (encodedUsername && encodedUsername !== 'undefined') {
+        validEncodedUsername(encodedUsername, req.query.forUsername, []).then(function (paramsToPassOn) {
+            req.paramsToPassOn = paramsToPassOn;
+            next();
+        });
+    } else {
+        console.log("Error is", err);
+        res.send(400, "bad request. either shareToken or autorization required.");
     }
 };
 
