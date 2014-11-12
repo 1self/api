@@ -10,7 +10,7 @@
     <link href="/css/barChart.css" rel="stylesheet" media="screen">
     <script src="/js/jquery.js"></script>
     <script src="/js/jquery.cookie.js"></script>
-    <script src="/js/humanize-duration.js"></script>    
+    <script src="/js/humanize-duration.js"></script>
     <script>
         var isUserLoggedIn = ("{{isUserLoggedIn}}" == "true");
         var graphOwner = "{{graphOwner}}";
@@ -47,13 +47,10 @@
 <div id="chart" class="chart">
 </div>
 <div class="detailsSection">
-    <div class="grid-desktop">
-        <div>
-            <span id="date" class="center"></span>
-            <span id="eventValue"></span>
-        </div>
+    <div class="dataPoint center">
+        <span id="eventValue"></span>
+        <span id="date" class="center"></span>
     </div>
-
     <hr>
     <div id="comments">
         <ul class="commentList">

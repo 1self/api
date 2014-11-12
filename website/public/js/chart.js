@@ -152,9 +152,8 @@ charts.showComments = function () {
         var commentsDiv = $(".commentList");
         commentsDiv.empty();
         comments.forEach(function (comment) {
-            commentsDiv.append("<li><div class='commenter'><img src='" + comment.avatarUrl + "' width='100' height='100'/></div>" +
-                "<div class='commentText'><p>" + comment.text + "</p>" +
-                "<sub><span class='commentTimestamp'>" + moment(comment.timestamp).format("DD MMM YYYY HH:mm") + "</span></sub></div></li><hr>");
+            commentsDiv.append("<li><div class='commenter'><img src='" + comment.avatarUrl + "' width=50/></div>" +
+                "<div class='commentText'>" + comment.text +"</div></li>");
         });
     });
 };

@@ -15,13 +15,13 @@ svg, img {
     margin-bottom: 20px;
 }
 
-.shareGraphButton, #date, #eventValue {
+.shareGraphButton, #date, #eventValue, .dataPoint {
     font-size: 1.24em;
 }
 
 .header {
     background: forestgreen;
-    border: 2px solid rgb(1, 102, 1);
+    border: 2px solid #016601 ;
     width: 100%;
 }
 
@@ -43,14 +43,14 @@ svg, img {
     vertical-align: middle;
 }
 
-.share-button-container {
+.share-button-container  {
     padding: 4px;
     background: #4CBB62;
     text-align: right;
     clear: right;
 }
 
-.shareGraphButton {
+.shareGraphButton, .addCommentButton {
     padding: 5px 11px;
     min-width: 90px;
     border: 1px solid #2CA4C7;
@@ -58,11 +58,50 @@ svg, img {
     background-color: #5bc0de;
     border-radius: 4px;
 }
-
-.shareGraphButton:hover {
+.addCommentButton {
+    width: 95%;
+}
+.shareGraphButton:hover, .addCommentButton:hover {
     color: #fff;
     background-color: #39b3d7;
     border-color: #269abc;
+}
+
+.dataPoint{
+    margin-top: 20px;
+}
+.commenter {
+    margin: 5px;
+    margin-top: 0;
+    float: left;
+}
+
+.commentText {
+    padding: 10px;
+    font-size: 1.24em;
+    text-align: center;
+}
+
+.commentText p, .commentTimestamp {
+    width: 100%;
+    margin-left: 40px;
+}
+.commentList {
+    padding: 0;
+    list-style: none;
+    overflow: hidden;
+}
+.commentList li:after {
+    content: "";
+    display: block;
+    clear: both;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #fff;
+}
+.commentList li > div {
+    display: table-cell;
+    vertical-align: middle;
 }
 
 .grid-desktop {
@@ -85,46 +124,22 @@ svg, img {
 
 .detailsSection {
     background-color: #94D6A1;
+    text-align: center;
 }
 
 .graphInfo {
     margin-top: 2%;
 }
 
-.commentList {
-    padding: 0;
-    list-style: none;
-    overflow: hidden;
-}
 
-.commentList li, #addCommentInput, .addCommentButton {
-    margin-top: 1%;
+.commentList li, #addCommentInput {
+
     width: 100%;
-    font-size: 40px;
+    /*font-size: 40px;*/
 }
 
-.addCommentButton {
-    box-shadow: 10px 10px 5px #888888;
-}
 
-.commentList li > div {
-    display: table-cell;
-}
 
-.commenter {
-    margin-right: 5px;
-    height: 100%;
-    float: left;
-}
-
-#commentText {
-    margin-left: 40px;
-}
-
-.commentText p, .commentTimestamp {
-    width: 100%;
-    margin-left: 40px;
-}
 
 #graphShareLink {
     margin: 5px;
