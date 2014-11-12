@@ -152,7 +152,7 @@ charts.showComments = function () {
         var commentsDiv = $(".commentList");
         commentsDiv.empty();
         comments.forEach(function (comment) {
-            commentsDiv.append("<li><div class='commenter'><img src='" + comment.avatarUrl + "' width=50/></div>" +
+            commentsDiv.append("<li><div class='commenter' style='display:table-cell'><img src='" + comment.avatarUrl + "' width=50/></div>" +
                 "<div class='commentText'>" + comment.text +"</div></li>");
         });
     });
