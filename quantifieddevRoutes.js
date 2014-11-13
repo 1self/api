@@ -1034,12 +1034,36 @@ module.exports = function (app) {
 
     //v1/users/{{edsykes}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
     app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/:renderType",
-        validateShareToken, function (req, res) {
+        validateShareToken,function(req, res) {
+
+            var getGraphOwnerAvatarUrl = function() {
+                var deferred = Q.defer();
+                var username = req.param("username");
+                var userQueryObject = {
+                    username: username
+                }
+
+                mongoDbConnection(function(qdDb) {
+                    qdDb.collection("users", function(err, collection) {
+                        collection.findOne(userQueryObject, function(error, user) {
+                            if (error) {
+                                console.error("DB error", error);
+                                deferred.reject(error);
+                            } else {
+
+                                deferred.resolve(user.githubUser["_json"].avatar_url);
+                            }
+                        });
+                    });
+                });
+
+                return deferred.promise;
+            };
 
             req.session.redirectUrl = req.originalUrl;
             var streamId = req.query.streamId;
-//        var shareToken = req.query.shareToken;
-            var renderChart = function () {
+            //        var shareToken = req.query.shareToken;
+            var renderChart = function(graphOwnerAvatarUrl) {
                 var graphInfo = getGraphInfo(req.originalUrl, req.param("username"));
                 var isUserLoggedIn = (req.session.username !== undefined);
                 res.render('chart', {
@@ -1048,6 +1072,7 @@ module.exports = function (app) {
                     measurement: graphInfo.measurement,
                     graphOwner: req.param("username"),
                     username: req.param("username"),
+                    graphOwnerAvatarUrl: graphOwnerAvatarUrl,
                     avatarUrl: req.session.avatarUrl,
                     objectTags: req.param("objectTags"),
                     actionTags: req.param("actionTags"),
@@ -1059,18 +1084,20 @@ module.exports = function (app) {
             };
 
             streamExists(streamId)
-                .then(function (exists) {
+                .then(function(exists) {
                     if (exists) {
                         getStreamsForUser(req.param('username'))
-                            .then(function (user) {
+                            .then(function(user) {
                                 return linkStreamToUser(user, streamId);
-                            }).then(renderChart)
-                            .catch(function (error) {
+                            })
+                            .then(getGraphOwnerAvatarUrl)
+                            .then(renderChart)
+                            .catch(function(error) {
                                 console.error("error during linking stream to user ", error);
                                 res.status(500).send("Internal server error.");
                             });
                     } else {
-                        renderChart();
+                        getGraphOwnerAvatarUrl().then(renderChart);
                     }
                 });
         });
