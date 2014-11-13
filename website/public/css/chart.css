@@ -160,6 +160,7 @@ ul.commentList li div {
 
 .commentList li, #addCommentInput {
 
+    margin-bottom: 20px;
     width: 100%;
     /*font-size: 40px;*/
 }
