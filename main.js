@@ -1350,6 +1350,7 @@ app.post('/stream', function (req, res) {
         if (err) {
             res.status(500).send("Database error");
         } else {
+            delete data._id;
             res.send(data);
         }
     });
@@ -1368,6 +1369,8 @@ app.post('/v1/streams', function (req, res) {
             if (err) {
                 res.status(500).send("Database error");
             } else {
+                delete data._id;
+                delete data.clientId;
                 res.send(data);
             }
         });
