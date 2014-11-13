@@ -1,7 +1,7 @@
 window.charts = window.charts || {};
 
 charts.graphUrl; // /v1/users/... without query params
-charts.date;
+charts.defaultSelectedDate;
 
 var getEventsFor = function (type, typeId, objectTags, actionTags, operation, period, shareToken) {
     return $.ajax({
@@ -32,6 +32,7 @@ charts.addComment = function () {
     };
     var graph = {
         graphUrl: charts.graphUrl,
+        dataPointDate: charts.selectedDate,
         username: graphOwner,
         objectTags: objectTags,
         actionTags: actionTags,

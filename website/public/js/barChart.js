@@ -13,7 +13,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
         var height = width;
         var weekAgo = new Date(moment().subtract("days", 7).format("MM/DD/YYYY"));
         var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
-        var xWidth = width/8;
+        var xWidth = width / 8;
         var x = d3.time.scale()
             .domain([weekAgo , tomorrow])
             .rangeRound([0, width - margin.left - margin.right])
@@ -109,6 +109,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 var month = moment(d.date).format("MM");
                 var year = moment(d.date).format("YYYY");
                 charts.graphUrl = window.location.href.split(window.location.origin)[1].split("?")[0] + "/" + year + "/" + month + "/" + day;
+                charts.selectedDate = moment(d.date)._d;
                 charts.showComments();
             });
         /*.on("mouseover", function (d) {
@@ -146,8 +147,8 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             return new Date(Math.max.apply(null, datesForDataPoints));
         };
 
-        var getDataPointDescription = function(eventValue) {
-            if(measurement === "time") {
+        var getDataPointDescription = function (eventValue) {
+            if (measurement === "time") {
                 return humanizeDuration(eventValue * 1000)
             } else {
                 return eventValue + " " + "decibels";
@@ -183,7 +184,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
 
         var highlightLatestDataPointDate = function () {
             var date = getLatestDataPointDate();
-            charts.date = date;
+            charts.defaultSelectedDate = date;
             showDetailsForDate(date);
         };
 

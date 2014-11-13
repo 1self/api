@@ -1956,6 +1956,7 @@ app.post("/v1/comments", function (req, res) {
             if (_.isEmpty(chartComments)) {
                 chartComment.comments = [chartComment.comment];
                 delete chartComment.comment;
+                chartComment.dataPointDate = moment(chartComment.dataPointDate)._d;
                 return createChartComment(chartComment);
             }
             else {
