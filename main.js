@@ -264,7 +264,7 @@ var saveEvent_driver = function (myEvent, stream, res, rm) {
     requestModule.post(options,
         function (error, response, body) {
             if (!error && response.statusCode == 200) {
-                res.send(body);
+                res.send({status: "ok"});
             } else {
                 res.status(500).send("Database error");
             }
