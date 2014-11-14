@@ -165,37 +165,19 @@ ul.commentList li div {
     /*font-size: 40px;*/
 }
 
-
-
-
 #graphShareLink {
     margin: 5px;
+		font-size: 11pt;
     background-color: #ccc;
+		word-wrap: break-word;
 }
 
 .shareEmailNoticeMessage {
     color: green;
 }
 
-/*Media queries  threshhold resolutions  480 800 1100*/
-@media (max-width: 355px) {
-
-    .grid-desktop, .grid-desktop div, .grid-desktop div span {
-        display: block;
-    }
-}
-
-@media (max-width: 1200px) {
-    .modal-dialog {
-        margin-top: 40%;
-        font-size: 40px !important;
-    }
-
-    .font-size {
-        font-size: 30px !important;
-    }
-
-    button, a {
-        font-size: 30px;
-    }
+.modal-content{
+		width: 500px;
+		height: 550px;
+		margin: auto;
 }
