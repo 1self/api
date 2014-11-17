@@ -30,8 +30,8 @@
      var shareToken = "{{shareToken}}";
      var renderType = "{{renderType}}";
 
-     if(window.location.href.indexOf("api.") > 1) {
-       window.location.href = window.location.href.replace("api", "app");
+     if(window.location.href.indexOf("://api") > 1) {
+       window.location.href = window.location.href.replace("://api", "://app");
      }
     </script>
 </head>
