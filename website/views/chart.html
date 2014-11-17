@@ -12,23 +12,27 @@
     <script src="/js/jquery.cookie.js"></script>
     <script src="/js/humanize-duration.js"></script>
     <script>
-        var isUserLoggedIn = ("{{isUserLoggedIn}}" == "true");
-        var graphOwner = "{{graphOwner}}";
-        var chartTitle = "{{title}}";
-        var measurement = "{{measurement}}";
-        if (isUserLoggedIn) {
-            var username = "{{username}}";
-            var avatarUrl = "{{avatarUrl}}";
-        } else {
-            var streamId = "{{streamId}}";
-        }
-        var objectTags = "{{objectTags}}";
-        var actionTags = "{{actionTags}}";
-        var operation = "{{operation}}";
-        var property = "{{property}}";
-        var period = "{{period}}";
-        var shareToken = "{{shareToken}}";
-        var renderType = "{{renderType}}";
+     var isUserLoggedIn = ("{{isUserLoggedIn}}" == "true");
+     var graphOwner = "{{graphOwner}}";
+     var chartTitle = "{{title}}";
+     var measurement = "{{measurement}}";
+     if (isUserLoggedIn) {
+       var username = "{{username}}";
+       var avatarUrl = "{{avatarUrl}}";
+     } else {
+       var streamId = "{{streamId}}";
+     }
+     var objectTags = "{{objectTags}}";
+     var actionTags = "{{actionTags}}";
+     var operation = "{{operation}}";
+     var property = "{{property}}";
+     var period = "{{period}}";
+     var shareToken = "{{shareToken}}";
+     var renderType = "{{renderType}}";
+
+     if(window.location.href.indexOf("api.") > 1) {
+       window.location.href = window.location.href.replace("api", "app");
+     }
     </script>
 </head>
 <body>
