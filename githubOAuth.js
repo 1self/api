@@ -123,6 +123,11 @@ module.exports = function (app) {
         scope: 'user:email'
     }));
 
+    app.get('/api/app/github', passport.authenticate('github', {
+        scope: 'user:email',
+        redirect_uri: 'http://api-test.1self.co/auth/github/callback'
+    }));
+
     app.get('/auth/github/callback', passport.authenticate('github', {
         failureRedirect: CONTEXT_URI + '/signup'
     }), handleGithubCallback);
