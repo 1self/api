@@ -1926,12 +1926,31 @@ var getCommentsForChart = function (graph) {
     var oneWeekAgo = moment.utc(moment().format("YYYY-MM-DD")).subtract(1, "week")._d;
     graph.dataPointDate = {"$gt": oneWeekAgo};
     var deferred = q.defer();
+
+    var transform = function (documents) {
+        return _.map(documents, function (data) {
+            var dataPointDate = moment(data.dataPointDate).format("YYYY-MM-DD");
+            var allAvatars = [];
+            var comments = _.map(data.comments, function (comment) {
+                allAvatars.push(comment.avatarUrl);
+                return {
+                    text: comment.text,
+                    avatarUrl: comment.avatarUrl
+                };
+            });
+            var avatars = _.uniq(allAvatars);
+            return {dataPointDate: dataPointDate, avatars: avatars, comments: comments};
+        });
+    };
+
     mongoDbConnection(function (qdDb) {
-        qdDb.collection('comments').findOne(graph, {comments: 1}, function (err, chartComments) {
+        qdDb.collection('comments').find(graph, function (err, docs) {
             if (err) {
                 deferred.reject("Error occurred for getCommentsForChart");
-            } else if (chartComments) {
-                deferred.resolve(chartComments.comments);
+            } else if (docs) {
+                docs.toArray(function (err, chartComments) {
+                    deferred.resolve(transform(chartComments));
+                });
             } else {
                 deferred.resolve([]);
             }

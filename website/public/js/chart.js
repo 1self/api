@@ -1,7 +1,7 @@
 window.charts = window.charts || {};
 
 charts.graphUrl; // /v1/users/... without query params
-charts.defaultSelectedDate;
+charts.dataPoints = [];
 
 var getEventsFor = function (type, typeId, objectTags, actionTags, operation, period, shareToken) {
     return $.ajax({
@@ -53,7 +53,6 @@ charts.addComment = function () {
         $(".commentList").append("<li><div class='commenter' style='display:table-cell'><img src='" + comment.avatarUrl + "' width='50'/></div>" +
             "<div class='commentText'><p>" + comment.text + "</p>" +
             "</div></li>");
-        console.info("awesome. comment added." + JSON.stringify(comment));
         $("#commentText").val("");
         $("#addCommentInput").hide();
     });
@@ -143,6 +142,23 @@ var submitShare = function () {
 };
 
 charts.showComments = function () {
+    var commentsDiv = $(".commentList");
+    commentsDiv.empty();
+
+    charts.dataPoints
+        .filter(function (dataPoint) {
+            return dataPoint.dataPointDate === charts.selectedDate;
+        })
+        .forEach(function (dataPoint) {
+            dataPoint.comments.forEach(function (comment) {
+                commentsDiv.append("<li><div class='commenter' style='display:table-cell'><img src='" + comment.avatarUrl + "' width=50/></div>" +
+                    "<div class='commentText'>" + comment.text + "</div></li>");
+            });
+        });
+};
+
+$(document).ready(function () {
+    showChartTitle();
     $.ajax({
         url: "/v1/comments",
         method: "GET",
@@ -159,16 +175,7 @@ charts.showComments = function () {
             "Authorization": $.cookie("_eun")
         }
     }).done(function (comments) {
-        var commentsDiv = $(".commentList");
-        commentsDiv.empty();
-        comments.forEach(function (comment) {
-            commentsDiv.append("<li><div class='commenter' style='display:table-cell'><img src='" + comment.avatarUrl + "' width=50/></div>" +
-                "<div class='commentText'>" + comment.text + "</div></li>");
-        });
+        charts.dataPoints = comments;
     });
-};
-
-$(document).ready(function () {
-    showChartTitle();
     $("#shareSubmit").click(submitShare);
 });

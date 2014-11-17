@@ -109,7 +109,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 var month = moment(d.date).format("MM");
                 var year = moment(d.date).format("YYYY");
                 charts.graphUrl = window.location.href.split(window.location.origin)[1].split("?")[0] + "/" + year + "/" + month + "/" + day;
-                charts.selectedDate = d.date;
+                charts.selectedDate = moment(d.date).format("YYYY-MM-DD");
                 charts.showComments();
             });
         /*.on("mouseover", function (d) {
@@ -159,13 +159,13 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             var eventValue;
             svg.selectAll('.bar')
                 .style("stroke", function (data) {
-                    if (moment(date).format("DD MM YYYY") == moment(data.date).format("DD MM YYYY")) {
+                    if (moment(data.date).isSame(moment(date))) {
                         eventValue = data.value;
                         return "#38A0BA";
                     }
                 })
                 .style("stroke-width", function (data) {
-                    if (moment(date).format("DD MM YYYY") == moment(data.date).format("DD MM YYYY")) {
+                    if (moment(data.date).isSame(moment(date))) {
                         return 3;
                     }
                 });
@@ -184,8 +184,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
 
         var highlightLatestDataPointDate = function () {
             var date = getLatestDataPointDate();
-            charts.defaultSelectedDate = date;
-            charts.selectedDate = moment(date).format("MM/DD/YYYY");
+            charts.selectedDate = moment(date).format("YYYY-MM-DD");
             showDetailsForDate(date);
         };
 
