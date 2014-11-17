@@ -50,6 +50,20 @@ charts.addComment = function () {
             "Authorization": $.cookie("_eun")
         }
     }).done(function (data) {
+        var displayedComment = {text: commentText, avatarUrl: graphOwnerAvatarUrl};
+        var selectedDataPoint = _.find(charts.dataPoints, function (dataPoint) {
+            return dataPoint.dataPointDate === charts.selectedDate;
+        });
+        if (_.isEmpty(selectedDataPoint)) {
+            var newDataPoint = {
+                dataPointDate: charts.selectedDate,
+                avatars: [graphOwnerAvatarUrl],
+                comments: [displayedComment]
+            };
+            charts.dataPoints.push(newDataPoint);
+        } else {
+            selectedDataPoint.comments.push(displayedComment);
+        }
         $(".commentList").append("<li><div class='commenter' style='display:table-cell'><img src='" + comment.avatarUrl + "' width='50'/></div>" +
             "<div class='commentText'><p>" + comment.text + "</p>" +
             "</div></li>");

@@ -1985,7 +1985,7 @@ app.post("/v1/comments", function (req, res) {
             if (_.isEmpty(chartComments)) {
                 chartComment.comments = [chartComment.comment];
                 delete chartComment.comment;
-                chartComment.dataPointDate = moment.utc(chartComment.dataPointDate, "MM/DD/YYYY").toDate();
+                chartComment.dataPointDate = moment.utc(chartComment.dataPointDate, "YYYY-MM-DD").toDate();
 //                chartComment.dataPointDate = new Date();
                 return createChartComment(chartComment);
             }
