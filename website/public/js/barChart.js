@@ -185,6 +185,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
         var highlightLatestDataPointDate = function () {
             var date = getLatestDataPointDate();
             charts.defaultSelectedDate = date;
+            charts.selectedDate = moment(date).format("MM/DD/YYYY");
             showDetailsForDate(date);
         };
 
