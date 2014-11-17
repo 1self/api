@@ -112,20 +112,6 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 charts.selectedDate = moment(d.date).format("YYYY-MM-DD");
                 charts.showComments();
             });
-        /*.on("mouseover", function (d) {
-         if ($(window).width() > 767) {
-         tip.show(d)
-         }
-         })
-         .on("mouseout", function () {
-         if ($(window).width() > 767) {
-         tip.hide();
-         } else {
-         tooltipDivForMobile.transition()
-         .duration(100)
-         .style("opacity", 0);
-         }
-         });*/
 
         svg.append('g')
             .attr('class', 'y axis')
