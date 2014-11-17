@@ -11,9 +11,9 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
         };
         var width = window.innerWidth;
         var height = width;
-        var weekAgo = new Date(moment().subtract("days", 7).format("MM/DD/YYYY"));
+        var weekAgo = new Date(moment().subtract("days", 6).format("MM/DD/YYYY"));
         var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
-        var xWidth = width / 8;
+        var xWidth = width / 7;
         var x = d3.time.scale()
             .domain([weekAgo , tomorrow])
             .rangeRound([0, width - margin.left - margin.right])
@@ -109,7 +109,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 var month = moment(d.date).format("MM");
                 var year = moment(d.date).format("YYYY");
                 charts.graphUrl = window.location.href.split(window.location.origin)[1].split("?")[0] + "/" + year + "/" + month + "/" + day;
-                charts.selectedDate = moment(d.date)._d;
+                charts.selectedDate = d.date;
                 charts.showComments();
             });
         /*.on("mouseover", function (d) {

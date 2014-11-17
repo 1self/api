@@ -1922,12 +1922,12 @@ var updateChartComment = function (chartComment) {
     return deferred.promise;
 };
 
-var getCommentsForChart = function (graphUrl) {
+var getCommentsForChart = function (graph) {
+    var oneWeekAgo = moment.utc(moment().format("YYYY-MM-DD")).subtract(1, "week")._d;
+    graph.dataPointDate = {"$gt": oneWeekAgo};
     var deferred = q.defer();
     mongoDbConnection(function (qdDb) {
-        qdDb.collection('comments').findOne({
-            graphUrl: graphUrl
-        }, {comments: 1}, function (err, chartComments) {
+        qdDb.collection('comments').findOne(graph, {comments: 1}, function (err, chartComments) {
             if (err) {
                 deferred.reject("Error occurred for getCommentsForChart");
             } else if (chartComments) {
@@ -1942,8 +1942,15 @@ var getCommentsForChart = function (graphUrl) {
 
 // Get comments for the graph url
 app.get("/v1/comments", function (req, res) {
-    var graphUrl = req.query.graphUrl;
-    getCommentsForChart(graphUrl).then(function (comments) {
+    var graph = {
+        username: req.query.username,
+        objectTags: req.query.objectTags,
+        actionTags: req.query.actionTags,
+        operation: req.query.operation,
+        period: req.query.period,
+        renderType: req.query.renderType
+    };
+    getCommentsForChart(graph).then(function (comments) {
         res.send(comments);
     });
 });
@@ -1959,7 +1966,8 @@ app.post("/v1/comments", function (req, res) {
             if (_.isEmpty(chartComments)) {
                 chartComment.comments = [chartComment.comment];
                 delete chartComment.comment;
-                chartComment.dataPointDate = moment(chartComment.dataPointDate)._d;
+                chartComment.dataPointDate = moment.utc(chartComment.dataPointDate, "MM/DD/YYYY").toDate();
+//                chartComment.dataPointDate = new Date();
                 return createChartComment(chartComment);
             }
             else {

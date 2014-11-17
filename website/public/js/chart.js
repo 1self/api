@@ -144,7 +144,16 @@ var submitShare = function () {
 
 charts.showComments = function () {
     $.ajax({
-        url: "/v1/comments?graphUrl=" + charts.graphUrl,
+        url: "/v1/comments",
+        method: "GET",
+        data: {
+            username: graphOwner,
+            objectTags: objectTags,
+            actionTags: actionTags,
+            operation: operation,
+            period: period,
+            renderType: renderType
+        },
         headers: {
             "Accept": "application/json",
             "Authorization": $.cookie("_eun")
@@ -154,7 +163,7 @@ charts.showComments = function () {
         commentsDiv.empty();
         comments.forEach(function (comment) {
             commentsDiv.append("<li><div class='commenter' style='display:table-cell'><img src='" + comment.avatarUrl + "' width=50/></div>" +
-                "<div class='commentText'>" + comment.text +"</div></li>");
+                "<div class='commentText'>" + comment.text + "</div></li>");
         });
     });
 };
