@@ -1745,7 +1745,7 @@ app.get('/quantifieddev/extensions/message', function (req, res) {
 });
 
 var getQueryForVisualizationAPI = function (streamIds, params) {
-    var lastTwoWeeks = moment().subtract('days', 13);
+    var lastWeek = moment.utc().startOf('day').subtract('days', 6).format();
     var actionTags = params.actionTags.split(',');
     var objectTags = params.objectTags.split(',');
 
@@ -1766,7 +1766,7 @@ var getQueryForVisualizationAPI = function (streamIds, params) {
                 "payload.eventDateTime": {
                     "$operator": {
                         ">": {
-                            "$date": moment(lastTwoWeeks).format()
+                            "$date": lastWeek
                         }
                     }
                 },
