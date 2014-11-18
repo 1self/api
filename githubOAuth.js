@@ -1,9 +1,13 @@
 var request = require("request");
-var passport = require('passport')
+var passport = require('passport');
 var githubStrategy = require('passport-github').Strategy;
 
 var GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 var GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
+
+var QD_GITHUB_CLIENT_ID = process.env.QD_GITHUB_CLIENT_ID;
+var QD_GITHUB_CLIENT_SECRET = process.env.QD_GITHUB_CLIENT_SECRET;
+
 var CONTEXT_URI = process.env.CONTEXT_URI;
 var mongoDbConnection = require('./lib/connection.js');
 
@@ -46,7 +50,7 @@ module.exports = function (app) {
                     var githubUserRecord = {
                         githubUser: githubUser,
                         registeredOn: new Date()
-                    }
+                    };
                     mongoDbConnection(function (qdDb) {
                         qdDb.collection('users').insert(githubUserRecord, function (err, insertedRecords) {
                             if (err) {
@@ -91,7 +95,7 @@ module.exports = function (app) {
                     req.session.avatarUrl = user.githubUser._json.avatar_url;
                     redirect(githubUser, "/claimUsername");
                 }
-            })
+            });
         });
     };
 
@@ -103,23 +107,57 @@ module.exports = function (app) {
         done(null, obj);
     });
 
-    passport.use(new githubStrategy({
-            clientID: GITHUB_CLIENT_ID,
-            clientSecret: GITHUB_CLIENT_SECRET,
-            callbackURL: CONTEXT_URI + "/auth/github/callback"
-        },
-        function (accessToken, refreshToken, profile, done) {
-            var githubProfile = {
-                profile: profile,
-                accessToken: accessToken
-            };
-            return done(null, githubProfile);
+    var setGitHubAuthStrategy = function(req, res, next) {
+        if (req.oauthStrategy === "qd") {
+            passport.use(new githubStrategy({
+                clientID: QD_GITHUB_CLIENT_ID,
+                clientSecret: QD_GITHUB_CLIENT_SECRET,
+                callbackURL: CONTEXT_URI + "/auth/github/callback"
+            },
+                                            function (accessToken, refreshToken, profile, done) {
+                                                var githubProfile = {
+                                                    profile: profile,
+                                                    accessToken: accessToken
+                                                };
+                                                return done(null, githubProfile);
+                                            }
+                                           ));
+        } else {
+            passport.use(new githubStrategy({
+                clientID: GITHUB_CLIENT_ID,
+                clientSecret: GITHUB_CLIENT_SECRET,
+                callbackURL: CONTEXT_URI + "/auth/github/callback"
+            },
+                                            function (accessToken, refreshToken, profile, done) {
+                                                var githubProfile = {
+                                                    profile: profile,
+                                                    accessToken: accessToken
+                                                };
+                                                return done(null, githubProfile);
+                                            }
+                                           ));
         }
-    ));
+        next();
+    };
+
     app.use(passport.initialize());
     app.use(passport.session());
 
-    app.get('/auth/github', passport.authenticate('github', {
+    var setQdOauthStrategy = function(req, res, next) {
+        req.oauthStrategy = "qd";
+        next();
+    };
+
+    var set1selfOauthStrategy = function(req, res, next) {
+        req.oauthStrategy = "1self";
+        next();
+    };
+
+    app.get('/auth/github', setQdOauthStrategy, setGitHubAuthStrategy, passport.authenticate('github', {
+        scope: 'user:email'
+    }));
+
+    app.get('/1self/auth/github', set1selfOauthStrategy, setGitHubAuthStrategy, passport.authenticate('github', {
         scope: 'user:email'
     }));
 
