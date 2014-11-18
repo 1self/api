@@ -156,10 +156,12 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                     }
                 });
             $(".addCommentButton").show();
-            $("#date").html(moment(date).format("DD/MM/YY dddd"));
-
+            if (isNaN(date)) {
+                $("#date").html('No data logged for this activity');
+            }else{
+                $("#date").html(moment(date).format("DD/MM/YY dddd"));
+            }
             $("#eventValue").html(getDataPointDescription(eventValue));
-
 
             var day = moment(date).format("DD");
             var month = moment(date).format("MM");
