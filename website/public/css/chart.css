@@ -188,10 +188,11 @@ ul.commentList li div {
 }
 
 .avatar_group {
-    width: 12.5%;
+    width: 14.28%;
     float:left;
+    padding: 5px;
     height: 100%;
-    background-color: black;
+    background-color: forestgreen;
 }
 
 .comment_avatar, .count {
