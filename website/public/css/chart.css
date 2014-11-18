@@ -20,22 +20,26 @@ svg, img {
 .shareGraphButton, .dataPoint, .addCommentButton {
     font-size: 1.2em;
 }
+
 .header-main {
     background: #504E4E;
-    border: 1px solid #333 ;
+    border: 1px solid #333;
     width: 100%;
 }
+
 .header-main .page-title {
     font-size: 1.5em;
     text-align: center;
 }
-.header-main .avatar{
-    width:45px;
+
+.header-main .avatar {
+    width: 45px;
 }
+
 .header {
     background: forestgreen;
-    border: 1px solid #016601 ;
-    border-bottom: 2px solid #016601 ;
+    border: 1px solid #016601;
+    border-bottom: 2px solid #016601;
     width: 100%;
 }
 
@@ -57,7 +61,7 @@ svg, img {
     vertical-align: middle;
 }
 
-.share-button-container  {
+.share-button-container {
     padding: 4px;
     background: #4CBB62;
     text-align: right;
@@ -72,18 +76,21 @@ svg, img {
     background-color: #504E4E;
     border-radius: 4px;
 }
+
 .addCommentButton {
     width: 95%;
 }
+
 .shareGraphButton:hover, .addCommentButton:hover {
     color: #fff;
     background-color: #39b3d7;
     border-color: #269abc;
 }
 
-.dataPoint{
+.dataPoint {
     margin-top: 20px;
 }
+
 .commenter {
     margin: 0 10px 0 0;
     float: left;
@@ -100,6 +107,7 @@ svg, img {
     width: 100%;
     margin-left: 40px;
 }
+
 ul.commentList {
     padding: 0;
     margin-top: 10px;
@@ -107,7 +115,7 @@ ul.commentList {
     padding-top: 10px;
     list-style: none;
     overflow: hidden;
-    border-top:1px solid #ffffff;
+    border-top: 1px solid #ffffff;
     background: forestgreen;
     color: #fff;
 }
@@ -120,12 +128,15 @@ ul.commentList {
     margin-bottom: 10px;
     border-bottom: 1px solid #fff;
 }
+
 .commentList li:last-child::after {
     margin-bottom: 0;
 }
-ul.commentList li div.commenter{
-    width:50px;
+
+ul.commentList li div.commenter {
+    width: 50px;
 }
+
 ul.commentList li div {
     vertical-align: top;
 }
@@ -157,7 +168,6 @@ ul.commentList li div {
     margin-top: 2%;
 }
 
-
 .commentList li, #addCommentInput {
 
     margin-bottom: 20px;
@@ -167,32 +177,33 @@ ul.commentList li div {
 
 #graphShareLink {
     margin: 5px;
-		font-size: 11pt;
+    font-size: 11pt;
     background-color: #ccc;
-		word-wrap: break-word;
+    word-wrap: break-word;
 }
 
 .shareEmailNoticeMessage {
     color: green;
 }
 
-.modal-content{
-		width: 500px;
-		height: 550px;
-		margin: auto;
+.modal-content {
+    width: 500px;
+    height: 550px;
+    margin: auto;
 }
 
-.comments_summary{
+.comments_summary {
     width: 100%;
     height: 112px;
+    background-color: #4CBB62;
 }
 
 .avatar_group {
     width: 14.28%;
-    float:left;
+    float: left;
     padding: 5px;
     height: 100%;
-    background-color: black;
+    /*background-color: #4CBB62;*/
 }
 
 .comment_avatar, .count {
@@ -201,10 +212,10 @@ ul.commentList li div {
     float: left;
     height: 50%;
     background-size: 100%;
-    border: 3px solid greenyellow;
+    border: 2px solid transparent;
 }
 
-.count{
+.count {
     line-height: 55px;
     font-weight: bold;
     color: white;

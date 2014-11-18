@@ -1,1 +1,1 @@
-web: supervisor main.js
+web: supervisor -- --debug main.js
