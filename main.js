@@ -16,7 +16,8 @@ var RedisStore = require('connect-redis')(session);
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
-var fs = require('fs')
+var fs = require('fs');
+var validateRequest = require("./validateRequest");
 
 
 var opbeatOptions = {
@@ -1426,7 +1427,7 @@ app.get('/eventsCount', function (req, res) {
 
 app.post('/stream/:id/event', postEvent);
 
-app.post('/v1/streams/:id/events', postEvent);
+app.post('/v1/streams/:id/events', validateRequest.validate, postEvent);
 
 var formatEventDateTime = function (datetime) {
     if (typeof datetime !== 'undefined') {
@@ -1480,7 +1481,7 @@ var postEvents = function (req, res) {
 };
 app.post('/stream/:id/batch', postEvents);
 
-app.post('/v1/streams/:id/events/batch', postEvents);
+app.post('/v1/streams/:id/events/batch', validateRequest.validate, postEvents);
 
 app.get('/live/devbuild/:durationMins', function (req, res) {
     var durationMins = req.params.durationMins;
