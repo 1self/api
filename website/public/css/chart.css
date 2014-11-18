@@ -198,34 +198,27 @@ ul.commentList li div {
     float: left;
 }
 
-.comment_avatar img {
-    max-width: 100%;
-    height: auto;
-    background-color: #4CBB62;
-}
-
 .avatar_group {
     width: 14.28%;
     float: left;
-    padding: 5px;
     height: 100%;
+    background-color: rgb(72, 148, 85);
 }
 
 .comment_avatar, .count {
     width: 50%;
     background-repeat: no-repeat;
     float: left;
-    background-size: 100%;
-    border: 2px solid transparent;
+    background-size: cover;
+    border: 1px solid transparent;
 }
 
 .count {
     font-weight: bold;
     color: white;
-    background-color: rgb(158, 182, 159);
 }
 
-@media screen and (min-device-width: 800px) {
+@media screen and (min-device-width: 500px) {
     .comment_avatar, .count {
         height: 54px;
         overflow: hidden;
@@ -245,6 +238,6 @@ ul.commentList li div {
 
     .count {
         line-height: 20px;
-        font-size: 15px;
+        font-size: 11px;
     }
 }
