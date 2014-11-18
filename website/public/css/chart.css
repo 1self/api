@@ -184,7 +184,7 @@ ul.commentList li div {
 
 .comments_summary{
     width: 100%;
-    height: 80px;
+    height: 112px;
 }
 
 .avatar_group {
@@ -192,7 +192,7 @@ ul.commentList li div {
     float:left;
     padding: 5px;
     height: 100%;
-    background-color: forestgreen;
+    background-color: black;
 }
 
 .comment_avatar, .count {
@@ -201,10 +201,11 @@ ul.commentList li div {
     float: left;
     height: 50%;
     background-size: 100%;
+    border: 3px solid greenyellow;
 }
 
 .count{
-    line-height: 40px;
+    line-height: 55px;
     font-weight: bold;
     color: white;
     background-color: rgb(158, 182, 159);
