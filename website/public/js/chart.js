@@ -171,6 +171,22 @@ charts.showComments = function () {
         });
 };
 
+var displayCommentsSummary = function () {
+    for (var i = 6; i >= 0; i--) {
+        var currentDataPointDate = moment().subtract(i, 'days').format("YYYY-MM-DD"); // "2014-11-14"
+        var currentDataPoint = _.findWhere(charts.dataPoints, {"dataPointDate": currentDataPointDate});
+        if (!_.isEmpty(currentDataPoint)) {
+            var latest3Avatars = currentDataPoint.avatars.slice(0, 3);
+            latest3Avatars.forEach(function (avatarUrl, j) {
+                $("#group" + i + "-avatar" + j).css({'background-image': 'url(' + avatarUrl + ')'});
+            });
+            if (currentDataPoint.comments.length > 3) {
+                $("#group" + i + "-commentCount").addClass("count").html(currentDataPoint.comments.length);
+            }
+        }
+    }
+};
+
 $(document).ready(function () {
     showChartTitle();
     $.ajax({
@@ -190,6 +206,7 @@ $(document).ready(function () {
         }
     }).done(function (comments) {
         charts.dataPoints = comments;
+        displayCommentsSummary();
     });
     $("#shareSubmit").click(submitShare);
 });
