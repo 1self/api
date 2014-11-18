@@ -203,6 +203,7 @@ ul.commentList li div {
     float: left;
     height: 100%;
     background-color: rgb(72, 148, 85);
+    border: 1px solid white;
 }
 
 .comment_avatar, .count {
@@ -218,26 +219,26 @@ ul.commentList li div {
     color: white;
 }
 
-@media screen and (min-device-width: 500px) {
+@media screen and (min-device-width: 800px) {
     .comment_avatar, .count {
-        height: 54px;
+        height: 98px;
         overflow: hidden;
     }
 
     .count {
-        line-height: 54px;
-        font-size: 30px;
+        line-height: 98px;
+        font-size: 45px;
     }
 }
 
 @media screen and (max-device-width: 480px) {
     .comment_avatar, .count {
-        height: 20px;
+        height: 28px;
         overflow: hidden;
     }
 
     .count {
-        line-height: 20px;
-        font-size: 11px;
+        line-height: 28px;
+        font-size: 15px;
     }
 }
