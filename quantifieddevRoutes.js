@@ -10,6 +10,7 @@ var path = require('path');
 var QD_EMAIL = process.env.QD_EMAIL;
 var ObjectID = require('mongodb').ObjectID;
 var mongoDbConnection = require('./lib/connection.js');
+var validateRequest = require("./validateRequest");
 
 var emailConfigOptions = {
     root: path.join(__dirname, "/website/public/email_templates")
@@ -971,7 +972,7 @@ module.exports = function (app) {
     };
 
     //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
-    app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/:renderType", function (req, res) {
+    app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/:renderType", validateRequest.validateStreamIdAndReadToken, function (req, res) {
         if (req.session.username) {
             var redirectUrl = "/v1/users/" + req.session.username + "/events/" +
                 req.param("objectTags") + "/" + req.param("actionTags") + "/" +
@@ -981,6 +982,7 @@ module.exports = function (app) {
             req.session.redirectUrl = req.originalUrl + "?streamId=" + req.param('streamId');
             var graphInfo = getGraphInfo(req.originalUrl);
             res.render('chart', {
+                readToken: req.param("readToken"),
                 isUserLoggedIn: false,
                 title: graphInfo.title,
                 measurement: graphInfo.measurement,

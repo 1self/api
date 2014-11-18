@@ -1813,7 +1813,7 @@ var getQueryForVisualizationAPI = function (streamIds, params) {
 };
 
 //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}({{:property}})/daily/{{barchart/json}}
-app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/type/json",
+app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/type/json", validateRequest.validateStreamIdAndReadToken,
     function (req, res) {
         var query = getQueryForVisualizationAPI([req.params.streamId], req.params);
         getAggregatedEventsFromPlatform(query)
