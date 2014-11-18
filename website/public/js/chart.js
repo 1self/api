@@ -18,7 +18,13 @@ var getEventsFor = function (type, typeId, objectTags, actionTags, operation, pe
 
 var plotChart = function (events) {
     if (renderType === "barchart") {
-        charts.plotBarChart("#chart", events, null, null);
+        if(events === null || events.length == 0){
+            $(".no-data").show();
+        }else{
+            charts.plotBarChart("#chart", events, null, null);
+            $('.detailsSection').show();
+            $('.share-button-container').show();
+        }
     }
 };
 

@@ -49,12 +49,18 @@
 </table>
 
 
-<div class="share-button-container">
+<div class="share-button-container" style="display:none;">
     <button type="button" class="shareGraphButton" onclick="handleShareGraph()">SHARE</button>
 </div>
+
+<div class="no-data" style="display:none">
+    There is no activity logged.
+</div>
+
 <div id="chart" class="chart">
 </div>
-<div class="detailsSection">
+
+<div class="detailsSection" style="display:none">
     <div id="commentSummary" class="comments_summary">
         {% for i in [6,5,4,3,2,1,0] %}
         <div id="group{{i}}" class="avatar_group">

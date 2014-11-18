@@ -242,3 +242,16 @@ ul.commentList li div {
         font-size: 15px;
     }
 }
+
+
+.no-data{
+    text-align: center;
+    margin: 0 auto;
+    height: 28px;
+    width: 270px;
+    background-color: rgba(221, 198, 198, 0.91);
+    font-size: 20px;
+    margin-top: 40px;
+    border-radius: 15px;
+    color: white;
+}
