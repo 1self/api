@@ -197,6 +197,7 @@ ul.commentList li div {
 
 .comment_avatar, .count {
     width: 50%;
+    background-repeat: no-repeat;
     float: left;
     height: 50%;
     background-size: 100%;
