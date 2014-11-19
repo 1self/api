@@ -141,6 +141,12 @@ ul.commentList li div {
     vertical-align: top;
 }
 
+.modal-content {
+    width: 500px;
+    max-width: 85%;
+    margin: 0 auto;
+}
+
 .grid-desktop {
     display: table;
     width: 100%;
@@ -176,20 +182,21 @@ ul.commentList li div {
 }
 
 #graphShareLink {
-    margin: 5px;
-    font-size: 11pt;
+    padding: 5px;
+    margin: 5px 0 10px 0;
+    font-size: 1.1em;
     background-color: #ccc;
-    word-wrap: break-word;
+    overflow-x: scroll;
+    white-space: nowrap;
+}
+
+#shareLinkWithEmailDiv label input, #shareSubmit {
+    width: 100%;
+    margin: 5px 0;
 }
 
 .shareEmailNoticeMessage {
     color: green;
-}
-
-.modal-content {
-    width: 500px;
-    height: 550px;
-    margin: auto;
 }
 
 .comments_summary {
@@ -243,8 +250,7 @@ ul.commentList li div {
     }
 }
 
-
-.no-data{
+.no-data {
     text-align: center;
     margin: 0 auto;
     height: 28px;
