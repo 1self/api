@@ -68,6 +68,27 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
+    var streamIdAndReadTokenExists = function (streamId, readToken) {
+        console.log("streamIdAndReadTokenExists :: streamId is", streamId);
+        console.log("streamIdAndReadTokenExists :: readToken is", readToken);
+        // TODO Include readToken as part of mongo query object
+        var byStreamId = {
+            "streamid": streamId
+        };
+        var deferred = Q.defer();
+
+        mongoDbConnection(function (qdDb) {
+            qdDb.collection('stream').findOne(byStreamId, function (err, stream) {
+                if (!err && stream) {
+                    deferred.resolve(true);
+                } else {
+                    deferred.resolve(false);
+                }
+            });
+        });
+        return deferred.promise;
+    };
+
     var getStreamsForUser = function (oneselfUsername) {
         var streamidUsernameMapping = {
             "username": oneselfUsername.toLowerCase()
@@ -977,7 +998,7 @@ module.exports = function (app) {
         if (req.session.username) {
             var redirectUrl = "/v1/users/" + req.session.username + "/events/" +
                 req.param("objectTags") + "/" + req.param("actionTags") + "/" +
-                req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType");
+                    req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType") + "?streamId=" + req.param("streamId") + "&readToken=" + req.query.readToken;
             res.redirect(redirectUrl);
         } else {
             req.session.redirectUrl = req.originalUrl + "?streamId=" + req.param('streamId');
@@ -1044,7 +1065,7 @@ module.exports = function (app) {
                 var username = req.param("username");
                 var userQueryObject = {
                     username: username
-                }
+                };
 
                 mongoDbConnection(function(qdDb) {
                     qdDb.collection("users", function(err, collection) {
@@ -1065,6 +1086,7 @@ module.exports = function (app) {
 
             req.session.redirectUrl = req.originalUrl;
             var streamId = req.query.streamId;
+            var readToken = req.query.readToken;
             //        var shareToken = req.query.shareToken;
             var renderChart = function(graphOwnerAvatarUrl) {
                 var graphInfo = getGraphInfo(req.originalUrl, req.param("username"));
@@ -1086,7 +1108,7 @@ module.exports = function (app) {
                 });
             };
 
-            streamExists(streamId)
+            streamIdAndReadTokenExists(streamId, readToken)
                 .then(function(exists) {
                     if (exists) {
                         getStreamsForUser(req.param('username'))

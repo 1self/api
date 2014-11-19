@@ -111,6 +111,7 @@ var validEncodedUsername = function (encodedUsername, forUsername, params) {
     mongoDbConnection(function (qdDb) {
         qdDb.collection('users').findOne(encodedUsernameExists, function (err, user) {
             if (err) {
+                console.log("Error is", err);
                 deferred.reject(err);
             } else {
                 if (user) {
@@ -1847,7 +1848,7 @@ var authorizeUser = function (req, res, next) {
             next();
         });
     } else {
-        console.log("Error is", err);
+        console.log("Error - bad request. either shareToken or autorization required.");
         res.send(400, "bad request. either shareToken or autorization required.");
     }
 };
