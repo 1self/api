@@ -32,9 +32,9 @@ svg, img {
     text-align: center;
 }
 
-.header-main .avatar {
-    width: 45px;
-}
+/*.header-main .avatar {*/
+/*width: 45px;*/
+/*}*/
 
 .header {
     background: forestgreen;
@@ -53,10 +53,10 @@ svg, img {
 
 .avatar img {
     border-radius: 4px;
+    width: 65px;
 }
 
 .avatar {
-    width: 65px;
     padding: 2px;
     vertical-align: middle;
 }
