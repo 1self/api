@@ -9,6 +9,7 @@ var QD_GITHUB_CLIENT_ID = process.env.QD_GITHUB_CLIENT_ID;
 var QD_GITHUB_CLIENT_SECRET = process.env.QD_GITHUB_CLIENT_SECRET;
 
 var CONTEXT_URI = process.env.CONTEXT_URI;
+var ONESELF_CONTEXT_URI = process.env.ONESELF_CONTEXT_URI;
 var mongoDbConnection = require('./lib/connection.js');
 
 
@@ -126,7 +127,7 @@ module.exports = function (app) {
             passport.use(new githubStrategy({
                 clientID: GITHUB_CLIENT_ID,
                 clientSecret: GITHUB_CLIENT_SECRET,
-                callbackURL: CONTEXT_URI + "/auth/github/callback"
+                callbackURL: ONESELF_CONTEXT_URI + "/auth/github/callback"
             },
                                             function (accessToken, refreshToken, profile, done) {
                                                 var githubProfile = {
