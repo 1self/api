@@ -19,9 +19,9 @@ var getEventsFor = function (type, typeId, objectTags, actionTags, operation, pe
 
 var plotChart = function (events) {
     if (renderType === "barchart") {
-        if(events === null || events.length == 0){
+        if (events === null || events.length == 0) {
             $(".no-data").show();
-        }else{
+        } else {
             charts.plotBarChart("#chart", events, null, null);
             $('.detailsSection').show();
             $('.share-button-container').show();
@@ -113,7 +113,7 @@ var handleShareGraph = function () {
             }
         });
     } else if (unregisteredUserOnStreamsPage()) {
-        $("#shareLoginModal").modal({show: true});
+        $("#loginModal").modal({show: true});
     } else {
         $.ajax({
             url: "/v1/graph/share?graphUrl=" + window.location.pathname,

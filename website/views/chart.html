@@ -44,7 +44,11 @@
 </table>
 <table class="header">
     <tr>
-        <td id="" class="avatar"><img src="{{graphOwnerAvatarUrl}}"/></td>
+        <td id="" class="avatar">
+            {% if graphOwnerAvatarUrl %}
+            <img src="{{graphOwnerAvatarUrl}}"/>
+            {% endif %}
+        </td>
         <td id="chartTitle" class="page-title"></td>
     </tr>
 </table>
@@ -100,31 +104,10 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span
                             aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <h2 class="modal-title" id="loginLabel">Add a Comment</h2>
+                    <h4 class="modal-title">Please log in</h4>
                 </div>
                 <div class="modal-body">
-                    <p>To add a comment, please login to 1self.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-lg btn-default" data-dismiss="modal"><span class="font-size">Close</span>
-                    </button>
-                    <a href="/auth/github" class="btn btn-lg btn-primary"><span class="font-size">Login to 1self</span></a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="shareLoginModal" tabindex="-1" role="dialog" aria-labelledby="shareLoginLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span
-                            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <h2 class="modal-title" id="shareLoginLabel">Share your graph</h2>
-                </div>
-                <div class="modal-body">
-                    <p>To share your graph, please login to 1self.</p>
+                    <p>To proceed further, please login to 1self.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal"><span
