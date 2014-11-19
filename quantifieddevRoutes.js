@@ -8,6 +8,7 @@ var util = require("./util");
 var emailTemplates = require('swig-email-templates');
 var path = require('path');
 var QD_EMAIL = process.env.QD_EMAIL;
+var ONESELF_EMAIL = process.env.ONESELF_EMAIL;
 var ObjectID = require('mongodb').ObjectID;
 var mongoDbConnection = require('./lib/connection.js');
 var validateRequest = require("./validateRequest");
@@ -874,7 +875,7 @@ module.exports = function (app) {
             emailRender('graphShare.eml.html', context, function (err, html, text) {
                 sendgrid.send({
                     to: toEmailId,
-                    from: QD_EMAIL,
+                    from: ONESELF_EMAIL,
                     subject: fromEmailId + ' wants to share 1self activity',
                     html: html
                 }, function (err, json) {
