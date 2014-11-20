@@ -71,9 +71,16 @@ svg, img {
 
 .share-button-container {
     padding: 4px;
+    position: relative;
     background: #4CBB62;
     text-align: right;
     clear: right;
+}
+
+.shareGraphButton {
+    position: absolute;
+    right: 15px;
+    top: 15px;
 }
 
 .shareGraphButton, .addCommentButton {
