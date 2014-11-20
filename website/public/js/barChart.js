@@ -4,8 +4,8 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
     setTimeout(function () {
         $(divId).empty();
         var margin = {
-            top: 120,
-            right: 30,
+            top: 20,
+            right: 0,
             bottom: 0,
             left: 0
         };

@@ -1,7 +1,7 @@
 body {
     font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     font-size: 14px;
-    background: #94D6A1;
+    background: #1EAC64;
     margin: 0;
     padding: 0;
 }
@@ -13,8 +13,18 @@ svg, img {
 #date, #eventValue {
     margin-top: 20px;
     margin-bottom: 20px;
-    color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+#date {
+    color: #618773;
+    font-size: 1.5em
+}
+
+#eventValue {
     font-size: 1em;
+    color: white;
 }
 
 .shareGraphButton, .dataPoint, .addCommentButton {
@@ -45,7 +55,7 @@ svg, img {
 }
 
 .header {
-    background: forestgreen;
+    background: #157744;
     border: 1px solid #016601;
     border-bottom: 2px solid #016601;
     width: 100%;
@@ -72,7 +82,6 @@ svg, img {
 .share-button-container {
     padding: 4px;
     position: relative;
-    background: #4CBB62;
     text-align: right;
     clear: right;
 }
@@ -105,6 +114,7 @@ svg, img {
 
 .dataPoint {
     margin-top: 20px;
+    background-color: #0A3B21;
 }
 
 .commenter {
@@ -113,7 +123,7 @@ svg, img {
 }
 
 .commentText {
-    padding: 0 10px;
+    padding: 10px;
     font-size: 1.2em;
     text-align: left;
     line-height: 1em;
@@ -127,12 +137,11 @@ svg, img {
 ul.commentList {
     padding: 0;
     margin-top: 10px;
+    background: #105833;
     margin-bottom: 20px;
-    padding-top: 10px;
     list-style: none;
     overflow: hidden;
     border-top: 1px solid #ffffff;
-    background: forestgreen;
     color: #fff;
 }
 
@@ -140,8 +149,6 @@ ul.commentList {
     content: "";
     display: block;
     clear: both;
-    padding-top: 10px;
-    margin-bottom: 10px;
     border-bottom: 1px solid #fff;
 }
 
@@ -182,19 +189,17 @@ ul.commentList li div {
 }
 
 .detailsSection {
-    background-color: #94D6A1;
     text-align: center;
+    margin-top: -25px;
 }
 
 .graphInfo {
     margin-top: 2%;
 }
 
-.commentList li, #addCommentInput {
-
+#addCommentInput {
     margin-bottom: 20px;
     width: 100%;
-    /*font-size: 40px;*/
 }
 
 #graphShareLink {
@@ -225,7 +230,7 @@ ul.commentList li div {
     width: 14.28%;
     float: left;
     height: 100%;
-    background-color: rgb(72, 148, 85);
+    background-color: #3B6F53;
     border: 1px solid white;
 }
 
