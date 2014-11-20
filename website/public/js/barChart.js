@@ -75,6 +75,29 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             .attr("stop-color", "#fff")
             .attr("stop-opacity", 1);
 
+        var filter = svg.append("svg:defs")
+            .append("filter")
+            .attr("id", "drop-shadow")
+            .attr("height", "130%");
+
+        filter.append("feGaussianBlur")
+            .attr("in", "SourceAlpha")
+            .attr("stdDeviation", 5)
+            .attr("result", "blur");
+
+        filter.append("feOffset")
+            .attr("in", "blur")
+            .attr("dx", 5)
+            .attr("dy", 5)
+            .attr("result", "offsetBlur");
+
+        var feMerge = filter.append("feMerge");
+
+        feMerge.append("feMergeNode")
+            .attr("in", "offsetBlur")
+        feMerge.append("feMergeNode")
+            .attr("in", "SourceGraphic");
+
         svg.selectAll('.chart')
             .data(events)
             .enter().append('rect')
@@ -94,12 +117,17 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 svg.selectAll('.bar')
                     .style("stroke", function (data) {
                         if (d === data) {
-                            return "#38A0BA";
+                            return "rgba(114, 126, 129, 0.5)";
                         }
                     })
+                    .style("filter", function (data) {
+                       if (d === data) {
+                          return "url(#drop-shadow)";
+                        }
+                     })
                     .style("stroke-width", function (data) {
                         if (d === data) {
-                            return 3;
+                            return 5;
                         }
                     });
                 $(".addCommentButton").show();
@@ -147,12 +175,16 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 .style("stroke", function (data) {
                     if (moment(data.date).isSame(moment(date))) {
                         eventValue = data.value;
-                        return "#38A0BA";
+                        return "rgba(114, 126, 129, 0.5)";
+                    }
+                }).style("filter", function (data) {
+                    if (moment(data.date).isSame(moment(date))) {
+                        return "url(#drop-shadow)";
                     }
                 })
                 .style("stroke-width", function (data) {
                     if (moment(data.date).isSame(moment(date))) {
-                        return 3;
+                        return 5;
                     }
                 });
             $(".addCommentButton").show();
