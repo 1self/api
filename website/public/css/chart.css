@@ -29,11 +29,19 @@ svg, img {
 
 .header-main .page-title {
     font-size: 1.5em;
-    text-align: center;
 }
 
 .header-main .avatar {
     width: 45px;
+}
+
+.header .avatar {
+    width: 45px;
+}
+
+.header td.page-title {
+    padding: 4px;
+    font-size: 1em;
 }
 
 .header {
