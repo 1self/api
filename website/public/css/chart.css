@@ -83,6 +83,7 @@ svg, img {
     color: #fff;
     background-color: #504E4E;
     border-radius: 4px;
+    box-shadow: 5px 5px 7px #71947B;
 }
 
 .addCommentButton {
