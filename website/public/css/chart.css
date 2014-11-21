@@ -232,7 +232,15 @@ ul.commentList li div {
     height: 100%;
     background-color: #3B6F53;
     border: 1px solid white;
+    display: inline-block;  
 }
+
+.avatar_group:after {
+    content: '';
+    display: block;
+    margin-top: 75%;
+}
+
 
 .comment_avatar, .count {
     width: 50%;
@@ -249,8 +257,10 @@ ul.commentList li div {
 
 @media screen and (min-device-width: 800px) {
     .comment_avatar, .count {
-        height: 98px;
-        overflow: hidden;
+        position: relative;
+        width: 50%;
+        height: 0;
+        padding-bottom: 40%;
     }
 
     .count {
