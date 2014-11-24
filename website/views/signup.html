@@ -31,6 +31,17 @@
      ga('send', 'pageview');
     </script>
 
+		<script>
+		 // Always redirect to 1self.co from quantifieddev domain
+		 if(window.location.href.match(/staging.quantifieddev.org/) !== null) {
+			 // For staging
+			 window.location.replace("https://staging.1self.co");
+		 } else if (window.location.href.match(/quantifieddev.org/) !== null) {
+			 // For production
+			 window.location.replace("https://dev.1self.co");
+		 }
+		</script>
+
   </head>
   <body class="animated fadeInDown">
     <div class="top-bar" style="background: #373737">
