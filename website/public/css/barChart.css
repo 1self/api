@@ -3,38 +3,43 @@
 }*/
 
 .bar {
-    background-color: rgba(255,255,255)
-    background: linear-gradient(to right, rgba(255, 255, 255, 0),  rgba(255, 255, 255, 1));
+    background-color: rgba(255, 255, 255) background : linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
 }
-.axis path{
+
+.axis path {
     fill: none;
-    stroke:#fff;
+    stroke: #fff;
 }
+
 text {
-    fill: #016601;
+    fill: white;
+    text-shadow: 2px 2px rgb(118, 109, 109);
     font-size: 1.5em;
 }
+
 .d3-tip, .tooltip {
-     line-height: 1;
-     font-weight: bold;
-     font-size: 30px;
-     padding: 12px;
-     background: rgba(0, 0, 0, 0.8);
-     color: #fff;
-     border-radius: 2px;
-     z-index: 10;
- }
+    line-height: 1;
+    font-weight: bold;
+    font-size: 30px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border-radius: 2px;
+    z-index: 10;
+}
+
 .d3-tip:after {
-     box-sizing: border-box;
-     display: inline;
-     font-size: 5px;
-     width: 100%;
-     line-height: 1;
-     color: rgba(0, 0, 0, 0.8);
-     content: "\25BC";
-     position: absolute;
-     text-align: center;
- }
+    box-sizing: border-box;
+    display: inline;
+    font-size: 5px;
+    width: 100%;
+    line-height: 1;
+    color: rgba(0, 0, 0, 0.8);
+    content: "\25BC";
+    position: absolute;
+    text-align: center;
+}
+
 .d3-tip.n:after {
     margin: -1px 0 0 0;
     top: 100%;
