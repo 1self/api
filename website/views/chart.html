@@ -45,6 +45,9 @@
                 var link = $("#graphShareLink").html();
                 clipboard.setData("text/plain", link);
             });
+            client.on('aftercopy', function(event) {
+                $('#copy-success').show();
+            });
         });
     </script>
 </head>
@@ -155,7 +158,8 @@
                                 graph.</p>
 
                             <p id="graphShareLink"></p>
-                            <button id="copy-button" title="Copy" data-clipboard-target="graphShareLink">Copy</button>
+                            <button class="btn btn-primary font-size" id="copy-button" title="Copy" data-clipboard-target="graphShareLink">Copy Share Link</button>
+                            <img id="copy-success" src="/img/tick.png" style="display: none;">
 
                         </div>
                         {% if isUserLoggedIn %}
