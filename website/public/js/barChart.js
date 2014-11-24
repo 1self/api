@@ -26,17 +26,13 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             .domain([0, maxDataValue])
             .range([height - margin.top - margin.bottom, 0])
             .nice(4);
-        var yTicks = d3.min([5, maxDataValue]);
 
         var xAxis = d3.svg.axis()
-            .scale(x)
-            .tickFormat('');
+            .scale(x);
 
         var yAxis = d3.svg.axis()
             .scale(y)
-            .orient('right')
-            .ticks(yTicks)
-            .tickPadding(8);
+            .orient('right');
 
         var svg = d3.select(divId).append('svg')
             .attr('class', 'chart')
