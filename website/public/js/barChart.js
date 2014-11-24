@@ -61,19 +61,21 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
         var gradient = svg.append("svg:defs")
             .append("svg:linearGradient")
             .attr("id", "gradient")
-            .attr("y2", "0%")
-            .attr("y1", "100%")
-            .attr("spreadMethod", "pad");
+            .attr("x1", "0%")
+            .attr("y1", "0%")
+            .attr("x2", "0%")
+            .attr("y2", "100%")
+            .attr("spreadMethod", "reflect");
 
         gradient.append("svg:stop")
-            .attr("offset", "0%")
+            .attr("offset", "5%")
             .attr("stop-color", "#fff")
-            .attr("stop-opacity", 0.3);
+            .attr("stop-opacity", 0.9);
 
         gradient.append("svg:stop")
             .attr("offset", "100%")
-            .attr("stop-color", "#fff")
-            .attr("stop-opacity", 1);
+            .attr("stop-color", "#DEF2E9")
+            .attr("stop-opacity", 0.7);
 
         var filter = svg.append("svg:defs")
             .append("filter")
@@ -121,10 +123,10 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                         }
                     })
                     .style("filter", function (data) {
-                       if (d === data) {
-                          return "url(#drop-shadow)";
+                        if (d === data) {
+                            return "url(#drop-shadow)";
                         }
-                     })
+                    })
                     .style("stroke-width", function (data) {
                         if (d === data) {
                             return 5;
@@ -190,7 +192,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             $(".addCommentButton").show();
             if (isNaN(date)) {
                 $("#date").html('No data logged for this activity');
-            }else{
+            } else {
                 $("#date").html(moment(date).format("DD/MM/YY dddd"));
             }
             $("#eventValue").html(getDataPointDescription(eventValue));
