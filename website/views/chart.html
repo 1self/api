@@ -11,7 +11,9 @@
     <script src="/js/jquery.js"></script>
     <script src="/js/jquery.cookie.js"></script>
     <script src="/js/humanize-duration.js"></script>
+    <script src="/js/zeroclipboard/ZeroClipboard.js"></script>
     <script>
+
         var isUserLoggedIn = ("{{isUserLoggedIn}}" == "true");
         var graphOwner = "{{graphOwner}}";
         var graphOwnerAvatarUrl = "{{graphOwnerAvatarUrl}}";
@@ -32,6 +34,18 @@
         var renderType = "{{renderType}}";
         var readToken = "{{readToken}}";
 
+        //ZeroClipBoard config
+        ZeroClipboard.config({
+            swfPath: "/js/zeroclipboard/ZeroClipboard.swf"
+        });
+        $(document).ready(function() {
+            var client = new ZeroClipboard($("#copy-button"));
+            client.on("copy", function(event) {
+                var clipboard = event.clipboardData;
+                var link = $("#graphShareLink").html();
+                clipboard.setData("text/plain", link);
+            });
+        });
     </script>
 </head>
 <body>
@@ -136,6 +150,8 @@
                                 graph.</p>
 
                             <p id="graphShareLink"></p>
+                            <button id="copy-button" title="Copy" data-clipboard-target="graphShareLink">Copy</button>
+
                         </div>
                         {% if isUserLoggedIn %}
                         <p class="center">OR</p>
