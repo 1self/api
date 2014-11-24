@@ -59,7 +59,7 @@
 <table class="header">
     <tr>
         <td class="avatar">
-        {% if graphOwnerAvatarUrl %}
+            {% if graphOwnerAvatarUrl %}
             <img src="{{graphOwnerAvatarUrl}}"/>
             {% endif %}
         </td>
@@ -104,13 +104,17 @@
         <ul class="commentList">
         </ul>
     </div>
-    <div id="addCommentInput" style="display:none">
+    {% if isUserLoggedIn %}
+    <div id="addCommentInput">
         <span><img src="{{avatarUrl}}" width="50"/></span>
         <input id="commentText" type="text" placeholder="Add Comment">
+        <button class="btn btn-info" onclick="charts.addComment();">Add</button>
     </div>
+    {% else %}
     <button type="button" class="btn btn-info addCommentButton" onclick="handleAddComment()" style="display:none">
         ADD YOUR COMMENT
     </button>
+    {% endif %}
 
     <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginLabel"
          aria-hidden="true">
@@ -127,7 +131,8 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal"><span
                             class="font-size">Close</span></button>
-                    <a href="/1self/auth/github" class="btn btn-primary"><span class="font-size">Login to 1self</span></a>
+                    <a href="/1self/auth/github" class="btn btn-primary"><span
+                            class="font-size">Login to 1self</span></a>
                 </div>
             </div>
         </div>
