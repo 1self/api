@@ -73,8 +73,8 @@ var liveworld = function() {
     };
 
     var url = function() {
-        return (location.hostname == "localhost") ?
-            "http://localhost:5000/live/devbuild/" :
+        return (location.hostname == "app-staging.1self.co") ?
+            "https://app-staging.1self.co/live/devbuild/" :
             "https://app.1self.co/live/devbuild/";
     };
 

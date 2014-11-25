@@ -34,8 +34,8 @@ var liveCountry = function() {
     };
 
     var url = function() {
-        return (location.hostname == "localhost") ?
-            "http://localhost:5000/" :
+        return (location.hostname == "app-staging.1self.co") ?
+            "https://app-staging.1self.co/" :
             "https://app.1self.co/";
     };
 
