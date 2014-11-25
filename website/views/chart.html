@@ -40,15 +40,28 @@
         });
         $(document).ready(function() {
             var client = new ZeroClipboard($("#copy-button"));
-            client.on("copy", function(event) {
-                var clipboard = event.clipboardData;
-                var link = $("#graphShareLink").html();
-                clipboard.setData("text/plain", link);
+            client.on('ready', function(event) {
+                $('#copy-button').show();
+
+                client.on("copy", function(event) {
+                    var clipboard = event.clipboardData;
+                    var link = $("#graphShareLink").html();
+                    clipboard.setData("text/plain", link);
+                });
+
+                client.on('aftercopy', function(event) {
+                    $('#copy-success').show();
+                });
             });
-            client.on('aftercopy', function(event) {
-                $('#copy-success').show();
+
+            client.on('error', function(event) {
+                ZeroClipboard.destroy();
             });
-        });
+
+            $('#graphShareLink').click(function() {
+                $(this).select();
+            });
+    });
     </script>
 </head>
 <body>
@@ -157,8 +170,8 @@
                             <p>Copy the url below and share it with your friends. They will be able to access this
                                 graph.</p>
 
-                            <p id="graphShareLink"></p>
-                            <button class="btn btn-primary font-size" id="copy-button" title="Copy" data-clipboard-target="graphShareLink">Copy Share Link</button>
+                            <textarea readonly id="graphShareLink" style="resize: none; height: 30px; width: 260px; overflow: hidden;"></textarea>
+                            <button class="btn btn-primary font-size" style="display: none" id="copy-button" title="Copy" data-clipboard-target="graphShareLink">Copy Link</button>
                             <img id="copy-success" src="/img/tick.png" style="display: none;">
 
                         </div>
