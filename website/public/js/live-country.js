@@ -36,7 +36,7 @@ var liveCountry = function() {
     var url = function() {
         return (location.hostname == "localhost") ?
             "http://localhost:5000/" :
-            "https://app.quantifieddev.org/";
+            "https://app.1self.co/";
     };
 
     var plotGraph = function() {
