@@ -37,6 +37,9 @@ module.exports = function (app) {
     };
 
     app.get("/signup", function (req, res) {
+        if (!(_.isEmpty(req.param('streamId')))){
+            req.session.redirectUrl = req.originalUrl + "?streamId=" + req.param('streamId');
+        }
         res.render('signup');
     });
 
