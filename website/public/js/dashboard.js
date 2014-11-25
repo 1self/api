@@ -27,7 +27,7 @@ var handleConnectToGithub = function () {
     githubHeatMap.html(html_data);
     //If you want the github datasource to run locally, change the window.location
 //    window.location = "http://gitplugin.com:5001/authSuccess";
-    window.location = "http://github-datasource.herokuapp.com/authSuccess";
+    window.location = "http://github-datasource.1self.co:5001/authSuccess";
 };
 $(document).ready(function () {
     $(document).on('mouseup keyup', function (e) {
