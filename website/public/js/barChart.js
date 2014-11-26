@@ -182,7 +182,6 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 for (var i = bars.data().length - 1; i >= 0; i--) {
                     if (d === bars.data()[i]) {
                         var bar = bars[0][i];
-                        bar.remove();
                         $('#bars').append(bar);
                     }
                 };
