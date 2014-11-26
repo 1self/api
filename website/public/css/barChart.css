@@ -8,11 +8,12 @@
 
 .axis path {
     fill: none;
-    stroke: #fff;
+    /*stroke: #fff;*/
+    stroke: rgba(117, 117, 117, 0.62);
 }
 
 text {
-    fill: white;
+    fill: rgba(117, 117, 117, 0.62);
     text-shadow: 2px 2px rgb(118, 109, 109);
     font-size: 0.8em;
 }
