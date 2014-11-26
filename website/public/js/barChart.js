@@ -32,7 +32,8 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
 
         var yAxis = d3.svg.axis()
             .scale(y)
-            .orient('right');
+            .orient('right')
+            .ticks(5);
 
         var svg = d3.select(divId).append('svg')
             .attr('class', 'chart')
