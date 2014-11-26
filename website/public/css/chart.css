@@ -119,6 +119,26 @@ svg, img {
     background-color: #0A3B21;
 }
 
+#addCommentInput {
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+#addCommentInput > * {
+    height: 44px;
+    margin-left: 10px;
+    float: left;
+}
+
+#addCommentInput img {
+    width: 44px;
+}
+
+#commentText {
+    width: 60%;
+    font-size: 1.2em;
+}
+
 .commenter {
     margin: 0 10px 0 0;
     float: left;
@@ -199,11 +219,6 @@ ul.commentList li div {
     margin-top: 2%;
 }
 
-#addCommentInput {
-    margin-bottom: 20px;
-    width: 100%;
-}
-
 #graphShareLink {
     padding: 5px;
     margin: 5px 0 10px 0;
@@ -234,7 +249,7 @@ ul.commentList li div {
     height: 100%;
     background-color: #3B6F53;
     border: 1px solid white;
-    display: inline-block;  
+    display: inline-block;
 }
 
 .avatar_group:after {
@@ -242,7 +257,6 @@ ul.commentList li div {
     display: block;
     margin-top: 75%;
 }
-
 
 .comment_avatar, .count {
     width: 50%;
