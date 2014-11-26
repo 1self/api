@@ -134,11 +134,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             })
             .on("click", function (d) {
                 svg.selectAll('.bar')
-                    .style("stroke", function (data) {
-                        if (d === data) {
-                            return "rgba(114, 126, 129, 0.5)";
-                        }
-                    })
+                    .style("stroke", null)
                     .style("filter", function (data) {
                         if (d === data) {
                             return "url(#drop-shadow)";
@@ -198,12 +194,8 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
         var showDetailsForDate = function (date) {
             var eventValue;
             svg.selectAll('.bar')
-                .style("stroke", function (data) {
-                    if (moment(data.date).isSame(moment(date))) {
-                        eventValue = data.value;
-                        return "rgba(114, 126, 129, 0.5)";
-                    }
-                }).style("filter", function (data) {
+                .style("stroke", null)
+                .style("filter", function (data) {
                     if (moment(data.date).isSame(moment(date))) {
                         return "url(#drop-shadow)";
                     }
@@ -211,6 +203,12 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 .style("stroke-width", function (data) {
                     if (moment(data.date).isSame(moment(date))) {
                         return 5;
+                    }
+                }).style("fill", function (data) {
+                    if (moment(data.date).isSame(moment(date))) {
+                        return "url(#gradient_highlight)";
+                    } else {
+                        return "url(#gradient)"
                     }
                 });
             $(".addCommentButton").show();
