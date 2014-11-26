@@ -151,6 +151,11 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                         } else {
                             return "url(#gradient)"
                         }
+                    })
+                    .style("background-color", function (data) {
+                        if (d === data) {
+                            return "rgba(0, 0, 0, 0.22)";
+                        }
                     });
                 $(".addCommentButton").show();
                 $("#date").html(moment(d.date).format("DD/MM/YY dddd"));
