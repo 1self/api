@@ -40,6 +40,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             .attr('width', width)
             .attr('height', height)
             .append('g')
+            .attr('id', 'bars')
             .attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
         var tipText = function (d) {
             return "<strong>" + operation + " " + d.value +
@@ -134,7 +135,8 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 return height - margin.top - margin.bottom - y(d.value);
             })
             .on("click", function (d) {
-                svg.selectAll('.bar')
+                var bars = svg.selectAll('.bar');
+                bars
                     .style("stroke", function (data) {
                         if (d === data) {
                             return null;
@@ -175,6 +177,15 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 charts.graphUrl = window.location.href.split(window.location.origin)[1].split("?")[0] + "/" + year + "/" + month + "/" + day;
                 charts.selectedDate = moment(d.date).format("YYYY-MM-DD");
                 charts.showComments();
+
+                //Redraw
+                for (var i = bars.data().length - 1; i >= 0; i--) {
+                    if (d === bars.data()[i]) {
+                        var bar = bars[0][i];
+                        bar.remove();
+                        $('#bars').append(bar);
+                    }
+                };
             });
 
         svg.append('g')
@@ -209,7 +220,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             var eventValue;
             svg.selectAll('.bar')
                 .style("stroke", function (data) {
-                        if (d === data) {
+                        if (moment(data.date).isSame(moment(date))) {
                             return null;
                         } else {
                             return "rgba(255,255,255,0.7)";
