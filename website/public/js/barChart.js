@@ -77,17 +77,18 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
         var filter = svg.append("svg:defs")
             .append("filter")
             .attr("id", "drop-shadow")
-            .attr("height", "130%");
+            .attr("height", "130%")
+            .attr("width", "170%");
 
         filter.append("feGaussianBlur")
             .attr("in", "SourceAlpha")
-            .attr("stdDeviation", 5)
+            .attr("stdDeviation", 2)
             .attr("result", "blur");
 
         filter.append("feOffset")
             .attr("in", "blur")
-            .attr("dx", 5)
-            .attr("dy", 5)
+            .attr("dx", 0)
+            .attr("dy", 3   )
             .attr("result", "offsetBlur");
 
         var feMerge = filter.append("feMerge");
