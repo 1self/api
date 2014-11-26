@@ -1325,14 +1325,12 @@ app.get('/recent_signups', function (req, res) {
     });
 });
 
-var validateClient = function (clientId, clientSecret) {
+var validateClient = function (appId, appSecret) {
     var deferred = q.defer();
-
     var query = {
-        clientId: clientId,
-        clientSecret: clientSecret
+        appId: appId,
+        appSecret: appSecret
     };
-
     mongoDbConnection(function (qdDb) {
         qdDb.collection('registeredApps').findOne(query, function (err, result) {
             if (err) {
@@ -1357,17 +1355,18 @@ app.post('/stream', function (req, res) {
         }
     });
 });
+
 app.post('/v1/streams', function (req, res) {
     var auth = req.headers.authorization;
 
     if (auth === undefined) {
         res.send(401, "Unauthorized request. Please pass valid clientId and clientSecret");
     }
-    var clientId = auth.split(":")[0];
-    var clientSecret = auth.split(":")[1];
+    var appId = auth.split(":")[0];
+    var appSecret = auth.split(":")[1];
 
-    validateClient(clientId, clientSecret).then(function () {
-        util.createV1Stream(clientId, function (err, data) {
+    validateClient(appId, appSecret).then(function () {
+        util.createV1Stream(appId, function (err, data) {
             if (err) {
                 res.status(500).send("Database error");
             } else {
@@ -1381,6 +1380,21 @@ app.post('/v1/streams', function (req, res) {
     });
 });
 
+app.post('/v1/apps', function (req, res) {
+    var appName = req.param("appName");
+
+    if (appName === undefined) {
+        res.send(401, "Unauthorized request. Please pass valid name");
+    }
+    util.registerApp(appName, function (err, data) {
+        if (err) {
+            res.status(500).send("Database error");
+        } else {
+            delete data._id;
+            res.send(data);
+        }
+    });
+});
 
 app.get('/stream/:id', function (req, res) {
     var readToken = req.headers.authorization;
