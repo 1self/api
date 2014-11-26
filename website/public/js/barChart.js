@@ -74,6 +74,25 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             .attr("stop-color", "#DEF2E9")
             .attr("stop-opacity", 0.7);
 
+        var gradient_highlight = svg.append("svg:defs")
+            .append("svg:linearGradient")
+            .attr("id", "gradient_highlight")
+            .attr("x1", "0%")
+            .attr("y1", "0%")
+            .attr("x2", "0%")
+            .attr("y2", "100%")
+            .attr("spreadMethod", "reflect");
+
+        gradient_highlight.append("svg:stop")
+            .attr("offset", "5%")
+            .attr("stop-color", "#fff")
+            .attr("stop-opacity", 0.9);
+
+        gradient_highlight.append("svg:stop")
+            .attr("offset", "100%")
+            .attr("stop-color", "#DEF2E9")
+            .attr("stop-opacity", 0.7);
+
         var filter = svg.append("svg:defs")
             .append("filter")
             .attr("id", "drop-shadow")
@@ -128,6 +147,13 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                     .style("stroke-width", function (data) {
                         if (d === data) {
                             return 5;
+                        }
+                    })
+                    .style("fill", function (data) {
+                        if (d === data) {
+                            return "url(#gradient_highlight)";
+                        } else {
+                            return "url(#gradient)"
                         }
                     });
                 $(".addCommentButton").show();
