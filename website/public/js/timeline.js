@@ -32,7 +32,9 @@ var insertEvents = function(data){
 
         var listOfEvents = dateGroupedEvents[date];
         for(i = 0; i < listOfEvents.length; i++){
-            html += '<li class="list-group-item">' + listOfEvents[i].payload.objectTags.join(',')  + '</li>';
+            html += '<li class="list-group-item">' + listOfEvents[i].payload.objectTags.join(',')  + '<br/>' +
+                JSON.stringify(listOfEvents[i].payload.properties) +
+                '</li>';
         }
 
         html += '</ul>' +
@@ -41,7 +43,6 @@ var insertEvents = function(data){
     }
 
     timeline_container.html(html);
-
 };
 
 var groupEventsByDate = function(data){
