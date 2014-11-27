@@ -20,7 +20,7 @@ svg, img {
 }
 
 #date {
-    color: #618773;
+    color: rgba(255, 255, 255, 0.36);
     font-size: 1.5em
 }
 
@@ -57,9 +57,8 @@ svg, img {
 }
 
 .header {
-    background: #157744;
-    border: 1px solid #016601;
-    border-bottom: 2px solid #016601;
+    background: rgba(0, 0, 0, 0.33);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.5);;
     width: 100%;
 }
 
@@ -101,7 +100,17 @@ svg, img {
     color: #fff;
     background-color: #504E4E;
     border-radius: 4px;
-    box-shadow: 5px 5px 7px #71947B;
+    box-shadow: 5px 5px 7px #393939;
+}
+
+.submitComment {
+    border: 1px solid #333333;
+    color: #fff;
+    background-color: #504E4E;
+}
+
+.submitComment:hover, .submitComment:focus {
+    color: #fff;
 }
 
 .addCommentButton {
@@ -115,8 +124,9 @@ svg, img {
 }
 
 .dataPoint {
+    clear: both;
     margin-top: 20px;
-    background-color: #0A3B21;
+    background-color: rgba(0, 0, 0, 0.64);
 }
 
 #addCommentInput {
@@ -159,7 +169,7 @@ svg, img {
 ul.commentList {
     padding: 0;
     margin-top: 10px;
-    background: #105833;
+    background: rgba(0, 0, 0, 0.5);
     margin-bottom: 20px;
     list-style: none;
     overflow: hidden;
@@ -212,7 +222,7 @@ ul.commentList li div {
 
 .detailsSection {
     text-align: center;
-    margin-top: -25px;
+    margin-top: -6px;
 }
 
 .graphInfo {
@@ -247,7 +257,7 @@ ul.commentList li div {
     width: 14.28%;
     float: left;
     height: 100%;
-    background-color: #3B6F53;
+    background-color: rgba(78, 78, 78, 0.64);
     border: 1px solid white;
     display: inline-block;
 }

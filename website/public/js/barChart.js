@@ -108,7 +108,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
         filter.append("feOffset")
             .attr("in", "blur")
             .attr("dx", 0)
-            .attr("dy", 3   )
+            .attr("dy", 3)
             .attr("result", "offsetBlur");
 
         var feMerge = filter.append("feMerge");
@@ -184,7 +184,8 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                         var bar = bars[0][i];
                         $('#bars').append(bar);
                     }
-                };
+                }
+                ;
             });
 
         svg.append('g')
@@ -219,12 +220,12 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             var eventValue;
             svg.selectAll('.bar')
                 .style("stroke", function (data) {
-                        if (moment(data.date).isSame(moment(date))) {
-                            return null;
-                        } else {
-                            return "rgba(255,255,255,0.7)";
-                        }
-                    })
+                    if (moment(data.date).isSame(moment(date))) {
+                        return null;
+                    } else {
+                        return "rgba(255,255,255,0.7)";
+                    }
+                })
                 .style("filter", function (data) {
                     if (moment(data.date).isSame(moment(date))) {
                         return "url(#drop-shadow)";
