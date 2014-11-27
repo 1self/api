@@ -1,7 +1,9 @@
+@import url("fonts/Raleway");
+
 body {
-    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-family: "Raleway-Light", "Raleway-Bold", "Raleway-ExtraBold", "Raleway-Medium";
     font-size: 14px;
-    background: #94D6A1;
+    background: #1EAC64;
     margin: 0;
     padding: 0;
 }
@@ -13,8 +15,18 @@ svg, img {
 #date, #eventValue {
     margin-top: 20px;
     margin-bottom: 20px;
-    color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+#date {
+    color: #618773;
+    font-size: 1.5em
+}
+
+#eventValue {
     font-size: 1em;
+    color: white;
 }
 
 .shareGraphButton, .dataPoint, .addCommentButton {
@@ -29,15 +41,23 @@ svg, img {
 
 .header-main .page-title {
     font-size: 1.5em;
-    text-align: center;
 }
 
-/*.header-main .avatar {*/
-/*width: 45px;*/
-/*}*/
+.header-main .avatar {
+    width: 45px;
+}
+
+.header .avatar {
+    width: 45px;
+}
+
+.header td.page-title {
+    padding: 4px;
+    font-size: 1em;
+}
 
 .header {
-    background: forestgreen;
+    background: #157744;
     border: 1px solid #016601;
     border-bottom: 2px solid #016601;
     width: 100%;
@@ -63,9 +83,15 @@ svg, img {
 
 .share-button-container {
     padding: 4px;
-    background: #4CBB62;
+    position: relative;
     text-align: right;
     clear: right;
+}
+
+.shareGraphButton {
+    position: absolute;
+    right: 15px;
+    top: 15px;
 }
 
 .shareGraphButton, .addCommentButton {
@@ -75,6 +101,7 @@ svg, img {
     color: #fff;
     background-color: #504E4E;
     border-radius: 4px;
+    box-shadow: 5px 5px 7px #71947B;
 }
 
 .addCommentButton {
@@ -89,6 +116,27 @@ svg, img {
 
 .dataPoint {
     margin-top: 20px;
+    background-color: #0A3B21;
+}
+
+#addCommentInput {
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+#addCommentInput > * {
+    height: 44px;
+    margin-left: 10px;
+    float: left;
+}
+
+#addCommentInput img {
+    width: 44px;
+}
+
+#commentText {
+    width: 60%;
+    font-size: 1.2em;
 }
 
 .commenter {
@@ -97,7 +145,7 @@ svg, img {
 }
 
 .commentText {
-    padding: 0 10px;
+    padding: 10px;
     font-size: 1.2em;
     text-align: left;
     line-height: 1em;
@@ -111,12 +159,11 @@ svg, img {
 ul.commentList {
     padding: 0;
     margin-top: 10px;
+    background: #105833;
     margin-bottom: 20px;
-    padding-top: 10px;
     list-style: none;
     overflow: hidden;
     border-top: 1px solid #ffffff;
-    background: forestgreen;
     color: #fff;
 }
 
@@ -124,8 +171,6 @@ ul.commentList {
     content: "";
     display: block;
     clear: both;
-    padding-top: 10px;
-    margin-bottom: 10px;
     border-bottom: 1px solid #fff;
 }
 
@@ -166,19 +211,12 @@ ul.commentList li div {
 }
 
 .detailsSection {
-    background-color: #94D6A1;
     text-align: center;
+    margin-top: -25px;
 }
 
 .graphInfo {
     margin-top: 2%;
-}
-
-.commentList li, #addCommentInput {
-
-    margin-bottom: 20px;
-    width: 100%;
-    /*font-size: 40px;*/
 }
 
 #graphShareLink {
@@ -209,8 +247,15 @@ ul.commentList li div {
     width: 14.28%;
     float: left;
     height: 100%;
-    background-color: rgb(72, 148, 85);
+    background-color: #3B6F53;
     border: 1px solid white;
+    display: inline-block;
+}
+
+.avatar_group:after {
+    content: '';
+    display: block;
+    margin-top: 75%;
 }
 
 .comment_avatar, .count {
@@ -228,8 +273,10 @@ ul.commentList li div {
 
 @media screen and (min-device-width: 800px) {
     .comment_avatar, .count {
-        height: 98px;
-        overflow: hidden;
+        position: relative;
+        width: 50%;
+        height: 0;
+        padding-bottom: 40%;
     }
 
     .count {
@@ -254,8 +301,7 @@ ul.commentList li div {
     text-align: center;
     margin: 0 auto;
     height: 28px;
-    width: 270px;
-    background-color: rgba(221, 198, 198, 0.91);
+    width: 280px;
     font-size: 20px;
     margin-top: 40px;
     border-radius: 15px;

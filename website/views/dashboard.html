@@ -29,6 +29,18 @@
          ga('create', 'UA-49828181-1', 'quantifieddev.org');
          ga('send', 'pageview');
         </script>
+
+        <script>
+         // Always redirect to 1self.co from quantifieddev domain
+         if(window.location.href.match(/staging.quantifieddev.org/) !== null) {
+           // For staging
+           window.location.replace("https://app-staging.1self.co/dashboard" + window.location.search);
+         } else if (window.location.href.match(/quantifieddev.org/) !== null) {
+           // For production
+           window.location.replace("https://app.1self.co/dashboard" + window.location.search);
+         }
+        </script>
+
     </head>
     <body class="animated fadeInDown" ng-app>
         {% include "./templates/_qd_header.html" %}

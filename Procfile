@@ -1,2 +1,2 @@
-web: node main.js
+web: supervisor main.js
 

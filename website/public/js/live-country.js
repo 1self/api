@@ -34,9 +34,9 @@ var liveCountry = function() {
     };
 
     var url = function() {
-        return (location.hostname == "localhost") ?
-            "http://localhost:5000/" :
-            "https://app.quantifieddev.org/";
+        return (location.hostname == "app-staging.1self.co") ?
+            "https://app-staging.1self.co/" :
+            "https://app.1self.co/";
     };
 
     var plotGraph = function() {

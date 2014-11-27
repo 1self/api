@@ -75,7 +75,6 @@ charts.addComment = function () {
             "<div class='commentText'><p>" + comment.text + "</p>" +
             "</div></li>");
         $("#commentText").val("");
-        $("#addCommentInput").hide();
     });
 };
 

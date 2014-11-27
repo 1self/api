@@ -4,8 +4,8 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
     setTimeout(function () {
         $(divId).empty();
         var margin = {
-            top: 120,
-            right: 30,
+            top: 20,
+            right: 0,
             bottom: 0,
             left: 0
         };
@@ -26,23 +26,21 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             .domain([0, maxDataValue])
             .range([height - margin.top - margin.bottom, 0])
             .nice(4);
-        var yTicks = d3.min([5, maxDataValue]);
 
         var xAxis = d3.svg.axis()
-            .scale(x)
-            .tickFormat('');
+            .scale(x);
 
         var yAxis = d3.svg.axis()
             .scale(y)
             .orient('right')
-            .ticks(yTicks)
-            .tickPadding(8);
+            .ticks(5);
 
         var svg = d3.select(divId).append('svg')
             .attr('class', 'chart')
             .attr('width', width)
             .attr('height', height)
             .append('g')
+            .attr('id', 'bars')
             .attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
         var tipText = function (d) {
             return "<strong>" + operation + " " + d.value +
@@ -61,25 +59,71 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
         var gradient = svg.append("svg:defs")
             .append("svg:linearGradient")
             .attr("id", "gradient")
-            .attr("y2", "0%")
-            .attr("y1", "100%")
-            .attr("spreadMethod", "pad");
+            .attr("x1", "0%")
+            .attr("y1", "0%")
+            .attr("x2", "0%")
+            .attr("y2", "100%")
+            .attr("spreadMethod", "reflect");
 
         gradient.append("svg:stop")
-            .attr("offset", "0%")
+            .attr("offset", "5%")
             .attr("stop-color", "#fff")
-            .attr("stop-opacity", 0.3);
+            .attr("stop-opacity", 0.8);
 
         gradient.append("svg:stop")
             .attr("offset", "100%")
             .attr("stop-color", "#fff")
-            .attr("stop-opacity", 1);
+            .attr("stop-opacity", 0.4);
+
+        var gradient_highlight = svg.append("svg:defs")
+            .append("svg:linearGradient")
+            .attr("id", "gradient_highlight")
+            .attr("x1", "0%")
+            .attr("y1", "0%")
+            .attr("x2", "0%")
+            .attr("y2", "100%")
+            .attr("spreadMethod", "reflect");
+
+        gradient_highlight.append("svg:stop")
+            .attr("offset", "5%")
+            .attr("stop-color", "#fff")
+            .attr("stop-opacity", 0.9);
+
+        gradient_highlight.append("svg:stop")
+            .attr("offset", "100%")
+            .attr("stop-color", "#fff")
+            .attr("stop-opacity", 0.7);
+
+        var filter = svg.append("svg:defs")
+            .append("filter")
+            .attr("id", "drop-shadow")
+            .attr("height", "130%")
+            .attr("width", "170%");
+
+        filter.append("feGaussianBlur")
+            .attr("in", "SourceAlpha")
+            .attr("stdDeviation", 2)
+            .attr("result", "blur");
+
+        filter.append("feOffset")
+            .attr("in", "blur")
+            .attr("dx", 0)
+            .attr("dy", 3   )
+            .attr("result", "offsetBlur");
+
+        var feMerge = filter.append("feMerge");
+
+        feMerge.append("feMergeNode")
+            .attr("in", "offsetBlur")
+        feMerge.append("feMergeNode")
+            .attr("in", "SourceGraphic");
 
         svg.selectAll('.chart')
             .data(events)
             .enter().append('rect')
             .attr('class', 'bar')
             .style("fill", "url(#gradient)")
+            .style("stroke", "rgba(255,255,255,0.7)")
             .attr('x', function (d) {
                 return x(new Date(d.date));
             })
@@ -91,15 +135,37 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 return height - margin.top - margin.bottom - y(d.value);
             })
             .on("click", function (d) {
-                svg.selectAll('.bar')
+                var bars = svg.selectAll('.bar');
+                bars
                     .style("stroke", function (data) {
                         if (d === data) {
-                            return "#38A0BA";
+                            return null;
+                        } else {
+                            return "rgba(255,255,255,0.7)";
+                        }
+                    })
+                    .style("filter", function (data) {
+                        if (d === data) {
+                            return "url(#drop-shadow)";
                         }
                     })
                     .style("stroke-width", function (data) {
                         if (d === data) {
-                            return 3;
+                            return "5px";
+                        } else {
+                            return "1px";
+                        }
+                    })
+                    .style("fill", function (data) {
+                        if (d === data) {
+                            return "url(#gradient_highlight)";
+                        } else {
+                            return "url(#gradient)"
+                        }
+                    })
+                    .style("background-color", function (data) {
+                        if (d === data) {
+                            return "rgba(0, 0, 0, 0.22)";
                         }
                     });
                 $(".addCommentButton").show();
@@ -111,6 +177,14 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 charts.graphUrl = window.location.href.split(window.location.origin)[1].split("?")[0] + "/" + year + "/" + month + "/" + day;
                 charts.selectedDate = moment(d.date).format("YYYY-MM-DD");
                 charts.showComments();
+
+                //Redraw
+                for (var i = bars.data().length - 1; i >= 0; i--) {
+                    if (d === bars.data()[i]) {
+                        var bar = bars[0][i];
+                        $('#bars').append(bar);
+                    }
+                };
             });
 
         svg.append('g')
@@ -145,20 +219,34 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             var eventValue;
             svg.selectAll('.bar')
                 .style("stroke", function (data) {
+                        if (moment(data.date).isSame(moment(date))) {
+                            return null;
+                        } else {
+                            return "rgba(255,255,255,0.7)";
+                        }
+                    })
+                .style("filter", function (data) {
                     if (moment(data.date).isSame(moment(date))) {
-                        eventValue = data.value;
-                        return "#38A0BA";
+                        return "url(#drop-shadow)";
                     }
                 })
                 .style("stroke-width", function (data) {
                     if (moment(data.date).isSame(moment(date))) {
-                        return 3;
+                        return "5px";
+                    } else {
+                        return "1px";
+                    }
+                }).style("fill", function (data) {
+                    if (moment(data.date).isSame(moment(date))) {
+                        return "url(#gradient_highlight)";
+                    } else {
+                        return "url(#gradient)"
                     }
                 });
             $(".addCommentButton").show();
             if (isNaN(date)) {
                 $("#date").html('No data logged for this activity');
-            }else{
+            } else {
                 $("#date").html(moment(date).format("DD/MM/YY dddd"));
             }
             $("#eventValue").html(getDataPointDescription(eventValue));

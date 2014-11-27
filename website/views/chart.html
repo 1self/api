@@ -11,7 +11,9 @@
     <script src="/js/jquery.js"></script>
     <script src="/js/jquery.cookie.js"></script>
     <script src="/js/humanize-duration.js"></script>
+    <script src="/js/zeroclipboard/ZeroClipboard.js"></script>
     <script>
+
         var isUserLoggedIn = ("{{isUserLoggedIn}}" == "true");
         var graphOwner = "{{graphOwner}}";
         var graphOwnerAvatarUrl = "{{graphOwnerAvatarUrl}}";
@@ -32,6 +34,34 @@
         var renderType = "{{renderType}}";
         var readToken = "{{readToken}}";
 
+        //ZeroClipBoard config
+        ZeroClipboard.config({
+            swfPath: "/js/zeroclipboard/ZeroClipboard.swf"
+        });
+        $(document).ready(function () {
+            var client = new ZeroClipboard($("#copy-button"));
+            client.on('ready', function (event) {
+                $('#copy-button').show();
+
+                client.on("copy", function (event) {
+                    var clipboard = event.clipboardData;
+                    var link = $("#graphShareLink").html();
+                    clipboard.setData("text/plain", link);
+                });
+
+                client.on('aftercopy', function (event) {
+                    $('#copy-success').show();
+                });
+            });
+
+            client.on('error', function (event) {
+                ZeroClipboard.destroy();
+            });
+
+            $('#graphShareLink').click(function () {
+                $(this).select();
+            });
+        });
     </script>
 </head>
 <body>
@@ -44,7 +74,7 @@
 </table>
 <table class="header">
     <tr>
-        <td id="" class="avatar">
+        <td class="avatar">
             {% if graphOwnerAvatarUrl %}
             <img src="{{graphOwnerAvatarUrl}}"/>
             {% endif %}
@@ -82,20 +112,25 @@
     </div>
 
     <div class="dataPoint center">
-        <span id="eventValue"></span>
         <span id="date" class="center"></span>
+        <br/>
+        <span id="eventValue"></span>
     </div>
     <div id="comments">
         <ul class="commentList">
         </ul>
     </div>
-    <div id="addCommentInput" style="display:none">
-        <span><img src="{{avatarUrl}}" width="50"/></span>
+    {% if isUserLoggedIn %}
+    <div id="addCommentInput">
+        <img src="{{avatarUrl}}"/>
         <input id="commentText" type="text" placeholder="Add Comment">
+        <button class="btn btn-info" onclick="charts.addComment();">Add</button>
     </div>
+    {% else %}
     <button type="button" class="btn btn-info addCommentButton" onclick="handleAddComment()" style="display:none">
         ADD YOUR COMMENT
     </button>
+    {% endif %}
 
     <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginLabel"
          aria-hidden="true">
@@ -112,7 +147,8 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal"><span
                             class="font-size">Close</span></button>
-                    <a href="/auth/github" class="btn btn-primary"><span class="font-size">Login to 1self</span></a>
+                    <a href="/auth/github" class="btn btn-primary"><span
+                            class="font-size">Login to 1self</span></a>
                 </div>
             </div>
         </div>
@@ -134,7 +170,13 @@
                             <p>Copy the url below and share it with your friends. They will be able to access this
                                 graph.</p>
 
-                            <p id="graphShareLink"></p>
+                            <textarea readonly id="graphShareLink"
+                                      style="resize: none; height: 30px; width: 260px; overflow: hidden;"></textarea>
+                            <button class="btn btn-primary font-size" style="display: none" id="copy-button"
+                                    title="Copy" data-clipboard-target="graphShareLink">Copy Link
+                            </button>
+                            <img id="copy-success" src="/img/tick.png" style="display: none;">
+
                         </div>
                         {% if isUserLoggedIn %}
                         <p class="center">OR</p>

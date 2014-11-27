@@ -1,5 +1,5 @@
 var request = require("request");
-var passport = require('passport')
+var passport = require('passport');
 var githubStrategy = require('passport-github').Strategy;
 
 var GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
@@ -46,7 +46,7 @@ module.exports = function (app) {
                     var githubUserRecord = {
                         githubUser: githubUser,
                         registeredOn: new Date()
-                    }
+                    };
                     mongoDbConnection(function (qdDb) {
                         qdDb.collection('users').insert(githubUserRecord, function (err, insertedRecords) {
                             if (err) {
@@ -91,7 +91,7 @@ module.exports = function (app) {
                     req.session.avatarUrl = user.githubUser._json.avatar_url;
                     redirect(githubUser, "/claimUsername");
                 }
-            })
+            });
         });
     };
 
