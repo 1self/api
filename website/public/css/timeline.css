@@ -17,6 +17,7 @@ body {
 
 .panel {
     background-color: transparent;
+    margin-bottom: 0;
     border: none;
 }
 
@@ -26,7 +27,7 @@ body {
 }
 
 .panel-title{
-    font-size: 3em;
+    font-size: 1.5em;
 }
 
 .list-group-item{
@@ -34,7 +35,7 @@ body {
     background-color: #0D4A2A;
     margin-bottom: 1em;
     text-transform: uppercase;
-    font-size: 1.5em;
+    font-size: 1em;
     cursor: pointer;
 }
 
@@ -46,4 +47,9 @@ body {
 
 .page-header h1{
     margin: 0;
+    font-size: 28px;
+}
+
+.panel-body{
+    padding: 0;
 }
