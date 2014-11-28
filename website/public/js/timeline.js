@@ -25,7 +25,7 @@ var insertEvents = function(data){
     for(var date in dateGroupedEvents){
         html += '<div class="panel panel-primary">' +
             '<div class="panel-heading">' +
-            '<h3 class="panel-title">' + date + '</h3>' +
+            '<h3 class="panel-title">' + formatDate(date) + '</h3>' +
             '</div>' +
             '<div class="panel-body">' +
             '<ul class="list-group">';
@@ -70,3 +70,17 @@ var getVisualizationUrl = function(event){
         "/" + event.payload.actionTags.join(',') + "/sum(:dba)" + 
         "/daily/barChart'";
 };
+
+
+var formatDate = function(date){
+    moment.locale('en', {
+        calendar: {
+            lastDay: '[Yesterday]',
+            sameDay: '[Today]',
+            lastWeek: '[Last] dddd LL',
+            sameElse: 'LL'
+        }
+    });
+    
+    return moment(date).calendar();
+}
