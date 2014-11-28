@@ -341,3 +341,8 @@ ul.commentList li div {
     color: #B1B1B1;
     font-weight: bold;
 }
+
+.menu-button .dropdown-menu {
+    right:0 !important;
+    left: auto;
+}
