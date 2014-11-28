@@ -18,7 +18,7 @@ var getEvents = function(){
 };
 
 var insertEvents = function(data){
-    var dateGroupedEvents = groupEventsByDate(data),
+    var dateGroupedEvents = groupEventsByDate(data.reverse()),
     timeline_container = $('#timeline'),
     html = "";
 
