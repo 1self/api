@@ -290,7 +290,7 @@ ul.commentList li div {
     }
 
     .count {
-        line-height: 98px;
+        /*line-height: 98px;*/
         font-size: 45px;
     }
 }
