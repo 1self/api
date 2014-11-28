@@ -78,7 +78,7 @@ var formatDate = function(date){
             lastDay: '[Yesterday]',
             sameDay: '[Today]',
             lastWeek: '[Last] dddd LL',
-            sameElse: 'LL'
+            sameElse: 'ddd ll'
         }
     });
     
