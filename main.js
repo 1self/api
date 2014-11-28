@@ -1993,7 +1993,7 @@ app.get("/v1/comments", function (req, res) {
 app.post("/v1/comments", function (req, res) {
     var encodedUsername = req.headers.authorization;
     var chartComment = req.body;
-    chartComment.comment.timestamp = moment().toDate();
+    chartComment.comment.timestamp = moment.utc().toDate();
     validEncodedUsername(encodedUsername, "", [])
         .then(function () {
             return findGraphUrl(chartComment.graphUrl);
