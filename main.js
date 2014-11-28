@@ -1945,7 +1945,7 @@ var getCommentsForChart = function (graph) {
 
     var transform = function (documents) {
         return _.map(documents, function (data) {
-            var dataPointDate = moment(data.dataPointDate).format("YYYY-MM-DD");
+            var dataPointDate = moment.utc(data.dataPointDate).format("YYYY-MM-DD");
             var allAvatars = [];
             var comments = _.map(data.comments, function (comment) {
                 allAvatars.push(comment.avatarUrl);
