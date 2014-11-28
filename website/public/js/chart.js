@@ -33,7 +33,6 @@ charts.addComment = function () {
     var commentText = $("#commentText").val();
     var comment = {
         text: commentText,
-        timestamp: new Date(),
         user: username,
         avatarUrl: avatarUrl
     };
