@@ -67,7 +67,17 @@
 <body>
 <table class="header-main">
     <tr>
-        <td id="mainTitle" class="page-title">1Self</td>
+        <td id="mainTitle" class="page-title">
+          1Self
+          <div class="btn-group menu-button">
+            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+              menu <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="/timeline">Timeline</a></li>
+            </ul>
+          </div>
+        </td>
         <td id="avatar"></td>
         <!--<td id="avatar-main"></td>-->
     </tr>
@@ -82,8 +92,6 @@
         <td id="chartTitle" class="page-title"></td>
     </tr>
 </table>
-
-<a href="/timeline">See Timeline</a>
 
 <div class="share-button-container" style="display:none;">
     <button type="button" class="shareGraphButton" onclick="handleShareGraph()">SHARE</button>

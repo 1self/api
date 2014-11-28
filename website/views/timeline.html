@@ -6,16 +6,38 @@
     <title></title>
     <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
     <link href="/css/timeline.css" rel="stylesheet" media="screen"/>
+    <link href="/css/chart.css" rel="stylesheet" media="screen">
+    <link href="/css/barChart.css" rel="stylesheet" media="screen">
     <script src="/js/jquery.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
     <script type="text/javascript">
-      var eun = "{{encodedUsername}}";
+      var eun = "{{encodedUsername}}",
+      username = "{{username}}";
     </script>
+    <script type="text/javascript" src="/js/timeline.js"></script>
   </head>
   <body>
+    <table class="header-main">
+      <tr>
+        <td id="mainTitle" class="page-title">
+          1Self
+          <div class="btn-group menu-button">
+            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+              menu <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="/timeline">Timeline</a></li>
+            </ul>
+          </div>
+        </td>
+        <td id="avatar"></td>
+      </tr>
+    </table>
+
     <div class="page-header text-center">
       <h1>TIMELINE</h1>
     </div>
     <div id="timeline"></div>
-    <script type="text/javascript" src="/js/timeline.js"></script>
+
   </body>
 </html>

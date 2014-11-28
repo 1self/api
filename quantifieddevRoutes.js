@@ -1134,7 +1134,9 @@ module.exports = function (app) {
     app.get("/timeline", sessionManager.requiresSession, function (req, res) {
         getStreamsForUser(req.session.username).then(function (user) {
             res.render('timeline',{
-                encodedUsername: req.session.encodedUsername
+                encodedUsername: req.session.encodedUsername,
+                username: req.session.username,
+                avatarUrl: req.session.avatarUrl
             });
         });
     });

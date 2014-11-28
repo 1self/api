@@ -35,4 +35,29 @@ body {
     margin-bottom: 1em;
     text-transform: uppercase;
     font-size: 1.5em;
+    cursor: pointer;
+}
+
+.menu-button{
+    float: right;
+}
+
+.menu-button button, .menu-button button:hover{
+    background-color: #6D6D6D;
+    color: #B1B1B1;
+    border: 2px solid #BBBBBB;
+    font-weight: bold;
+}
+
+.menu-button .carat {
+    background-color: #BBBBBB;
+}
+
+.menu-button ul{
+    background-color: #6D6D6D;
+}
+
+.menu-button .dropdown-menu>li>a, .menu-button .dropdown-menu>li>a:hover{
+    color: #B1B1B1;
+    font-weight: bold;
 }
