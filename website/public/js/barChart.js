@@ -10,7 +10,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             left: 0
         };
         var width = window.innerWidth;
-        var height = width - 44;
+        var height = width / 1.61;
         var weekAgo = new Date(moment().subtract("days", 6).format("MM/DD/YYYY"));
         var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
         var xWidth = width / 7;

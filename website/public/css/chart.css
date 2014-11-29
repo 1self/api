@@ -183,8 +183,8 @@ svg, img {
 .dataPoint {
     clear: both;
     background-color: rgba(0, 0, 0, 0.64);
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding-top: 7px;
+    padding-bottom: 7px;
 }
 
 #addCommentInput {
@@ -354,7 +354,7 @@ ul.commentList li div {
 
 @media screen and (max-device-width: 480px) {
     .comment_avatar, .count {
-        height: 28px;
+        height: 21px;
         overflow: hidden;
     }
 
