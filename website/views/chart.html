@@ -8,11 +8,13 @@
     <link href="/css/bootstrap-modal.css" rel="stylesheet" media="screen">
     <link href="/css/chart.css" rel="stylesheet" media="screen">
     <link href="/css/barChart.css" rel="stylesheet" media="screen">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
     <script src="/js/jquery.js"></script>
     <script src="/js/jquery.cookie.js"></script>
     <script src="/js/humanize-duration.js"></script>
-    <script src="/js/zeroclipboard/ZeroClipboard.js"></script>
+    <script src="/js/zeroclipboard/ZeroClipboard.js"></script> 
     <script>
+
 
         var isUserLoggedIn = ("{{isUserLoggedIn}}" == "true");
         var graphOwner = "{{graphOwner}}";
@@ -66,24 +68,9 @@
 </head>
 <body>
 <table class="header-main">
-    <tr>
-        <td id="mainTitle" class="page-title">
-          1Self
-          <div class="btn-group menu-button">
-            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-              menu <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="/timeline">Timeline</a></li>
-            </ul>
-          </div>
-        </td>
-        <td id="avatar"></td>
-        <!--<td id="avatar-main"></td>-->
-    </tr>
 </table>
 <table class="header">
-    <tr>
+    <tr class="headerrow">
         <td class="avatar">
             {% if graphOwnerAvatarUrl %}
             <img src="{{graphOwnerAvatarUrl}}"/>
@@ -94,7 +81,8 @@
 </table>
 
 <div class="share-button-container" style="display:none;">
-    <button type="button" class="shareGraphButton" onclick="handleShareGraph()">SHARE</button>
+     <button type="button" class="button1self" onclick="handle1selfClick()"><img src="/img/1selfbutton.png"></button>
+     <button type="button" class="shareGraphButton" onclick="handleShareGraph()"><i class="fa fa-share-alt"></i></button>
 </div>
 
 <div class="no-data" style="display:none">
@@ -125,7 +113,7 @@
         <br/>
         <span id="eventValue"></span>
     </div>
-    <div id="comments">
+    <div id="comments" class="comments">
         <ul class="commentList">
         </ul>
     </div>
