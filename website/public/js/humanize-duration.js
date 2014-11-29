@@ -55,8 +55,8 @@ http://git.io/j0HgmQ
       week: function(c) { return "week" + ((c !== 1) ? "s" : ""); },
       day: function(c) { return "day" + ((c !== 1) ? "s" : ""); },
       hour: function(c) { return "hour" + ((c !== 1) ? "s" : ""); },
-      minute: function(c) { return "minute" + ((c !== 1) ? "s" : ""); },
-      second: function(c) { return "second" + ((c !== 1) ? "s" : ""); },
+      minute: function(c) { return "min" + ((c !== 1) ? "s" : ""); },
+      second: function(c) { return "sec" + ((c !== 1) ? "s" : ""); },
       millisecond: function(c) { return "millisecond" + ((c !== 1) ? "s" : ""); }
     },
     nl: {

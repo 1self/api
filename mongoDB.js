@@ -3,9 +3,10 @@ var mongoAppKey = process.env.DBKEY;
 var mongoUri = process.env.DBURI;
 var qdDb;
 
-console.log("Connecting to: " + mongoUri);
+console.log("Connecting XX to: " + mongoUri);
 
 mongoClient.connect(mongoUri, function(err, db) {
+	console.log("XXXXX");
 	if (err) {
 		console.log(err);
 	} else {

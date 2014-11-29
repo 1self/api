@@ -21,11 +21,12 @@ svg, img {
 
 #date {
     color: rgba(255, 255, 255, 0.36);
-    font-size: 1.5em
+    font-size: 1.3em;
+    font-family: raleway-extralight;
 }
 
 #eventValue {
-    font-size: 1em;
+    font-size: 1.2em;
     color: white;
 }
 
@@ -66,8 +67,11 @@ svg, img {
     padding: 7px;
     vertical-align: middle;
     font-size: 1.3em;
-    color: #ffffff;
+    color: #FFFFFF;
     min-height: 80px;
+    letter-spacing: 0.1em;
+    font-family: raleway-thin;
+    font-weight: 100;
 }
 
 .avatar img {
@@ -95,12 +99,14 @@ svg, img {
 
 .shareGraphButton, .addCommentButton {
     padding: 5px 11px;
-    min-width: 90px;
+    min-width: 75px;
     border: 1px solid #333333;
     color: #fff;
     background-color: #504E4E;
     border-radius: 4px;
     box-shadow: 5px 5px 7px #393939;
+    letter-spacing: 0.05em;
+    font-family: raleway;
 }
 
 .submitComment {

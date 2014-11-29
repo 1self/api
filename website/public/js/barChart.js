@@ -178,14 +178,23 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 charts.selectedDate = moment(d.date).format("YYYY-MM-DD");
                 charts.showComments();
 
-                //Redraw
+                // in order to make the shadow work correctly the highlighted
+                // bar needs to be drawn last. This makes the <g> element that
+                // is created last in the list of elements which makes it on 
+                // top of everything else
                 for (var i = bars.data().length - 1; i >= 0; i--) {
                     if (d === bars.data()[i]) {
                         var bar = bars[0][i];
                         $('#bars').append(bar);
                     }
                 }
-                ;
+
+                // When the selected bar is the first one, it draws over the y axis.
+                // Therefore, we must redraw the y axis.
+                d3.select('.y.axis').remove();
+                svg.append('g')
+                .attr('class', 'y axis')
+                .call(yAxis);
             });
 
         svg.append('g')
