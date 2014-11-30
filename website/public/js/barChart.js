@@ -96,25 +96,32 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
 
         var filter = svg.append("svg:defs")
             .append("filter")
+            .attr("x", "-70%")
+            .attr("y", "-300%")
             .attr("id", "drop-shadow")
-            .attr("height", "130%")
-            .attr("width", "170%");
+            .attr("height", "500%")
+            .attr("width", "380%");
 
+        var comptransf = filter.append("feComponentTransfer");
+        comptransf.append("feFuncA")
+                  .attr("type", "linear")
+                  .attr("slope", "10.7") 
+        comptransf.append("feFuncR")
+                  .attr("type", "linear")
+                  .attr("slope", "-10.7") 
+        comptransf.append("feFuncG")
+                  .attr("type", "linear")
+                  .attr("slope", "0") 
+        comptransf.append("feFuncB")
+                  .attr("type", "linear")
+                  .attr("slope", "0") 
+        
         filter.append("feGaussianBlur")
-            .attr("in", "SourceAlpha")
-            .attr("stdDeviation", 2)
-            .attr("result", "blur");
-
-        filter.append("feOffset")
-            .attr("in", "blur")
-            .attr("dx", 0)
-            .attr("dy", 3)
-            .attr("result", "offsetBlur");
+            .attr("stdDeviation", 15)
 
         var feMerge = filter.append("feMerge");
 
-        feMerge.append("feMergeNode")
-            .attr("in", "offsetBlur")
+        feMerge.append("feMergeNode");
         feMerge.append("feMergeNode")
             .attr("in", "SourceGraphic");
 
