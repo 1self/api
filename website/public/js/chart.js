@@ -218,4 +218,8 @@ $(document).ready(function () {
         displayCommentsSummary();
     });
     $("#shareSubmit").click(submitShare);
+
+    var cw = $('.avatar_group').width();
+    var ch = $(window).width() * (cw / 100);
+    $('.avatar_group').css({'height': ch+'px'});
 });
