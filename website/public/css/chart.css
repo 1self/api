@@ -354,7 +354,7 @@ ul.commentList li div {
 
 @media screen and (max-device-width: 480px) {
     .comment_avatar, .count {
-        height: 21px;
+        height: 100%;
         overflow: hidden;
     }
 

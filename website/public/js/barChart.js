@@ -1,4 +1,4 @@
-window.charts = window.charts || {};
+        window.charts = window.charts || {};
 
 charts.plotBarChart = function (divId, events, fromTime, tillTime) {
     setTimeout(function () {
@@ -259,13 +259,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             } else {
                 $("#date").html(moment(date).format("DD/MM/YY dddd"));
             }
-            $("#eventValue").html(getDataPointDescription(eventValue));
-
-            var day = moment(date).format("DD");
-            var month = moment(date).format("MM");
-            var year = moment(date).format("YYYY");
-            charts.graphUrl = window.location.href.split(window.location.origin)[1].split("?")[0] + "/" + year + "/" + month + "/" + day;
-            charts.showComments();
+            $("#eventValue").html(getDataPointDescription(events[events.length-1].value));
         };
 
         var highlightLatestDataPointDate = function () {
