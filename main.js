@@ -375,6 +375,7 @@ var getAggregatedEventsFromPlatform = function (queryString) {
         qs: queryString,
         method: 'GET'
     };
+    console.log(JSON.stringify(requestDetails));
     requestModule(requestDetails, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             var result = JSON.parse(body);
@@ -1333,6 +1334,7 @@ var validateClient = function (appId, appSecret) {
     };
     mongoDbConnection(function (qdDb) {
         qdDb.collection('registeredApps').findOne(query, function (err, result) {
+            console.log("reg apps: " + err + result);
             if (err) {
                 deferred.reject();
             } else if (!result) {
@@ -1358,7 +1360,7 @@ app.post('/stream', function (req, res) {
 
 app.post('/v1/streams', function (req, res) {
     var auth = req.headers.authorization;
-
+    console.log("auth is " + auth);
     if (auth === undefined) {
         res.send(401, "Unauthorized request. Please pass valid clientId and clientSecret");
     }
@@ -1805,6 +1807,8 @@ var getQueryForVisualizationAPI = function (streamIds, params) {
         }
     };
 
+
+
     var operation_string = params.operation.split('(');
     var operation = operation_string[0];
     var query = {};
@@ -1824,17 +1828,22 @@ var getQueryForVisualizationAPI = function (streamIds, params) {
         "resultField": "value"
     };
 
+    console.log(JSON.stringify(query));
     return {spec: JSON.stringify(query)};
 };
 
 //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}({{:property}})/daily/{{barchart/json}}
 app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/type/json", validateRequest.validateStreamIdAndReadToken,
+    
     function (req, res) {
+        console.log("validating");
         var query = getQueryForVisualizationAPI([req.params.streamId], req.params);
         getAggregatedEventsFromPlatform(query)
             .then(function (response) {
+                console.log("trying to transform events");
                 res.send(transformPlatformDataToQDEvents(response[0]));
             }).catch(function (error) {
+                console.log("an error occurred retrieving events: " + error);
                 res.status(404).send("Oops! Some error occurred.");
             });
     });

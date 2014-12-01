@@ -1,4 +1,4 @@
-window.charts = window.charts || {};
+        window.charts = window.charts || {};
 
 charts.plotBarChart = function (divId, events, fromTime, tillTime) {
     setTimeout(function () {
@@ -10,7 +10,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             left: 0
         };
         var width = window.innerWidth;
-        var height = width;
+        var height = width / 1.61;
         var weekAgo = new Date(moment().subtract("days", 6).format("MM/DD/YYYY"));
         var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
         var xWidth = width / 7;
@@ -96,25 +96,32 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
 
         var filter = svg.append("svg:defs")
             .append("filter")
+            .attr("x", "-70%")
+            .attr("y", "-300%")
             .attr("id", "drop-shadow")
-            .attr("height", "130%")
-            .attr("width", "170%");
+            .attr("height", "500%")
+            .attr("width", "380%");
 
+        var comptransf = filter.append("feComponentTransfer");
+        comptransf.append("feFuncA")
+                  .attr("type", "linear")
+                  .attr("slope", "10.7") 
+        comptransf.append("feFuncR")
+                  .attr("type", "linear")
+                  .attr("slope", "-10.7") 
+        comptransf.append("feFuncG")
+                  .attr("type", "linear")
+                  .attr("slope", "0") 
+        comptransf.append("feFuncB")
+                  .attr("type", "linear")
+                  .attr("slope", "0") 
+        
         filter.append("feGaussianBlur")
-            .attr("in", "SourceAlpha")
-            .attr("stdDeviation", 2)
-            .attr("result", "blur");
-
-        filter.append("feOffset")
-            .attr("in", "blur")
-            .attr("dx", 0)
-            .attr("dy", 3)
-            .attr("result", "offsetBlur");
+            .attr("stdDeviation", 15)
 
         var feMerge = filter.append("feMerge");
 
-        feMerge.append("feMergeNode")
-            .attr("in", "offsetBlur")
+        feMerge.append("feMergeNode");
         feMerge.append("feMergeNode")
             .attr("in", "SourceGraphic");
 
@@ -178,14 +185,23 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 charts.selectedDate = moment(d.date).format("YYYY-MM-DD");
                 charts.showComments();
 
-                //Redraw
+                // in order to make the shadow work correctly the highlighted
+                // bar needs to be drawn last. This makes the <g> element that
+                // is created last in the list of elements which makes it on 
+                // top of everything else
                 for (var i = bars.data().length - 1; i >= 0; i--) {
                     if (d === bars.data()[i]) {
                         var bar = bars[0][i];
                         $('#bars').append(bar);
                     }
                 }
-                ;
+
+                // When the selected bar is the first one, it draws over the y axis.
+                // Therefore, we must redraw the y axis.
+                d3.select('.y.axis').remove();
+                svg.append('g')
+                .attr('class', 'y axis')
+                .call(yAxis);
             });
 
         svg.append('g')
@@ -250,13 +266,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             } else {
                 $("#date").html(moment(date).format("DD/MM/YY dddd"));
             }
-            $("#eventValue").html(getDataPointDescription(eventValue));
-
-            var day = moment(date).format("DD");
-            var month = moment(date).format("MM");
-            var year = moment(date).format("YYYY");
-            charts.graphUrl = window.location.href.split(window.location.origin)[1].split("?")[0] + "/" + year + "/" + month + "/" + day;
-            charts.showComments();
+            $("#eventValue").html(getDataPointDescription(events[events.length-1].value));
         };
 
         var highlightLatestDataPointDate = function () {
