@@ -5,7 +5,23 @@
         this.actionTags = evt.actionTags;
         this.interestingProperty = evt.interestingProperty;
         this.operation = evt.operation;
+        this.unitOfMeasurement = evt.unitOfMeasurement;
     };
+
+    Event.prototype.humanizedValue = function(value){
+        if("milliseconds" == this.unitOfMeasurement){
+            var duration = moment.duration(value),
+            humanized_value = "";
+            
+            humanized_value += duration.hours() ? duration.hours() + " hour " : "";
+            humanized_value += duration.minutes() ? duration.minutes() + " mins " : "";
+            humanized_value += duration.seconds() ? duration.seconds() + " secs " : "";
+            
+            return humanized_value;
+        }else{
+            return value + " " + this.unitOfMeasurement;
+        }
+    }; 
 
     var EventLookup = function(events){
         this.events = events;
@@ -14,12 +30,12 @@
     EventLookup.prototype.findByObjectAndActionTags = function(objectTags, actionTags){
         for(var i = 0; i < this.events.length; i++){
             var event = this.events[i],
-            eventObjectTags = event.objectTags.join('|').toLowerCase().split('|'),
-            eventActionTags = event.actionTags.join('|').toLowerCase().split('|');
+            objectTagsLowercased = objectTags.join('|').toLowerCase().split('|'),
+            actionTagsLowercased = actionTags.join('|').toLowerCase().split('|');
 
             //merge and check length to be same
-            var objectTagsMatch = (_.union(eventObjectTags, objectTags).length == objectTags.length);
-            var actionTagsMatch = (_.union(eventActionTags, actionTags).length == actionTags.length);
+            var objectTagsMatch = (_.union(event.objectTags, objectTagsLowercased).length == event.objectTags.length);
+            var actionTagsMatch = (_.union(event.actionTags, actionTagsLowercased).length == event.actionTags.length);
 
             if(objectTagsMatch && actionTagsMatch){
                 return event;
@@ -34,29 +50,30 @@
 })();
 
 
-var preDefinedOsEvents = [],
-noiseEvent = new OsEvent({name: "Noise", 
-                          objectTags: ["soundmeter"],
-                          actionTags: ["sample"],
-                          interestingProperty: "dba",
-                          operation: "mean(dba)"
-                         }),
+var preDefinedOsEvents = [
+    new OsEvent({name: "Noise Sample", 
+                 objectTags: ["soundmeter"],
+                 actionTags: ["sample"],
+                 interestingProperty: "dba",
+                 operation: "mean(dba)",
+                 unitOfMeasurement: "decibels"
+                }),
 
-githubPushEvent = new OsEvent({name: "Github Push", 
-                               objectTags: ["computer", "software", "source control"],
-                               actionTags: ["github", "push"],
-                               interestingProperty: "",
-                               operation: "count"
-                              }),
+    new OsEvent({name: "Github Push", 
+                 objectTags: ["computer", "software", "source control"],
+                 actionTags: ["github", "push"],
+                 interestingProperty: "",
+                 operation: "count",
+                 unitOfMeasurement: ""
+                }),
 
-exercisingEvent = new OsEvent({name: "Exercising", 
-                               objectTags: ["self"],
-                               actionTags: ["exercise"],
-                               interestingProperty: "duration",
-                               operation: "sum(duration)"
-                              });
-
-
-preDefinedOsEvents.push(noiseEvent, githubPushEvent);
+    new OsEvent({name: "Exercising", 
+                 objectTags: ["self"],
+                 actionTags: ["exercise"],
+                 interestingProperty: "duration",
+                 operation: "sum(duration)",
+                 unitOfMeasurement: "milliseconds"
+                })
+];
 
 var os_event_lookup = new OsEventLookup(preDefinedOsEvents);
