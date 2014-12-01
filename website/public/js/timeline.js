@@ -32,8 +32,13 @@ var insertEvents = function(data){
 
         var listOfEvents = dateGroupedEvents[date];
         for(i = 0; i < listOfEvents.length; i++){
-            html += '<li onclick="' + getVisualizationUrl(listOfEvents[i])  + '" class="list-group-item">' + listOfEvents[i].payload.objectTags.join(',')  + '<br/>' +
-                JSON.stringify(listOfEvents[i].payload.properties) +
+            var os_event = getOsEvent(listOfEvents[i]);
+            if(os_event == null){
+                console.log("No os event for : " + JSON.stringify(listOfEvents[i]));
+                continue;
+            }
+            html += '<li onclick="' + getVisualizationUrl(listOfEvents[i])  + '" class="list-group-item">' + os_event.name  + '<br/>' +
+                os_event.interestingProperty + " : " + listOfEvents[i].payload.properties[os_event.interestingProperty] +
                 '</li>';
         }
         
@@ -84,3 +89,8 @@ var formatDate = function(date){
     
     return moment(date).calendar();
 }
+
+
+var getOsEvent = function(event){
+    return os_event_lookup.findByObjectAndActionTags(event.payload.objectTags, event.payload.actionTags);
+};
