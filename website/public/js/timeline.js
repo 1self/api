@@ -80,7 +80,7 @@ var getVisualizationUrl = function(event){
     return "window.location.href = " + 
         "'/v1/users/" + username + "/events/" + event.objectTags.join(',') +
         "/" + event.actionTags.join(',') + "/" + event.operation +
-        "/daily/barChart'";
+        "/daily/barchart'";
 };
 
 
