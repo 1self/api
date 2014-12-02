@@ -9,8 +9,8 @@
     };
 
     Event.prototype.humanizedValue = function(value){
-        if("milliseconds" == this.unitOfMeasurement){
-            var duration = moment.duration(value),
+        if("seconds" == this.unitOfMeasurement){
+            var duration = moment.duration(value * 1000),
             humanized_value = "";
             
             humanized_value += duration.hours() ? duration.hours() + " hour " : "";
@@ -72,7 +72,7 @@ var preDefinedOsEvents = [
                  actionTags: ["exercise"],
                  interestingProperty: "duration",
                  operation: "sum(duration)",
-                 unitOfMeasurement: "milliseconds"
+                 unitOfMeasurement: "seconds"
                 }),
 
     new OsEvent({name: "Coding", 
@@ -80,7 +80,7 @@ var preDefinedOsEvents = [
                  actionTags: ["code"],
                  interestingProperty: "duration",
                  operation: "sum(duration)",
-                 unitOfMeasurement: "milliseconds"
+                 unitOfMeasurement: "seconds"
                 }),
 
     new OsEvent({name: "Commuting", 
@@ -88,7 +88,7 @@ var preDefinedOsEvents = [
                  actionTags: ["commute"],
                  interestingProperty: "duration",
                  operation: "sum(duration)",
-                 unitOfMeasurement: "milliseconds"
+                 unitOfMeasurement: "seconds"
                 }),
 
     new OsEvent({name: "Cooking", 
@@ -96,7 +96,7 @@ var preDefinedOsEvents = [
                  actionTags: ["cook"],
                  interestingProperty: "duration",
                  operation: "sum(duration)",
-                 unitOfMeasurement: "milliseconds"
+                 unitOfMeasurement: "seconds"
                 }),
 
     new OsEvent({name: "Meditating", 
@@ -104,7 +104,7 @@ var preDefinedOsEvents = [
                  actionTags: ["meditate"],
                  interestingProperty: "duration",
                  operation: "sum(duration)",
-                 unitOfMeasurement: "milliseconds"
+                 unitOfMeasurement: "seconds"
                 }),
 
     new OsEvent({name: "Meeting", 
@@ -112,7 +112,7 @@ var preDefinedOsEvents = [
                  actionTags: ["meet"],
                  interestingProperty: "duration",
                  operation: "sum(duration)",
-                 unitOfMeasurement: "milliseconds"
+                 unitOfMeasurement: "seconds"
                 }),
 
     new OsEvent({name: "Partying", 
@@ -120,7 +120,7 @@ var preDefinedOsEvents = [
                  actionTags: ["party"],
                  interestingProperty: "duration",
                  operation: "sum(duration)",
-                 unitOfMeasurement: "milliseconds"
+                 unitOfMeasurement: "seconds"
                 }),
 
     new OsEvent({name: "Playing Instrument", 
@@ -128,7 +128,7 @@ var preDefinedOsEvents = [
                  actionTags: ["play"],
                  interestingProperty: "duration",
                  operation: "sum(duration)",
-                 unitOfMeasurement: "milliseconds"
+                 unitOfMeasurement: "seconds"
                 }),
 
     new OsEvent({name: "Playing Games", 
@@ -136,7 +136,7 @@ var preDefinedOsEvents = [
                  actionTags: ["play"],
                  interestingProperty: "duration",
                  operation: "sum(duration)",
-                 unitOfMeasurement: "milliseconds"
+                 unitOfMeasurement: "seconds"
                 }),
 
     new OsEvent({name: "Reading", 
@@ -144,7 +144,7 @@ var preDefinedOsEvents = [
                  actionTags: ["read"],
                  interestingProperty: "duration",
                  operation: "sum(duration)",
-                 unitOfMeasurement: "milliseconds"
+                 unitOfMeasurement: "seconds"
                 }),
 
     new OsEvent({name: "Sitting", 
@@ -152,7 +152,7 @@ var preDefinedOsEvents = [
                  actionTags: ["sit"],
                  interestingProperty: "duration",
                  operation: "sum(duration)",
-                 unitOfMeasurement: "milliseconds"
+                 unitOfMeasurement: "seconds"
                 }),
 
     new OsEvent({name: "Sleeping", 
@@ -160,7 +160,7 @@ var preDefinedOsEvents = [
                  actionTags: ["sleep"],
                  interestingProperty: "duration",
                  operation: "sum(duration)",
-                 unitOfMeasurement: "milliseconds"
+                 unitOfMeasurement: "seconds"
                 }),
 
     new OsEvent({name: "Standing", 
@@ -168,7 +168,7 @@ var preDefinedOsEvents = [
                  actionTags: ["stand"],
                  interestingProperty: "duration",
                  operation: "sum(duration)",
-                 unitOfMeasurement: "milliseconds"
+                 unitOfMeasurement: "seconds"
                 }),
 
     new OsEvent({name: "Studying", 
@@ -176,7 +176,7 @@ var preDefinedOsEvents = [
                  actionTags: ["study"],
                  interestingProperty: "duration",
                  operation: "sum(duration)",
-                 unitOfMeasurement: "milliseconds"
+                 unitOfMeasurement: "seconds"
                 }),
 
     new OsEvent({name: "Tooth Brushing", 
@@ -184,7 +184,7 @@ var preDefinedOsEvents = [
                  actionTags: ["floss"],
                  interestingProperty: "duration",
                  operation: "sum(duration)",
-                 unitOfMeasurement: "milliseconds"
+                 unitOfMeasurement: "seconds"
                 }),
 
     new OsEvent({name: "TV Watching", 
@@ -192,7 +192,7 @@ var preDefinedOsEvents = [
                  actionTags: ["watch"],
                  interestingProperty: "duration",
                  operation: "sum(duration)",
-                 unitOfMeasurement: "milliseconds"
+                 unitOfMeasurement: "seconds"
                 }),
 
     new OsEvent({name: "Working", 
@@ -200,7 +200,7 @@ var preDefinedOsEvents = [
                  actionTags: ["work"],
                  interestingProperty: "duration",
                  operation: "sum(duration)",
-                 unitOfMeasurement: "milliseconds"
+                 unitOfMeasurement: "seconds"
                 }),
 
     new OsEvent({name: "Writing", 
@@ -208,7 +208,7 @@ var preDefinedOsEvents = [
                  actionTags: ["write"],
                  interestingProperty: "duration",
                  operation: "sum(duration)",
-                 unitOfMeasurement: "milliseconds"
+                 unitOfMeasurement: "seconds"
                 })
 ];
 
