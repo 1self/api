@@ -1096,7 +1096,7 @@ module.exports = function (app) {
             var readToken = req.query.readToken;
             //        var shareToken = req.query.shareToken;
             var renderChart = function(graphOwnerAvatarUrl) {
-                var graphInfo = getGraphInfo(req.params("actionTags"),req.originalUrl, req.param("username"));
+                var graphInfo = getGraphInfo(req.param("actionTags"),req.originalUrl, req.param("username"));
                 var isUserLoggedIn = (req.session.username !== undefined);
                 res.render('chart', {
                     isUserLoggedIn: isUserLoggedIn,
@@ -1136,16 +1136,11 @@ module.exports = function (app) {
     
 
     app.get("/timeline", sessionManager.requiresSession, function (req, res) {
-        getStreamsForUser(req.session.username).then(function (user) {
-            res.render('timeline',{
-                encodedUsername: req.session.encodedUsername,
-                username: req.session.username,
-                avatarUrl: req.session.avatarUrl
-            });
+        res.render('timeline',{
+            encodedUsername: req.session.encodedUsername,
+            username: req.session.username,
+            avatarUrl: req.session.avatarUrl
         });
     });
-
-
-
 
 };
