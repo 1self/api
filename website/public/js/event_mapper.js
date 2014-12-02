@@ -67,6 +67,14 @@ var preDefinedOsEvents = [
                  unitOfMeasurement: ""
                 }),
 
+    new OsEvent({name: "Exercising", 
+                 objectTags: ["self"],
+                 actionTags: ["exercise"],
+                 interestingProperty: "duration",
+                 operation: "sum(duration)",
+                 unitOfMeasurement: "milliseconds"
+                }),
+
     new OsEvent({name: "Coding", 
                  objectTags: ["self"],
                  actionTags: ["code"],
@@ -201,7 +209,7 @@ var preDefinedOsEvents = [
                  interestingProperty: "duration",
                  operation: "sum(duration)",
                  unitOfMeasurement: "milliseconds"
-                });
+                })
 ];
 
 var os_event_lookup = new OsEventLookup(preDefinedOsEvents);
