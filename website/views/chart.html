@@ -81,7 +81,12 @@
 </table>
 
 <div class="share-button-container" style="display:none;">
-     <button type="button" class="button1self" onclick="handle1selfClick()"><img src="/img/1selfbutton.png"></button>
+
+  {% if isUserLoggedIn %}
+  <a href="/timeline"><button type="button" class="button1self" ><img src="/img/1selfbutton.png"></button></a>
+  {% else %}
+  <a href="/auth/github"><button type="button" class="button1self" ><img src="/img/1selfbutton.png"></button></a>
+  {% endif %}
      <button type="button" class="shareGraphButton" onclick="handleShareGraph()"><i class="fa fa-share-alt"></i></button>
 </div>
 
