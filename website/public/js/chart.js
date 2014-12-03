@@ -127,10 +127,6 @@ var handleShareGraph = function () {
     }
 };
 
-var handle1selfClick = function(){
-    window.location.href= "/timeline";
-}
-
 var showChartTitle = function () {
     $("#chartTitle").html(chartTitle);
     if (isUserLoggedIn) {
