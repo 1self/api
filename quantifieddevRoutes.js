@@ -1096,7 +1096,7 @@ module.exports = function (app) {
             var readToken = req.query.readToken;
             //        var shareToken = req.query.shareToken;
             var renderChart = function(graphOwnerAvatarUrl) {
-                var graphInfo = getGraphInfo(req.param("actionTags"),req.originalUrl, req.param("username"));
+                var graphInfo = getGraphInfo(req.param("objectTags"), req.param("actionTags"),req.originalUrl, req.param("username"));
                 var isUserLoggedIn = (req.session.username !== undefined);
                 res.render('chart', {
                     isUserLoggedIn: isUserLoggedIn,
