@@ -341,12 +341,12 @@ ul.commentList li div {
     .comment_avatar, .count {
         position: relative;
         width: 50%;
-        height: 0;
+        height: 98px;
         padding-bottom: 40%;
     }
 
     .count {
-        /*line-height: 98px;*/
+        line-height: 98px;
         font-size: 45px;
     }
 }
@@ -354,8 +354,7 @@ ul.commentList li div {
 @media screen and (max-device-width: 480px) {
     .comment_avatar, .count {
         overflow: hidden;
-    
-        /* height: 50px; */
+        height: 28px;
 }
 
     .count {
