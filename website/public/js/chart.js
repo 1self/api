@@ -103,7 +103,10 @@ var handleShareGraph = function () {
             success: function (data) {
                 $("#shareModal").modal({show: true});
                 $("#loadingDiv").hide();
-                $("#graphShareLink").html(window.location.origin + data.graphShareUrl);
+                var link = window.location.origin + data.graphShareUrl;
+                var graphShareLink = "<a href='"+link+"'> "+link+" </a>";
+                $("#graphShareHyperLink").html(graphShareLink);
+                $("#graphShareLink").html(link);
                 $("#shareModal").modal({show: true});
             },
             error: function () {
@@ -118,7 +121,10 @@ var handleShareGraph = function () {
             success: function (data) {
                 $("#shareModal").modal({show: true});
                 $("#loadingDiv").hide();
-                $("#graphShareLink").html(window.location.origin + data.graphShareUrl);
+                var link = window.location.origin + data.graphShareUrl;
+                var graphShareLink = "<a href='"+link+"'>"+link+"</a>";
+                $("#graphShareHyperLink").html(graphShareLink);
+                $("#graphShareLink").html(link);
             },
             error: function () {
                 alert("some problem. Please try again later.");
