@@ -12,7 +12,6 @@
     <script src="/js/jquery.js"></script>
     <script src="/js/jquery.cookie.js"></script>
     <script src="/js/humanize-duration.js"></script>
-    <script src="/js/zeroclipboard/ZeroClipboard.js"></script> 
     <script>
 
 
@@ -172,15 +171,8 @@
                             <p>Copy the url below and share it with your friends. They will be able to access this
                               graph.</p>
 
-                            <div id="graphShareHyperLink" style="overflow:scroll;"> 
+                            <div id="graphShareHyperLink" style="word-wrap: break-word;resize: none; height: 120px; width: 260px; overflow:visible;margin-bottom:10px;"> 
                             </div>
-
-                            <textarea readonly id="graphShareLink"
-                                      style="resize: none; height: 30px; width: 260px; overflow: hidden;"></textarea>
-                            <button class="btn btn-primary font-size" style="display: none" id="copy-button"
-                                    title="Copy" data-clipboard-target="graphShareLink">Copy Link
-                            </button>
-                            <img id="copy-success" src="/img/tick.png" style="display: none;">
 
                         </div>
                         {% if isUserLoggedIn %}
