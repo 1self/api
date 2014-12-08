@@ -212,6 +212,11 @@ svg, img {
     float: left;
 }
 
+.commenter img, #addCommentInput img {
+    border-radius: 100%;
+    margin: 3px;
+}
+
 .commentText {
     padding: 10px;
     font-size: 1.2em;
@@ -354,11 +359,11 @@ ul.commentList li div {
 @media screen and (max-device-width: 480px) {
     .comment_avatar, .count {
         overflow: hidden;
-        height: 28px;
+        height: 22px;
 }
 
     .count {
-        line-height: 28px;
+        line-height: 22px;
         font-size: 15px;
     }
 }
