@@ -1008,7 +1008,7 @@ module.exports = function (app) {
                     req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType") + "?streamId=" + req.param("streamId") + "&readToken=" + req.query.readToken;
             res.redirect(redirectUrl);
         } else {
-            req.session.redirectUrl = req.originalUrl + "&streamId=" + req.param('streamId');
+            req.session.redirectUrl = req.originalUrl + "?streamId=" + req.param('streamId');
             var graphInfo = getGraphInfo(req.param("objectTags"), req.param("actionTags"), req.originalUrl);
             res.render('chart', {
                 readToken: req.param("readToken"),
