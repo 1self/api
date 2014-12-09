@@ -1009,7 +1009,7 @@ module.exports = function (app) {
             res.redirect(redirectUrl);
         } else {
             var queryString;
-            if (Object.keys(req.params).length > 0){
+            if (Object.keys(req.query).length > 0){
                 queryString = "&streamId=" + req.param('streamId');
             }
             else {
