@@ -1008,7 +1008,15 @@ module.exports = function (app) {
                     req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType") + "?streamId=" + req.param("streamId") + "&readToken=" + req.query.readToken;
             res.redirect(redirectUrl);
         } else {
-            req.session.redirectUrl = req.originalUrl + "?streamId=" + req.param('streamId');
+            var queryString;
+            if (Object.keys(req.params).length > 0){
+                queryString = "&streamId=" + req.param('streamId');
+            }
+            else {
+                queryString = "?streamId=" + req.param('streamId');
+            }
+            req.session.redirectUrl = req.originalUrl + queryString;
+
             var graphInfo = getGraphInfo(req.param("objectTags"), req.param("actionTags"), req.originalUrl);
             res.render('chart', {
                 readToken: req.param("readToken"),
