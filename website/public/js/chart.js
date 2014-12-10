@@ -88,6 +88,7 @@ var handleAddComment = function () {
         $("#addCommentInput").show();
     }
     else {
+        window.localStorage.selectedDate = charts.selectedDate;
         $("#loginModal").modal({show: true});
     }
 };

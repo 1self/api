@@ -270,7 +270,10 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
         };
 
         var highlightLatestDataPointDate = function () {
-            var date = getLatestDataPointDate();
+            var date = window.localStorage.selectedDate || getLatestDataPointDate();
+            if(window.localStorage.selectedDate) {
+                delete window.localStorage.selectedDate;
+            }
             charts.selectedDate = moment(date).format("YYYY-MM-DD");
             showDetailsForDate(date);
         };
