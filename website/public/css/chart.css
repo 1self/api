@@ -61,6 +61,8 @@ svg, img {
     text-transform: uppercase;
     text-overflow: ellipsis;
     height: 60px;
+    padding-left: 20px;
+    line-height: 1em;
 }
 
 .header {
