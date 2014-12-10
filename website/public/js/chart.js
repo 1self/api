@@ -224,4 +224,6 @@ $(document).ready(function () {
     var cw = $('.avatar_group').width();
     var ch = $(window).width() * (cw / 100);
     $('.avatar_group').css({'height': ch+'px'});
+
+    setTimeout(function(){charts.showComments();}, 3000)
 });
