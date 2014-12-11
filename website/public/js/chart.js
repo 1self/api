@@ -167,7 +167,7 @@ var showChartTitle = function () {
 
 var submitShare = function () {
     var emailId = $("#emailId").val();
-    var graphShareUrl = $("#graphShareLink").html();
+    var graphShareUrl = $("#graphShareHyperLink a:first-child").attr("href");
 
     $.ajax({
         url: "/v1/share_graph",
