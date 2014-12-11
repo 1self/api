@@ -31,6 +31,9 @@ var plotChart = function (events) {
 
 charts.addComment = function () {
     var commentText = $("#commentText").val();
+
+
+
     var comment = {
         text: commentText,
         user: username,
@@ -47,6 +50,12 @@ charts.addComment = function () {
         renderType: renderType,
         comment: comment
     };
+
+    //disable further commenting until current one completes
+    $('#commentAddButton').attr('disabled','disabled');
+    $('#addText').hide();
+    $('.sending_comment_loader').show();
+
     $.ajax({
         url: "/v1/comments",
         method: "POST",
@@ -56,6 +65,12 @@ charts.addComment = function () {
             "Authorization": $.cookie("_eun")
         }
     }).done(function (data) {
+        //enable the add button
+        $('#commentAddButton').removeAttr('disabled');
+        $('#addText').show();
+        $('.sending_comment_loader').hide();
+
+
         var displayedComment = {text: commentText, avatarUrl: graphOwnerAvatarUrl};
         var selectedDataPoint = _.find(charts.dataPoints, function (dataPoint) {
             return dataPoint.dataPointDate === charts.selectedDate;

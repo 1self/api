@@ -168,6 +168,14 @@ svg, img {
     background-color: #504E4E;
 }
 
+div.sending_comment_loader {
+    background-image: url('/img/ajax-loader.gif');
+    background-repeat: no-repeat;
+    width: 15px;
+    display:none;
+    padding-top: 10px;
+}
+
 .submitComment:hover, .submitComment:focus {
     color: #fff;
 }

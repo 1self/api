@@ -126,7 +126,7 @@
     <div id="addCommentInput">
         <img src="{{avatarUrl}}"/>
         <input id="commentText" type="text" placeholder="Add Comment">
-        <button class="btn submitComment" onclick="charts.addComment();">Add</button>
+        <button id="commentAddButton" class="btn submitComment" onclick="charts.addComment();"><span id="addText">Add</span> <div class="sending_comment_loader"></div></button>
     </div>
     {% else %}
     <button type="button" class="btn btn-info addCommentButton" onclick="handleAddComment()" style="display:none">
