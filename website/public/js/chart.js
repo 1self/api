@@ -32,7 +32,7 @@ var plotChart = function (events) {
 charts.addComment = function () {
     var commentText = $("#commentText").val();
 
-
+    if("" == commentText.trim()) return;
 
     var comment = {
         text: commentText,
