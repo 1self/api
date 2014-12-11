@@ -35,6 +35,7 @@ var sessionSecret = process.env.SESSION_SECRET;
 var redisURL = url.parse(process.env.REDISCLOUD_URL);
 var redisClient = redis.createClient(redisURL.port, redisURL.hostname, {no_ready_check: true});
 redisClient.auth(redisURL.auth.split(":")[1]);
+app.set('trust proxy', 1);
 app.use(session({
     store: new RedisStore({
         client: redisClient
