@@ -44,7 +44,7 @@ app.use(session({
     saveUninitialized: false, // don't create session until something stored
     cookie: {
         maxAge: 2 * 365 * 24 * 60 * 60 * 1000, // 2 years
-        secure: false // change to true when using https
+        secure: true // change to true when using https
     }
 }));
 
