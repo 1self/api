@@ -85,7 +85,7 @@ $("#addCommentInput").keyup(function (e) {
 
 var handleAddComment = function () {
     if (isUserLoggedIn) {
-        $("#addCommentInput").show();
+        $("#addCommentInput").show();   
     }
     else {
         window.localStorage.selectedDate = charts.selectedDate;
@@ -226,5 +226,12 @@ $(document).ready(function () {
     var ch = $(window).width() * (cw / 100);
     $('.avatar_group').css({'height': ch+'px'});
 
-    setTimeout(function(){charts.showComments();}, 3000)
+    setTimeout(function(){
+        charts.showComments();
+        if(isUserLoggedIn){
+        if(window.localStorage.selectedDate) {
+            delete window.localStorage.selectedDate;
+        }
+    }
+    }, 3000)
 });
