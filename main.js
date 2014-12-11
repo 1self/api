@@ -35,7 +35,6 @@ var sessionSecret = process.env.SESSION_SECRET;
 var redisURL = url.parse(process.env.REDISCLOUD_URL);
 var redisClient = redis.createClient(redisURL.port, redisURL.hostname, {no_ready_check: true});
 redisClient.auth(redisURL.auth.split(":")[1]);
-app.set('trust proxy', 1);
 app.use(session({
     store: new RedisStore({
         client: redisClient
@@ -45,8 +44,7 @@ app.use(session({
     saveUninitialized: false, // don't create session until something stored
     cookie: {
         maxAge: 2 * 365 * 24 * 60 * 60 * 1000, // 2 years
-        secure: true, // change to true when using https
-        httpOnly: false
+        secure: false // change to true when using https
     }
 }));
 
