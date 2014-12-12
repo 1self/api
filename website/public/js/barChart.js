@@ -1,6 +1,7 @@
         window.charts = window.charts || {};
 
 charts.plotBarChart = function (divId, events, fromTime, tillTime) {
+    events = _.sortBy(events, function(e){ return e.date;})
     setTimeout(function () {
         $(divId).empty();
         var margin = {
@@ -42,6 +43,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             .append('g')
             .attr('id', 'bars')
             .attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
+
         var tipText = function (d) {
             return "<strong>" + operation + " " + d.value +
                 "</strong> <span style='color:lightgrey'> on " + moment(d.date).format("ddd MMM DD") + "</span>";
@@ -116,8 +118,9 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                   .attr("type", "linear")
                   .attr("slope", "0") 
         
-        filter.append("feGaussianBlur")
-            .attr("stdDeviation", 15)
+        var blur = filter.append("feGaussianBlur")
+            .attr("stdDeviation", 0);
+        blur.transition().delay(2050).attr("stdDeviation", 5);
 
         var feMerge = filter.append("feMerge");
 
@@ -125,26 +128,20 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
         feMerge.append("feMergeNode")
             .attr("in", "SourceGraphic");
 
-        svg.selectAll('.chart')
-            .data(events)
-            .enter().append('rect')
+        var chart = svg.selectAll('.chart');
+
+        chart.data(events)
+            .enter()
+            .append('rect')
             .attr('class', 'bar')
             .style("fill", "url(#gradient)")
             .style("stroke", "rgba(255,255,255,0.7)")
-            .attr('x', function (d) {
-                return x(new Date(d.date));
-            })
-            .attr('y', function (d) {
-                return height - margin.top - margin.bottom - (height - margin.top - margin.bottom - y(d.value));
-            })
-            .attr('width', xWidth)
-            .attr('height', function (d) {
-                return height - margin.top - margin.bottom - y(d.value);
-            })
             .on("click", function (d) {
                 var bars = svg.selectAll('.bar');
                 bars
+                    .transition()
                     .style("stroke", function (data) {
+
                         if (d === data) {
                             return null;
                         } else {
@@ -158,7 +155,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                     })
                     .style("stroke-width", function (data) {
                         if (d === data) {
-                            return "5px";
+                            return "3px";
                         } else {
                             return "1px";
                         }
@@ -202,8 +199,33 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 svg.append('g')
                 .attr('class', 'y axis')
                 .call(yAxis);
+
+                blur.attr("stdDeviation", 0);
+                blur.transition().attr("stdDeviation", 5);
+
+
+            })
+
+            .attr('x', function (d) {
+                return x(new Date(d.date));
+            })
+            .attr('y', height)
+            .attr('width', xWidth)
+            .attr('height', 0)
+            .transition()
+                .delay(
+                    function(d, i) {
+                     return i * 210 +210; 
+                 })
+                .duration(150)
+                .attr('height', function (d) {
+                return height - margin.top - margin.bottom - y(d.value);
+                })
+                .attr('y', function (d) {
+                return height - margin.top - margin.bottom - (height - margin.top - margin.bottom - y(d.value));
             });
 
+            
         svg.append('g')
             .attr('class', 'y axis')
             .call(yAxis);
