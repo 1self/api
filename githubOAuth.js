@@ -82,6 +82,7 @@ module.exports = function (app) {
                             tokenisedUrl[3] = req.session.username;
                             redirectUrl = tokenisedUrl.join("/");
                         }
+                        res.cookie('_eun', req.session.encodedUsername);
                         res.redirect(redirectUrl);
                     } else {
                         redirect(user, "/dashboard");

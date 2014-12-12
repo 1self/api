@@ -251,6 +251,7 @@ module.exports = function (app) {
                     tokenizedUrl[3] = req.session.username;
                     redirectUrl = tokenizedUrl.join("/");
                 }
+                res.cookie('_eun', req.session.encodedUsername);
                 res.redirect(redirectUrl);
             } else {
                 res.redirect(CONTEXT_URI + '/dashboard');
@@ -888,6 +889,7 @@ module.exports = function (app) {
     };
 
     var sendGraphShareEmail = function (graphShareUrl, fromEmailId, toEmailId) {
+
         var deferred = Q.defer();
         var graphUrl = graphShareUrl;
 
