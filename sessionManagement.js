@@ -12,6 +12,10 @@ exports.requiresSession = function (req, res, next) {
         }
     } else {
         req.session.redirectUrl = CONTEXT_URI + req.originalUrl;
-        res.redirect(CONTEXT_URI + "/signup" + "?" + req.url.split('?')[1]);
+        if ( req.url.split('?')[1] !== undefined) {
+            res.redirect(CONTEXT_URI + "/signup" + "?" + req.url.split('?')[1]);
+        } else {
+            res.redirect(CONTEXT_URI + "/signup");
+        }
     }
 };

@@ -25,4 +25,4 @@ Development Enviorment set up For API
  - To run API  <br>
 	 -mongodb must be started <br>
 	 -start foreman using command foreman start -f Procfile.dev <br>
-	 -If this is not working then use command "supervisor main.js" and for this you need to add all variables from .env to your add sysytem varibles. <br>
+	 -If this does not work then use command "supervisor main.js" and for this you need to add all variables from .env to your add sysytem varibles. <br>

@@ -31,6 +31,9 @@ var plotChart = function (events) {
 
 charts.addComment = function () {
     var commentText = $("#commentText").val();
+
+    if("" == commentText.trim()) return;
+
     var comment = {
         text: commentText,
         user: username,
@@ -47,6 +50,12 @@ charts.addComment = function () {
         renderType: renderType,
         comment: comment
     };
+
+    //disable further commenting until current one completes
+    $('#commentAddButton').attr('disabled','disabled');
+    $('#addText').hide();
+    $('.sending_comment_loader').show();
+
     $.ajax({
         url: "/v1/comments",
         method: "POST",
@@ -56,6 +65,12 @@ charts.addComment = function () {
             "Authorization": $.cookie("_eun")
         }
     }).done(function (data) {
+        //enable the add button
+        $('#commentAddButton').removeAttr('disabled');
+        $('#addText').show();
+        $('.sending_comment_loader').hide();
+
+
         var displayedComment = {text: commentText, avatarUrl: graphOwnerAvatarUrl};
         var selectedDataPoint = _.find(charts.dataPoints, function (dataPoint) {
             return dataPoint.dataPointDate === charts.selectedDate;
@@ -85,9 +100,10 @@ $("#addCommentInput").keyup(function (e) {
 
 var handleAddComment = function () {
     if (isUserLoggedIn) {
-        $("#addCommentInput").show();
+        $("#addCommentInput").show();   
     }
     else {
+        window.localStorage.selectedDate = charts.selectedDate;
         $("#loginModal").modal({show: true});
     }
 };
@@ -103,7 +119,10 @@ var handleShareGraph = function () {
             success: function (data) {
                 $("#shareModal").modal({show: true});
                 $("#loadingDiv").hide();
-                $("#graphShareLink").html(window.location.origin + data.graphShareUrl);
+                var link = window.location.origin + data.graphShareUrl;
+                var graphShareLink = "<a href='"+link+"'> "+link+" </a>";
+                $("#graphShareHyperLink").html(graphShareLink);
+                $("#graphShareLink").html(link);
                 $("#shareModal").modal({show: true});
             },
             error: function () {
@@ -118,7 +137,10 @@ var handleShareGraph = function () {
             success: function (data) {
                 $("#shareModal").modal({show: true});
                 $("#loadingDiv").hide();
-                $("#graphShareLink").html(window.location.origin + data.graphShareUrl);
+                var link = window.location.origin + data.graphShareUrl;
+                var graphShareLink = "<a href='"+link+"'>"+link+"</a>";
+                $("#graphShareHyperLink").html(graphShareLink);
+                $("#graphShareLink").html(link);
             },
             error: function () {
                 alert("some problem. Please try again later.");
@@ -126,10 +148,6 @@ var handleShareGraph = function () {
         });
     }
 };
-
-var handle1selfClick = function(){
-    window.location.href= "/timeline";
-}
 
 var showChartTitle = function () {
     $("#chartTitle").html(chartTitle);
@@ -149,7 +167,7 @@ var showChartTitle = function () {
 
 var submitShare = function () {
     var emailId = $("#emailId").val();
-    var graphShareUrl = $("#graphShareLink").html();
+    var graphShareUrl = $("#graphShareHyperLink a:first-child").attr("href");
 
     $.ajax({
         url: "/v1/share_graph",
@@ -222,4 +240,13 @@ $(document).ready(function () {
     var cw = $('.avatar_group').width();
     var ch = $(window).width() * (cw / 100);
     $('.avatar_group').css({'height': ch+'px'});
+
+    setTimeout(function(){
+        charts.showComments();
+        if(isUserLoggedIn){
+        if(window.localStorage.selectedDate) {
+            delete window.localStorage.selectedDate;
+        }
+    }
+    }, 3000)
 });

@@ -32,9 +32,21 @@ var insertEvents = function(data){
 
         var listOfEvents = dateGroupedEvents[date];
         for(i = 0; i < listOfEvents.length; i++){
-            html += '<li onclick="' + getVisualizationUrl(listOfEvents[i])  + '" class="list-group-item">' + listOfEvents[i].payload.objectTags.join(',')  + '<br/>' +
-                JSON.stringify(listOfEvents[i].payload.properties) +
-                '</li>';
+            var current_event = listOfEvents[i],
+            os_event = getOsEvent(current_event);
+
+            if(os_event == null){
+                console.log("No os event for : " + JSON.stringify(current_event));
+                continue;
+            }
+
+            html += '<li onclick="' + getVisualizationUrl(os_event)  + '" class="list-group-item"><span class="event_title">' + os_event.name  + '</span>';
+
+            if("" !== os_event.interestingProperty){
+                html += '<div class="event_property">' + os_event.humanizedValue(current_event.payload.properties[os_event.interestingProperty]) + '</div>';
+            }
+            
+            html += '</li>';
         }
         
         html += '</ul>' +
@@ -66,9 +78,9 @@ var groupEventsByDate = function(data){
 
 var getVisualizationUrl = function(event){
     return "window.location.href = " + 
-        "'/v1/users/" + username + "/events/" + event.payload.objectTags.join(',') +
-        "/" + event.payload.actionTags.join(',') + "/sum(:dba)" + 
-        "/daily/barChart'";
+        "'/v1/users/" + username + "/events/" + event.objectTags.join(',') +
+        "/" + event.actionTags.join(',') + "/" + event.operation +
+        "/daily/barchart'";
 };
 
 
@@ -84,3 +96,11 @@ var formatDate = function(date){
     
     return moment(date).calendar();
 }
+
+
+var getOsEvent = function(event){
+    // if(event.payload.source == "Timer App"){
+    //     abc=1;
+    // }
+    return os_event_lookup.findByObjectAndActionTags(event.payload.objectTags, event.payload.actionTags);
+};

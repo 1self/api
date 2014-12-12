@@ -1,3 +1,7 @@
+body {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
 #timeline{
     text-align: center;
 }
@@ -34,9 +38,19 @@ body {
     color: white;
     background-color: #0D4A2A;
     margin-bottom: 1em;
-    text-transform: uppercase;
     font-size: 1em;
     cursor: pointer;
+}
+
+.event_title{
+    text-transform: uppercase;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.event_property{
+    font-size: 1.3em;
+    font-style: italic;
 }
 
 .page-header{

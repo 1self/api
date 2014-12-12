@@ -61,6 +61,8 @@ svg, img {
     text-transform: uppercase;
     text-overflow: ellipsis;
     height: 60px;
+    padding-left: 20px;
+    line-height: 1em;
 }
 
 .header {
@@ -166,6 +168,14 @@ svg, img {
     background-color: #504E4E;
 }
 
+div.sending_comment_loader {
+    background-image: url('/img/ajax-loader.gif');
+    background-repeat: no-repeat;
+    width: 15px;
+    display:none;
+    padding-top: 10px;
+}
+
 .submitComment:hover, .submitComment:focus {
     color: #fff;
 }
@@ -210,6 +220,11 @@ svg, img {
 .commenter {
     margin: 0 10px 0 0;
     float: left;
+}
+
+.commenter img, #addCommentInput img {
+    border-radius: 100%;
+    margin: 3px;
 }
 
 .commentText {
@@ -341,12 +356,12 @@ ul.commentList li div {
     .comment_avatar, .count {
         position: relative;
         width: 50%;
-        height: 0;
+        height: 98px;
         padding-bottom: 40%;
     }
 
     .count {
-        /*line-height: 98px;*/
+        line-height: 98px;
         font-size: 45px;
     }
 }
@@ -354,12 +369,11 @@ ul.commentList li div {
 @media screen and (max-device-width: 480px) {
     .comment_avatar, .count {
         overflow: hidden;
-    
-        /* height: 50px; */
+        height: 22px;
 }
 
     .count {
-        line-height: 28px;
+        line-height: 22px;
         font-size: 15px;
     }
 }
@@ -375,31 +389,3 @@ ul.commentList li div {
     color: white;
 }
 
-.menu-button{
-    float: right;
-}
-
-.menu-button button, .menu-button button:hover{
-    background-color: #6D6D6D;
-    color: #B1B1B1;
-    border: 2px solid #BBBBBB;
-    font-weight: bold;
-}
-
-.menu-button .carat {
-    background-color: #BBBBBB;
-}
-
-.menu-button ul{
-    background-color: #6D6D6D;
-}
-
-.menu-button .dropdown-menu>li>a, .menu-button .dropdown-menu>li>a:hover{
-    color: #B1B1B1;
-    font-weight: bold;
-}
-
-.menu-button .dropdown-menu {
-    right:0 !important;
-    left: auto;
-}

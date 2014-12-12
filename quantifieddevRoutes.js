@@ -251,6 +251,7 @@ module.exports = function (app) {
                     tokenizedUrl[3] = req.session.username;
                     redirectUrl = tokenizedUrl.join("/");
                 }
+                res.cookie('_eun', req.session.encodedUsername);
                 res.redirect(redirectUrl);
             } else {
                 res.redirect(CONTEXT_URI + '/dashboard');
@@ -888,6 +889,7 @@ module.exports = function (app) {
     };
 
     var sendGraphShareEmail = function (graphShareUrl, fromEmailId, toEmailId) {
+
         var deferred = Q.defer();
         var graphUrl = graphShareUrl;
 
@@ -1008,7 +1010,15 @@ module.exports = function (app) {
                     req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType") + "?streamId=" + req.param("streamId") + "&readToken=" + req.query.readToken;
             res.redirect(redirectUrl);
         } else {
-            req.session.redirectUrl = req.originalUrl + "?streamId=" + req.param('streamId');
+            var queryString;
+            if (Object.keys(req.query).length > 0){
+                queryString = "&streamId=" + req.param('streamId');
+            }
+            else {
+                queryString = "?streamId=" + req.param('streamId');
+            }
+            req.session.redirectUrl = req.originalUrl + queryString;
+
             var graphInfo = getGraphInfo(req.param("objectTags"), req.param("actionTags"), req.originalUrl);
             res.render('chart', {
                 readToken: req.param("readToken"),
@@ -1096,7 +1106,7 @@ module.exports = function (app) {
             var readToken = req.query.readToken;
             //        var shareToken = req.query.shareToken;
             var renderChart = function(graphOwnerAvatarUrl) {
-                var graphInfo = getGraphInfo(req.params("actionTags"),req.originalUrl, req.param("username"));
+                var graphInfo = getGraphInfo(req.param("objectTags"), req.param("actionTags"),req.originalUrl, req.param("username"));
                 var isUserLoggedIn = (req.session.username !== undefined);
                 res.render('chart', {
                     isUserLoggedIn: isUserLoggedIn,
@@ -1136,16 +1146,11 @@ module.exports = function (app) {
     
 
     app.get("/timeline", sessionManager.requiresSession, function (req, res) {
-        getStreamsForUser(req.session.username).then(function (user) {
-            res.render('timeline',{
-                encodedUsername: req.session.encodedUsername,
-                username: req.session.username,
-                avatarUrl: req.session.avatarUrl
-            });
+        res.render('timeline',{
+            encodedUsername: req.session.encodedUsername,
+            username: req.session.username,
+            avatarUrl: req.session.avatarUrl
         });
     });
-
-
-
 
 };

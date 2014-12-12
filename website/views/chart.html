@@ -12,7 +12,7 @@
     <script src="/js/jquery.js"></script>
     <script src="/js/jquery.cookie.js"></script>
     <script src="/js/humanize-duration.js"></script>
-    <script src="/js/zeroclipboard/ZeroClipboard.js"></script> 
+    <script src="/js/zeroclipboard/ZeroClipboard.min.js"></script>
     <script>
 
 
@@ -67,8 +67,8 @@
     </script>
 </head>
 <body>
-<table class="header-main">
-</table>
+  <table class="header-main">
+  </table>
 <table class="header">
     <tr class="headerrow">
         <td class="avatar">
@@ -81,7 +81,12 @@
 </table>
 
 <div class="share-button-container" style="display:none;">
-     <button type="button" class="button1self" onclick="handle1selfClick()"><img src="/img/1selfbutton.png"></button>
+
+  {% if isUserLoggedIn %}
+  <a href="/timeline"><button type="button" class="button1self" ><img src="/img/1selfbutton.png"></button></a>
+  {% else %}
+  <a href="/auth/github"><button type="button" class="button1self" ><img src="/img/1selfbutton.png"></button></a>
+  {% endif %}
      <button type="button" class="shareGraphButton" onclick="handleShareGraph()"><i class="fa fa-share-alt"></i></button>
 </div>
 
@@ -121,7 +126,7 @@
     <div id="addCommentInput">
         <img src="{{avatarUrl}}"/>
         <input id="commentText" type="text" placeholder="Add Comment">
-        <button class="btn submitComment" onclick="charts.addComment();">Add</button>
+        <button id="commentAddButton" class="btn submitComment" onclick="charts.addComment();"><span id="addText">Add</span> <div class="sending_comment_loader"></div></button>
     </div>
     {% else %}
     <button type="button" class="btn btn-info addCommentButton" onclick="handleAddComment()" style="display:none">
@@ -165,14 +170,10 @@
                     <div id="shareContentDiv">
                         <div id="shareLinkDiv">
                             <p>Copy the url below and share it with your friends. They will be able to access this
-                                graph.</p>
+                              graph.</p>
 
-                            <textarea readonly id="graphShareLink"
-                                      style="resize: none; height: 30px; width: 260px; overflow: hidden;"></textarea>
-                            <button class="btn btn-primary font-size" style="display: none" id="copy-button"
-                                    title="Copy" data-clipboard-target="graphShareLink">Copy Link
-                            </button>
-                            <img id="copy-success" src="/img/tick.png" style="display: none;">
+                            <div id="graphShareHyperLink" style="border: 1px solid ; padding: 5px; border-color: #ccc; word-wrap: break-word;resize: none;width: 260px; overflow:visible;margin-bottom:10px;"> 
+                            </div>
 
                         </div>
                         {% if isUserLoggedIn %}
