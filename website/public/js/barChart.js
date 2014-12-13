@@ -120,7 +120,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
         
         var blur = filter.append("feGaussianBlur")
             .attr("stdDeviation", 0);
-        blur.transition().delay(2050).attr("stdDeviation", 5);
+        blur.transition().delay(1500).attr("stdDeviation", 5);
 
         var feMerge = filter.append("feMerge");
 
@@ -215,9 +215,10 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             .transition()
                 .delay(
                     function(d, i) {
-                     return i * 210 +210; 
+                     return i * 130 +30; 
                  })
-                .duration(150)
+                .ease('cubic')
+                .duration(240)
                 .attr('height', function (d) {
                 return height - margin.top - margin.bottom - y(d.value);
                 })
