@@ -72,19 +72,16 @@ Util.prototype.createV1Stream =  function(appId, callback) {
     });
 };
 
-Util.prototype.registerApp =  function(appName, callback) {
+Util.prototype.registerApp =  function(appDetails, callback) {
 
     var appId = crypto.randomBytes(16).toString('hex');
     var appSecret = crypto.randomBytes(32).toString('hex');
 
-    var rec = {
-        appName: appName,
-        appId: "app-id-" +appId,
-        appSecret: "app-secret-" +appSecret
-    };
+    appDetails.appId = "app-id-" + appId;
+    appDetails.appSecret = "app-secret-" + appSecret;
 
     mongoDbConnection(function(qdDb) {
-        qdDb.collection('registeredApps').insert(rec, function(err, insertedRecords) {
+        qdDb.collection('registeredApps').insert(appDetails, function(err, insertedRecords) {
             if (err) {
                 console.log(err);
                 callback(err, null);

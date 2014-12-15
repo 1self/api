@@ -1382,18 +1382,27 @@ app.post('/v1/streams', function (req, res) {
     });
 });
 
-app.post('/v1/apps', function (req, res) {
-    var appName = req.param("appName");
+app.post('/v1/app', function (req, res) {
+    var appName = req.param("appName"),
+    appEmail = req.param('appEmail');
 
-    if (appName === undefined) {
-        res.send(401, "Unauthorized request. Please pass valid name");
+    if (appName === undefined || appEmail === undefined) {
+        res.send(401, "Unauthorized request. Please pass valid app_name and app_email");
     }
-    util.registerApp(appName, function (err, data) {
+
+    var appDetails = {
+        appName: appName,
+        appDescription: req.param('appDescription'),
+        appUrl: req.param('appUrl'),
+        appEmail: appEmail,
+        createdOn: moment.utc().toDate()
+    };
+
+    util.registerApp(appDetails, function (err, data) {
         if (err) {
             res.status(500).send("Database error");
         } else {
-            delete data._id;
-            res.send(data);
+            res.send("You will receive a email shortly with the app_key and app_secret to '" + appEmail + "'. Thank You.");
         }
     });
 });
