@@ -12,6 +12,7 @@ var ONESELF_EMAIL = process.env.ONESELF_EMAIL;
 var ObjectID = require('mongodb').ObjectID;
 var mongoDbConnection = require('./lib/connection.js');
 var validateRequest = require("./validateRequest");
+var moment = require("moment");
 
 var emailConfigOptions = {
     root: path.join(__dirname, "/website/public/email_templates")
@@ -851,6 +852,64 @@ module.exports = function (app) {
         };
         sendEmail(graphShareUrl);
     });
+
+    app.post('/v1/app', function (req, res) {
+        var appName = req.param("appName"),
+        appEmail = req.param('appEmail');
+
+        if (appName === undefined || appEmail === undefined) {
+            res.send(401, "Unauthorized request. Please pass valid app_name and app_email");
+        }
+
+        var appDetails = {
+            appName: appName,
+            appDescription: req.param('appDescription'),
+            appUrl: req.param('appUrl'),
+            appEmail: appEmail,
+            createdOn: moment.utc().toDate()
+        };
+
+        util.registerApp(appDetails, function (err, data) {
+            if (err) {
+                res.status(500).send("Database error");
+            } else {
+                sendAppDetailsByEmail(data.appId, data.appSecret, data.appName, data.appEmail)
+                    .then(function(){
+                        res.send("You will receive a email shortly with the app_key and app_secret to '" + appEmail + "'. Thank You.");
+                    });
+            }
+        });
+    });
+
+
+    var sendAppDetailsByEmail = function (appId, appSecret, appName, toEmailId) {
+        var deferred = Q.defer();
+
+        emailTemplates(emailConfigOptions, function (err, emailRender) {
+            var context = {
+                appId: appId,
+                appSecret: appSecret,
+                appName: appName
+            };
+            emailRender('appDetails.eml.html', context, function (err, html, text) {
+                sendgrid.send({
+                    to: toEmailId,
+                    from: ONESELF_EMAIL,
+                    subject: '[' + appName + '] 1self Developer Application Details',
+                    html: html
+                }, function (err, json) {
+                    if (err) {
+                        console.error(err);
+                        deferred.reject(err);
+                    } else {
+                        console.log("New Developer App Details sent successfully to ", toEmailId);
+                        deferred.resolve();
+                    }
+                });
+            });
+        });
+        return deferred.promise;
+    };
 
     var getAlreadySharedGraphObject = function (graphUrl) {
         var deferred = Q.defer();
