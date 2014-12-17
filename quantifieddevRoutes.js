@@ -863,8 +863,6 @@ module.exports = function (app) {
 
         var appDetails = {
             appName: appName,
-            appDescription: req.param('appDescription'),
-            appUrl: req.param('appUrl'),
             appEmail: appEmail,
             createdOn: moment.utc().toDate()
         };
