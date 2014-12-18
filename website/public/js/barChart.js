@@ -250,7 +250,11 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
         var getDataPointDescription = function (eventValue) {
             if (measurement === "time") {
                 var str = humanizeDuration(eventValue * 1000, { units: ["hours", "minutes", "seconds", "millisecond"] })
-                return str.substring(0,str.lastIndexOf(','));
+                var ind = str.length;
+                if(str.search("milli") > 0 && str.lastIndexOf(',') > 0) {
+                    ind = str.lastIndexOf(',');
+                }
+                return str.substring(0,ind);
             } else if (measurement === "decibels") {
                 return parseFloat(eventValue).toFixed(0) + " " + "decibels";
             } else {
