@@ -1360,6 +1360,7 @@ app.post('/stream', function (req, res) {
 
 app.post('/v1/streams', function (req, res) {
     var auth = req.headers.authorization;
+    var callbackUrl = req.body.callbackUrl;
     console.log("auth is " + auth);
     if (auth === undefined) {
         res.send(401, "Unauthorized request. Please pass valid clientId and clientSecret");
@@ -1368,7 +1369,7 @@ app.post('/v1/streams', function (req, res) {
     var appSecret = auth.split(":")[1];
 
     validateClient(appId, appSecret).then(function () {
-        util.createV1Stream(appId, function (err, data) {
+        util.createV1Stream(appId, callbackUrl, function (err, data) {
             if (err) {
                 res.status(500).send("Database error");
             } else {

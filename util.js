@@ -37,7 +37,7 @@ Util.prototype.createStream =  function(callback) {
     });
 };
 
-Util.prototype.createV1Stream =  function(appId, callback) {
+Util.prototype.createV1Stream =  function(appId, callbackUrl, callback) {
     crypto.randomBytes(16, function(ex, buf) {
         if (ex) throw ex;
 
@@ -54,6 +54,7 @@ Util.prototype.createV1Stream =  function(appId, callback) {
             streamid: streamid.join(''),
             writeToken: writeToken,
             readToken: readToken,
+            callbackUrl: callbackUrl,
             appId: appId
         };
 
