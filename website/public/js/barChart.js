@@ -249,9 +249,12 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
 
         var getDataPointDescription = function (eventValue) {
             if (measurement === "time") {
-                return humanizeDuration(eventValue * 1000)
+                var str = humanizeDuration(eventValue * 1000, { units: ["hours", "minutes", "seconds", "millisecond"] })
+                return str.substring(0,str.lastIndexOf(','));
+            } else if (measurement === "decibels") {
+                return parseFloat(eventValue).toFixed(0) + " " + "decibels";
             } else {
-                return eventValue + " " + "decibels";
+                return parseFloat(eventValue).toFixed(0) + "";
             }
         };
 
