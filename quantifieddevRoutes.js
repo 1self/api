@@ -38,6 +38,10 @@ module.exports = function (app) {
     };
 
     app.get("/signup", function (req, res) {
+        if("staging" == process.env.NODE_ENV){
+            res.status(404).send("*** This environment does not support this feature ***");
+        }
+
         if (!(_.isEmpty(req.param('streamId')))){
             req.session.redirectUrl = "/dashboard" + "?streamId=" + req.param('streamId');
         }
