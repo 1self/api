@@ -1,3 +1,4 @@
+var requestModule = require('request');
 var sessionManager = require("./sessionManagement");
 var _ = require("underscore");
 var Q = require('q');
@@ -13,10 +14,16 @@ var ObjectID = require('mongodb').ObjectID;
 var mongoDbConnection = require('./lib/connection.js');
 var validateRequest = require("./validateRequest");
 var moment = require("moment");
+var PasswordEncrypt = require('./lib/PasswordEncrypt');
+var platformUri = process.env.PLATFORM_BASE_URI;
+
+var sharedSecret = process.env.SHARED_SECRET;
 
 var emailConfigOptions = {
     root: path.join(__dirname, "/website/public/email_templates")
 };
+
+var encryptedPassword = PasswordEncrypt.encryptPassword(sharedSecret);
 
 module.exports = function (app) {
 
@@ -883,6 +890,54 @@ module.exports = function (app) {
         });
     });
 
+    app.get('/v1/sync/:username/:objectTags/:actionTags', function (req, res) {
+        var username = req.param("username");
+        var objectTags = req.param("objectTags");
+        var actionTags = req.param("actionTags");
+
+        var getStreamsFromPlatform = function (streamIds) {
+            var deferred = Q.defer();
+            var filterSpec = {
+                'payload.streamid': streamIds,
+                'payload.objecTags': objectTags,
+                'payload.actionTags': actionTags
+            };
+            var options = {
+                url: platformUri + '/rest/events/findStreams',
+                auth: {
+                    user: "",
+                    password: encryptedPassword
+                },
+                qs: {
+                    'filterSpec': JSON.stringify(filterSpec),
+                    'projectionSpec': JSON.stringify({}),
+                    'orderSpec': JSON.stringify({})
+                },
+                method: 'GET'
+            };
+
+            var handleResponse = function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    var result = JSON.parse(body);
+                    deferred.resolve(result);
+                } else {
+                    deferred.reject(error);
+                }
+            };
+            requestModule(options, handleResponse);
+            return deferred.promise;
+        };
+
+        // TODO Get stream ids from db
+        getStreamsFromPlatform(['AFXDNJQJYMJSZYOP', 'BFXDNJQJYMJSZYOP']).then(function(result) {
+            res.send("Refresh data successful", result);            
+        });
+
+        console.log("Username -> ", username);
+        console.log("actionTags -> ", actionTags);
+        console.log("objectTags -> ", objectTags);        
+    });
+    
 
     var sendAppDetailsByEmail = function (appId, appSecret, appName, toEmailId) {
         var deferred = Q.defer();
