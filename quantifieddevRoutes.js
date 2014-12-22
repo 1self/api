@@ -846,6 +846,8 @@ module.exports = function (app) {
         var graphShareUrl = req.body.graphShareUrl;
         var fromUsername = req.session.username;
 
+        
+
         var sendEmail = function (graphShareUrl) {
             return getPrimaryEmailId(fromUsername)
                 .then(function (fromEmailId) {
