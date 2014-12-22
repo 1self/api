@@ -896,11 +896,21 @@ module.exports = function (app) {
         var objectTags = req.param("objectTags");
         var actionTags = req.param("actionTags");
 
-        var getStreamsFromPlatform = function (streamIds) {
+        var transformToStreamIds = function(result){
+            return _.map(result.streams, function(el){ return el.streamid; });
+        };
+
+        var getStreamsFromPlatform = function (streams) {
+            var streamIds = transformToStreamIds(streams);
+
             var deferred = Q.defer();
             var filterSpec = {
-                'payload.streamid': streamIds,
-                'payload.objecTags': objectTags,
+                'payload.streamid': {
+                    "$operator": {
+                        "in": streamIds
+                    }
+                },
+                'payload.objectTags': objectTags,
                 'payload.actionTags': actionTags
             };
             var options = {
@@ -910,15 +920,13 @@ module.exports = function (app) {
                     password: encryptedPassword
                 },
                 qs: {
-                    'filterSpec': JSON.stringify(filterSpec),
-                    'projectionSpec': JSON.stringify({}),
-                    'orderSpec': JSON.stringify({})
+                    'filterSpec': JSON.stringify(filterSpec)
                 },
                 method: 'GET'
             };
-
             var handleResponse = function (error, response, body) {
                 if (!error && response.statusCode == 200) {
+                    console.log(body);
                     var result = JSON.parse(body);
                     deferred.resolve(result);
                 } else {
@@ -928,15 +936,9 @@ module.exports = function (app) {
             requestModule(options, handleResponse);
             return deferred.promise;
         };
-
-        // TODO Get stream ids from db
-        getStreamsFromPlatform(['AFXDNJQJYMJSZYOP', 'BFXDNJQJYMJSZYOP']).then(function(result) {
-            res.send("Refresh data successful", result);            
+        getStreamsForUser(username).then(getStreamsFromPlatform).then(function(uniqueStreams) {
+            res.send(uniqueStreams.streams);
         });
-
-        console.log("Username -> ", username);
-        console.log("actionTags -> ", actionTags);
-        console.log("objectTags -> ", objectTags);        
     });
     
 
