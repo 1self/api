@@ -120,6 +120,18 @@ svg, img {
     }
 }
 
+@-webkit-keyframes slidein {
+    from{
+        right: -50px;
+        top: 74px;
+    }
+
+    to{
+        right: 15px;
+        top: 74px;
+    }
+}
+
 
 
 .button1self img{
@@ -169,6 +181,18 @@ svg, img {
 }
   
 @keyframes slideinbutton1self {
+    from{
+        right: -50px;
+        top: 15px;
+    }
+
+    to{
+        right: 15px;
+        top: 15px;
+    }
+}
+
+@-webkit-keyframes slideinbutton1self {
     from{
         right: -50px;
         top: 15px;
