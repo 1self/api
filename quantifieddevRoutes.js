@@ -18,6 +18,7 @@ var PasswordEncrypt = require('./lib/PasswordEncrypt');
 var platformUri = process.env.PLATFORM_BASE_URI;
 
 var sharedSecret = process.env.SHARED_SECRET;
+var validator = require('validator');
 
 var emailConfigOptions = {
     root: path.join(__dirname, "/website/public/email_templates")
@@ -852,6 +853,11 @@ module.exports = function (app) {
         var toEmailId = req.body.toEmailId;
         var graphShareUrl = req.body.graphShareUrl;
         var fromUsername = req.session.username;
+
+        if(!validator.isEmail(toEmailId)){
+            res.send(500, {"message": "EmailId not valid"});
+            return;
+        }
 
         var sendEmail = function (graphShareUrl) {
             return getPrimaryEmailId(fromUsername)

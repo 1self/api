@@ -18,7 +18,7 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var fs = require('fs');
 var validateRequest = require("./validateRequest");
-
+var validator = require('validator');
 
 var opbeatOptions = {
     organization_id: process.env.OPBEAT_ORGANIZATION_ID,
@@ -1989,6 +1989,9 @@ app.post("/v1/comments", function (req, res) {
     var encodedUsername = req.headers.authorization;
     var chartComment = req.body;
     chartComment.comment.timestamp = moment.utc().toDate();
+
+    chartComment.comment.text = validator.escape(chartComment.comment.text); //escape html
+
     validEncodedUsername(encodedUsername, "", [])
         .then(function () {
             return findGraphUrl(chartComment.graphUrl);
@@ -1998,7 +2001,6 @@ app.post("/v1/comments", function (req, res) {
                 chartComment.comments = [chartComment.comment];
                 delete chartComment.comment;
                 chartComment.dataPointDate = moment.utc(chartComment.dataPointDate, "YYYY-MM-DD").toDate();
-//                chartComment.dataPointDate = new Date();
                 return createChartComment(chartComment);
             }
             else {
