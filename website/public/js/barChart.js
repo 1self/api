@@ -175,10 +175,8 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 $(".addCommentButton").show();
                 $("#date").html(moment(d.date).format("DD/MM/YY dddd"));
                 $("#eventValue").html(getDataPointDescription(d.value));
-                var day = moment(d.date).format("DD");
-                var month = moment(d.date).format("MM");
-                var year = moment(d.date).format("YYYY");
-                charts.graphUrl = window.location.href.split(window.location.origin)[1].split("?")[0] + "/" + year + "/" + month + "/" + day;
+
+                setGraphUrl(d.date);
                 charts.selectedDate = moment(d.date).format("YYYY-MM-DD");
                 charts.showComments();
 
@@ -202,8 +200,6 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
 
                 blur.attr("stdDeviation", 0);
                 blur.transition().attr("stdDeviation", 5);
-
-
             })
 
             .attr('x', function (d) {
@@ -297,10 +293,19 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 $("#date").html(moment(date).format("DD/MM/YY dddd"));
             }
             $("#eventValue").html(getDataPointDescription(events[events.length-1].value));
+            
         };
+
+        var setGraphUrl = function(date){
+            var day = moment(date).format("DD");
+            var month = moment(date).format("MM");
+            var year = moment(date).format("YYYY");
+            charts.graphUrl = window.location.href.split(window.location.origin)[1].split("?")[0] + "/" + year + "/" + month + "/" + day;
+        }
 
         var highlightLatestDataPointDate = function () {
             var date = window.localStorage.selectedDate || getLatestDataPointDate();
+            setGraphUrl(date);
             charts.selectedDate = moment(date).format("YYYY-MM-DD");
             showDetailsForDate(date);
         };
