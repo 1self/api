@@ -1463,11 +1463,35 @@ var saveBatchEvents = function (myEvents, stream, res) {
     requestModule.post(options,
         function (error, response, body) {
             if (!error && response.statusCode == 200) {
-                res.send(body);
+                var latestEventDate = moment(formatEventDateTime(myEvents[myEvents.length - 1].dateTime)).toDate();
+                updateLatestEventSyncDate(stream.streamid, latestEventDate).then(function(){
+                    res.send(body);
+                });
             } else {
                 res.status(500).send("Database error");
             }
         });
+};
+ 
+var updateLatestEventSyncDate = function(streamId, latestEventDate) {
+    var deferred = q.defer();
+
+    var query = {"streamid": streamId};
+    var updateObject = {
+        $set: {"latestEventSyncDate": latestEventDate}
+    };
+
+    mongoDbConnection(function (db) {
+        db.collection('stream').update(query, updateObject, function (err, recordsUpdated) {
+            if (err) {
+                console.log("Error is", err);
+                deferred.reject(err);
+            } else {
+                deferred.resolve(updateObject);
+            }
+        });
+    });
+    return deferred.promise;
 };
 
 var postEvents = function (req, res) {

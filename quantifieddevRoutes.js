@@ -942,11 +942,65 @@ module.exports = function (app) {
             requestModule(options, handleResponse);
             return deferred.promise;
         };
-        getStreamsForUser(username).then(getStreamsFromPlatform).then(function(uniqueStreams) {
-            res.send(uniqueStreams.streams);
-        });
+        getStreamsForUser(username)
+            .then(getStreamsFromPlatform)
+            .then(getCallbackUrls)
+            .then(hitCallbackUrls)
+            .then(function() {
+                res.send("ok");
+            });
     });
-    
+
+    var getCallbackUrls = function(response) {
+        var deferred = Q.defer();
+        getStreamsForStreamIds(response.streams).then(function(streams) {
+            var callbackUrls = _.chain(streams).collect(function(el) { return el.callbackUrl;}).reject(function(el) {
+                return el === undefined;
+            }).value();
+            return deferred.resolve(callbackUrls);
+        });
+        return deferred.promise;
+    };
+
+    var getStreamsForStreamIds = function(streamIds) {
+        var deferred = Q.defer();
+        mongoDbConnection(function (qdDb) {
+            qdDb.collection('stream').find({
+                streamid: { $in:   streamIds} }, function(err, dbObjs) {
+                    if (err) {
+                        deferred.reject("Error occurred", err);
+                    };
+                    dbObjs.toArray(function (err, streams) {
+                        deferred.resolve(streams);
+                    });
+                });
+        });
+        return deferred.promise;
+    };
+
+    var request = function(url) {
+        var deferred = Q.defer();
+        requestModule(url, function(err, resp, body) {
+            console.log("Response for request is 112233", body);
+            deferred.resolve(resp);
+        });
+        return deferred.promise;
+    };
+
+    var hitCallbackUrls = function(urls) {
+        var deferred = Q.defer();
+        var requests = [];
+        _.each(urls, function(url) {
+            requests.push(request(url));
+        });
+
+        Q.all(requests).then(function() {
+            deferred.resolve();
+        }).catch(function(err) {
+            console.log("Error occured", err);
+        });
+        return deferred.promise;
+    };
 
     var sendAppDetailsByEmail = function (appId, appSecret, appName, toEmailId) {
         var deferred = Q.defer();
@@ -1048,7 +1102,7 @@ module.exports = function (app) {
         var measurement = "";
         objectTags = objectTags.split(",");
         actionTags = actionTags.split(",");
-        if (objectTags.indexOf("ambient") !== -1 
+        if (objectTags.indexOf("ambient") !== -1
             && actionTags.indexOf("sample") !== -1) { // noise app
             title = "average noise experienced";
             measurement = "decibels";
@@ -1268,7 +1322,7 @@ module.exports = function (app) {
                     }
                 });
         });
-    
+
 
     app.get("/timeline", sessionManager.requiresSession, function (req, res) {
         res.render('timeline',{
