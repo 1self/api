@@ -884,7 +884,7 @@ module.exports = function (app) {
             } else {
                 sendAppDetailsByEmail(data.appId, data.appSecret, data.appName, data.appEmail)
                     .then(function(){
-                        res.send("You will receive a email shortly with the app_key and app_secret to '" + appEmail + "'. Thank You.");
+                        res.send("We have sent email containing your api key to '" + appEmail + "'. Thank You.");
                     });
             }
         });
