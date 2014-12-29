@@ -959,7 +959,9 @@ module.exports = function (app) {
         var callbackUrls = _.chain(streams).filter(function (stream) {
             return stream.callbackUrl !== undefined;
         }).map(function (stream) {
-            var callbackUrl = stream.callbackUrl.replace("{{streamId}}", stream.streamid).replace("{{writeToken}}", stream.writeToken).replace("{{latestEventsyncDate}}", stream.latestEventSyncDate.toISOString());
+            var callbackUrl = stream.callbackUrl.replace("{{streamId}}", stream.streamid)
+                .replace("{{writeToken}}", stream.writeToken)
+                .replace("{{latestEventSyncDate}}", stream.latestEventSyncDate.toISOString());
             return callbackUrl;
         }).value();
         console.log(callbackUrls);
