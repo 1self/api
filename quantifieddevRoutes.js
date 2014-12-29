@@ -63,8 +63,8 @@ module.exports = function (app) {
 
     var isStreamAlreadyLinkedToUser = function (streamid, user) {
         return _.where(user.streams, {
-                "streamid": streamid
-            }).length > 0;
+            "streamid": streamid
+        }).length > 0;
     };
 
     var streamExists = function (streamid) {
@@ -482,18 +482,18 @@ module.exports = function (app) {
         };
         mongoDbConnection(function (qdDb) {
             qdDb.collection('emailMap').findOne(query,
-                function (err, userInviteEntry) {
-                    if (err) {
-                        console.log("Error", err);
-                        deferred.reject(err);
-                    } else {
-                        if (_.isEmpty(userInviteEntry)) {
-                            deferred.reject("token not found");
-                        } else {
-                            deferred.resolve(userInviteEntry);
-                        }
-                    }
-                });
+                                                function (err, userInviteEntry) {
+                                                    if (err) {
+                                                        console.log("Error", err);
+                                                        deferred.reject(err);
+                                                    } else {
+                                                        if (_.isEmpty(userInviteEntry)) {
+                                                            deferred.reject("token not found");
+                                                        } else {
+                                                            deferred.resolve(userInviteEntry);
+                                                        }
+                                                    }
+                                                });
         });
         return deferred.promise;
     };
@@ -892,6 +892,7 @@ module.exports = function (app) {
                 sendAppDetailsByEmail(data.appId, data.appSecret, data.appName, data.appEmail)
                     .then(function () {
                         res.send("You will receive a email shortly with the app_key and app_secret to '" + appEmail + "'. Thank You.");
+
                     });
             }
         });
@@ -960,8 +961,8 @@ module.exports = function (app) {
             return stream.callbackUrl !== undefined;
         }).map(function (stream) {
             var callbackUrl = stream.callbackUrl.replace("{{streamId}}", stream.streamid)
-                .replace("{{writeToken}}", stream.writeToken)
-                .replace("{{latestEventSyncDate}}", stream.latestEventSyncDate.toISOString());
+                    .replace("{{writeToken}}", stream.writeToken)
+                    .replace("{{latestEventSyncDate}}", stream.latestEventSyncDate.toISOString());
             return callbackUrl;
         }).value();
         console.log(callbackUrls);
@@ -1133,12 +1134,12 @@ module.exports = function (app) {
             title += "partying";
             measurement = "time";
         } else if (objectTags.indexOf("instrument") !== -1
-            && actionTags.indexOf("play") !== -1) {
+                   && actionTags.indexOf("play") !== -1) {
             title += "playing instrument";
             measurement = "time";
         } else if (objectTags.indexOf("computer") !== -1
-            && objectTags.indexOf("games") !== -1
-            && actionTags.indexOf("play") !== -1) {
+                   && objectTags.indexOf("games") !== -1
+                   && actionTags.indexOf("play") !== -1) {
             title += "playing computer games";
             measurement = "time";
 
@@ -1166,7 +1167,7 @@ module.exports = function (app) {
             title += "working";
             measurement = "time";
         } else if (objectTags.indexOf("helloworld") !== -1
-            && actionTags.indexOf("write") !== -1) {
+                   && actionTags.indexOf("write") !== -1) {
             title += "writing hello,world";
             measurement = "time";
         } else if (actionTags.indexOf("write") !== -1) {
@@ -1196,8 +1197,8 @@ module.exports = function (app) {
     app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/:renderType", validateRequest.validateStreamIdAndReadToken, function (req, res) {
         if (req.session.username) {
             var redirectUrl = "/v1/users/" + req.session.username + "/events/" +
-                req.param("objectTags") + "/" + req.param("actionTags") + "/" +
-                req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType") + "?streamId=" + req.param("streamId") + "&readToken=" + req.query.readToken;
+                    req.param("objectTags") + "/" + req.param("actionTags") + "/" +
+                    req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType") + "?streamId=" + req.param("streamId") + "&readToken=" + req.query.readToken;
             res.redirect(redirectUrl);
         } else {
             var queryString;
@@ -1249,8 +1250,8 @@ module.exports = function (app) {
     var validateShareToken = function (req, res, next) {
         var shareToken = req.query.shareToken;
         var graphUrl = "/v1/users/" + req.param("username") + "/events/" +
-            req.param("objectTags") + "/" + req.param("actionTags") + "/" +
-            req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType");
+                req.param("objectTags") + "/" + req.param("actionTags") + "/" +
+                req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType");
 
         console.log("Graph Url is", graphUrl);
 
@@ -1265,74 +1266,74 @@ module.exports = function (app) {
 
     //v1/users/{{edsykes}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
     app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/:renderType",
-        validateShareToken, function (req, res) {
+            validateShareToken, function (req, res) {
 
-            var getGraphOwnerAvatarUrl = function () {
-                var deferred = Q.defer();
-                var username = req.param("username");
-                var userQueryObject = {
-                    username: username
-                };
+                var getGraphOwnerAvatarUrl = function () {
+                    var deferred = Q.defer();
+                    var username = req.param("username");
+                    var userQueryObject = {
+                        username: username
+                    };
 
-                mongoDbConnection(function (qdDb) {
-                    qdDb.collection("users", function (err, collection) {
-                        collection.findOne(userQueryObject, function (error, user) {
-                            if (error) {
-                                console.error("DB error", error);
-                                deferred.reject(error);
-                            } else {
+                    mongoDbConnection(function (qdDb) {
+                        qdDb.collection("users", function (err, collection) {
+                            collection.findOne(userQueryObject, function (error, user) {
+                                if (error) {
+                                    console.error("DB error", error);
+                                    deferred.reject(error);
+                                } else {
 
-                                deferred.resolve(user.githubUser["_json"].avatar_url);
-                            }
+                                    deferred.resolve(user.githubUser["_json"].avatar_url);
+                                }
+                            });
                         });
                     });
-                });
 
-                return deferred.promise;
-            };
+                    return deferred.promise;
+                };
 
-            req.session.redirectUrl = req.originalUrl;
-            var streamId = req.query.streamId;
-            var readToken = req.query.readToken;
-            //        var shareToken = req.query.shareToken;
-            var renderChart = function (graphOwnerAvatarUrl) {
-                var graphInfo = getGraphInfo(req.param("objectTags"), req.param("actionTags"), req.originalUrl, req.param("username"));
-                var isUserLoggedIn = (req.session.username !== undefined);
-                res.render('chart', {
-                    isUserLoggedIn: isUserLoggedIn,
-                    title: graphInfo.title,
-                    measurement: graphInfo.measurement,
-                    graphOwner: req.param("username"),
-                    username: req.param("username"),
-                    graphOwnerAvatarUrl: graphOwnerAvatarUrl,
-                    avatarUrl: req.session.avatarUrl,
-                    objectTags: req.param("objectTags"),
-                    actionTags: req.param("actionTags"),
-                    operation: req.param("operation"),
-                    period: req.param("period"),
-                    shareToken: req.query.shareToken,
-                    renderType: req.param("renderType")
-                });
-            };
+                req.session.redirectUrl = req.originalUrl;
+                var streamId = req.query.streamId;
+                var readToken = req.query.readToken;
+                //        var shareToken = req.query.shareToken;
+                var renderChart = function (graphOwnerAvatarUrl) {
+                    var graphInfo = getGraphInfo(req.param("objectTags"), req.param("actionTags"), req.originalUrl, req.param("username"));
+                    var isUserLoggedIn = (req.session.username !== undefined);
+                    res.render('chart', {
+                        isUserLoggedIn: isUserLoggedIn,
+                        title: graphInfo.title,
+                        measurement: graphInfo.measurement,
+                        graphOwner: req.param("username"),
+                        username: req.param("username"),
+                        graphOwnerAvatarUrl: graphOwnerAvatarUrl,
+                        avatarUrl: req.session.avatarUrl,
+                        objectTags: req.param("objectTags"),
+                        actionTags: req.param("actionTags"),
+                        operation: req.param("operation"),
+                        period: req.param("period"),
+                        shareToken: req.query.shareToken,
+                        renderType: req.param("renderType")
+                    });
+                };
 
-            streamIdAndReadTokenExists(streamId, readToken)
-                .then(function (exists) {
-                    if (exists) {
-                        getStreamsForUser(req.param('username'))
-                            .then(function (user) {
-                                return linkStreamToUser(user, streamId);
-                            })
-                            .then(getGraphOwnerAvatarUrl)
-                            .then(renderChart)
-                            .catch(function (error) {
-                                console.error("error during linking stream to user ", error);
-                                res.status(500).send("Internal server error.");
-                            });
-                    } else {
-                        getGraphOwnerAvatarUrl().then(renderChart);
-                    }
-                });
-        });
+                streamIdAndReadTokenExists(streamId, readToken)
+                    .then(function (exists) {
+                        if (exists) {
+                            getStreamsForUser(req.param('username'))
+                                .then(function (user) {
+                                    return linkStreamToUser(user, streamId);
+                                })
+                                .then(getGraphOwnerAvatarUrl)
+                                .then(renderChart)
+                                .catch(function (error) {
+                                    console.error("error during linking stream to user ", error);
+                                    res.status(500).send("Internal server error.");
+                                });
+                        } else {
+                            getGraphOwnerAvatarUrl().then(renderChart);
+                        }
+                    });
+            });
 
 
     app.get("/timeline", sessionManager.requiresSession, function (req, res) {
