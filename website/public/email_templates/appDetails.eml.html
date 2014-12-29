@@ -1,14 +1,44 @@
+<style type="text/css">
+table, th, td {
+    border: 1px solid black;
+    padding: 10px;
+    border-collapse: collapse;
+}
+
+p {
+    padding: 5px 0 5px 0;
+}
+
+</style>
+
 <div>
-  Hi, <br /><br />
+  Hi, <br />
 
-  Below are the 1self developer application details for <b>{{appName}}</b> you had requested for: <br /><br />
+  <h2>Your Key</h2>
+  
+  <table>
+    <tr>
+      <td><b>Application Id</b></td>
+      <td>{{appId}}</td>
+    </tr>
 
-  <b>AppName:</b> {{appName}}<br />
-  <b>AppId:</b> {{appId}}<br />
-  <b>AppSecret:</b> {{appSecret}}<br /><br />
+    <tr>
+      <td><b>Application Secret</b></td>
+      <td>{{appSecret}}</td>
+    </tr>
 
-  Please do NOT share the app details with anyone. <br/> <br/>
+  </table>
+  
 
-  Thanks! <br />
+  <p>This is your private key, please look after it.</p>
+
+  <h2>What's Next?</h2>
+
+  <p>Get building! Integrate your application <LINK TO APPLICATION CONCEPT> with 1self or build a data connector <LINK TO CONCEPT>. The api documentation describes when you need your application key (hint: creating streams) <LINK TO STREAM ENDPOINT>.</p>
+
+  <div>The quick start guide is a great place to get a feel for the api, check it out <LINK TO QUICK START></div>
+
+  <p>Any questions or comments, just reply to this email.<p>
+
   <b>1self dev team</b>
 </div>

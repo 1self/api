@@ -76,7 +76,7 @@ Util.prototype.registerApp =  function(appDetails, callback) {
 
     var appId = crypto.randomBytes(16).toString('hex');
     var appSecret = crypto.randomBytes(32).toString('hex');
-
+    
     appDetails.appId = "app-id-" + appId;
     appDetails.appSecret = "app-secret-" + appSecret;
 

@@ -865,15 +865,13 @@ module.exports = function (app) {
     });
 
     app.post('/v1/app', function (req, res) {
-        var appName = req.param("appName"),
-        appEmail = req.param('appEmail');
+        var appEmail = req.param('appEmail');
 
-        if (appName === undefined || appEmail === undefined) {
-            res.send(401, "Unauthorized request. Please pass valid app_name and app_email");
+        if (appEmail === undefined) {
+            res.send(401, "Unauthorized request. Please pass valid app_email");
         }
 
         var appDetails = {
-            appName: appName,
             appEmail: appEmail,
             createdOn: moment.utc().toDate()
         };
@@ -882,7 +880,7 @@ module.exports = function (app) {
             if (err) {
                 res.status(500).send("Database error");
             } else {
-                sendAppDetailsByEmail(data.appId, data.appSecret, data.appName, data.appEmail)
+                sendAppDetailsByEmail(data.appId, data.appSecret, data.appEmail)
                     .then(function(){
                         res.send("We have sent email containing your api key to '" + appEmail + "'. Thank You.");
                     });
@@ -891,20 +889,19 @@ module.exports = function (app) {
     });
 
 
-    var sendAppDetailsByEmail = function (appId, appSecret, appName, toEmailId) {
+    var sendAppDetailsByEmail = function (appId, appSecret, toEmailId) {
         var deferred = Q.defer();
 
         emailTemplates(emailConfigOptions, function (err, emailRender) {
             var context = {
                 appId: appId,
-                appSecret: appSecret,
-                appName: appName
+                appSecret: appSecret
             };
             emailRender('appDetails.eml.html', context, function (err, html, text) {
                 sendgrid.send({
                     to: toEmailId,
                     from: ONESELF_EMAIL,
-                    subject: '[' + appName + '] 1self Developer Application Details',
+                    subject: '[1self] Developer Application Details',
                     html: html
                 }, function (err, json) {
                     if (err) {
