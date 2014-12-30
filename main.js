@@ -1984,6 +1984,38 @@ app.get("/v1/comments", function (req, res) {
     });
 });
 
+//check if user exists
+app.get("/v1/user/:username/exists", function(req, res){
+    var username = req.param("username"),
+
+    getUserbyName = function(username){
+        var deferred = q.defer(),
+        byOneselfUsername = {
+            "username": username.toLowerCase()
+        };
+
+        mongoDbConnection(function (qdDb) {
+            qdDb.collection('users').findOne(byOneselfUsername, function (err, user) {
+                if (user) {
+                    deferred.resolve(user);
+                }
+                else {
+                    console.log("User '" + username + "' is not a previous 1self user");
+                    deferred.reject();
+                }
+            });
+        });
+        return deferred.promise;
+    }
+
+    getUserbyName(username)
+        .then(function(){
+            res.send({status: "ok"});
+        }, function(){
+            res.status(404).send({status: "Not Authorized"});
+        });
+});
+
 app.post("/v1/comments", function (req, res) {
     var encodedUsername = req.headers.authorization;
     var chartComment = req.body;
