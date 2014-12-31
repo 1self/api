@@ -173,10 +173,10 @@ var qd = function () {
         result.buildEvents.map(function (buildEvent) {
             totalBuilds.push(buildEvent.passed + buildEvent.failed);
         });
-        totalBuilds = totalBuilds.slice(totalBuilds.length - sparkbarDataForDays, totalBuilds.length)
-        console.log("sparking builds:", totalBuilds)
+        totalBuilds = totalBuilds.slice(totalBuilds.length - sparkbarDataForDays, totalBuilds.length);
+        console.log("sparking builds:", totalBuilds);
         var sparkBar = window.oneSelf.toSparkBars(totalBuilds);
-        var tweetText = sparkBar + " my builds over the last 2 weeks. See yours at quantifieddev.org";
+        var tweetText = sparkBar + " my builds over the last 2 weeks. See yours at app.1self.co";
         var hashTags = ['coding'].join(',');
         $('#tweetMyBuilds').attr('href', "https://twitter.com/share?url=''&hashtags=" + hashTags + "&text=" + tweetText);
         ga('send', 'event', 'tweet_click', 'Build History');
@@ -195,7 +195,7 @@ var qd = function () {
         totalWtfs = totalWtfs.slice(totalWtfs.length - sparkbarDataForDays, totalWtfs.length)
         console.log("sparking wtfs:", totalWtfs)
         var sparkBar = window.oneSelf.toSparkBars(totalWtfs);
-        var tweetText = sparkBar + " my WTFs over the last 2 weeks. The only measure of code quality. See yours at quantifieddev.org";
+        var tweetText = sparkBar + " my WTFs over the last 2 weeks. The only measure of code quality. See yours at app.1self.co";
         var hashTags = ['wtf', 'coding'].join(',');
         $('#tweetMyWtfs').attr('href', "https://twitter.com/share?url=''&hashtags=" + hashTags + "&text=" + tweetText);
         ga('send', 'event', 'tweet_click', 'Hourly WTFs');
@@ -216,7 +216,7 @@ var qd = function () {
         totalHydrations = totalHydrations.slice(totalHydrations.length - sparkbarDataForDays, totalHydrations.length);
         console.log("sparking hydrations:", totalHydrations)
         var sparkBar = window.oneSelf.toSparkBars(totalHydrations);
-        var tweetText = sparkBar + " my hydration levels over the last 2 weeks. See yours at quantifieddev.org";
+        var tweetText = sparkBar + " my hydration levels over the last 2 weeks. See yours at app.1self.co";
         var hashTags = ['hydrate', 'coding'].join(',');
         $('#tweetMyHydration').attr('href', "https://twitter.com/share?url=''&hashtags=" + hashTags + "&text=" + tweetText);
         ga('send', 'event', 'tweet_click', 'Water Intake History');
@@ -236,7 +236,7 @@ var qd = function () {
         totalCaffeine = totalCaffeine.slice(totalCaffeine.length - sparkbarDataForDays, totalCaffeine.length);
         console.log("sparking caffeine:", totalCaffeine)
         var sparkBar = window.oneSelf.toSparkBars(totalCaffeine);
-        var tweetText = sparkBar + " my caffeine levels over the last 2 weeks. See yours at quantifieddev.org";
+        var tweetText = sparkBar + " my caffeine levels over the last 2 weeks. See yours at app.1self.co";
         var hashTags = ['coffee', 'coding'].join(',');
         $('#tweetMyCaffeine').attr('href', "https://twitter.com/share?url=''&hashtags=" + hashTags + "&text=" + tweetText);
         ga('send', 'event', 'tweet_click', 'Caffeine Intake History');
@@ -254,7 +254,7 @@ var qd = function () {
         totalBuildDuration = totalBuildDuration.slice(totalBuildDuration.length - sparkbarDataForDays, totalBuildDuration.length);
         console.log("sparking totalBuildDuration:", totalBuildDuration)
         var sparkBar = window.oneSelf.toSparkBars(totalBuildDuration);
-        var tweetText = sparkBar + " my build duration over the last 2 weeks. See yours at quantifieddev.org";
+        var tweetText = sparkBar + " my build duration over the last 2 weeks. See yours at app.1self.co";
         var hashTags = ['buildDuration', 'coding'].join(',');
         $('#tweetMyBuildDuration').attr('href', "https://twitter.com/share?url=''&hashtags=" + hashTags + "&text=" + tweetText);
         ga('send', 'event', 'tweet_click', 'Build Duration History');
@@ -272,9 +272,9 @@ var qd = function () {
         });
 
         totalActiveDuration = totalActiveDuration.slice(totalActiveDuration.length - sparkbarDataForDays, totalActiveDuration.length);
-        console.log("sparking totalActiveDuration:", totalActiveDuration)
+        console.log("sparking totalActiveDuration:", totalActiveDuration);
         var sparkBar = window.oneSelf.toSparkBars(totalActiveDuration);
-        var tweetText = sparkBar + " my+%23programming+activity+over+the+last+2+weeks.+See+yours+at+quantifieddev.org";
+        var tweetText = sparkBar + " my+%23programming+activity+over+the+last+2+weeks.+See+yours+at+app.1self.co";
         var hashTags = 'coding';
         var url = "https://twitter.com/intent/tweet?text=" + tweetText + "&hashtags=" + hashTags;
         $('#tweetMyActiveDuration').attr('href', url);
