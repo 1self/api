@@ -2,6 +2,7 @@ var crypto = require('crypto');
 var mongoDbConnection = require('./lib/connection.js');
 var mongoRespository = require('./mongoRepository.js');
 var q = require('q');
+var moment = require("moment");
 
 var Util = function () {
 };
@@ -15,11 +16,9 @@ Util.prototype.createStream = function (callback) {
             var charCode = String.fromCharCode((buf[i] % 26) + 65);
             streamid.push(charCode);
         }
-        ;
 
         var writeToken = crypto.randomBytes(22).toString('hex');
         var readToken = crypto.randomBytes(22).toString('hex');
-
         var stream = {
             streamid: streamid.join(''),
             writeToken: writeToken,
@@ -72,25 +71,17 @@ Util.prototype.createV1Stream = function (appId) {
         });
 };
 
-Util.prototype.registerApp = function (appDetails, callback) {
-
+Util.prototype.registerApp = function (appEmail) {
     var appId = crypto.randomBytes(16).toString('hex');
     var appSecret = crypto.randomBytes(32).toString('hex');
+    var appDetails = {
+        appEmail: appEmail,
+        createdOn: moment.utc().toDate(),
+        appId: "app-id-" + appId,
+        appSecret: "app-secret-" + appSecret
+    };
 
-    appDetails.appId = "app-id-" + appId;
-    appDetails.appSecret = "app-secret-" + appSecret;
-
-    mongoDbConnection(function (qdDb) {
-        qdDb.collection('registeredApps').insert(appDetails, function (err, insertedRecords) {
-            if (err) {
-                console.log(err);
-                callback(err, null);
-            } else {
-                console.log("Inserted records for creating app", insertedRecords[0]);
-                callback(null, insertedRecords[0]);
-            }
-        });
-    });
+    return mongoRespository.insert('registeredApps', appDetails);
 };
 
 module.exports = new Util();
