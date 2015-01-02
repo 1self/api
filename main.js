@@ -103,7 +103,7 @@ var convertMillisToSecs = function (milliseconds) {
     return Math.round(milliseconds / (1000) * 100) / 100;
 };
 
-var validEncodedUsername = function (encodedUsername, forUsername, params) {
+var validEncodedUsername = function (encodedUsername) {
     var deferred = q.defer();
     var query = {
         "encodedUsername": encodedUsername
@@ -111,9 +111,7 @@ var validEncodedUsername = function (encodedUsername, forUsername, params) {
     mongoRespository.findOne('users', query)
         .then(function (user) {
             if (user) {
-                var usernames = [encodedUsername, forUsername];
-                var paramsToPassOn = [usernames, params];
-                deferred.resolve(paramsToPassOn);
+                deferred.resolve();
             } else {
                 deferred.reject();
             }
@@ -164,6 +162,36 @@ var checkGraphAlreadyShared = function (graphShareObject) {
     return deferred.promise;
 };
 
+var _getStreamIdForUsername = function (encodedUsername, forUsername) {
+    var deferred = q.defer();
+    var query = null;
+    if (!(_.isEmpty(forUsername)) && (forUsername !== 'undefined')) {
+        query = {
+            "username": forUsername.toLowerCase()
+        };
+    } else {
+        query = {
+            "encodedUsername": encodedUsername
+        };
+    }
+    var projection = {
+        "streams": 1
+    };
+    mongoRespository.findOne('users', query, projection)
+        .then(function (user) {
+            if (!user) {
+                deferred.reject("user not found");
+            } else if (user.streams) {
+                console.log("Streams: " + JSON.stringify(user.streams));
+                deferred.resolve(user.streams);
+            } else {
+                deferred.resolve([]);
+            }
+        }, function (err) {
+            deferred.reject(err);
+        });
+    return deferred.promise;
+};
 
 var getStreamIdForUsername = function (params) {
     var deferred = q.defer();
@@ -300,8 +328,7 @@ var postEvent = function (req, res) {
         });
 };
 
-var getEventsForStreams = function (params) {
-    var streams = params[0];
+var getEventsForStreams = function (streams) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
@@ -532,8 +559,7 @@ var transformPlatformDataToQDEvents = function (result) {
     });
 };
 
-var getBuildEventsFromPlatform = function (params) {
-    var streams = params[0];
+var getBuildEventsFromPlatform = function (streams) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
@@ -612,8 +638,7 @@ var getBuildEventsFromPlatform = function (params) {
  };
  };*/
 
-var getMyActiveDuration = function (params) {
-    var streams = params[0];
+var getMyActiveDuration = function (streams) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
@@ -721,8 +746,7 @@ var getMyActiveDuration = function (params) {
     return deferred.promise;
 };
 
-var generateQueryForBuildDuration = function (params) {
-    var streams = params[0];
+var generateQueryForBuildDuration = function (streams) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
@@ -748,8 +772,7 @@ var generateQueryForBuildDuration = function (params) {
     };
 };
 
-var generateQueryForWtfEvents = function (params) {
-    var streams = params[0];
+var generateQueryForWtfEvents = function (streams) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
@@ -760,8 +783,7 @@ var generateQueryForWtfEvents = function (params) {
     };
 };
 
-var generateQueryForHydrationEvents = function (params) {
-    var streams = params[0];
+var generateQueryForHydrationEvents = function (streams) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
@@ -772,8 +794,7 @@ var generateQueryForHydrationEvents = function (params) {
     };
 };
 
-var generateQueryForCaffeineEvents = function (params) {
-    var streams = params[0];
+var generateQueryForCaffeineEvents = function (streams) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
@@ -799,8 +820,8 @@ var generateWeek = function (defaultValues) {
     return result;
 };
 
-var generateHourlyBuildCountQuery = function (params) {
-    var streams = params[0];
+var generateHourlyBuildCountQuery = function (streams) {
+
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
@@ -811,8 +832,7 @@ var generateHourlyBuildCountQuery = function (params) {
     };
 };
 
-var generateHourlyWtfCountQuery = function (params) {
-    var streams = params[0];
+var generateHourlyWtfCountQuery = function (streams) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
@@ -823,8 +843,7 @@ var generateHourlyWtfCountQuery = function (params) {
     };
 };
 
-var generateHourlyHydrationCountQuery = function (params) {
-    var streams = params[0];
+var generateHourlyHydrationCountQuery = function (streams) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
@@ -835,8 +854,7 @@ var generateHourlyHydrationCountQuery = function (params) {
     };
 };
 
-var generateHourlyCaffeineCountQuery = function (params) {
-    var streams = params[0];
+var generateHourlyCaffeineCountQuery = function (streams) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
@@ -847,8 +865,7 @@ var generateHourlyCaffeineCountQuery = function (params) {
     };
 };
 
-var generateHourlyGithubPushEventsCountQuery = function (params) {
-    var streams = params[0];
+var generateHourlyGithubPushEventsCountQuery = function (streams) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
@@ -1204,9 +1221,7 @@ var getDailyGithubPushEventsCount = function (streamid) {
     return deferred.promise;
 };
 
-var correlateGithubPushesAndIDEActivity = function (params) {
-    var streams = params[0];
-    var events = params[1];
+var correlateGithubPushesAndIDEActivity = function (streams, firstEvent, secondEvent) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
@@ -1216,7 +1231,7 @@ var correlateGithubPushesAndIDEActivity = function (params) {
             "field": {
                 "name": "properties.duration"
             },
-            "data": getQueryForStreamIdActionTagAndObjectTag(streamids, events[0]),
+            "data": getQueryForStreamIdActionTagAndObjectTag(streamids, firstEvent),
             "filterSpec": {},
             "projectionSpec": {
                 "resultField": "activeTimeInMillis"
@@ -1225,7 +1240,7 @@ var correlateGithubPushesAndIDEActivity = function (params) {
     };
     var countQuery = {
         "$count": {
-            "data": getQueryForStreamIdActionTagAndObjectTag(streamids, events[1]),
+            "data": getQueryForStreamIdActionTagAndObjectTag(streamids, secondEvent),
             "filterSpec": {},
             "projectionSpec": {
                 "resultField": "githubPushEventCount"
@@ -1400,8 +1415,10 @@ app.get('/stream/:id', function (req, res) {
 
 app.get('/event', function (req, res) {
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername, req.query.forUsername, [])
-        .then(getStreamIdForUsername)
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return _getStreamIdForUsername(encodedUsername, req.query.forUsername);
+        })
         .then(getEventsForStreams)
         .then(function (response) {
             res.send(response);
@@ -1525,8 +1542,10 @@ app.get('/live/devbuild/:durationMins', function (req, res) {
 app.get('/quantifieddev/mydev', function (req, res) {
     var encodedUsername = req.headers.authorization;
     var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername, forUsername, [])
-        .then(getStreamIdForUsername)
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return _getStreamIdForUsername(encodedUsername, forUsername)
+        })
         .then(getBuildEventsFromPlatform)
         .then(function (response) {
             res.send(response);
@@ -1538,8 +1557,11 @@ app.get('/quantifieddev/mydev', function (req, res) {
 
 app.get('/quantifieddev/mywtf', function (req, res) {
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername, req.query.forUsername, [])
-        .then(getStreamIdForUsername)
+    var forUsername = req.query.forUsername;
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return _getStreamIdForUsername(encodedUsername, forUsername)
+        })
         .then(generateQueryForWtfEvents)
         .then(getAggregatedEventsFromPlatform)
         .then(function (response) {
@@ -1552,8 +1574,11 @@ app.get('/quantifieddev/mywtf', function (req, res) {
 
 app.get('/quantifieddev/myhydration', function (req, res) {
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername, req.query.forUsername, [])
-        .then(getStreamIdForUsername)
+    var forUsername = req.query.forUsername;
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return _getStreamIdForUsername(encodedUsername, forUsername)
+        })
         .then(generateQueryForHydrationEvents)
         .then(getAggregatedEventsFromPlatform)
         .then(function (response) {
@@ -1566,8 +1591,11 @@ app.get('/quantifieddev/myhydration', function (req, res) {
 
 app.get('/quantifieddev/mycaffeine', function (req, res) {
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername, req.query.forUsername, [])
-        .then(getStreamIdForUsername)
+    var forUsername = req.query.forUsername;
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return _getStreamIdForUsername(encodedUsername, forUsername)
+        })
         .then(generateQueryForCaffeineEvents)
         .then(getAggregatedEventsFromPlatform)
         .then(function (response) {
@@ -1580,8 +1608,11 @@ app.get('/quantifieddev/mycaffeine', function (req, res) {
 
 app.get('/quantifieddev/buildDuration', function (req, res) {
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername, req.query.forUsername, [])
-        .then(getStreamIdForUsername)
+    var forUsername = req.query.forUsername;
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return _getStreamIdForUsername(encodedUsername, forUsername)
+        })
         .then(generateQueryForBuildDuration)
         .then(getAggregatedEventsFromPlatform)
         .then(function (response) {
@@ -1597,8 +1628,11 @@ app.get('/quantifieddev/buildDuration', function (req, res) {
 
 app.get('/quantifieddev/hourlyBuildCount', function (req, res) {
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername, req.query.forUsername, [])
-        .then(getStreamIdForUsername)
+    var forUsername = req.query.forUsername;
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return _getStreamIdForUsername(encodedUsername, forUsername)
+        })
         .then(generateHourlyBuildCountQuery)
         .then(getAggregatedEventsFromPlatform)
         .then(function (response) {
@@ -1611,9 +1645,11 @@ app.get('/quantifieddev/hourlyBuildCount', function (req, res) {
 
 app.get('/quantifieddev/hourlyWtfCount', function (req, res) {
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername, req.query.forUsername, [])
-        .then(getStreamIdForUsername)
-        .then(generateHourlyWtfCountQuery)
+    var forUsername = req.query.forUsername;
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return _getStreamIdForUsername(encodedUsername, forUsername)
+        }).then(generateHourlyWtfCountQuery)
         .then(getAggregatedEventsFromPlatform)
         .then(function (response) {
             var result = transformPlatformDataToQDEvents(response[0]);
@@ -1624,9 +1660,11 @@ app.get('/quantifieddev/hourlyWtfCount', function (req, res) {
 });
 app.get('/quantifieddev/hourlyHydrationCount', function (req, res) {
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername, req.query.forUsername, [])
-        .then(getStreamIdForUsername)
-        .then(generateHourlyHydrationCountQuery)
+    var forUsername = req.query.forUsername;
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return _getStreamIdForUsername(encodedUsername, forUsername)
+        }).then(generateHourlyHydrationCountQuery)
         .then(getAggregatedEventsFromPlatform)
         .then(function (response) {
             var result = transformPlatformDataToQDEvents(response[0]);
@@ -1638,9 +1676,11 @@ app.get('/quantifieddev/hourlyHydrationCount', function (req, res) {
 
 app.get('/quantifieddev/hourlyCaffeineCount', function (req, res) {
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername, req.query.forUsername, [])
-        .then(getStreamIdForUsername)
-        .then(generateHourlyCaffeineCountQuery)
+    var forUsername = req.query.forUsername;
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return _getStreamIdForUsername(encodedUsername, forUsername)
+        }).then(generateHourlyCaffeineCountQuery)
         .then(getAggregatedEventsFromPlatform)
         .then(function (response) {
             var result = transformPlatformDataToQDEvents(response[0]);
@@ -1652,9 +1692,11 @@ app.get('/quantifieddev/hourlyCaffeineCount', function (req, res) {
 
 app.get('/quantifieddev/myActiveEvents', function (req, res) {
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername, req.query.forUsername, [])
-        .then(getStreamIdForUsername)
-        .then(getMyActiveDuration)
+    var forUsername = req.query.forUsername;
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return _getStreamIdForUsername(encodedUsername, forUsername)
+        }).then(getMyActiveDuration)
         .then(function (response) {
             res.send(response);
         }).catch(function (error) {
@@ -1677,9 +1719,11 @@ app.get('/quantifieddev/githubPushEventForCompare', function (req, res) {
 
 app.get('/quantifieddev/compare/ideActivity', function (req, res) {
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername, req.query.forUsername, [])
-        .then(getStreamIdForUsername)
-        .then(getTotalUsersOfQd)
+    var forUsername = req.query.forUsername;
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return _getStreamIdForUsername(encodedUsername, forUsername)
+        }).then(getTotalUsersOfQd)
         .then(getIdeActivityDurationForCompare)
         .then(function (response) {
             console.log("Ide Activity For compare: ", JSON.stringify(response));
@@ -1691,9 +1735,11 @@ app.get('/quantifieddev/compare/ideActivity', function (req, res) {
 
 app.get('/quantifieddev/hourlyGithubPushEvents', function (req, res) {
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername, req.query.forUsername, [])
-        .then(getStreamIdForUsername)
-        .then(generateHourlyGithubPushEventsCountQuery)
+    var forUsername = req.query.forUsername;
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return _getStreamIdForUsername(encodedUsername, forUsername)
+        }).then(generateHourlyGithubPushEventsCountQuery)
         .then(getAggregatedEventsFromPlatform)
         .then(function (response) {
             var result = transformPlatformDataToQDEvents(response[0]);
@@ -1721,9 +1767,14 @@ app.get('/quantifieddev/correlate', function (req, res) {
     var firstEvent = req.query.firstEvent;
     var secondEvent = req.query.secondEvent;
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername, req.query.forUsername, [firstEvent, secondEvent])
-        .then(getStreamIdForUsername)
-        .then(correlateGithubPushesAndIDEActivity)
+    var forUsername = req.query.forUsername;
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return _getStreamIdForUsername(encodedUsername, forUsername);
+        })
+        .then(function (streams) {
+            return correlateGithubPushesAndIDEActivity(streams, firstEvent, secondEvent);
+        })
         .then(function (response) {
             res.send(response);
         }).catch(function (error) {
