@@ -1,6 +1,10 @@
 var mongoDbConnection = require('./lib/connection.js');
 var q = require('q');
 
+function defaultFor(arg, val) {
+    return typeof arg !== 'undefined' ? arg : val;
+}
+
 var insert = function (collection, document) {
     var deferred = q.defer();
     mongoDbConnection(function (qdDb) {
@@ -18,22 +22,21 @@ var insert = function (collection, document) {
 
 var find = function (collection, query, projection) {
     var deferred = q.defer();
+    projection = defaultFor(projection, {});
     mongoDbConnection(function (qdDb) {
         qdDb.collection(collection).find(query, projection, function (err, documents) {
             if (err) {
                 console.err(err);
                 deferred.reject(err);
             } else {
-                deferred.resolve(documents.toArray());
+                documents.toArray(function (err, docs) {
+                    deferred.resolve(docs);
+                });
             }
         });
     });
     return deferred.promise;
 };
-
-function defaultFor(arg, val) {
-    return typeof arg !== 'undefined' ? arg : val;
-}
 
 var findOne = function (collection, query, projection) {
     var deferred = q.defer();
