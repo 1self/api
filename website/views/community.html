@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Quantified Dev Beta</title>
-    <meta charset="UTF-8" />
+<head>
+    <title>1self - Live smarter</title>
+    <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1">
-    <meta name="description" content="Quantified Dev Community View" />
-    <meta name="keywords" content="Admin, Dashboard, Bootstrap3, Sass, transform, CSS3, HTML5, Web design, UI Design, Responsive Dashboard, Responsive Admin, Admin Theme, Best Admin UI, Bootstrap Theme, Wrapbootstrap, Bootstrap" />
-    <meta name="author" content="Bootstrap Gallery" />
+    <meta name="description" content="1self Dev Community View"/>
+    <meta name="keywords"
+          content="Admin, Dashboard, Bootstrap3, Sass, transform, CSS3, HTML5, Web design, UI Design, Responsive Dashboard, Responsive Admin, Admin Theme, Best Admin UI, Bootstrap Theme, Wrapbootstrap, Bootstrap"/>
+    <meta name="author" content="Bootstrap Gallery"/>
     <link rel="shortcut icon" href="/img/quantified-dev-favicon.ico">
     <link href="/css/import.css" rel="stylesheet" media="screen">
     <link href="/fonts/font-awesome.css" rel="stylesheet">
@@ -32,108 +33,133 @@
     <script src="/js/jvectormap/jquery-jvectormap-usa.js"></script>
 
     <script>
-     (function(i, s, o, g, r, a, m) {
-       i['GoogleAnalyticsObject'] = r;
-       i[r] = i[r] || function() {
-         (i[r].q = i[r].q || []).push(arguments)
-       }, i[r].l = 1 * new Date();
-       a = s.createElement(o),
-       m = s.getElementsByTagName(o)[0];
-       a.async = 1;
-       a.src = g;
-       m.parentNode.insertBefore(a, m)
-     })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-     ga('create', 'UA-49828181-1', 'quantifieddev.org');
-     ga('send', 'pageview');
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                    m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+        ga('create', 'UA-49828181-1', 'quantifieddev.org');
+        ga('send', 'pageview');
     </script>
 
-  </head>
-  <body class="animated fadeInDown" ng-app>
-    {% include "./templates/_qd_header.html" %}
-    <aside id="sidebar">
-      <div>
+</head>
+<body class="animated fadeInDown" ng-app>
+{% include "./templates/_qd_header.html" %}
+<aside id="sidebar">
+    <div>
         {% include "./templates/_menu.html" %}
-      </div>
-    </aside>
-    <div class="dashboard-wrapper">
-      <div class="container">
+    </div>
+</aside>
+<div class="dashboard-wrapper">
+    <div class="container">
         <div>
-          {% include "./templates/_link_datasource.html" %}
+            {% include "./templates/_link_datasource.html" %}
         </div>
         <div class="row page-title">
-          <div class="col-lg-9 col-md-8 col-sm-9 col-xs-12">
-            <h2>Community</h2>
-            <ul class="breadcrumb">
-              <li>Home</li>
-              <li>Community</li>
-            </ul>
-          </div> 
-        </div>
-        <div class="row" >
-          <div class='col-lg-6 col-md-6 col-sm-12 info-tiles info-secondary'>
-            <iframe id="qd-globe" src="https://app.quantifieddev.org/community/globe" width="100%" scrolling="no" frameborder="0"> </iframe> <script src="https://app.quantifieddev.org/js/iframeResizer.min.js"></script> <script> var win = document.getElementById("qd-globe").contentWindow; document.getElementById("qd-globe").onload = function() { iFrameResize({ resizedCallback: function(data) { data.iframe.style.height = data.height - 25 + "px"; } }); win.postMessage( window.location.toString(), "https://app.quantifieddev.org/community/globe" ); return false; } </script>
-          </div>
-          <div class="col-lg-6 col-md-6 col-sm-12 info-tiles tiles-secondary">
-            <div class="tiles-heading">
-              <div id="country" style="margin-bottom: 10px;">Your Country's Events</div>
+            <div class="col-lg-9 col-md-8 col-sm-9 col-xs-12">
+                <h2>Community</h2>
+                <ul class="breadcrumb">
+                    <li>Home</li>
+                    <li>Community</li>
+                </ul>
             </div>
-            <div class="tiles-body">
-              <div class="pull-left animated bounceIn">
-              </div>
+        </div>
+        <div class="row">
+            <div class='col-lg-6 col-md-6 col-sm-12 info-tiles info-secondary'>
+                <iframe id="qd-globe" src="https://app.1self.co/community/globe" width="100%" scrolling="no"
+                        frameborder="0"></iframe>
+                <script src="https://app.1self.co/js/iframeResizer.min.js"></script>
+                <script> var win = document.getElementById("qd-globe").contentWindow;
+                document.getElementById("qd-globe").onload = function () {
+                    iFrameResize({ resizedCallback: function (data) {
+                        data.iframe.style.height = data.height - 25 + "px";
+                    } });
+                    win.postMessage(window.location.toString(), "https://app.1self.co/community/globe");
+                    return false;
+                } </script>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 info-tiles tiles-secondary">
+                <div class="tiles-heading">
+                    <div id="country" style="margin-bottom: 10px;">Your Country's Events</div>
+                </div>
+                <div class="tiles-body">
+                    <div class="pull-left animated bounceIn">
+                    </div>
 
-              <div class="row margin-zero">
-              <div class="number">
-                <div id='live-country'>
+                    <div class="row margin-zero">
+                        <div class="number">
+                            <div id='live-country'>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px;">
+                        <div class="col-xs-8 col-centered">
+                            <select id="country-event-select" class="form-control">
+                                <option value='all'
+                                {% if country.event == "all" %}selected="true"{% endif %}>All</option>
+                                <option value='Build'
+                                {% if country.event == "Build" %}selected="true"{% endif %}>Builds</option>
+                                <option value='wtf'
+                                {% if country.event == "wtf" %}selected="true"{% endif %}>WTFs</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px;">
+                        <div class="col-xs-8 col-centered">
+                            <select id="country-time-select" class="form-control">
+                                <option value='1'
+                                {% if country.duration == 1 %}selected="true"{% endif %}>Last Minute</option>
+                                <option value='60'
+                                {% if country.duration == 60 %}selected="true"{% endif %}>Last Hour</option>
+                                <option value='1440'
+                                {% if country.duration == 1440 %}selected="true"{% endif %}>Last Day</option>
+                                <option value='10080'
+                                {% if country.duration == 10080 %}selected="true"{% endif %}>Last Week</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px;">
+                        <div class="col-xs-8 col-centered">
+                            <select id="country-language-select" class="form-control">
+                                <option value="all"
+                                {% if country.lang == "all" %}selected="true"{% endif %}>All Languages</option>
+                                <option value="java"
+                                {% if country.lang == "java" %}selected="true"{% endif %} >Java</option>
+                                <option value="groovy"
+                                {% if country.lang == "groovy" %}selected="true"{% endif %}>Groovy</option>
+                                <option value="scala"
+                                {% if country.lang == "scala" %}selected="true"{% endif %}>Scala</option>
+                                <option value="c#"
+                                {% if country.lang == "c#" %}selected="true"{% endif %}>C#</option>
+                                <option value="javascript"
+                                {% if country.lang == "javascript" %}selected="true"{% endif %}>Javascript</option>
+                                <option value="python"
+                                {% if country.lang == "python" %}selected="true"{% endif %}>Python</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-              </div></div>
-              <div class="row" style="margin-bottom: 10px;">
-                <div class="col-xs-8 col-centered">
-                  <select id="country-event-select" class="form-control">
-                    <option value='all'{% if country.event == "all" %}selected="true"{% endif %}>All</option>
-                    <option value='Build' {% if country.event == "Build" %}selected="true"{% endif %}>Builds</option>
-                    <option value='wtf' {% if country.event == "wtf" %}selected="true"{% endif %}>WTFs</option>
-                  </select>
+                <div class="tiles-footer">
+                    <span class="inline-sparkline pull-right" id="visits"></span>
                 </div>
-              </div>
-              <div class="row" style="margin-bottom: 10px;">
-                <div class="col-xs-8 col-centered">
-                  <select id="country-time-select" class="form-control">
-                    <option value='1'{% if country.duration == 1 %}selected="true"{% endif %}>Last Minute</option>
-                    <option value='60'{% if country.duration == 60 %}selected="true"{% endif %}>Last Hour</option>
-                    <option value='1440'{% if country.duration == 1440 %}selected="true"{% endif %}>Last Day</option>
-                    <option value='10080' {% if country.duration == 10080 %}selected="true"{% endif %}>Last Week</option>
-                  </select>
-                </div>
-              </div>
-              <div class="row" style="margin-bottom: 10px;">
-                <div class="col-xs-8 col-centered">
-                  <select id="country-language-select" class="form-control">
-                    <option value="all" {% if country.lang == "all" %}selected="true"{% endif %}>All Languages</option>
-                    <option value="java" {% if country.lang == "java" %}selected="true"{% endif %} >Java</option>
-                    <option value="groovy" {% if country.lang == "groovy" %}selected="true"{% endif %}>Groovy</option>
-                    <option value="scala" {% if country.lang == "scala" %}selected="true"{% endif %}>Scala</option>
-                    <option value="c#" {% if country.lang == "c#" %}selected="true"{% endif %}>C#</option>
-                    <option value="javascript" {% if country.lang == "javascript" %}selected="true"{% endif %}>Javascript</option>
-                    <option value="python" {% if country.lang == "python" %}selected="true"{% endif %}>Python</option>
-                  </select>
-                </div>
-              </div>
             </div>
-            <div class="tiles-footer">
-              <span class="inline-sparkline pull-right" id="visits"></span>
-            </div>
-          </div>
         </div>
-      </div>
-      <script src="/js/d3.v3.min.js"></script>
-      <script src="/js/d3.geo.projection.v0.min.js"></script>
-      <script src="/js/topojson.v1.min.js"></script>
-      <script src="/js/queue.v1.min.js"></script>
-      <script src="/js/underscore-min.js"></script>
-      <script src="/js/live-country.js"></script>
-      <script src="/js/link-datasource.js"></script>
-      <script src="/js/custom.js"></script>
-      <script src="/js/menu-for-high-resolution.js"></script>
-      <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-    </body>
-  </html>
+    </div>
+    <script src="/js/d3.v3.min.js"></script>
+    <script src="/js/d3.geo.projection.v0.min.js"></script>
+    <script src="/js/topojson.v1.min.js"></script>
+    <script src="/js/queue.v1.min.js"></script>
+    <script src="/js/underscore-min.js"></script>
+    <script src="/js/live-country.js"></script>
+    <script src="/js/link-datasource.js"></script>
+    <script src="/js/custom.js"></script>
+    <script src="/js/menu-for-high-resolution.js"></script>
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+</body>
+</html>
