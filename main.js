@@ -19,6 +19,7 @@ var cookieParser = require('cookie-parser');
 var fs = require('fs');
 var validateRequest = require("./validateRequest");
 var validator = require('validator');
+var mongoRespository = require('./mongoRepository.js');
 
 var opbeatOptions = {
     organization_id: process.env.OPBEAT_ORGANIZATION_ID,
@@ -248,7 +249,7 @@ var getGithubStreamIdForUsername = function (params) {
     return deferred.promise;
 };
 
-var saveEvent_driver = function (myEvent, stream, res, rm) {
+var saveEvent_driver = function (myEvent, stream, res) {
     myEvent.streamid = stream.streamid;
     myEvent.eventDateTime = {
         "$date": formatEventDateTime(myEvent.dateTime)
@@ -273,37 +274,34 @@ var saveEvent_driver = function (myEvent, stream, res, rm) {
         });
 };
 
-var authenticateWriteToken = function (token, id, error, success) {
-    mongoDbConnection(function (qdDb) {
-        qdDb.collection('stream').find({
-            streamid: id
-        }, function (err, docs) {
-            docs.toArray(function (err, docsArray) {
-                var stream = docsArray[0] || {};
-                if (stream.writeToken != token) {
-                    error();
-                } else {
-                    success({
-                        streamid: stream.streamid
-                    });
-                }
-            });
+var authenticateWriteToken = function (writeToken, id) {
+    var deferred = q.defer();
+    var query = {
+        streamid: id
+    };
+    mongoRespository.findOne('stream', query)
+        .then(function (stream) {
+            if (stream === null || stream.writeToken !== writeToken) {
+                deferred.reject();
+            } else {
+                deferred.resolve({
+                    streamid: stream.streamid
+                });
+            }
         });
-    });
+
+    return deferred.promise;
 };
 
 var postEvent = function (req, res) {
     var writeToken = req.headers.authorization;
-    authenticateWriteToken(
-        writeToken,
-        req.params.id,
+    authenticateWriteToken(writeToken, req.params.id)
+        .then(function (stream) {
+            saveEvent_driver(req.body, stream, res);
+        },
         function () {
             res.status(404).send("stream not found");
-        },
-        function (stream) {
-            saveEvent_driver(req.body, stream, res, requestModule);
-        }
-    );
+        });
 };
 
 var getEventsForStreams = function (params) {
@@ -1471,15 +1469,13 @@ var saveBatchEvents = function (myEvents, stream, res) {
 
 var postEvents = function (req, res) {
     var writeToken = req.headers.authorization;
-    authenticateWriteToken(writeToken, req.params.id,
+    authenticateWriteToken(writeToken, req.params.id)
+        .then(function (stream) {
+            saveBatchEvents(req.body, stream, res);
+        },
         function () {
             res.status(404).send("stream not found");
-        },
-        function (stream) {
-            saveBatchEvents(req.body, stream, res);
-        }
-    );
-
+        });
 };
 app.post('/stream/:id/batch', postEvents);
 
@@ -1897,20 +1893,6 @@ var findGraphUrl = function (graphUrl) {
     return deferred.promise;
 };
 
-var createChartComment = function (chartComment) {
-    var deferred = q.defer();
-    mongoDbConnection(function (qdDb) {
-        qdDb.collection('comments').insert(chartComment, function (err, recordsInserted) {
-            if (err) {
-                deferred.reject(err);
-            } else {
-                deferred.resolve();
-            }
-        });
-    });
-    return deferred.promise;
-};
-
 var updateChartComment = function (chartComment) {
     var deferred = q.defer();
     mongoDbConnection(function (qdDb) {
@@ -2031,7 +2013,7 @@ app.post("/v1/comments", function (req, res) {
                 chartComment.comments = [chartComment.comment];
                 delete chartComment.comment;
                 chartComment.dataPointDate = moment.utc(chartComment.dataPointDate, "YYYY-MM-DD").toDate();
-                return createChartComment(chartComment);
+                return mongoRespository.insert('comments', chartComment);
             }
             else {
                 return updateChartComment(chartComment);
