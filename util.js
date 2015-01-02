@@ -1,5 +1,6 @@
 var crypto = require('crypto');
 var mongoDbConnection = require('./lib/connection.js');
+var mongoRespository = require('./mongoRepository.js');
 var q = require('q');
 
 var Util = function () {
@@ -65,21 +66,10 @@ var generateStream = function (appId) {
 };
 
 Util.prototype.createV1Stream = function (appId) {
-    var deferred = q.defer();
-
-    generateStream(appId).then(function (stream) {
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection('stream').insert(stream, function (err, insertedRecords) {
-                if (err) {
-                    console.err(err);
-                    deferred.reject(err);
-                } else {
-                    deferred.resolve(insertedRecords[0]);
-                }
-            });
+    return generateStream(appId)
+        .then(function (stream) {
+            return mongoRespository.insert('stream', stream);
         });
-    });
-    return deferred.promise;
 };
 
 Util.prototype.registerApp = function (appDetails, callback) {
