@@ -51,6 +51,22 @@ var findOne = function (collection, query, projection) {
     return deferred.promise;
 };
 
+var update = function (collection, query, updateObject) {
+    var deferred = q.defer();
+    mongoDbConnection(function (qdDb) {
+        qdDb.collection(collection).update(query, updateObject, function (err, updateCount) {
+            if (err) {
+                console.err(err);
+                deferred.reject(err);
+            } else {
+                deferred.resolve(updateCount);
+            }
+        });
+    });
+    return deferred.promise;
+};
+
 exports.insert = insert;
 exports.find = find;
 exports.findOne = findOne;
+exports.update = update;

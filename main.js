@@ -105,26 +105,22 @@ var convertMillisToSecs = function (milliseconds) {
 
 var validEncodedUsername = function (encodedUsername, forUsername, params) {
     var deferred = q.defer();
-    var encodedUsernameExists = {
+    var query = {
         "encodedUsername": encodedUsername
     };
-
-    mongoDbConnection(function (qdDb) {
-        qdDb.collection('users').findOne(encodedUsernameExists, function (err, user) {
-            if (err) {
-                console.log("Error is", err);
-                deferred.reject(err);
+    mongoRespository.findOne('users', query)
+        .then(function (user) {
+            if (user) {
+                var usernames = [encodedUsername, forUsername];
+                var paramsToPassOn = [usernames, params];
+                deferred.resolve(paramsToPassOn);
             } else {
-                if (user) {
-                    var usernames = [encodedUsername, forUsername];
-                    var paramsToPassOn = [usernames, params];
-                    deferred.resolve(paramsToPassOn);
-                } else {
-                    deferred.reject();
-                }
+                deferred.reject();
             }
+        }, function (err) {
+            console.log("Error is", err);
+            deferred.reject(err);
         });
-    });
 
     return deferred.promise;
 };
@@ -1330,18 +1326,17 @@ var validateClient = function (appId, appSecret) {
         appId: appId,
         appSecret: appSecret
     };
-    mongoDbConnection(function (qdDb) {
-        qdDb.collection('registeredApps').findOne(query, function (err, result) {
-            console.log("reg apps: " + err + result);
-            if (err) {
-                deferred.reject();
-            } else if (!result) {
+
+    mongoRespository.findOne('registeredApps', query)
+        .then(function (result) {
+            if (!result) {
                 deferred.reject();
             } else {
                 deferred.resolve();
             }
+        }, function (err) {
+            deferred.reject(err);
         });
-    });
     return deferred.promise;
 };
 
@@ -1877,39 +1872,36 @@ app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/t
 var findGraphUrl = function (graphUrl) {
     var deferred = q.defer();
     var query = {graphUrl: graphUrl};
-    mongoDbConnection(function (qdDb) {
-        qdDb.collection('comments').findOne(query, function (err, chartComments) {
-            if (err) {
-                deferred.reject(err);
+
+    mongoRespository.findOne('comments', query)
+        .then(function (chartComments) {
+            if (chartComments) {
+                deferred.resolve(chartComments);
             } else {
-                if (chartComments) {
-                    deferred.resolve(chartComments);
-                } else {
-                    deferred.resolve();
-                }
+                deferred.resolve();
             }
+        }, function (err) {
+            deferred.reject(err);
         });
-    });
+
     return deferred.promise;
 };
 
 var updateChartComment = function (chartComment) {
     var deferred = q.defer();
-    mongoDbConnection(function (qdDb) {
-        var query = {graphUrl: chartComment.graphUrl};
-        var commentToInsert = {
-            "$push": {
-                "comments": chartComment.comment
-            }
-        };
-        qdDb.collection('comments').update(query, commentToInsert, function (err, recordsUpdated) {
-            if (err) {
-                deferred.reject(err);
-            } else {
-                deferred.resolve();
-            }
+    var query = {graphUrl: chartComment.graphUrl};
+    var commentToInsert = {
+        "$push": {
+            "comments": chartComment.comment
+        }
+    };
+    mongoRespository.update('comments', query, commentToInsert)
+        .then(function () {
+            deferred.resolve();
+        }, function (err) {
+            deferred.reject(err);
         });
-    });
+
     return deferred.promise;
 };
 
