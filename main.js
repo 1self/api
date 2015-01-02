@@ -1362,24 +1362,24 @@ app.post('/v1/streams', function (req, res) {
     var auth = req.headers.authorization;
     console.log("auth is " + auth);
     if (auth === undefined) {
-        res.send(401, "Unauthorized request. Please pass valid clientId and clientSecret");
+        res.send(401, "Unauthorized request. Please pass valid appId and appSecret");
     }
     var appId = auth.split(":")[0];
     var appSecret = auth.split(":")[1];
 
-    validateClient(appId, appSecret).then(function () {
-        util.createV1Stream(appId, function (err, data) {
-            if (err) {
-                res.status(500).send("Database error");
-            } else {
-                delete data._id;
-                delete data.clientId;
-                res.send(data);
-            }
+    validateClient(appId, appSecret)
+        .then(function () {
+            return util.createV1Stream(appId)
+                .then(function (data) {
+                    delete data._id;
+                    delete data.appId;
+                    res.send(data);
+                }, function (err) {
+                    res.status(500).send("Database error.");
+                });
+        }).catch(function () {
+            res.status(401).send("Unauthorized request. Invalid appId and appSecret");
         });
-    }).catch(function () {
-        res.send(401);
-    });
 });
 
 
@@ -1793,7 +1793,6 @@ var getQueryForVisualizationAPI = function (streamIds, params) {
     };
 
 
-
     var operation_string = params.operation.split('(');
     var operation = operation_string[0];
     var query = {};
@@ -1819,7 +1818,7 @@ var getQueryForVisualizationAPI = function (streamIds, params) {
 
 //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}({{:property}})/daily/{{barchart/json}}
 app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/type/json", validateRequest.validateStreamIdAndReadToken,
-    
+
     function (req, res) {
         console.log("validating");
         var query = getQueryForVisualizationAPI([req.params.streamId], req.params);
@@ -1985,33 +1984,33 @@ app.get("/v1/comments", function (req, res) {
 });
 
 //check if user exists
-app.get("/v1/user/:username/exists", function(req, res){
+app.get("/v1/user/:username/exists", function (req, res) {
     var username = req.param("username"),
 
-    getUserbyName = function(username){
-        var deferred = q.defer(),
-        byOneselfUsername = {
-            "username": username.toLowerCase()
-        };
+        getUserbyName = function (username) {
+            var deferred = q.defer(),
+                byOneselfUsername = {
+                    "username": username.toLowerCase()
+                };
 
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection('users').findOne(byOneselfUsername, function (err, user) {
-                if (user) {
-                    deferred.resolve(user);
-                }
-                else {
-                    console.log("User '" + username + "' is not a previous 1self user");
-                    deferred.reject();
-                }
+            mongoDbConnection(function (qdDb) {
+                qdDb.collection('users').findOne(byOneselfUsername, function (err, user) {
+                    if (user) {
+                        deferred.resolve(user);
+                    }
+                    else {
+                        console.log("User '" + username + "' is not a previous 1self user");
+                        deferred.reject();
+                    }
+                });
             });
-        });
-        return deferred.promise;
-    }
+            return deferred.promise;
+        }
 
     getUserbyName(username)
-        .then(function(){
+        .then(function () {
             res.send({status: "ok"});
-        }, function(){
+        }, function () {
             res.status(404).send({status: "Not Authorized"});
         });
 });
