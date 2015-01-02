@@ -1,225 +1,239 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Quantified Dev Beta</title>
-    <meta charset="UTF-8" />
+<head>
+    <title>1self - Live smarter</title>
+    <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1">
-    <meta name="description" content="Quantified Dev Dashboard" />
-    <meta name="keywords" content="Quantified Dev Development QuantifiedSelf Quantified Self" />
-    <meta name="author" content="Quantified Dev" />
+    <meta name="description" content="1self Comparison"/>
+    <meta name="keywords" content="1self Quantified Dev Development QuantifiedSelf Quantified Self"/>
+    <meta name="author" content="1self"/>
     <link rel="shortcut icon" href="/img/quantified-dev-favicon.ico">
     <link href="/css/twitter.css" rel="stylesheet">
     <link href="/css/import.css" rel="stylesheet" media="screen">
     <link href="/fonts/font-awesome.css" rel="stylesheet">
     <script>
-     (function(i, s, o, g, r, a, m) {
-       i['GoogleAnalyticsObject'] = r;
-       i[r] = i[r] || function() {
-         (i[r].q = i[r].q || []).push(arguments)
-       }, i[r].l = 1 * new Date();
-       a = s.createElement(o),
-       m = s.getElementsByTagName(o)[0];
-       a.async = 1;
-       a.src = g;
-       m.parentNode.insertBefore(a, m)
-     })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-     ga('create', 'UA-49828181-1', 'quantifieddev.org');
-     ga('send', 'pageview');
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                    m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+        ga('create', 'UA-49828181-1', 'quantifieddev.org');
+        ga('send', 'pageview');
     </script>
-  </head>
-  <body class="animated fadeInDown" ng-app>
-    {% include "./templates/_qd_header.html" %}
-    <!-- Top Bar End -->
-    <!-- Left sidebar start -->
-    <aside id="sidebar">
-      <div>
+</head>
+<body class="animated fadeInDown" ng-app>
+{% include "./templates/_qd_header.html" %}
+<!-- Top Bar End -->
+<!-- Left sidebar start -->
+<aside id="sidebar">
+    <div>
         {% include "./templates/_menu.html" %}
-      </div>
-    </aside>
-    <!-- Left sidebar end -->
-    <div class="dashboard-wrapper">
-      <div class="container comparison">
+    </div>
+</aside>
+<!-- Left sidebar end -->
+<div class="dashboard-wrapper">
+    <div class="container comparison">
         <div>
-          {% include "./templates/_link_datasource.html" %}
+            {% include "./templates/_link_datasource.html" %}
         </div>
         <div class="row page-title">
-         
+
             <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12 mobile-margin-bottom-five">
-              <h2>Comparison</h2>
-              <ul class="breadcrumb">
-                <li>Home</li>
-                <li>Comparison</li>
-              </ul>
+                <h2>Comparison</h2>
+                <ul class="breadcrumb">
+                    <li>Home</li>
+                    <li>Comparison</li>
+                </ul>
             </div>
             <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 mobile-margin-bottom-five">
-              <button data-toggle="modal" class="btn btn-info" id="compare-btn">Send Comparison Request</button>
-              <div>{% include "./templates/_compare_request_popup.html" %}</div>
+                <button data-toggle="modal" class="btn btn-info" id="compare-btn">Send Comparison Request</button>
+                <div>{% include "./templates/_compare_request_popup.html" %}</div>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-              <div class="row">
-                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                <div class="row">
+                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
 
-                  {% if friends %}
-                    <select id="friendList" class="btn btn-default" >
-                      <!-- <option>Select Friend</option> -->
-                      {% for friend in friends %}
-                        <option {% if friend == compareWith %} selected="true" {% endif %} >
-                          {{ friend }}
-                        </option>
-                      {% endfor %}
-                    </select>
-                    <div class="row">
-                      <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <p id="compare-username-errors" class="text-danger text-bold" style="margin-top: 3%"></p>
-                      </div>
+                        {% if friends %}
+                        <select id="friendList" class="btn btn-default">
+                            <!-- <option>Select Friend</option> -->
+                            {% for friend in friends %}
+                            <option
+                            {% if friend == compareWith %} selected="true" {% endif %} >
+                            {{ friend }}
+                            </option>
+                            {% endfor %}
+                        </select>
+
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                <p id="compare-username-errors" class="text-danger text-bold"
+                                   style="margin-top: 3%"></p>
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
-                  {% endif %}
                 </div>
-              </div>
             </div>
-         
+
         </div>
         <div class="row graph-container-row compare-graph-container-row">
-          <div id="compare-build-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12"  style="display:none;">
-            <div class="panel panel-secondary fixed-height">
-              <div class="panel-heading cursor-move">
-                <h3 class="panel-title"><i class="icon-bar-chart"></i>Side By Side Build History</h3>
-              </div>
-              <div class="panel-body">
-                <div id="compare-build-history"><div class="no-data-msg alert" role="alert">No data available</div></div>
-              </div>
-            </div>
-          </div>
-          <div id="compare-active-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12"  style="display:none;">
-            <div class="panel panel-secondary fixed-height">
-              <div class="panel-heading cursor-move">
-                <h3 class="panel-title"><i class="icon-bar-chart"></i>Side By Side IDE Active Work History</h3>
-              </div>
-              <div class="panel-body">
-                <div id="compare-active-events">
-                  <div class="no-data-msg alert" role="alert">No data available</div>
+            <div id="compare-build-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+                <div class="panel panel-secondary fixed-height">
+                    <div class="panel-heading cursor-move">
+                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Side By Side Build History</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div id="compare-build-history">
+                            <div class="no-data-msg alert" role="alert">No data available</div>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
-          <div id="diff-hourly-github-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12"  style="display:none;">
-            <div class="panel panel-secondary fixed-height">
-              <div class="panel-heading cursor-move">
-                <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Github Push Events Difference HeatMap</h3>
-              </div>
-              <div class="panel-body">
-                <div id="diff-hourly-github-events"><div class="no-data-msg alert" role="alert">No data available</div></div>
-              </div>
-            </div>
-          </div>
-          <div id="daily-github-event-compare-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12"  style="display:none;">
-            <div class="panel panel-secondary fixed-height">
-              <div class="panel-heading cursor-move">
-                <h3 class="panel-title"><i class="icon-bar-chart"></i>Daily Github Push Event Comparison</h3>
-              </div>
-              <div class="panel-body">
-                <div id="daily-github-event-compare"><div class="no-data-msg alert" role="alert">No data available</div></div>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-            <div class="panel panel-secondary fixed-height">
-              <div class="panel-heading cursor-move">
-                <h3 class="panel-title"><i class="icon-bar-chart"></i>My Github Push Events vs Avg of the Rest of the World</h3>
-              </div>
-              <div class="panel-body">
-                <div id="compare-github-events">
-                  <div class="no-data-msg alert" role="alert">No data available</div>
+            <div id="compare-active-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+                <div class="panel panel-secondary fixed-height">
+                    <div class="panel-heading cursor-move">
+                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Side By Side IDE Active Work History</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div id="compare-active-events">
+                            <div class="no-data-msg alert" role="alert">No data available</div>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
-          <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-            <div class="panel panel-secondary fixed-height">
-              <div class="panel-heading cursor-move">
-                <h3 class="panel-title"><i class="icon-bar-chart"></i>My IDE Activity vs Avg of the Rest of the World</h3>
-              </div>
-              <div class="panel-body">
-                <div id="compare-ide-activity">
-                  <div class="no-data-msg alert" role="alert">No data available</div>
+            <div id="diff-hourly-github-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12"
+                 style="display:none;">
+                <div class="panel panel-secondary fixed-height">
+                    <div class="panel-heading cursor-move">
+                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Github Push Events Difference
+                            HeatMap</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div id="diff-hourly-github-events">
+                            <div class="no-data-msg alert" role="alert">No data available</div>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
+            <div id="daily-github-event-compare-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12"
+                 style="display:none;">
+                <div class="panel panel-secondary fixed-height">
+                    <div class="panel-heading cursor-move">
+                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Daily Github Push Event Comparison</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div id="daily-github-event-compare">
+                            <div class="no-data-msg alert" role="alert">No data available</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+                <div class="panel panel-secondary fixed-height">
+                    <div class="panel-heading cursor-move">
+                        <h3 class="panel-title"><i class="icon-bar-chart"></i>My Github Push Events vs Avg of the Rest
+                            of the World</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div id="compare-github-events">
+                            <div class="no-data-msg alert" role="alert">No data available</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+                <div class="panel panel-secondary fixed-height">
+                    <div class="panel-heading cursor-move">
+                        <h3 class="panel-title"><i class="icon-bar-chart"></i>My IDE Activity vs Avg of the Rest of the
+                            World</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div id="compare-ide-activity">
+                            <div class="no-data-msg alert" role="alert">No data available</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-    <!-- Main Container End -->
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="/js/jquery.js"></script>
-    <script src="/js/jquery.cookie.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/bootstrap-modal.js"></script>
-    <script src="/js/bootstrap-modalmanager.js"></script>
-    <script src="/js/underscore-min.js"></script>
-    <!-- jQuery UI JS -->
-    <script src="/js/jquery-ui-v1.10.3.js"></script>
-    <!-- Sparkline graphs -- >
-    <script src="/js/sparkline.js"></script>
-    <!-- Data tables -->
-    <script src="/js/jquery.datatables.js"></script>
-    <!-- Date Range -->
-    <script src="/js/daterange/moment.js"></script>
-    <script src="/js/daterange/daterangepicker.js"></script>
-    <!-- Animated Right Sidebar -->
-    <script src="/js/slidebars.js"></script>
-    <!-- JVector Map -->
-    <script src="/js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
-    <script src="/js/jvectormap/jquery-jvectormap-usa.js"></script>
-    <!-- Custom JS -->
-    <script src="/js/custom.js"></script>
-    <script src="/js/custom-index.js"></script>
-    <script src="/js/utils.js"></script>
-    <script src="/packages/d3/d3.js"></script>
-    <script src="/js/d3.tip.v0.6.3.js"></script>
-    <script src="/packages/d3/d3.geo.projection.v0.min.js"></script>
-    <script src="/packages/d3/topojson.v1.min.js"></script>
-    <script src="/packages/d3/queue.v1.min.js"></script>
-    <script src="/packages/regressionjs/regression.js"></script>
-    <script src="/js/ajax_request.js"></script>
-    
-    <script src="/js/quantified-dev.js"></script>
-    <script src="/js/wtf-history-d3.js"></script>
-    <script src="/js/hydration-history-d3.js"></script>
-    <script src="/js/caffeine-history-d3.js"></script>
-    <script src="/js/buildDuration-history-d3.js"></script>
-    <script src="/js/active-events-d3.js"></script>
-    <script src="/js/compare.js"></script>
-    <script src="/js/build-history-d3-for.js"></script>
-    <script src="/js/active-events-d3-for.js"></script>
-    <script src="/js/build-history-d3.js"></script>
-    <script src="/js/build-compare-d3.js"></script>
-    <script src="/js/active-events-compare-d3.js"></script>
-    <script src="/js/link-datasource.js"></script>
-    <script src="/js/restOfTheWorld-events-compare-d3.js"></script>
-    <script src="/js/hourlyEvent-diff-d3.js"></script>
-    <script src="/js/event-daily-compare-d3.js"></script>
-    <script src="/js/mustache.js"></script>
-    <script src="/js/menu-for-high-resolution.js"></script>
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-  
-    <script>
+</div>
+<!-- Main Container End -->
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="/js/jquery.js"></script>
+<script src="/js/jquery.cookie.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/bootstrap-modal.js"></script>
+<script src="/js/bootstrap-modalmanager.js"></script>
+<script src="/js/underscore-min.js"></script>
+<!-- jQuery UI JS -->
+<script src="/js/jquery-ui-v1.10.3.js"></script>
+<!-- Sparkline graphs -- >
+<script src="/js/sparkline.js"></script>
+<!-- Data tables -->
+<script src="/js/jquery.datatables.js"></script>
+<!-- Date Range -->
+<script src="/js/daterange/moment.js"></script>
+<script src="/js/daterange/daterangepicker.js"></script>
+<!-- Animated Right Sidebar -->
+<script src="/js/slidebars.js"></script>
+<!-- JVector Map -->
+<script src="/js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
+<script src="/js/jvectormap/jquery-jvectormap-usa.js"></script>
+<!-- Custom JS -->
+<script src="/js/custom.js"></script>
+<script src="/js/custom-index.js"></script>
+<script src="/js/utils.js"></script>
+<script src="/packages/d3/d3.js"></script>
+<script src="/js/d3.tip.v0.6.3.js"></script>
+<script src="/packages/d3/d3.geo.projection.v0.min.js"></script>
+<script src="/packages/d3/topojson.v1.min.js"></script>
+<script src="/packages/d3/queue.v1.min.js"></script>
+<script src="/packages/regressionjs/regression.js"></script>
+<script src="/js/ajax_request.js"></script>
 
-     $(document).ready(function() {
-       $("#compare-btn").click(function(){
-         ga('send', 'event', 'comparison_request', 'comparision_request_initiated');
-       });
+<script src="/js/quantified-dev.js"></script>
+<script src="/js/wtf-history-d3.js"></script>
+<script src="/js/hydration-history-d3.js"></script>
+<script src="/js/caffeine-history-d3.js"></script>
+<script src="/js/buildDuration-history-d3.js"></script>
+<script src="/js/active-events-d3.js"></script>
+<script src="/js/compare.js"></script>
+<script src="/js/build-history-d3-for.js"></script>
+<script src="/js/active-events-d3-for.js"></script>
+<script src="/js/build-history-d3.js"></script>
+<script src="/js/build-compare-d3.js"></script>
+<script src="/js/active-events-compare-d3.js"></script>
+<script src="/js/link-datasource.js"></script>
+<script src="/js/restOfTheWorld-events-compare-d3.js"></script>
+<script src="/js/hourlyEvent-diff-d3.js"></script>
+<script src="/js/event-daily-compare-d3.js"></script>
+<script src="/js/mustache.js"></script>
+<script src="/js/menu-for-high-resolution.js"></script>
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 
-       $("#submit-compare-details").click(function() {
-         ga('send', 'event', 'comparison_request', 'comparision_email_entered');
-       });
+<script>
 
-       $("#send-compare-request-email").click(function() {
-         ga('send', 'event', 'comparison_request', 'comparision_email_sent');
-       });
-     });
+    $(document).ready(function () {
+        $("#compare-btn").click(function () {
+            ga('send', 'event', 'comparison_request', 'comparision_request_initiated');
+        });
 
-    </script>
-  </body>
+        $("#submit-compare-details").click(function () {
+            ga('send', 'event', 'comparison_request', 'comparision_email_entered');
+        });
+
+        $("#send-compare-request-email").click(function () {
+            ga('send', 'event', 'comparison_request', 'comparision_email_sent');
+        });
+    });
+
+</script>
+</body>
 </html>

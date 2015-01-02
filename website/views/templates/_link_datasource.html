@@ -1,45 +1,50 @@
 <div class="modal fade" id="noDataSourceMessage" tabindex="-1" role="dialog"
-aria-labelledby="noDataSourceMessageLabel" aria-hidden="false">
-<div class="modal-dialog">
-    <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <h4 class="modal-title" id="noDataSourceMessageLabel">Start linking data sources</h4>
-        </div>
-        <div class="modal-body">
-            To start seeing your data on the QuantifiedDev dashboard you need to start linking up data sources.
-            <br /><br />
-            It's easy.
-            <br /><br />
-            <div class="text-center">
-                <button href="#" id="connect_to_github_link_popup_btn" class="btn btn-primary">Link up my GitHub data</button>
-
-                <br /><br />
-                -- OR --
-                <br /><br />
-
-                <form action="http://quantifieddev.org/#download" target="_blank">
-                    <input type="submit" class="btn btn-primary" value="Download tool plugins"></input>
-                </form>
+     aria-labelledby="noDataSourceMessageLabel" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="noDataSourceMessageLabel">Start linking data sources</h4>
             </div>
+            <div class="modal-body">
+                To start seeing your data on the 1self dashboard you need to start linking up data sources.
+                <br/><br/>
+                It's easy.
+                <br/><br/>
 
-        </br /> </br />
+                <div class="text-center">
+                    <button href="#" id="connect_to_github_link_popup_btn" class="btn btn-primary">Link up my GitHub
+                        data
+                    </button>
 
-        <a href="#" onclick="$('#link-stream-id').toggle()">Manually link Stream Id and Read Token</a>
-        <br /><br />
-        <div id="link-stream-id" style="display:none">
-            <span style="font-weight:bold"></span> Find your Stream Id and Read Token in the admin window of your plugin, enter them in the boxes and click the button below
-            <br /><br/>
-            <form action="/dashboard" method="get">
-                <label for="streamId">Stream Id</label> <input name="streamId" class="form-control" type="text" id="streamId">
-                <label for="readToken">Read Token</label> <input name="readToken" class="form-control" type="text" id="readToken">
-                <br />
-                <label id="stream-error" style="color: red; display:none;">Please enter a Stream Id and Read Token</label>
-                <br />
-                <input type="submit" class="btn btn-success" value="Manually link your Stream Id" onClick="return validateStreamDetails();">
-            </form>
+
+                </div>
+
+                </br/> </br/>
+
+                <a href="#" onclick="$('#link-stream-id').toggle()">Manually link Stream Id and Read Token</a>
+                <br/><br/>
+
+                <div id="link-stream-id" style="display:none">
+                    <span style="font-weight:bold"></span> Find your Stream Id and Read Token in the admin window of
+                    your plugin, enter them in the boxes and click the button below
+                    <br/><br/>
+
+                    <form action="/dashboard" method="get">
+                        <label for="streamId">Stream Id</label> <input name="streamId" class="form-control" type="text"
+                                                                       id="streamId">
+                        <label for="readToken">Read Token</label> <input name="readToken" class="form-control"
+                                                                         type="text" id="readToken">
+                        <br/>
+                        <label id="stream-error" style="color: red; display:none;">Please enter a Stream Id and Read
+                            Token</label>
+                        <br/>
+                        <input type="submit" class="btn btn-success" value="Manually link your Stream Id"
+                               onClick="return validateStreamDetails();">
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-</div>
 </div>
