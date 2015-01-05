@@ -883,57 +883,43 @@ var getIdeActivityDurationForCompare = function (params) {
             }
         }
     };
-
-    console.log("query : " + JSON.stringify([myIdeActivityDuration, restOfTheWorldIdeActivityDuration]));
-    var options = {
-        url: platformUri + '/rest/analytics/aggregate',
-        auth: {
-            user: "",
-            password: encryptedPassword
-        },
-        qs: {
-            spec: JSON.stringify([myIdeActivityDuration, restOfTheWorldIdeActivityDuration]),
-            merge: true
-        },
-        method: 'GET'
+    var query = {
+        spec: JSON.stringify([myIdeActivityDuration, restOfTheWorldIdeActivityDuration]),
+        merge: true
     };
-
-    function callback(error, response, body) {
-        if (!error && response.statusCode === 200) {
-            var result = JSON.parse(body);
-            var defaultIdeActivityDurationForCompare = [
-                {
-                    key: "my",
-                    value: 0
-                },
-                {
-                    key: "avg",
-                    value: 0
-                }
-            ];
-            var ideActivityDurationForCompare = generateDatesFor(defaultIdeActivityDurationForCompare);
-            for (var date in result) {
-                if (ideActivityDurationForCompare[date] !== undefined) {
-                    if (result[date].myIdeActivityDuration === undefined) {
-                        result[date].myIdeActivityDuration = 0;
-                    }
-                    if (result[date].restOfTheWorldIdeActivityDuration === undefined) {
-                        result[date].restOfTheWorldIdeActivityDuration = 0;
-                    }
-                    ideActivityDurationForCompare[date].my = convertMillisToMinutes(result[date].myIdeActivityDuration);
-                    var durationInMins = convertMillisToMinutes(result[date].restOfTheWorldIdeActivityDuration);
-                    ideActivityDurationForCompare[date].avg = durationInMins / (totalUsers - 1);
-                }
+    var processResult = function (result) {
+        var defaultIdeActivityDurationForCompare = [
+            {
+                key: "my",
+                value: 0
+            },
+            {
+                key: "avg",
+                value: 0
             }
-            deferred.resolve(rollupToArray(ideActivityDurationForCompare));
-
-        } else {
-            deferred.reject(error);
+        ];
+        var ideActivityDurationForCompare = generateDatesFor(defaultIdeActivityDurationForCompare);
+        for (var date in result) {
+            if (ideActivityDurationForCompare[date] !== undefined) {
+                if (result[date].myIdeActivityDuration === undefined) {
+                    result[date].myIdeActivityDuration = 0;
+                }
+                if (result[date].restOfTheWorldIdeActivityDuration === undefined) {
+                    result[date].restOfTheWorldIdeActivityDuration = 0;
+                }
+                ideActivityDurationForCompare[date].my = convertMillisToMinutes(result[date].myIdeActivityDuration);
+                var durationInMins = convertMillisToMinutes(result[date].restOfTheWorldIdeActivityDuration);
+                ideActivityDurationForCompare[date].avg = durationInMins / (totalUsers - 1);
+            }
         }
-    }
-
-    requestModule(options, callback);
-
+        deferred.resolve(rollupToArray(ideActivityDurationForCompare));
+    };
+    platformService.aggregate(query)
+        .then(function (result) {
+            return processResult(result);
+        }, function (err) {
+            deferred.reject(error);
+        });
     return deferred.promise;
 };
 
