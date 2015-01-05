@@ -87,7 +87,6 @@ app.all('*', function (req, res, next) {
     }
 });
 
-
 require('./quantifieddevRoutes')(app);
 
 // Please keep it below inclusion of quantifieddevRoutes file.
@@ -1123,29 +1122,13 @@ app.get('/live/devbuild/:durationMins', function (req, res) {
     if (selectedLanguage) {
         filterSpec["payload.properties.Language"] = selectedLanguage;
     }
-
-    var options = {
-        url: platformUri + '/rest/events/filter',
-        auth: {
-            user: "",
-            password: encryptedPassword
-        },
-        qs: {
-            'filterSpec': JSON.stringify(filterSpec)
-        },
-        method: 'GET'
-    };
-
-    function callback(error, response, body) {
-        if (!error && response.statusCode === 200) {
-            var info = JSON.parse(body);
-            res.send(info);
-        } else {
+    var query = JSON.stringify(filterSpec);
+    platformService.filter(query)
+        .then(function (result) {
+            res.send(result);
+        }, function (err) {
             res.status(500).send("Something went wrong!");
-        }
-    }
-
-    requestModule(options, callback);
+        });
 });
 
 app.get('/quantifieddev/mydev', function (req, res) {

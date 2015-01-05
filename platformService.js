@@ -69,6 +69,30 @@ var aggregate = function (query) {
     return deferred.promise;
 };
 
+var filter = function (query) {
+    var deferred = q.defer();
+    var requestDetails = {
+        url: platformUri + '/rest/events/filter',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: {
+            'filterSpec': query
+        },
+        method: 'GET'
+    };
+    requestModule(requestDetails, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            deferred.resolve(JSON.parse(body));
+        } else {
+            deferred.reject(error);
+        }
+    });
+    return deferred.promise;
+};
+
 exports.saveEvent = saveEvent;
 exports.saveBatchEvents = saveBatchEvents;
 exports.aggregate = aggregate;
+exports.filter = filter;
