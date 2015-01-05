@@ -714,56 +714,44 @@ var getGithubPushEventCountForCompare = function (params) {
     });
     var myGithubPushEventCount = countOnParameters(myGithubPushEventGroupQuery, {}, "myGithubPushEventCount");
     var theirGithubPushEventCount = countOnParameters(theirGithubPushEventGroupQuery, {}, "theirGithubPushEventCount");
-    var options = {
-        url: platformUri + '/rest/analytics/aggregate',
-        auth: {
-            user: "",
-            password: encryptedPassword
-        },
-        qs: {
-            spec: JSON.stringify([myGithubPushEventCount, theirGithubPushEventCount]),
-            merge: true
-        },
-        method: 'GET'
+
+    var query = {
+        spec: JSON.stringify([myGithubPushEventCount, theirGithubPushEventCount]),
+        merge: true
     };
-
-    function callback(error, response, body) {
-        if (!error && response.statusCode === 200) {
-            var result = JSON.parse(body);
-            if (_.isEmpty(result)) {
-                deferred.resolve([]);
-            }
-            var defaultGithubPushEventsForCompare = [
-                {
-                    key: "my",
-                    value: 0
-                },
-                {
-                    key: "avg",
-                    value: 0
-                }
-            ];
-            var githubPushEventsForCompare = generateDatesFor(defaultGithubPushEventsForCompare);
-            for (var date in result) {
-                if (githubPushEventsForCompare[date] !== undefined) {
-                    if (result[date].myGithubPushEventCount === undefined) {
-                        result[date].myGithubPushEventCount = 0;
-                    }
-                    if (result[date].theirGithubPushEventCount === undefined) {
-                        result[date].theirGithubPushEventCount = 0;
-                    }
-                    githubPushEventsForCompare[date].my = result[date].myGithubPushEventCount;
-                    githubPushEventsForCompare[date].avg = result[date].theirGithubPushEventCount / (totalUsers - 1);
-                }
-            }
-            deferred.resolve(rollupToArray(githubPushEventsForCompare));
-
-        } else {
-            deferred.reject(error);
+    var processResult = function (result) {
+        if (_.isEmpty(result)) {
+            deferred.resolve([]);
         }
-    }
-
-    requestModule(options, callback);
+        var defaultGithubPushEventsForCompare = [
+            {
+                key: "my",
+                value: 0
+            },
+            {
+                key: "avg",
+                value: 0
+            }
+        ];
+        var githubPushEventsForCompare = generateDatesFor(defaultGithubPushEventsForCompare);
+        for (var date in result) {
+            if (githubPushEventsForCompare[date] !== undefined) {
+                if (result[date].myGithubPushEventCount === undefined) {
+                    result[date].myGithubPushEventCount = 0;
+                }
+                if (result[date].theirGithubPushEventCount === undefined) {
+                    result[date].theirGithubPushEventCount = 0;
+                }
+                githubPushEventsForCompare[date].my = result[date].myGithubPushEventCount;
+                githubPushEventsForCompare[date].avg = result[date].theirGithubPushEventCount / (totalUsers - 1);
+            }
+        }
+        deferred.resolve(rollupToArray(githubPushEventsForCompare));
+    };
+    platformService.aggregate(query)
+        .then(processResult, function (err) {
+            deferred.reject(err);
+        });
 
     return deferred.promise;
 };
@@ -972,44 +960,31 @@ var correlateGithubPushesAndIDEActivity = function (streams, firstEvent, secondE
             }
         }
     };
-    var query = [sumQuery, countQuery];
-    var options = {
-        url: platformUri + '/rest/analytics/aggregate',
-        auth: {
-            user: "",
-            password: encryptedPassword
-        },
-        qs: {
-            spec: JSON.stringify(query),
-            merge: true
-        },
-        method: 'GET'
+    var query = {
+        spec: JSON.stringify([sumQuery, countQuery]),
+        merge: true
     };
-
-    function callback(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var result = JSON.parse(body);
-            if (_.isEmpty(result)) {
-                deferred.resolve([]);
-            } else {
-                for (var date in result) {
-                    if (result[date].activeTimeInMillis === undefined) {
-                        result[date].activeTimeInMillis = 0;
-                    }
-                    if (result[date].githubPushEventCount === undefined) {
-                        result[date].githubPushEventCount = 0;
-                    }
-                    result[date].activeTimeInMinutes = convertMillisToMinutes(result[date].activeTimeInMillis);
-                    result[date].date = date;
-                }
-                deferred.resolve(result);
-            }
+    var processResult = function (result) {
+        if (_.isEmpty(result)) {
+            deferred.resolve([]);
         } else {
-            deferred.reject(error);
+            for (var date in result) {
+                if (result[date].activeTimeInMillis === undefined) {
+                    result[date].activeTimeInMillis = 0;
+                }
+                if (result[date].githubPushEventCount === undefined) {
+                    result[date].githubPushEventCount = 0;
+                }
+                result[date].activeTimeInMinutes = convertMillisToMinutes(result[date].activeTimeInMillis);
+                result[date].date = date;
+            }
+            deferred.resolve(result);
         }
-    }
-
-    requestModule(options, callback);
+    };
+    platformService.aggregate(query)
+        .then(processResult, function (err) {
+            deferred.reject(err);
+        });
     return deferred.promise;
 };
 
