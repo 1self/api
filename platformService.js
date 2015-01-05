@@ -28,4 +28,26 @@ var saveEvent = function (event) {
     return deferred.promise;
 };
 
+var aggregate = function (query) {
+    var deferred = q.defer();
+    var requestDetails = {
+        url: platformUri + '/rest/analytics/aggregate',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        qs: query,
+        method: 'GET'
+    };
+    requestModule(requestDetails, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            deferred.resolve(JSON.parse(body));
+        } else {
+            deferred.reject(error);
+        }
+    });
+    return deferred.promise;
+};
+
 exports.saveEvent = saveEvent;
+exports.aggregate = aggregate;

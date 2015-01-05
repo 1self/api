@@ -227,31 +227,6 @@ var postEvent = function (req, res) {
         });
 };
 
-var getAggregatedEventsFromPlatform = function (queryString) {
-    console.log("Query string: " + JSON.stringify(queryString));
-    var deferred = q.defer();
-    var requestDetails = {
-        url: platformUri + '/rest/analytics/aggregate',
-        auth: {
-            user: "",
-            password: encryptedPassword
-        },
-        qs: queryString,
-        method: 'GET'
-    };
-    console.log(JSON.stringify(requestDetails));
-    requestModule(requestDetails, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var result = JSON.parse(body);
-            deferred.resolve(result);
-        }
-        else {
-            deferred.reject(error);
-        }
-    });
-    return deferred.promise;
-};
-
 var generateDatesFor = function (defaultValues) {
     var result = {};
     var numberOfDaysToReportBuildsOn = 30;
@@ -403,58 +378,45 @@ var transformPlatformDataToQDEvents = function (result) {
 };
 
 var getBuildEventsFromPlatform = function (streams) {
+    var deferred = q.defer();
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
-    var deferred = q.defer();
     var groupQuery = groupByOnParametersForLastMonth(streamids, "Finish");
     var countSuccessQuery = countOnParameters(groupQuery, {"properties.Result": "Success"}, "passed");
     var countFailureQuery = countOnParameters(groupQuery, {"properties.Result": "Failure"}, "failed");
-    var options = {
-        url: platformUri + '/rest/analytics/aggregate',
-        auth: {
-            user: "",
-            password: encryptedPassword
-        },
-        qs: {
-            spec: JSON.stringify([countSuccessQuery, countFailureQuery]),
-            merge: true
-        },
-        method: 'GET'
+    var query = {
+        spec: JSON.stringify([countSuccessQuery, countFailureQuery]),
+        merge: true
     };
-
-    function callback(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var result = JSON.parse(body);
-            if (_.isEmpty(result)) {
-                deferred.resolve([]);
-            } else {
-                var defaultBuildValues = [
-                    {
-                        key: "passed",
-                        value: 0
-                    },
-                    {
-                        key: "failed",
-                        value: 0
-                    }
-                ];
-                var buildsByDay = generateDatesFor(defaultBuildValues);
-                for (var date in result) {
-                    if (buildsByDay[date] !== undefined) {
-                        buildsByDay[date].passed = result[date].passed;
-                        buildsByDay[date].failed = result[date].failed;
-                    }
-                }
-                deferred.resolve(rollupToArray(buildsByDay));
-            }
+    var processResult = function (result) {
+        if (_.isEmpty(result)) {
+            deferred.resolve([]);
         } else {
-            deferred.reject(error);
+            var defaultBuildValues = [
+                {
+                    key: "passed",
+                    value: 0
+                },
+                {
+                    key: "failed",
+                    value: 0
+                }
+            ];
+            var buildsByDay = generateDatesFor(defaultBuildValues);
+            for (var date in result) {
+                if (buildsByDay[date] !== undefined) {
+                    buildsByDay[date].passed = result[date].passed;
+                    buildsByDay[date].failed = result[date].failed;
+                }
+            }
+            deferred.resolve(rollupToArray(buildsByDay));
         }
-    }
-
-    requestModule(options, callback);
-
+    };
+    platformService.aggregate(query)
+        .then(processResult, function (err) {
+            deferred.reject(err);
+        });
     return deferred.promise;
 };
 
@@ -1303,7 +1265,7 @@ app.get('/quantifieddev/mywtf', function (req, res) {
             return getStreamIdForUsername(encodedUsername, forUsername)
         })
         .then(generateQueryForWtfEvents)
-        .then(getAggregatedEventsFromPlatform)
+        .then(platformService.aggregate)
         .then(function (response) {
             var result = transformPlatformDataToQDEvents(response[0]);
             res.send(result);
@@ -1320,7 +1282,7 @@ app.get('/quantifieddev/myhydration', function (req, res) {
             return getStreamIdForUsername(encodedUsername, forUsername)
         })
         .then(generateQueryForHydrationEvents)
-        .then(getAggregatedEventsFromPlatform)
+        .then(platformService.aggregate)
         .then(function (response) {
             var result = transformPlatformDataToQDEvents(response[0]);
             res.send(result);
@@ -1337,7 +1299,7 @@ app.get('/quantifieddev/mycaffeine', function (req, res) {
             return getStreamIdForUsername(encodedUsername, forUsername)
         })
         .then(generateQueryForCaffeineEvents)
-        .then(getAggregatedEventsFromPlatform)
+        .then(platformService.aggregate)
         .then(function (response) {
             var result = transformPlatformDataToQDEvents(response[0]);
             res.send(result);
@@ -1354,7 +1316,7 @@ app.get('/quantifieddev/buildDuration', function (req, res) {
             return getStreamIdForUsername(encodedUsername, forUsername)
         })
         .then(generateQueryForBuildDuration)
-        .then(getAggregatedEventsFromPlatform)
+        .then(platformService.aggregate)
         .then(function (response) {
             for (var date in response) {
                 response[date].avgBuildDuration = convertMillisToSecs(response[date].totalDuration / response[date].eventCount);
@@ -1374,7 +1336,7 @@ app.get('/quantifieddev/hourlyBuildCount', function (req, res) {
             return getStreamIdForUsername(encodedUsername, forUsername)
         })
         .then(generateHourlyBuildCountQuery)
-        .then(getAggregatedEventsFromPlatform)
+        .then(platformService.aggregate)
         .then(function (response) {
             var result = transformPlatformDataToQDEvents(response[0]);
             res.send(result);
@@ -1390,7 +1352,7 @@ app.get('/quantifieddev/hourlyWtfCount', function (req, res) {
         .then(function () {
             return getStreamIdForUsername(encodedUsername, forUsername)
         }).then(generateHourlyWtfCountQuery)
-        .then(getAggregatedEventsFromPlatform)
+        .then(platformService.aggregate)
         .then(function (response) {
             var result = transformPlatformDataToQDEvents(response[0]);
             res.send(result);
@@ -1405,7 +1367,7 @@ app.get('/quantifieddev/hourlyHydrationCount', function (req, res) {
         .then(function () {
             return getStreamIdForUsername(encodedUsername, forUsername)
         }).then(generateHourlyHydrationCountQuery)
-        .then(getAggregatedEventsFromPlatform)
+        .then(platformService.aggregate)
         .then(function (response) {
             var result = transformPlatformDataToQDEvents(response[0]);
             res.send(result);
@@ -1421,7 +1383,7 @@ app.get('/quantifieddev/hourlyCaffeineCount', function (req, res) {
         .then(function () {
             return getStreamIdForUsername(encodedUsername, forUsername)
         }).then(generateHourlyCaffeineCountQuery)
-        .then(getAggregatedEventsFromPlatform)
+        .then(platformService.aggregate)
         .then(function (response) {
             var result = transformPlatformDataToQDEvents(response[0]);
             res.send(result);
@@ -1483,7 +1445,7 @@ app.get('/quantifieddev/hourlyGithubPushEvents', function (req, res) {
             return getStreamIdForUsername(encodedUsername, forUsername)
         })
         .then(generateHourlyGithubPushEventsCountQuery)
-        .then(getAggregatedEventsFromPlatform)
+        .then(platformService.aggregate)
         .then(function (response) {
             var result = transformPlatformDataToQDEvents(response[0]);
             res.send(result);
@@ -1608,7 +1570,7 @@ app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period
     function (req, res) {
         console.log("validating");
         var query = getQueryForVisualizationAPI([req.params.streamId], req.params);
-        getAggregatedEventsFromPlatform(query)
+        platformService.aggregate(query)
             .then(function (response) {
                 console.log("trying to transform events");
                 res.send(transformPlatformDataToQDEvents(response[0]));
@@ -1655,7 +1617,7 @@ app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/t
             });
             return getQueryForVisualizationAPI(streamIds, req.params);
         })
-        .then(getAggregatedEventsFromPlatform)
+        .then(platformService.aggregate)
         .then(function (response) {
             res.send(transformPlatformDataToQDEvents(response[0]));
         }).catch(function (error) {
