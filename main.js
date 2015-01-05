@@ -290,62 +290,6 @@ var postEvent = function (req, res) {
         });
 };
 
-var getEventsForStreams = function (streams) {
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var deferred = q.defer();
-    var filterSpec = {
-        'payload.streamid': streamids
-    };
-    var options = {
-        url: platformUri + '/rest/events/filter',
-        auth: {
-            user: "",
-            password: encryptedPassword
-        },
-        qs: {
-            'filterSpec': JSON.stringify(filterSpec)
-        },
-        method: 'GET'
-    };
-
-    var getEventsFromPlatform = function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var result = JSON.parse(body);
-            deferred.resolve(result);
-        } else {
-            deferred.reject(error);
-        }
-    };
-    requestModule(options, getEventsFromPlatform);
-    return deferred.promise;
-};
-
-var getEventsCount = function () {
-    var deferred = q.defer();
-
-    var options = {
-        url: platformUri + '/rest/events/eventsCount',
-        auth: {
-            user: "",
-            password: encryptedPassword
-        },
-        method: 'GET'
-    };
-
-    var getEventsCountFromPlatform = function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var result = JSON.parse(body);
-            deferred.resolve(result);
-        } else {
-            deferred.reject(error);
-        }
-    };
-    requestModule(options, getEventsCountFromPlatform);
-    return deferred.promise;
-};
-
 var getAggregatedEventsFromPlatform = function (queryString) {
     console.log("Query string: " + JSON.stringify(queryString));
     var deferred = q.defer();
@@ -838,22 +782,6 @@ var generateHourlyGithubPushEventsCountQuery = function (streams) {
     };
 };
 
-var getTotalGithubUsersOfQd = function (params) {
-    var deferred = q.defer();
-    var query = {
-        "githubUser.githubStreamId": {
-            $exists: true
-        }
-    };
-    mongoRespository.count('users', query)
-        .then(function (count) {
-            deferred.resolve([count, params]);
-        }, function (err) {
-            deferred.reject(err);
-        });
-    return deferred.promise;
-};
-
 var getTotalUsersOfQd = function (streams) {
     var deferred = q.defer();
     mongoRespository.count('users', {})
@@ -1312,43 +1240,6 @@ app.post('/v1/streams', function (req, res) {
         });
 });
 
-
-app.get('/stream/:id', function (req, res) {
-    var readToken = req.headers.authorization;
-    var spec = {
-        streamid: req.params.id
-    };
-    mongoDbConnection(function (qdDb) {
-        qdDb.collection('stream').find(spec, function (err, docs) {
-            docs.toArray(function (err, streamArray) {
-                var stream = streamArray[0] || {};
-                if (stream.readToken !== readToken) {
-                    res.status(404).send("stream not found");
-                } else {
-                    var response = {
-                        streamid: stream.streamid
-                    };
-                    res.send(JSON.stringify(response));
-                }
-            });
-        });
-    });
-});
-
-app.get('/event', function (req, res) {
-    var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername)
-        .then(function () {
-            return _getStreamIdForUsername(encodedUsername, req.query.forUsername);
-        })
-        .then(getEventsForStreams)
-        .then(function (response) {
-            res.send(response);
-        }).catch(function (error) {
-            res.status(404).send("No stream associated with user.");
-        });
-});
-
 app.post('/stream/:id/event', postEvent);
 
 app.post('/v1/streams/:id/events', validateRequest.validate, postEvent);
@@ -1777,7 +1668,6 @@ var getQueryForVisualizationAPI = function (streamIds, params) {
 
 //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}({{:property}})/daily/{{barchart/json}}
 app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/type/json", validateRequest.validateStreamIdAndReadToken,
-
     function (req, res) {
         console.log("validating");
         var query = getQueryForVisualizationAPI([req.params.streamId], req.params);
@@ -1790,7 +1680,6 @@ app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period
                 res.status(404).send("Oops! Some error occurred.");
             });
     });
-
 
 var authorizeUser = function (req, res, next) {
     var shareToken = req.query.shareToken;
@@ -1976,7 +1865,6 @@ app.get("/v1/helptext/:topic", function (req, res) {
         res.send({helptext: data})
     });
 });
-
 
 app.options('*', function (request, response) {
     response.header('Access-Control-Allow-Origin', '*');
