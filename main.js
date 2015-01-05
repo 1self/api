@@ -1,4 +1,3 @@
-var requestModule = require('request');
 var express = require("express");
 var moment = require("moment");
 var url = require('url');
@@ -9,7 +8,6 @@ var opbeat = require('opbeat');
 var session = require("express-session");
 var q = require('q');
 var util = require('./util');
-var PasswordEncrypt = require('./lib/PasswordEncrypt');
 var redis = require('redis');
 var RedisStore = require('connect-redis')(session);
 var logger = require('morgan');
@@ -63,14 +61,6 @@ app.set('view engine', 'html');
  cache: false
  });*/
 
-// Constants
-var aDay = 24 * 60 * 60 * 1000;
-var platformUri = process.env.PLATFORM_BASE_URI;
-var sharedSecret = process.env.SHARED_SECRET;
-console.log("sharedSecret : " + sharedSecret);
-
-console.log('Connecting to PLATFORM_BASE_URI : ' + platformUri);
-
 require('./githubOAuth')(app);
 
 app.all('*', function (req, res, next) {
@@ -91,8 +81,6 @@ require('./quantifieddevRoutes')(app);
 
 // Please keep it below inclusion of quantifieddevRoutes file.
 app.use(opbeat.middleware.express(client));
-
-var encryptedPassword = PasswordEncrypt.encryptPassword(sharedSecret);
 
 var convertMillisToMinutes = function (milliseconds) {
     return Math.round(milliseconds / (1000 * 60) * 100) / 100;
@@ -230,6 +218,7 @@ var generateDatesFor = function (defaultValues) {
     var result = {};
     var numberOfDaysToReportBuildsOn = 30;
     var currentDate = new Date();
+    var aDay = 24 * 60 * 60 * 1000;
     var startDate = new Date(currentDate - (30 * aDay));
     for (var i = 0; i <= numberOfDaysToReportBuildsOn; i++) {
         var eachDay = startDate - 0 + (i * aDay);

@@ -6,6 +6,8 @@ var sharedSecret = process.env.SHARED_SECRET;
 var encryptedPassword = PasswordEncrypt.encryptPassword(sharedSecret);
 var platformUri = process.env.PLATFORM_BASE_URI;
 
+console.log('Connecting to PLATFORM_BASE_URI : ' + platformUri);
+
 var saveEvent = function (event) {
     var deferred = q.defer();
     var options = {
