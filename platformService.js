@@ -28,6 +28,26 @@ var saveEvent = function (event) {
     return deferred.promise;
 };
 
+var saveBatchEvents = function (batchEvents) {
+    var deferred = q.defer();
+    var options = {
+        url: platformUri + '/rest/events/batch',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        json: batchEvents
+    };
+    requestModule.post(options, function (error, response) {
+        if (!error && response.statusCode == 200) {
+            deferred.resolve({status: "ok"});
+        } else {
+            deferred.reject(error);
+        }
+    });
+    return deferred.promise;
+};
+
 var aggregate = function (query) {
     var deferred = q.defer();
     var requestDetails = {
@@ -50,4 +70,5 @@ var aggregate = function (query) {
 };
 
 exports.saveEvent = saveEvent;
+exports.saveBatchEvents = saveBatchEvents;
 exports.aggregate = aggregate;

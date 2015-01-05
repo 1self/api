@@ -1063,44 +1063,39 @@ var formatEventDateTime = function (datetime) {
     }
 };
 
-var saveBatchEvents = function (myEvents, stream, res) {
-    var myEventsWithPayload = [];
-    _.each(myEvents, function (myEvent) {
+var saveBatchEvents = function (myEvents, stream) {
+    var deferred = q.defer();
+    var myEventsWithPayload = _.map(myEvents, function (myEvent) {
         myEvent.streamid = stream.streamid;
         myEvent.eventDateTime = {
             "$date": formatEventDateTime(myEvent.dateTime)
         };
-
-        myEventsWithPayload.push({
+        return {
             'payload': myEvent
-        });
+        };
     });
-    var options = {
-        url: platformUri + '/rest/events/batch',
-        auth: {
-            user: "",
-            password: encryptedPassword
-        },
-        json: myEventsWithPayload
-    };
-    requestModule.post(options,
-        function (error, response, body) {
-            if (!error && response.statusCode == 200) {
-                res.send(body);
-            } else {
-                res.status(500).send("Database error");
-            }
+    platformService.saveBatchEvents(myEventsWithPayload)
+        .then(function (result) {
+            deferred.resolve(result);
+        }, function (err) {
+            deferred.reject(err);
         });
+    return deferred.promise;
 };
 
 var postEvents = function (req, res) {
     var writeToken = req.headers.authorization;
     authenticateWriteToken(writeToken, req.params.id)
         .then(function (stream) {
-            saveBatchEvents(req.body, stream, res);
+            return saveBatchEvents(req.body, stream);
         },
         function () {
             res.status(404).send("stream not found");
+        })
+        .then(function (result) {
+            res.send(result);
+        }, function (err) {
+            res.status(500).send('Database error.');
         });
 };
 app.post('/stream/:id/batch', postEvents);
