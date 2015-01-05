@@ -235,44 +235,6 @@ var getStreamIdForUsername = function (params) {
     return deferred.promise;
 };
 
-var getGithubStreamIdForUsername = function (params) {
-    var deferred = q.defer();
-    var query = null;
-    var usernames = params[0];
-    var encodedUsername = usernames[0];
-    var forUsername = usernames[1];
-    if (!(_.isEmpty(forUsername)) && (forUsername !== 'undefined')) {
-        query = {
-            "username": forUsername.toLowerCase()
-        };
-    } else {
-        query = {
-            "encodedUsername": encodedUsername
-        };
-    }
-
-    mongoDbConnection(function (qdDb) {
-        qdDb.collection('users').findOne(query, {
-            "githubUser.githubStreamId": 1
-        }, function (err, user) {
-            if (err) {
-                console.log(err);
-                deferred.reject(err);
-            } else {
-                if (!user) {
-                    deferred.reject("user not found");
-                } else if (user.githubUser.githubStreamId) {
-                    deferred.resolve(user.githubUser.githubStreamId);
-                } else {
-                    deferred.resolve(null);
-                }
-            }
-        });
-    });
-
-    return deferred.promise;
-};
-
 var saveEvent_driver = function (myEvent, stream, res) {
     myEvent.streamid = stream.streamid;
     myEvent.eventDateTime = {
@@ -883,30 +845,23 @@ var getTotalGithubUsersOfQd = function (params) {
             $exists: true
         }
     };
-    mongoDbConnection(function (qdDb) {
-        qdDb.collection('users').count(query, function (err, count) {
-            if (err) {
-                deferred.reject(err);
-            } else {
-                deferred.resolve([count, params]);
-            }
+    mongoRespository.count('users', query)
+        .then(function (count) {
+            deferred.resolve([count, params]);
+        }, function (err) {
+            deferred.reject(err);
         });
-    });
     return deferred.promise;
 };
 
-var getTotalUsersOfQd = function (params) {
+var getTotalUsersOfQd = function (streams) {
     var deferred = q.defer();
-    mongoDbConnection(function (qdDb) {
-        qdDb.collection('users').count(function (err, count) {
-            if (err) {
-                deferred.reject(err);
-            } else {
-                var paramsToPassOn = params[0];
-                deferred.resolve([count, paramsToPassOn]);
-            }
+    mongoRespository.count('users', {})
+        .then(function (count) {
+            deferred.resolve([count, streams]);
+        }, function (err) {
+            deferred.reject(err);
         });
-    });
     return deferred.promise;
 };
 
@@ -914,7 +869,10 @@ var getGithubPushEventCountForCompare = function (params) {
     var deferred = q.defer();
     var lastMonth = moment().subtract('months', 1);
     var totalUsers = params[0];
-    var streamid = params[1];
+    var streams = params[1];
+    var streamids = _.map(streams, function (stream) {
+        return stream.streamid;
+    });
     var groupBy = function (filterSpecValue) {
         return {
             "$groupBy": {
@@ -936,7 +894,7 @@ var getGithubPushEventCountForCompare = function (params) {
     var myGithubPushEventGroupQuery = groupBy({
         "payload.streamid": {
             "$operator": {
-                "in": [streamid]
+                "in": streamids
             }
         },
         "payload.eventDateTime": {
@@ -951,7 +909,7 @@ var getGithubPushEventCountForCompare = function (params) {
     var theirGithubPushEventGroupQuery = groupBy({
         "payload.streamid": {
             "$operator": {
-                "nin": [streamid]
+                "nin": streamids
             }
         },
         "payload.eventDateTime": {
@@ -1152,8 +1110,11 @@ var getIdeActivityDurationForCompare = function (params) {
     return deferred.promise;
 };
 
-var getDailyGithubPushEventsCount = function (streamid) {
+var getDailyGithubPushEventsCount = function (streams) {
     var deferred = q.defer();
+    var streamids = _.map(streams, function (stream) {
+        return stream.streamid;
+    });
     var groupQuery = {
         "$groupBy": {
             "fields": [
@@ -1165,7 +1126,7 @@ var getDailyGithubPushEventsCount = function (streamid) {
             "filterSpec": {
                 "payload.streamid": {
                     "$operator": {
-                        "in": [streamid]
+                        "in": streamids
                     }
                 },
                 "payload.actionTags": "Push"
@@ -1297,17 +1258,15 @@ app.get('/health', function (request, response) {
 });
 
 app.get('/users_count', function (req, res) {
-    mongoDbConnection(function (qdDb) {
-        qdDb.collection('users').count(function (err, count) {
-            if (err) {
-                console.log("Err", err);
-            } else {
-                res.send({
-                    count: count
-                });
-            }
+    mongoRespository.count('users', {})
+        .then(function (count) {
+            res.send({
+                count: count
+            });
+        }, function (err) {
+            console.log(err);
+            res.status(500).send("Database error.")
         });
-    });
 });
 
 app.get('/recent_signups', function (req, res) {
@@ -1706,9 +1665,11 @@ app.get('/quantifieddev/myActiveEvents', function (req, res) {
 
 app.get('/quantifieddev/githubPushEventForCompare', function (req, res) {
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername, req.query.forUsername, [])
-        .then(getGithubStreamIdForUsername)
-        .then(getTotalGithubUsersOfQd)
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return _getStreamIdForUsername(encodedUsername, req.query.forUsername);
+        })
+        .then(getTotalUsersOfQd)
         .then(getGithubPushEventCountForCompare)
         .then(function (response) {
             res.send(response);
@@ -1739,7 +1700,8 @@ app.get('/quantifieddev/hourlyGithubPushEvents', function (req, res) {
     validEncodedUsername(encodedUsername)
         .then(function () {
             return _getStreamIdForUsername(encodedUsername, forUsername)
-        }).then(generateHourlyGithubPushEventsCountQuery)
+        })
+        .then(generateHourlyGithubPushEventsCountQuery)
         .then(getAggregatedEventsFromPlatform)
         .then(function (response) {
             var result = transformPlatformDataToQDEvents(response[0]);
@@ -1752,8 +1714,10 @@ app.get('/quantifieddev/hourlyGithubPushEvents', function (req, res) {
 
 app.get('/quantifieddev/dailyGithubPushEvents', function (req, res) {
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername, req.query.forUsername, [])
-        .then(getGithubStreamIdForUsername)
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return _getStreamIdForUsername(encodedUsername, req.query.forUsername);
+        })
         .then(getDailyGithubPushEventsCount)
         .then(function (response) {
             res.send(response);
