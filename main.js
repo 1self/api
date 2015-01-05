@@ -1257,43 +1257,6 @@ app.get('/health', function (request, response) {
     response.send("I'm alive");
 });
 
-app.get('/users_count', function (req, res) {
-    mongoRespository.count('users', {})
-        .then(function (count) {
-            res.send({
-                count: count
-            });
-        }, function (err) {
-            console.log(err);
-            res.status(500).send("Database error.")
-        });
-});
-
-app.get('/recent_signups', function (req, res) {
-    mongoDbConnection(function (qdDb) {
-        qdDb.collection('users').find({}, {
-            "githubUser.profileUrl": true
-        }, {
-            "sort": [
-                ["_id", -1]
-            ],
-            "limit": "10"
-        }, function (error, results) {
-            results.toArray(function (err, users) {
-                if (err) {
-                    console.log("Err", err);
-                } else {
-                    console.log("Data is", users);
-                    res.send(users);
-                }
-            });
-            if (error) {
-                console.log("Err", error);
-            }
-        });
-    });
-});
-
 var validateClient = function (appId, appSecret) {
     var deferred = q.defer();
     var query = {
@@ -1383,16 +1346,6 @@ app.get('/event', function (req, res) {
             res.send(response);
         }).catch(function (error) {
             res.status(404).send("No stream associated with user.");
-        });
-});
-
-app.get('/eventsCount', function (req, res) {
-    getEventsCount()
-        .then(function (response) {
-            res.send(response);
-        }).catch(function (error) {
-            console.log("Err", error);
-            res.status(400).send("Invalid request");
         });
 });
 
