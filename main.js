@@ -19,6 +19,7 @@ var fs = require('fs');
 var validateRequest = require("./validateRequest");
 var validator = require('validator');
 var mongoRespository = require('./mongoRepository.js');
+var platformService = require('./platformService.js');
 
 var opbeatOptions = {
     organization_id: process.env.OPBEAT_ORGANIZATION_ID,
@@ -183,29 +184,12 @@ var getStreamIdForUsername = function (encodedUsername, forUsername) {
     return deferred.promise;
 };
 
-var saveEvent_driver = function (myEvent, stream, res) {
+var saveEvent = function (myEvent, stream, res) {
     myEvent.streamid = stream.streamid;
     myEvent.eventDateTime = {
         "$date": formatEventDateTime(myEvent.dateTime)
     };
-    var options = {
-        url: platformUri + '/rest/events/',
-        auth: {
-            user: "",
-            password: encryptedPassword
-        },
-        json: {
-            'payload': myEvent
-        }
-    };
-    requestModule.post(options,
-        function (error, response, body) {
-            if (!error && response.statusCode == 200) {
-                res.send({status: "ok"});
-            } else {
-                res.status(500).send("Database error");
-            }
-        });
+    return platformService.saveEvent(myEvent);
 };
 
 var authenticateWriteToken = function (writeToken, id) {
@@ -231,10 +215,15 @@ var postEvent = function (req, res) {
     var writeToken = req.headers.authorization;
     authenticateWriteToken(writeToken, req.params.id)
         .then(function (stream) {
-            saveEvent_driver(req.body, stream, res);
+            return saveEvent(req.body, stream);
         },
         function () {
             res.status(404).send("stream not found");
+        })
+        .then(function (result) {
+            res.send(result);
+        }, function (err) {
+            res.status(500).send("Database error.");
         });
 };
 
