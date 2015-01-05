@@ -420,29 +420,6 @@ var getBuildEventsFromPlatform = function (streams) {
     return deferred.promise;
 };
 
-/*var generateQueryForActivityEvents = function (params) {
- var streams = params[0];
- var streamids = _.map(streams, function (stream) {
- return stream.streamid;
- });
- var groupQuery = groupByOnParametersForLastMonth(streamids, "Develop");
- var sumOfActiveEvents = {
- "$sum": {
- "field": {
- "name": "properties.duration"
- },
- "data": groupQuery,
- "filterSpec": {},
- "projectionSpec": {
- "resultField": "totalActiveDuration"
- }
- }
- };
- return {
- spec: JSON.stringify(sumOfActiveEvents)
- };
- };*/
-
 var getMyActiveDuration = function (streams) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
@@ -501,53 +478,40 @@ var getMyActiveDuration = function (streams) {
             }
         }
     };
-    var options = {
-        url: platformUri + '/rest/analytics/aggregate',
-        auth: {
-            user: "",
-            password: encryptedPassword
-        },
-        qs: {
-            spec: JSON.stringify([sumOfActiveEvents,
-                countOfActiveEvents
-            ]),
-            merge: true
-        },
-        method: 'GET'
+    var query = {
+        spec: JSON.stringify([sumOfActiveEvents,
+            countOfActiveEvents
+        ]),
+        merge: true
     };
-
-    function callback(error, response, body) {
-        if (!error && response.statusCode === 200) {
-            var result = JSON.parse(body);
-            if (_.isEmpty(result)) {
-                deferred.resolve([]);
-            } else {
-                var defaulActiveDurationValues = [
-                    {
-                        key: "totalActiveDuration",
-                        value: 0
-                    },
-                    {
-                        key: "inActiveCount",
-                        value: 0
-                    }
-                ];
-                var activeDurationByDay = generateDatesFor(defaulActiveDurationValues);
-                for (var date in result) {
-                    if (activeDurationByDay[date] !== undefined) {
-                        activeDurationByDay[date].totalActiveDuration = convertMillisToMinutes(result[date].totalActiveDuration);
-                        activeDurationByDay[date].inActiveCount = result[date].activeCount - 1;
-                    }
-                }
-                deferred.resolve(rollupToArray(activeDurationByDay));
-            }
+    var processResult = function (result) {
+        if (_.isEmpty(result)) {
+            deferred.resolve([]);
         } else {
-            deferred.reject(error);
+            var defaulActiveDurationValues = [
+                {
+                    key: "totalActiveDuration",
+                    value: 0
+                },
+                {
+                    key: "inActiveCount",
+                    value: 0
+                }
+            ];
+            var activeDurationByDay = generateDatesFor(defaulActiveDurationValues);
+            for (var date in result) {
+                if (activeDurationByDay[date] !== undefined) {
+                    activeDurationByDay[date].totalActiveDuration = convertMillisToMinutes(result[date].totalActiveDuration);
+                    activeDurationByDay[date].inActiveCount = result[date].activeCount - 1;
+                }
+            }
+            deferred.resolve(rollupToArray(activeDurationByDay));
         }
-    }
-
-    requestModule(options, callback);
-
+    };
+    platformService.aggregate(query)
+        .then(processResult, function (err) {
+            deferred.reject(err);
+        });
     return deferred.promise;
 };
 
@@ -915,9 +879,7 @@ var getIdeActivityDurationForCompare = function (params) {
         deferred.resolve(rollupToArray(ideActivityDurationForCompare));
     };
     platformService.aggregate(query)
-        .then(function (result) {
-            return processResult(result);
-        }, function (err) {
+        .then(processResult, function (err) {
             deferred.reject(error);
         });
     return deferred.promise;
@@ -952,45 +914,34 @@ var getDailyGithubPushEventsCount = function (streams) {
         }
     };
     var dailyGithubPushEventCount = countOnParameters(groupQuery, {}, "githubPushEventCount");
-    var options = {
-        url: platformUri + '/rest/analytics/aggregate',
-        auth: {
-            user: "",
-            password: encryptedPassword
-        },
-        qs: {
-            spec: JSON.stringify(dailyGithubPushEventCount)
-        },
-        method: 'GET'
+
+    var query = {
+        spec: JSON.stringify(dailyGithubPushEventCount)
+    };
+    var processResult = function (result) {
+        result = result[0];
+        if (_.isEmpty(result)) {
+            deferred.resolve([]);
+        }
+        var defaultEventValues = [
+            {
+                key: "dailyEventCount",
+                value: 0
+            }
+        ];
+        var dailyGithubPushEvents = generateWeek(defaultEventValues);
+        for (var date in result) {
+            if (dailyGithubPushEvents[date] !== undefined) {
+                dailyGithubPushEvents[date].dailyEventCount = result[date].githubPushEventCount;
+            }
+        }
+        deferred.resolve(rollupToArray(dailyGithubPushEvents));
     };
 
-    function callback(error, response, body) {
-        if (!error && response.statusCode === 200) {
-            var result = JSON.parse(body);
-            result = result[0];
-            if (_.isEmpty(result)) {
-                deferred.resolve([]);
-            }
-            var defaultEventValues = [
-                {
-                    key: "dailyEventCount",
-                    value: 0
-                }
-            ];
-            var dailyGithubPushEvents = generateWeek(defaultEventValues);
-            for (var date in result) {
-                if (dailyGithubPushEvents[date] !== undefined) {
-                    dailyGithubPushEvents[date].dailyEventCount = result[date].githubPushEventCount;
-                }
-            }
-            deferred.resolve(rollupToArray(dailyGithubPushEvents));
-
-        } else {
+    platformService.aggregate(query)
+        .then(processResult, function (err) {
             deferred.reject(error);
-        }
-    }
-
-    requestModule(options, callback);
+        });
 
     return deferred.promise;
 };
