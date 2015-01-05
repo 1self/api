@@ -8,7 +8,6 @@ var _ = require("underscore");
 var opbeat = require('opbeat');
 var session = require("express-session");
 var q = require('q');
-var mongoDbConnection = require('./lib/connection.js');
 var util = require('./util');
 var PasswordEncrypt = require('./lib/PasswordEncrypt');
 var redis = require('redis');
@@ -144,18 +143,12 @@ var validateShareTokenAndGraphUrl = function (shareToken, graphUrl) {
 
 var checkGraphAlreadyShared = function (graphShareObject) {
     var deferred = q.defer();
-
-    mongoDbConnection(function (qdDb) {
-        qdDb.collection('graphShares').findOne(graphShareObject, function (err, graphShareObject) {
-            if (!err && graphShareObject) {
-                deferred.resolve(graphShareObject);
-            } else if (!err && !graphShareObject) {
-                deferred.resolve(null);
-            } else {
-                deferred.reject(err);
-            }
+    mongoRespository.findOne('graphShares', graphShareObject)
+        .then(function (graphShareObject) {
+            deferred.resolve(graphShareObject);
+        }, function (err) {
+            deferred.reject(err);
         });
-    });
     return deferred.promise;
 };
 
