@@ -25,7 +25,7 @@
     };
 
     Event.prototype.humanizedValue = function(){
-        var value;
+        var value = "";
 
         //dirty hack for "duration"
         if("duration" == this.values.split(':')[0]){
@@ -39,7 +39,11 @@
             
             value = humanized_value;
         }else{
-            value = this.values.split(",")[0];
+            var valueString = this.values.split(",")[0],
+            valueTitle = valueString.split(":")[0],
+            valueCount = parseFloat(valueString.split(":")[1]).toFixed(1);
+
+            value = valueCount + " " + valueTitle;
         }
 
         return value;
