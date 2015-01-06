@@ -263,7 +263,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                 }
                 return str.substring(0,ind);
             } else {
-                return parseFloat(eventValue).toFixed(0) + value_unit;
+                return parseFloat(eventValue).toFixed(1) + "  " + value_unit;
             }
         };
 
