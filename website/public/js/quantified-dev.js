@@ -57,7 +57,11 @@ var qd = function () {
         result.plotGraphWith('wtfEvents', wtfEvents, "#wtf-history-parent")
     };
     result.updateWTFModel = function () {
-        postAjax("mywtf", plotWtfEvents)
+        postV1Ajax("Computer,Software", "wtf", "count", "daily")
+            .done(plotWtfEvents)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
     };
     var plotHydrationEvents = function (hydrationEvents) {
         result.hydrationEvents = hydrationEvents;
@@ -190,7 +194,7 @@ var qd = function () {
         var totalWtfs = [];
         var sparkbarDataForDays = 14;
         result.wtfEvents.map(function (wtfEvent) {
-            totalWtfs.push(wtfEvent.wtfCount);
+            totalWtfs.push(wtfEvent.value);
         });
         totalWtfs = totalWtfs.slice(totalWtfs.length - sparkbarDataForDays, totalWtfs.length)
         console.log("sparking wtfs:", totalWtfs)

@@ -529,17 +529,6 @@ var generateQueryForBuildDuration = function (streams) {
     };
 };
 
-var generateQueryForWtfEvents = function (streams) {
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var groupQuery = groupByOnParametersForLastMonth(streamids, "wtf");
-    var countWTFQuery = countOnParameters(groupQuery, {}, "wtfCount");
-    return {
-        spec: JSON.stringify(countWTFQuery)
-    };
-};
-
 var generateQueryForHydrationEvents = function (streams) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
@@ -1177,23 +1166,6 @@ app.get('/quantifieddev/mydev', function (req, res) {
         });
 });
 
-app.get('/quantifieddev/mywtf', function (req, res) {
-    var encodedUsername = req.headers.authorization;
-    var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername)
-        .then(function () {
-            return getStreamIdForUsername(encodedUsername, forUsername)
-        })
-        .then(generateQueryForWtfEvents)
-        .then(platformService.aggregate)
-        .then(function (response) {
-            var result = transformPlatformDataToQDEvents(response[0]);
-            res.send(result);
-        }).catch(function (error) {
-            res.status(404).send("stream not found");
-        });
-});
-
 app.get('/quantifieddev/myhydration', function (req, res) {
     var encodedUsername = req.headers.authorization;
     var forUsername = req.query.forUsername;
@@ -1416,8 +1388,7 @@ app.get('/quantifieddev/extensions/message', function (req, res) {
     res.send(JSON.stringify(result));
 });
 
-var getQueryForVisualizationAPI = function (streamIds, params) {
-    var lastWeek = moment.utc().startOf('day').subtract('days', 6).format();
+var getQueryForVisualizationAPI = function (streamIds, params, fromDate, toDate) {
     var actionTags = params.actionTags.split(',');
     var objectTags = params.objectTags.split(',');
 
@@ -1438,7 +1409,10 @@ var getQueryForVisualizationAPI = function (streamIds, params) {
                 "payload.eventDateTime": {
                     "$operator": {
                         ">": {
-                            "$date": lastWeek
+                            "$date": fromDate
+                        },
+                        "<": {
+                            "$date": toDate
                         }
                     }
                 },
@@ -1530,12 +1504,16 @@ var authorizeUser = function (req, res, next) {
 };
 
 app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/type/json", authorizeUser, function (req, res) {
+    var lastWeek = moment.utc().startOf('day').subtract('days', 6).format();
+    var today = moment.utc().endOf('day').format();
+    var fromDate = req.query.from || lastWeek;
+    var toDate = req.query.to || today;
     getStreamIdForUsername(req.headers.authorization, req.forUsername)
         .then(function (streams) {
             var streamIds = _.map(streams, function (stream) {
                 return stream.streamid;
             });
-            return getQueryForVisualizationAPI(streamIds, req.params);
+            return getQueryForVisualizationAPI(streamIds, req.params, fromDate, toDate);
         })
         .then(platformService.aggregate)
         .then(function (response) {

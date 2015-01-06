@@ -15,6 +15,19 @@
             }
         });
     };
+//:objectTags/:actionTags/:operation/:period
+    var postV1Ajax = function (objectTags, actionTags, operation, period) {
+        var oneMonthAgo = encodeURIComponent(moment.utc().startOf('day').subtract('days', 30).format());
+        var today = encodeURIComponent(moment.utc().endOf('day').format());
+        var dataDuration = "?from=" + oneMonthAgo + "&to=" + today;
+        return $.ajax({
+            url: "/v1/users/" + username + "/events/" + objectTags + "/" + actionTags + "/" + operation + "/" + period + "/type/json" + dataDuration,
+            headers: {
+                "Accept": "application/json",
+                "Authorization": $.cookie("_eun")
+            }
+        });
+    };
 
     var postAjaxWithData = function (url, data, successCallback, failureCallback) {
         $.ajax({
@@ -33,4 +46,5 @@
     };
     window.postAjaxWithData = postAjaxWithData;
     window.postAjax = postAjax;
+    window.postV1Ajax = postV1Ajax;
 })(jQuery);
