@@ -26,6 +26,9 @@ var qd = function () {
         wtfEvents: function () {
             result.plotWTFHistory();
         },
+        noiseEvents: function() {
+            result.plotNoiseEventsHistory();
+        },
         hydrationEvents: function () {
             result.plotHydrationHistory();
         },
@@ -55,6 +58,17 @@ var qd = function () {
     var plotWtfEvents = function (wtfEvents) {
         result.wtfEvents = wtfEvents;
         result.plotGraphWith('wtfEvents', wtfEvents, "#wtf-history-parent")
+    };
+    var plotNoiseEvents = function (noiseEvents) {
+        result.noiseEvents = noiseEvents;
+        result.plotGraphWith('noiseEvents', noiseEvents, "#noise-graph-parent")
+    };
+    result.updateNoiseModel = function () {
+        postV1Ajax("ambient,sound", "sample", "count", "daily")
+            .done(plotNoiseEvents)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
     };
     result.updateWTFModel = function () {
         postV1Ajax("Computer,Software", "wtf", "count", "daily")
