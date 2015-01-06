@@ -412,12 +412,12 @@ ul.commentList li div {
     .comment_avatar, .count {
         position: relative;
         width: 50%;
-        height: 98px;
+        height: 22px;
         padding-bottom: 40%;
     }
 
     .count {
-        line-height: 98px;
+        line-height: 22px;
         font-size: 45px;
     }
 }
