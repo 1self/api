@@ -73,8 +73,8 @@ console.log('Connecting to PLATFORM_BASE_URI : ' + platformUri);
 require('./githubOAuth')(app);
 
 app.all('*', function (req, res, next) {
-    //res.header('Access-Control-Allow-Origin', '*');
-    //res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,accept,x-requested-with,x-withio-delay');
     if (req.headers["x-withio-delay"]) {
         var delay = req.headers["x-withio-delay"];
