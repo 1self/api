@@ -258,6 +258,11 @@ header {
     color: #25a8fb;
 }
 
+.logo img {
+    width: 80%;
+    height: 80%;
+}
+
 .top-bar .logo:hover, .logo:hover {
     text-decoration: none;
 }

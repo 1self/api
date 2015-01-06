@@ -1,105 +1,135 @@
-body{
-	line-height: 18px;
+body {
+    line-height: 18px;
 }
+
 .white-background {
-	 background:white;
+    background: white;
 }
+
 .header-text {
-	color: #E2E2E2;
+    color: #E2E2E2;
 }
+
 .signup-details {
-	color: #979797;
+    color: #979797;
 }
+
 .signup-button {
-	background:#1AC8A2;
-	border: 1px solid #54FFFA;
-	width: 100%;
+    background: #1AC8A2;
+    border: 1px solid #54FFFA;
+    width: 100%;
 }
+
 .error {
-	color: #C66868;
+    color: #C66868;
 }
-.logo{
-	padding: 12px 0;
-	display: inline-block;
+
+.logo {
+    padding: 12px 0;
+    display: inline-block;
 }
-.signup-form{
-	border: none;
-	padding: 0;
-	background: #515151;
-	margin-bottom: 0;
+
+.logo img {
+    width: 80%;
+    height: 80%;
 }
+
+.signup-form {
+    border: none;
+    padding: 0;
+    background: #515151;
+    margin-bottom: 0;
+}
+
 .container {
-	padding: 30px;
-	padding-top: 6px;
-	width: 98%;
-	margin: 0 auto;
-	background: #515151;
-	border-radius: 5px;
+    padding: 30px;
+    padding-top: 6px;
+    width: 98%;
+    margin: 0 auto;
+    background: #515151;
+    border-radius: 5px;
 }
-.step-heading{
-	margin: 35px 0 0 0;
-	font-weight: bold;
-	font-size: 15px;
+
+.step-heading {
+    margin: 35px 0 0 0;
+    font-weight: bold;
+    font-size: 15px;
 }
-.margin-top-five,.custom-error{
-	margin-top: 5px;
+
+.margin-top-five, .custom-error {
+    margin-top: 5px;
 }
-.custom-error{
-	display: inline-block;
+
+.custom-error {
+    display: inline-block;
 }
-.login-link-container,.signup-message{
-	margin-top: 15px;
+
+.login-link-container, .signup-message {
+    margin-top: 15px;
 }
-.login-link-container{
-	font-size: 18px;
+
+.login-link-container {
+    font-size: 18px;
 }
-.signup-message{
-	font-size: 13px;
+
+.signup-message {
+    font-size: 13px;
 }
-.btn:hover, .btn:focus,.signup-button{
-	color: #FFF;
+
+.btn:hover, .btn:focus, .signup-button {
+    color: #FFF;
 }
-.step-two-signup-button{
-	padding-top: 5px;
-	padding-bottom: 5px;
-	border-radius: 4px;
+
+.step-two-signup-button {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-radius: 4px;
 }
-.margin-top-ten{
-	margin-top: 10px;
+
+.margin-top-ten {
+    margin-top: 10px;
 }
-.form-control{
-	padding: 3px 12px 6px 12px; 
-	font-size: 18px;
+
+.form-control {
+    padding: 3px 12px 6px 12px;
+    font-size: 18px;
 }
-.signup-stpe2-label{
-	font-size: 17px;
+
+.signup-stpe2-label {
+    font-size: 17px;
 }
-.top-bar .logo,.logo {
-     font-size: 23px;
+
+.top-bar .logo, .logo {
+    font-size: 23px;
     color: #25a8fb;
     padding: 0 20px;
     height: 60px;
-	line-height: 60px;
-	width: 220px;
-  }
-.top-bar .logo:hover,.logo:hover{
-	text-decoration: none;
+    line-height: 60px;
+    width: 220px;
 }
-.top-bar{
-  box-shadow: 0 8px 6px -6px #000;
-  position: relative;
-  z-index: 100000;
+
+.top-bar .logo:hover, .logo:hover {
+    text-decoration: none;
 }
-.signup-button:hover{
-	background: #19bc98;
+
+.top-bar {
+    box-shadow: 0 8px 6px -6px #000;
+    position: relative;
+    z-index: 100000;
 }
-@media (min-width: 600px){
-	.container {
-		width: 400px;
-	}
+
+.signup-button:hover {
+    background: #19bc98;
 }
-@media screen and (min-width: 768px){
-	.jumbotron {
-	padding-top: 100px;
-	}
+
+@media (min-width: 600px) {
+    .container {
+        width: 400px;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .jumbotron {
+        padding-top: 100px;
+    }
 }
