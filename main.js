@@ -529,17 +529,6 @@ var generateQueryForBuildDuration = function (streams) {
     };
 };
 
-var generateQueryForWtfEvents = function (streams) {
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var groupQuery = groupByOnParametersForLastMonth(streamids, "wtf");
-    var countWTFQuery = countOnParameters(groupQuery, {}, "wtfCount");
-    return {
-        spec: JSON.stringify(countWTFQuery)
-    };
-};
-
 var generateQueryForHydrationEvents = function (streams) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
@@ -1174,23 +1163,6 @@ app.get('/quantifieddev/mydev', function (req, res) {
         }).catch(function (error) {
             console.log("error during fetching /mydev data ", error);
             res.status(404).send("cannot fetch mydev data");
-        });
-});
-
-app.get('/quantifieddev/mywtf', function (req, res) {
-    var encodedUsername = req.headers.authorization;
-    var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername)
-        .then(function () {
-            return getStreamIdForUsername(encodedUsername, forUsername)
-        })
-        .then(generateQueryForWtfEvents)
-        .then(platformService.aggregate)
-        .then(function (response) {
-            var result = transformPlatformDataToQDEvents(response[0]);
-            res.send(result);
-        }).catch(function (error) {
-            res.status(404).send("stream not found");
         });
 });
 
