@@ -977,10 +977,8 @@ module.exports = function (app) {
 
     var getGraphInfo = function (objectTags, actionTags) {
         var title = objectTags.replace(',', ' ') + ' ' + actionTags.replace(',', ' ');
-        var measurement = "";
         return {
             title: title,
-            measurement: measurement
         };
     };
 
@@ -1006,7 +1004,6 @@ module.exports = function (app) {
                 readToken: req.param("readToken"),
                 isUserLoggedIn: false,
                 title: graphInfo.title,
-                measurement: graphInfo.measurement,
                 streamId: req.param("streamId"),
                 objectTags: req.param("objectTags"),
                 actionTags: req.param("actionTags"),
@@ -1093,7 +1090,6 @@ module.exports = function (app) {
                 res.render('chart', {
                     isUserLoggedIn: isUserLoggedIn,
                     title: graphInfo.title,
-                    measurement: graphInfo.measurement,
                     graphOwner: req.param("username"),
                     username: req.param("username"),
                     graphOwnerAvatarUrl: graphOwnerAvatarUrl,

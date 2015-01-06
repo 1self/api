@@ -244,17 +244,26 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
         };
 
         var getDataPointDescription = function (eventValue) {
-            if (measurement === "time") {
+            //get the operation
+            var operation_string = operation.split('('),
+            operation_type = operation_string[0],
+            value_unit;
+            
+            if ("count" !== operation_type) {
+                value_unit = operation_string[1].slice(0, -1);
+            }else{
+                value_unit = "";
+            }
+
+            if ("duration" === value_unit) {
                 var str = humanizeDuration(eventValue * 1000, { units: ["hours", "minutes", "seconds", "millisecond"] })
                 var ind = str.length;
                 if(str.search("milli") > 0 && str.lastIndexOf(',') > 0) {
                     ind = str.lastIndexOf(',');
                 }
                 return str.substring(0,ind);
-            } else if (measurement === "decibels") {
-                return parseFloat(eventValue).toFixed(0) + " " + "decibels";
             } else {
-                return parseFloat(eventValue).toFixed(0) + "";
+                return parseFloat(eventValue).toFixed(0) + value_unit;
             }
         };
 
