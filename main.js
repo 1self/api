@@ -1039,6 +1039,45 @@ app.post('/v1/streams', function (req, res) {
         });
 });
 
+var getEventsForStreams = function (streams) {
+    var deferred = q.defer();
+    var streamids = _.map(streams, function (stream) {
+        return stream.streamid;
+    });
+    var filterSpec = {
+        'payload.streamid': {
+            "$operator": {
+                "in": streamids
+            }
+        }
+    };
+    var query = {
+        'filterSpec': JSON.stringify(filterSpec)
+    };
+    platformService.filter(query)
+        .then(function (result) {
+            deferred.resolve(result);
+        }, function (err) {
+            deferred.reject(err);
+        });
+    return deferred.promise;
+};
+
+
+app.get('/event', function (req, res) {
+    var encodedUsername = req.headers.authorization;
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return getStreamIdForUsername(encodedUsername, req.query.forUsername)
+        })
+        .then(getEventsForStreams)
+        .then(function (response) {
+            res.send(response);
+        }).catch(function (error) {
+            res.status(404).send("No stream associated with user.");
+        });
+});
+
 app.post('/stream/:id/event', postEvent);
 
 app.post('/v1/streams/:id/events', validateRequest.validate, postEvent);
@@ -1111,7 +1150,9 @@ app.get('/live/devbuild/:durationMins', function (req, res) {
     if (selectedLanguage) {
         filterSpec["payload.properties.Language"] = selectedLanguage;
     }
-    var query = JSON.stringify(filterSpec);
+    var query = {
+        'filterSpec': JSON.stringify(filterSpec)
+    };
     platformService.filter(query)
         .then(function (result) {
             res.send(result);
