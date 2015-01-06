@@ -64,7 +64,7 @@ var qd = function () {
         result.plotGraphWith('noiseEvents', noiseEvents, "#noise-graph-parent")
     };
     result.updateNoiseModel = function () {
-        postV1Ajax("ambient,sound", "sample", "count", "daily")
+        postV1Ajax("ambient,sound", "sample", "mean(dbspl)", "daily")
             .done(plotNoiseEvents)
             .fail(function (error) {
                 console.error("Error is: " + error);

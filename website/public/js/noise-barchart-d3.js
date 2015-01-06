@@ -43,7 +43,7 @@ window.qd.plotNoiseEventsHistory = function() {
             .append('g')
             .attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
         var tipText = function (d) {
-            return "<strong>" + d.value + (d.value === 1 ? " noise" : "noise") +
+            return "<strong>" + d.value + (d.value === 1 ? " dbspl" : " dbspl") +
                 "</strong> <span style='color:lightgrey'> on " + moment(d.date).format("ddd MMM DD") + "</span>";
         };
         var tooltipDivForMobile = d3.select("body").append("div")
