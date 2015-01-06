@@ -975,84 +975,9 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    var getGraphInfo = function (objectTags, actionTags, url, username) {
-        var title = "time spent ";
+    var getGraphInfo = function (objectTags, actionTags) {
+        var title = objectTags.replace(',', ' ') + ' ' + actionTags.replace(',', ' ');
         var measurement = "";
-        objectTags = objectTags.split(",");
-        actionTags = actionTags.split(",");
-        if (objectTags.indexOf("ambient") !== -1
-            && actionTags.indexOf("sample") !== -1) { // noise app
-            title = "average noise experienced";
-            measurement = "decibels";
-        } else if (actionTags.indexOf("meditate") !== -1) { // timer app events
-            title += "meditating";
-            measurement = "time";
-        } else if (actionTags.indexOf("exercise") !== -1) {
-            title += "exercising";
-            measurement = "time";
-        } else if (actionTags.indexOf("commute") !== -1) {
-            title += "commuting";
-            measurement = "time";
-        } else if (actionTags.indexOf("cook") !== -1) {
-            title += "cooking";
-            measurement = "time";
-        } else if (actionTags.indexOf("party") !== -1) {
-            title += "partying";
-            measurement = "time";
-        } else if (objectTags.indexOf("instrument") !== -1
-            && actionTags.indexOf("play") !== -1) {
-            title += "playing instrument";
-            measurement = "time";
-        } else if (objectTags.indexOf("computer") !== -1
-            && objectTags.indexOf("games") !== -1
-            && actionTags.indexOf("play") !== -1) {
-            title += "playing computer games";
-            measurement = "time";
-
-        } else if (actionTags.indexOf("read") !== -1) {
-            title += "reading";
-            measurement = "time";
-
-        } else if (actionTags.indexOf("sit") !== -1) {
-            title += "sitting";
-            measurement = "time";
-
-        } else if (actionTags.indexOf("stand") !== -1) {
-            title += "standing";
-            measurement = "time";
-        } else if (actionTags.indexOf("study") !== -1) {
-            title += "studying";
-            measurement = "time";
-        } else if (actionTags.indexOf("floss") !== -1) {
-            title += "flossing"
-            measurement = "time";
-        } else if (actionTags.indexOf("watching") !== -1) {
-            title += "watching";
-            measurement = "time";
-        } else if (actionTags.indexOf("work") !== -1) {
-            title += "working";
-            measurement = "time";
-        } else if (objectTags.indexOf("helloworld") !== -1
-            && actionTags.indexOf("write") !== -1) {
-            title += "writing hello,world";
-            measurement = "time";
-        } else if (actionTags.indexOf("write") !== -1) {
-            title += "writing";
-            measurement = "time";
-        } else if (actionTags.indexOf("meet") !== -1) {
-            title += "meeting";
-            measurement = "time";
-        } else if (actionTags.indexOf("brush") !== -1) {
-            title += "tooth brushing";
-            measurement = "time";
-        } else if (actionTags.indexOf("sleep") !== -1) {
-            title += "sleeping";
-            measurement = "time";
-
-        } else if (actionTags.indexOf("code") !== -1) {
-            title += "coding";
-            measurement = "time";
-        }
         return {
             title: title,
             measurement: measurement
@@ -1076,7 +1001,7 @@ module.exports = function (app) {
             }
             req.session.redirectUrl = req.originalUrl + queryString;
 
-            var graphInfo = getGraphInfo(req.param("objectTags"), req.param("actionTags"), req.originalUrl);
+            var graphInfo = getGraphInfo(req.param("objectTags"), req.param("actionTags"));
             res.render('chart', {
                 readToken: req.param("readToken"),
                 isUserLoggedIn: false,
@@ -1163,7 +1088,7 @@ module.exports = function (app) {
             var readToken = req.query.readToken;
             //        var shareToken = req.query.shareToken;
             var renderChart = function (graphOwnerAvatarUrl) {
-                var graphInfo = getGraphInfo(req.param("objectTags"), req.param("actionTags"), req.originalUrl, req.param("username"));
+                var graphInfo = getGraphInfo(req.param("objectTags"), req.param("actionTags"));
                 var isUserLoggedIn = (req.session.username !== undefined);
                 res.render('chart', {
                     isUserLoggedIn: isUserLoggedIn,
