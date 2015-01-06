@@ -14,6 +14,7 @@ var mongoDbConnection = require('./lib/connection.js');
 var validateRequest = require("./validateRequest");
 var moment = require("moment");
 var validator = require('validator');
+var mongoRespository = require('./mongoRepository.js');
 
 var emailConfigOptions = {
     root: path.join(__dirname, "/website/public/email_templates")
@@ -65,16 +66,16 @@ module.exports = function (app) {
             "streamid": streamid
         };
         var deferred = Q.defer();
-
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection('stream').findOne(byStreamId, function (err, stream) {
-                if (!err && stream) {
+        mongoRespository.findOne('stream', byStreamId)
+            .then(function (stream) {
+                if (stream) {
                     deferred.resolve(true);
                 } else {
                     deferred.resolve(false);
                 }
+            }, function (err) {
+                deferred.reject(err);
             });
-        });
         return deferred.promise;
     };
 
@@ -86,16 +87,16 @@ module.exports = function (app) {
             "streamid": streamId
         };
         var deferred = Q.defer();
-
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection('stream').findOne(byStreamId, function (err, stream) {
-                if (!err && stream) {
+        mongoRespository.findOne('stream', byStreamId)
+            .then(function (stream) {
+                if (stream) {
                     deferred.resolve(true);
                 } else {
                     deferred.resolve(false);
                 }
+            }, function (err) {
+                deferred.reject(err);
             });
-        });
         return deferred.promise;
     };
 
@@ -103,43 +104,38 @@ module.exports = function (app) {
         var streamidUsernameMapping = {
             "username": oneselfUsername.toLowerCase()
         };
+        var projection = {
+            "streams": 1,
+            "username": 1
+        };
         var deferred = Q.defer();
-
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection('users').findOne(streamidUsernameMapping, {
-                "streams": 1,
-                "username": 1
-            }, function (err, user) {
-                if (err) {
-                    deferred.reject(err);
-                } else {
-                    deferred.resolve(user);
-                }
+        mongoRespository.findOne('users', streamidUsernameMapping, projection)
+            .then(function (user) {
+                deferred.resolve(user);
+            }, function (err) {
+                deferred.reject(err);
             });
-        });
         return deferred.promise;
     };
 
     var insertStreamForUser = function (user, streamid) {
         var deferred = Q.defer();
-        mongoDbConnection(function (qdDb) {
-            var mappingToInsert = {
-                "$push": {
-                    "streams": {
-                        "streamid": streamid
-                    }
+        var updateObject = {
+            "$push": {
+                "streams": {
+                    "streamid": streamid
                 }
-            };
-            qdDb.collection('users').update({
-                "username": user.username.toLowerCase()
-            }, mappingToInsert, function (err, user) {
-                if (user) {
-                    deferred.resolve(true);
-                } else {
-                    deferred.reject(err);
-                }
+            }
+        };
+        var query = {
+            "username": user.username.toLowerCase()
+        };
+        mongoRespository.update('users', query, updateObject)
+            .then(function (user) {
+                deferred.resolve(true);
+            }, function (err) {
+                deferred.reject(err);
             });
-        });
         return deferred.promise;
     };
 
@@ -223,24 +219,24 @@ module.exports = function (app) {
         var updateUserRecord = function (encUserObj) {
             var deferred = Q.defer();
             var githubUsername = req.session.githubUsername;
-            mongoDbConnection(function (qdDb) {
-                var byGithubUsername = {
-                    "githubUser.username": githubUsername
-                };
-                qdDb.collection('users').update(byGithubUsername, {
-                    $set: {
-                        username: oneselfUsername,
-                        encodedUsername: encUserObj.encodedUsername,
-                        salt: encUserObj.salt
-                    }
+
+            var byGithubUsername = {
+                "githubUser.username": githubUsername
+            };
+
+            var updateObject = {
+                $set: {
+                    username: oneselfUsername,
+                    encodedUsername: encUserObj.encodedUsername,
+                    salt: encUserObj.salt
+                }
+            };
+            mongoRespository.update('users', byGithubUsername, updateObject)
+                .then(function () {
+                    deferred.resolve(encUserObj);
                 }, function (err) {
-                    if (err) {
-                        deferred.reject(err);
-                    } else {
-                        deferred.resolve(encUserObj);
-                    }
+                    deferred.reject(err);
                 });
-            });
             return deferred.promise;
         };
 
@@ -273,16 +269,17 @@ module.exports = function (app) {
             var byOneselfUsername = {
                 "username": oneselfUsername.toLowerCase()
             };
-            mongoDbConnection(function (qdDb) {
-                qdDb.collection('users').findOne(byOneselfUsername, function (err, user) {
+            mongoRespository.findOne('users', byOneselfUsername)
+                .then(function (user) {
                     if (user) {
                         deferred.reject("Username already taken. Please choose another one.");
                     }
                     else {
                         deferred.resolve();
                     }
+                }, function (err) {
+                    deferred.reject(err);
                 });
-            });
             return deferred.promise;
         };
 
@@ -976,10 +973,10 @@ module.exports = function (app) {
     };
 
     var getGraphInfo = function (objectTags, actionTags) {
-        var title = objectTags.replace(/,/g, ' ') + ' ' + 
+        var title = objectTags.replace(/,/g, ' ') + ' ' +
             actionTags.replace(/,/g, ' ');
         return {
-            title: title,
+            title: title
         };
     };
 
