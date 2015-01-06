@@ -976,7 +976,8 @@ module.exports = function (app) {
     };
 
     var getGraphInfo = function (objectTags, actionTags) {
-        var title = objectTags.replace(',', ' ') + ' ' + actionTags.replace(',', ' ');
+        var title = objectTags.replace(',', ' ') + ' ' + 
+            actionTags.replace(',', ' ');
         return {
             title: title,
         };
@@ -999,7 +1000,7 @@ module.exports = function (app) {
             }
             req.session.redirectUrl = req.originalUrl + queryString;
 
-            var graphInfo = getGraphInfo(req.param("objectTags"), req.param("actionTags"));
+            var graphInfo = getGraphInfo(req.param("objectTags"), req.param("actionTags"), req.param("operation"));
             res.render('chart', {
                 readToken: req.param("readToken"),
                 isUserLoggedIn: false,
