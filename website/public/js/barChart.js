@@ -250,7 +250,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
             value_unit = "";
             
             if ("count" !== operation_type) {
-                value_unit = operation_string[1].slice(0, -1);
+                value_unit = operation_string[1].slice(0, -1).replace(/-/g, " ");
             }
 
             if ("duration" === value_unit) {

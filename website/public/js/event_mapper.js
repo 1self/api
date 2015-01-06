@@ -1,215 +1,67 @@
 (function(){
     var Event = function(evt){
-        this.name = evt.name;
-        this.objectTags = evt.objectTags;
-        this.actionTags = evt.actionTags;
-        this.interestingProperty = evt.interestingProperty;
-        this.operation = evt.operation;
-        this.unitOfMeasurement = evt.unitOfMeasurement;
+        try{
+            this.name = this.computeName(evt.payload);
+            this.values = this.getValues(evt.payload);
+            this.url = this.computeUrl(evt.payload);
+        }catch(e){
+            console.log(e.message + "for " + JSON.stringify(evt));
+        }
     };
 
-    Event.prototype.humanizedValue = function(value){
-        if("seconds" == this.unitOfMeasurement){
-            var duration = moment.duration(value * 1000),
+    Event.prototype.computeName = function(evt){
+        return evt.objectTags.join(' ') + ' ' + 
+            evt.actionTags.join(' ');
+    };
+
+    Event.prototype.getValues = function(evt){
+        var properties = JSON.stringify(evt.properties),
+        value = properties
+            .replace("{", "")
+            .replace("}","")
+            .replace(/"/g, '');
+
+        return value;
+    };
+
+    Event.prototype.humanizedValue = function(){
+        var value;
+
+        //dirty hack for "duration"
+        if("duration" == this.values.split(':')[0]){
+            var durationString = this.values.split(":")[1];
+            var duration = moment.duration(parseInt(durationString) * 1000),
             humanized_value = "";
             
             humanized_value += duration.hours() ? duration.hours() + " hour " : "";
             humanized_value += duration.minutes() ? duration.minutes() + " mins " : "";
             humanized_value += duration.seconds() ? duration.seconds() + " secs " : "";
             
-            return humanized_value;
+            value = humanized_value;
         }else{
-            return value + " " + this.unitOfMeasurement;
-        }
-    }; 
-
-    var EventLookup = function(events){
-        this.events = events;
-    };
-
-    EventLookup.prototype.findByObjectAndActionTags = function(objectTags, actionTags){
-        for(var i = 0; i < this.events.length; i++){
-            var event = this.events[i],
-            objectTagsLowercased = objectTags.join('|').toLowerCase().split('|'),
-            actionTagsLowercased = actionTags.join('|').toLowerCase().split('|');
-
-            //merge and check length to be same
-            var objectTagsMatch = (_.union(event.objectTags, objectTagsLowercased).length == event.objectTags.length);
-            var actionTagsMatch = (_.union(event.actionTags, actionTagsLowercased).length == event.actionTags.length);
-
-            if(objectTagsMatch && actionTagsMatch){
-                return event;
-            }
+            value = this.values.split(",")[0];
         }
 
-        return null;
-    };
+        return value;
+    }
 
+    Event.prototype.computeUrl = function(evt){
+        //sum on first existing event FOR NOW
+        var first_value = this.values.split(":")[0],
+        operation;
+        
+        //hack for noiseapp
+        if("dba" == operation){
+            operation = "mean(dba)";
+        }else{
+            operation = "sum(" + first_value  + ")";
+        }
+
+        return "window.location.href = " + 
+            "'/v1/users/" + username + "/events/" + evt.objectTags.join(',') +
+            "/" + evt.actionTags.join(',') + "/" + operation +
+            "/daily/barchart'";
+    };
+    
     window.OsEvent = Event;
-    window.OsEventLookup = EventLookup;
 })();
-
-
-var preDefinedOsEvents = [
-    new OsEvent({name: "Noise Sample", 
-                 objectTags: ["soundmeter"],
-                 actionTags: ["sample"],
-                 interestingProperty: "dba",
-                 operation: "mean(dba)",
-                 unitOfMeasurement: "decibels"
-                }),
-
-    new OsEvent({name: "Github Push", 
-                 objectTags: ["computer", "software", "source control"],
-                 actionTags: ["github", "push"],
-                 interestingProperty: "",
-                 operation: "count",
-                 unitOfMeasurement: ""
-                }),
-
-    new OsEvent({name: "Exercising", 
-                 objectTags: ["self"],
-                 actionTags: ["exercise"],
-                 interestingProperty: "duration",
-                 operation: "sum(duration)",
-                 unitOfMeasurement: "seconds"
-                }),
-
-    new OsEvent({name: "Coding", 
-                 objectTags: ["self"],
-                 actionTags: ["code"],
-                 interestingProperty: "duration",
-                 operation: "sum(duration)",
-                 unitOfMeasurement: "seconds"
-                }),
-
-    new OsEvent({name: "Commuting", 
-                 objectTags: ["self"],
-                 actionTags: ["commute"],
-                 interestingProperty: "duration",
-                 operation: "sum(duration)",
-                 unitOfMeasurement: "seconds"
-                }),
-
-    new OsEvent({name: "Cooking", 
-                 objectTags: ["self"],
-                 actionTags: ["cook"],
-                 interestingProperty: "duration",
-                 operation: "sum(duration)",
-                 unitOfMeasurement: "seconds"
-                }),
-
-    new OsEvent({name: "Meditating", 
-                 objectTags: ["self"],
-                 actionTags: ["meditate"],
-                 interestingProperty: "duration",
-                 operation: "sum(duration)",
-                 unitOfMeasurement: "seconds"
-                }),
-
-    new OsEvent({name: "Meeting", 
-                 objectTags: ["self"],
-                 actionTags: ["meet"],
-                 interestingProperty: "duration",
-                 operation: "sum(duration)",
-                 unitOfMeasurement: "seconds"
-                }),
-
-    new OsEvent({name: "Partying", 
-                 objectTags: ["self"],
-                 actionTags: ["party"],
-                 interestingProperty: "duration",
-                 operation: "sum(duration)",
-                 unitOfMeasurement: "seconds"
-                }),
-
-    new OsEvent({name: "Playing Instrument", 
-                 objectTags: ["instrument"],
-                 actionTags: ["play"],
-                 interestingProperty: "duration",
-                 operation: "sum(duration)",
-                 unitOfMeasurement: "seconds"
-                }),
-
-    new OsEvent({name: "Playing Games", 
-                 objectTags: ["computer", "games"],
-                 actionTags: ["play"],
-                 interestingProperty: "duration",
-                 operation: "sum(duration)",
-                 unitOfMeasurement: "seconds"
-                }),
-
-    new OsEvent({name: "Reading", 
-                 objectTags: ["text"],
-                 actionTags: ["read"],
-                 interestingProperty: "duration",
-                 operation: "sum(duration)",
-                 unitOfMeasurement: "seconds"
-                }),
-
-    new OsEvent({name: "Sitting", 
-                 objectTags: ["self"],
-                 actionTags: ["sit"],
-                 interestingProperty: "duration",
-                 operation: "sum(duration)",
-                 unitOfMeasurement: "seconds"
-                }),
-
-    new OsEvent({name: "Sleeping", 
-                 objectTags: ["self"],
-                 actionTags: ["sleep"],
-                 interestingProperty: "duration",
-                 operation: "sum(duration)",
-                 unitOfMeasurement: "seconds"
-                }),
-
-    new OsEvent({name: "Standing", 
-                 objectTags: ["self"],
-                 actionTags: ["stand"],
-                 interestingProperty: "duration",
-                 operation: "sum(duration)",
-                 unitOfMeasurement: "seconds"
-                }),
-
-    new OsEvent({name: "Studying", 
-                 objectTags: ["self"],
-                 actionTags: ["study"],
-                 interestingProperty: "duration",
-                 operation: "sum(duration)",
-                 unitOfMeasurement: "seconds"
-                }),
-
-    new OsEvent({name: "Tooth Brushing", 
-                 objectTags: ["teeth"],
-                 actionTags: ["floss"],
-                 interestingProperty: "duration",
-                 operation: "sum(duration)",
-                 unitOfMeasurement: "seconds"
-                }),
-
-    new OsEvent({name: "TV Watching", 
-                 objectTags: ["tv"],
-                 actionTags: ["watch"],
-                 interestingProperty: "duration",
-                 operation: "sum(duration)",
-                 unitOfMeasurement: "seconds"
-                }),
-
-    new OsEvent({name: "Working", 
-                 objectTags: ["self"],
-                 actionTags: ["work"],
-                 interestingProperty: "duration",
-                 operation: "sum(duration)",
-                 unitOfMeasurement: "seconds"
-                }),
-
-    new OsEvent({name: "Writing", 
-                 objectTags: ["text"],
-                 actionTags: ["write"],
-                 interestingProperty: "duration",
-                 operation: "sum(duration)",
-                 unitOfMeasurement: "seconds"
-                })
-];
-
-var os_event_lookup = new OsEventLookup(preDefinedOsEvents);

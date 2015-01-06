@@ -976,8 +976,8 @@ module.exports = function (app) {
     };
 
     var getGraphInfo = function (objectTags, actionTags) {
-        var title = objectTags.replace(',', ' ') + ' ' + 
-            actionTags.replace(',', ' ');
+        var title = objectTags.replace(/,/g, ' ') + ' ' + 
+            actionTags.replace(/,/g, ' ');
         return {
             title: title,
         };

@@ -12,7 +12,7 @@ var getEvents = function(){
         type: 'GET',
         dataType: 'json',
         success: insertEvents,
-        error: function() { alert('boo!'); },
+        error: function() { alert('Some problem dude!'); },
         beforeSend: setHeader
     });
 };
@@ -33,18 +33,11 @@ var insertEvents = function(data){
         var listOfEvents = dateGroupedEvents[date];
         for(i = 0; i < listOfEvents.length; i++){
             var current_event = listOfEvents[i],
-            os_event = getOsEvent(current_event);
+            os_event = new OsEvent(current_event);
 
-            if(os_event == null){
-                console.log("No os event for : " + JSON.stringify(current_event));
-                continue;
-            }
+            html += '<li onclick="' + os_event.url  + '" class="list-group-item"><span class="event_title">' + os_event.name  + '</span>';
 
-            html += '<li onclick="' + getVisualizationUrl(os_event)  + '" class="list-group-item"><span class="event_title">' + os_event.name  + '</span>';
-
-            if("" !== os_event.interestingProperty){
-                html += '<div class="event_property">' + os_event.humanizedValue(current_event.payload.properties[os_event.interestingProperty]) + '</div>';
-            }
+            html += '<div class="event_property">' + os_event.humanizedValue() + '</div>';
             
             html += '</li>';
         }
@@ -76,14 +69,6 @@ var groupEventsByDate = function(data){
     return groups;
 };
 
-var getVisualizationUrl = function(event){
-    return "window.location.href = " + 
-        "'/v1/users/" + username + "/events/" + event.objectTags.join(',') +
-        "/" + event.actionTags.join(',') + "/" + event.operation +
-        "/daily/barchart'";
-};
-
-
 var formatDate = function(date){
     moment.locale('en', {
         calendar: {
@@ -96,11 +81,3 @@ var formatDate = function(date){
     
     return moment(date).calendar();
 }
-
-
-var getOsEvent = function(event){
-    // if(event.payload.source == "Timer App"){
-    //     abc=1;
-    // }
-    return os_event_lookup.findByObjectAndActionTags(event.payload.objectTags, event.payload.actionTags);
-};
