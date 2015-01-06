@@ -79,9 +79,7 @@ var filter = function (query) {
             user: "",
             password: encryptedPassword
         },
-        qs: {
-            'filterSpec': query
-        },
+        qs: query,
         method: 'GET'
     };
     requestModule(requestDetails, function (error, response, body) {
