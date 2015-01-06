@@ -10,11 +10,10 @@ var path = require('path');
 var QD_EMAIL = process.env.QD_EMAIL;
 var ONESELF_EMAIL = process.env.ONESELF_EMAIL;
 var ObjectID = require('mongodb').ObjectID;
-var mongoDbConnection = require('./lib/connection.js');
 var validateRequest = require("./validateRequest");
 var moment = require("moment");
 var validator = require('validator');
-var mongoRespository = require('./mongoRepository.js');
+var mongoRepository = require('./mongoRepository.js');
 
 var emailConfigOptions = {
     root: path.join(__dirname, "/website/public/email_templates")
@@ -66,7 +65,7 @@ module.exports = function (app) {
             "streamid": streamid
         };
         var deferred = Q.defer();
-        mongoRespository.findOne('stream', byStreamId)
+        mongoRepository.findOne('stream', byStreamId)
             .then(function (stream) {
                 if (stream) {
                     deferred.resolve(true);
@@ -87,7 +86,7 @@ module.exports = function (app) {
             "streamid": streamId
         };
         var deferred = Q.defer();
-        mongoRespository.findOne('stream', byStreamId)
+        mongoRepository.findOne('stream', byStreamId)
             .then(function (stream) {
                 if (stream) {
                     deferred.resolve(true);
@@ -109,7 +108,7 @@ module.exports = function (app) {
             "username": 1
         };
         var deferred = Q.defer();
-        mongoRespository.findOne('users', streamidUsernameMapping, projection)
+        mongoRepository.findOne('users', streamidUsernameMapping, projection)
             .then(function (user) {
                 deferred.resolve(user);
             }, function (err) {
@@ -130,7 +129,7 @@ module.exports = function (app) {
         var query = {
             "username": user.username.toLowerCase()
         };
-        mongoRespository.update('users', query, updateObject)
+        mongoRepository.update('users', query, updateObject)
             .then(function (user) {
                 deferred.resolve(true);
             }, function (err) {
@@ -231,7 +230,7 @@ module.exports = function (app) {
                     salt: encUserObj.salt
                 }
             };
-            mongoRespository.update('users', byGithubUsername, updateObject)
+            mongoRepository.update('users', byGithubUsername, updateObject)
                 .then(function () {
                     deferred.resolve(encUserObj);
                 }, function (err) {
@@ -269,7 +268,7 @@ module.exports = function (app) {
             var byOneselfUsername = {
                 "username": oneselfUsername.toLowerCase()
             };
-            mongoRespository.findOne('users', byOneselfUsername)
+            mongoRepository.findOne('users', byOneselfUsername)
                 .then(function (user) {
                     if (user) {
                         deferred.reject("Username already taken. Please choose another one.");
@@ -307,48 +306,36 @@ module.exports = function (app) {
         var user = {
             "encodedUsername": eun
         };
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection("users", function (err, collection) {
-                collection.findOne(user, function (err, user) {
-                    if (err) {
-                        console.log("DB error", err);
-                        deferred.reject(err);
-                    } else {
-                        deferred.resolve(user["_id"]);
-                    }
-                });
+        mongoRepository.findOne('users', user)
+            .then(function (user) {
+                deferred.resolve(user["_id"]);
+            }, function (err) {
+                deferred.reject(err);
             });
-        });
         return deferred.promise;
     };
 
     var createFriendship = function (userId1, userId2) {
         var deferred = Q.defer();
-
         var findUserByEun = {
             "_id": ObjectID(userId1)
         };
         var friend = {
             "friends": ObjectID(userId2)
         };
-
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection("users", function (err, collection) {
-                collection.update(findUserByEun, {
-                    $addToSet: friend
-                }, {
-                    upsert: true
-                }, function (error, data) {
-                    if (error) {
-                        console.log("DB error");
-                        deferred.reject(error);
-                    } else {
-                        console.log("friend inserted successfully");
-                        deferred.resolve();
-                    }
-                });
+        var updateObject = {
+            $addToSet: friend
+        };
+        var options = {
+            upsert: true
+        };
+        mongoRepository.update('users', findUserByEun, updateObject, options)
+            .then(function () {
+                deferred.resolve();
+            }, function (err) {
+                deferred.reject(err);
             });
-        });
+
         return deferred.promise;
     };
 
@@ -357,16 +344,12 @@ module.exports = function (app) {
         var query = {
             "_id": userDbId
         };
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection('users').findOne(query, function (err, user) {
-                if (err) {
-                    console.log("DB error", err);
-                    deferred.reject(err);
-                } else {
-                    deferred.resolve(user.username);
-                }
+        mongoRepository.findOne('users', query)
+            .then(function (user) {
+                deferred.resolve(user.username);
+            }, function (err) {
+                deferred.reject(err);
             });
-        });
         return deferred.promise;
     };
 
@@ -375,12 +358,9 @@ module.exports = function (app) {
         var query = {
             "username": username.toLowerCase()
         };
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection('users').findOne(query, function (err, user) {
-                if (err) {
-                    console.log("DB Error : ", err);
-                    deferred.reject(err);
-                } else if (_.isEmpty(user) || _.isEmpty(user.friends)) {
+        mongoRepository.findOne('users', query)
+            .then(function (user) {
+                if (_.isEmpty(user) || _.isEmpty(user.friends)) {
                     deferred.resolve(null);
                 } else {
                     var promiseArray = [];
@@ -394,8 +374,9 @@ module.exports = function (app) {
                         deferred.resolve(sortedAlphabetically);
                     });
                 }
+            }, function (err) {
+                deferred.reject(err);
             });
-        });
         return deferred.promise;
     };
 
@@ -404,20 +385,16 @@ module.exports = function (app) {
         var query = {
             "username": username.toLowerCase()
         };
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection('users').findOne(query, function (err, user) {
-                if (err) {
-                    console.log("DB Error : ", err);
-                    deferred.reject(err);
+        mongoRepository.findOne('users', query)
+            .then(function (user) {
+                if (!(_.isEmpty(user.githubUser.displayName))) {
+                    deferred.resolve(user.githubUser.displayName);
                 } else {
-                    if (!(_.isEmpty(user.githubUser.displayName))) {
-                        deferred.resolve(user.githubUser.displayName);
-                    } else {
-                        deferred.resolve(username);
-                    }
+                    deferred.resolve(username);
                 }
+            }, function (err) {
+                deferred.reject(err);
             });
-        });
         return deferred.promise;
     };
 
@@ -426,20 +403,16 @@ module.exports = function (app) {
         var query = {
             "encodedUsername": eun
         };
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection('users').findOne(query, function (err, user) {
-                if (err) {
-                    console.log("err : ", err);
-                    deferred.reject("DB error", err);
+        mongoRepository.findOne('users', query)
+            .then(function (user) {
+                if (!(_.isEmpty(user.githubUser.displayName))) {
+                    deferred.resolve(user.githubUser.displayName);
                 } else {
-                    if (!(_.isEmpty(user.githubUser.displayName))) {
-                        deferred.resolve(user.githubUser.displayName);
-                    } else {
-                        deferred.resolve(user.username);
-                    }
+                    deferred.resolve(user.username);
                 }
+            }, function (err) {
+                deferred.reject(err);
             });
-        });
         return deferred.promise;
     };
 
@@ -448,20 +421,16 @@ module.exports = function (app) {
         var query = {
             "encodedUsername": eun
         };
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection('users').findOne(query, function (err, user) {
-                if (err) {
-                    console.log("err : ", err);
-                    deferred.reject("DB error", err);
+        mongoRepository.findOne('users', query)
+            .then(function (user) {
+                if (!(_.isEmpty(user))) {
+                    deferred.resolve(user.username);
                 } else {
-                    if (!(_.isEmpty(user))) {
-                        deferred.resolve(user.username);
-                    } else {
-                        deferred.resolve(null);
-                    }
+                    deferred.resolve(null);
                 }
+            }, function (err) {
+                deferred.reject(err);
             });
-        });
         return deferred.promise;
     };
 
@@ -470,21 +439,16 @@ module.exports = function (app) {
         var query = {
             "token": token
         };
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection('emailMap').findOne(query,
-                function (err, userInviteEntry) {
-                    if (err) {
-                        console.log("Error", err);
-                        deferred.reject(err);
-                    } else {
-                        if (_.isEmpty(userInviteEntry)) {
-                            deferred.reject("token not found");
-                        } else {
-                            deferred.resolve(userInviteEntry);
-                        }
-                    }
-                });
-        });
+        mongoRepository.findOne('emailMap', query)
+            .then(function (userInviteEntry) {
+                if (_.isEmpty(userInviteEntry)) {
+                    deferred.reject("token not found");
+                } else {
+                    deferred.resolve(userInviteEntry);
+                }
+            }, function (err) {
+                deferred.reject(err);
+            });
         return deferred.promise;
     };
 
@@ -572,23 +536,18 @@ module.exports = function (app) {
         var createEntry = function (token) {
             var deferred = Q.defer();
             userInviteEntry.token = token;
-
-            mongoDbConnection(function (qdDb) {
-                qdDb.collection("emailMap", function (err, collection) {
-                    collection.update(userInviteEntry, {
-                        $set: userInviteEntry
-                    }, {
-                        upsert: true
-                    }, function (error, data) {
-                        if (error) {
-                            console.log("DB error", error);
-                            deferred.reject(error);
-                        } else {
-                            deferred.resolve(userInviteEntry);
-                        }
-                    });
+            var updateObject = {
+                $set: userInviteEntry
+            };
+            var options = {
+                upsert: true
+            };
+            mongoRepository.update('emailMap', userInviteEntry, updateObject, options)
+                .then(function () {
+                    deferred.resolve(userInviteEntry);
+                }, function (err) {
+                    deferred.reject(err);
                 });
-            });
             return deferred.promise;
         };
 
@@ -606,24 +565,19 @@ module.exports = function (app) {
     };
 
     var getEmailIdsForUsername = function (username) {
-        //Try using mongo aggregation
         var deferred = Q.defer();
         var query = {
             "username": username.toLowerCase()
         };
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection('users').findOne(query, {
-                "githubUser.emails": 1
-            }, function (err, emails) {
-                if (err) {
-                    console.log("Error while querying", err);
-                    deferred.reject(err);
-                } else {
-                    deferred.resolve(emails);
-                }
+        var projection = {
+            "githubUser.emails": 1
+        };
+        mongoRepository.findOne('users', query, projection)
+            .then(function (emails) {
+                deferred.resolve(emails);
+            }, function (err) {
+                deferred.reject(err);
             });
-        });
-
         return deferred.promise;
     };
 
@@ -643,22 +597,15 @@ module.exports = function (app) {
 
     var deleteUserInvitesEntry = function (userInviteEntry) {
         var deferred = Q.defer();
-        var findInviteByToken = {
+        var query = {
             "token": userInviteEntry.token
         };
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection("emailMap", function (err, collection) {
-                collection.remove(findInviteByToken, function (error, data) {
-                    if (error) {
-                        console.log("DB error ", error);
-                        deferred.reject(error);
-                    } else {
-                        console.log("Email mapping deleted! for token ", userInviteEntry.token);
-                        deferred.resolve(userInviteEntry);
-                    }
-                });
+        mongoRepository.remove('emailMap', query)
+            .then(function () {
+                deferred.resolve(userInviteEntry);
+            }, function (err) {
+                deferred.reject(err);
             });
-        });
         return deferred.promise;
     };
 
@@ -877,7 +824,6 @@ module.exports = function (app) {
             });
     });
 
-
     var sendAppDetailsByEmail = function (appId, appSecret, toEmailId) {
         var deferred = Q.defer();
 
@@ -908,37 +854,30 @@ module.exports = function (app) {
 
     var getAlreadySharedGraphObject = function (graphUrl) {
         var deferred = Q.defer();
-        var byGraphUrl = {
+        var query = {
             "graphUrl": graphUrl
         };
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection('graphShares').findOne(byGraphUrl, function (err, graphShareObject) {
-                if (!err && graphShareObject) {
+        mongoRepository.findOne('graphShares', query)
+            .then(function (graphShareObject) {
+                if (graphShareObject) {
                     deferred.resolve(graphShareObject);
-                } else if (!err && !graphShareObject) {
-                    deferred.resolve(null);
                 } else {
-                    deferred.reject(err);
+                    deferred.resolve(null);
                 }
+            }, function (err) {
+                deferred.reject(err);
             });
-        });
         return deferred.promise;
     };
 
     var insertGraphShareEntryInDb = function (graphShareObject) {
         var deferred = Q.defer();
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection("graphShares", function (err, collection) {
-                collection.insert(graphShareObject, function (error, data) {
-                    if (error) {
-                        console.log("DB error", error);
-                        deferred.reject(error);
-                    } else {
-                        deferred.resolve(graphShareObject);
-                    }
-                });
+        mongoRepository.insert('graphShares', graphShareObject)
+            .then(function () {
+                deferred.resolve(graphShareObject);
+            }, function (err) {
+                deferred.reject(err);
             });
-        });
         return deferred.promise;
     };
 
@@ -1019,17 +958,16 @@ module.exports = function (app) {
             "graphUrl": graphUrl,
             "shareToken": shareToken
         };
-
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection('graphShares').findOne(tokenGraphUrlQuery, function (err, entry) {
-                if (!err && entry) {
+        mongoRepository.findOne('graphShares', tokenGraphUrlQuery)
+            .then(function (entry) {
+                if (entry) {
                     deferred.resolve(true);
                 } else {
-                    console.log("Error is", err);
                     deferred.resolve(false);
                 }
+            }, function (err) {
+                deferred.reject(err);
             });
-        });
         return deferred.promise;
     };
 
@@ -1057,24 +995,15 @@ module.exports = function (app) {
             var getGraphOwnerAvatarUrl = function () {
                 var deferred = Q.defer();
                 var username = req.param("username");
-                var userQueryObject = {
+                var query = {
                     username: username
                 };
-
-                mongoDbConnection(function (qdDb) {
-                    qdDb.collection("users", function (err, collection) {
-                        collection.findOne(userQueryObject, function (error, user) {
-                            if (error) {
-                                console.error("DB error", error);
-                                deferred.reject(error);
-                            } else {
-
-                                deferred.resolve(user.githubUser["_json"].avatar_url);
-                            }
-                        });
+                mongoRepository.findOne('users', query)
+                    .then(function (user) {
+                        deferred.resolve(user.githubUser["_json"].avatar_url);
+                    }, function (err) {
+                        deferred.reject(err);
                     });
-                });
-
                 return deferred.promise;
             };
 
@@ -1120,7 +1049,6 @@ module.exports = function (app) {
                 });
         });
 
-
     app.get("/timeline", sessionManager.requiresSession, function (req, res) {
         res.render('timeline', {
             encodedUsername: req.session.encodedUsername,
@@ -1128,5 +1056,4 @@ module.exports = function (app) {
             avatarUrl: req.session.avatarUrl
         });
     });
-
 };

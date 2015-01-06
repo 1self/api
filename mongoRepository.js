@@ -69,10 +69,11 @@ var count = function (collection, query) {
     return deferred.promise;
 };
 
-var update = function (collection, query, updateObject) {
+var update = function (collection, query, updateObject, options) {
     var deferred = q.defer();
+    options = defaultFor(options, {});
     mongoDbConnection(function (qdDb) {
-        qdDb.collection(collection).update(query, updateObject, function (err, updateCount) {
+        qdDb.collection(collection).update(query, updateObject, options, function (err, updateCount) {
             if (err) {
                 console.err(err);
                 deferred.reject(err);
@@ -84,8 +85,25 @@ var update = function (collection, query, updateObject) {
     return deferred.promise;
 };
 
+var remove = function (collection, query, options) {
+    var deferred = q.defer();
+    options = defaultFor(options, {});
+    mongoDbConnection(function (qdDb) {
+        qdDb.collection(collection).remove(query, options, function (err, removeCount) {
+            if (err) {
+                console.err(err);
+                deferred.reject(err);
+            } else {
+                deferred.resolve(removeCount);
+            }
+        });
+    });
+    return deferred.promise;
+};
+
 exports.insert = insert;
 exports.find = find;
 exports.findOne = findOne;
 exports.update = update;
 exports.count = count;
+exports.remove = remove;
