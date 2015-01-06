@@ -296,11 +296,7 @@ charts.plotBarChart = function (divId, events, fromTime, tillTime) {
                     }
                 });
             $(".addCommentButton").show();
-            if (isNaN(date)) {
-                $("#date").html('No data logged for this activity');
-            } else {
-                $("#date").html(moment(date).format("DD/MM/YY dddd"));
-            }
+            $("#date").html(moment(date).format("DD/MM/YY dddd"));
             $("#eventValue").html(getDataPointDescription(events[events.length-1].value));
             
         };
