@@ -43,7 +43,7 @@
             valueTitle = valueString.split(":")[0],
             valueCount = parseFloat(valueString.split(":")[1]).toFixed(1);
 
-            value = valueCount + " " + valueTitle;
+            value = valueCount + " " + valueTitle.replace(/-/g, " ");
         }
 
         return value;
@@ -54,7 +54,7 @@
         var first_value = this.values.split(":")[0],
         operation;
         
-        //hack for noiseapp
+        //hack for noiseapp (for now)
         if("dba" == operation){
             operation = "mean(dba)";
         }else{
