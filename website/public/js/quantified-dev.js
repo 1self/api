@@ -93,7 +93,11 @@ var qd = function () {
         result.plotGraphWith('caffeineEvents', caffeineEvents, "#caffeine-history-parent");
     };
     result.updateCaffeineModel = function () {
-        postAjax("mycaffeine", plotCaffeineEvents)
+        postV1Ajax("Drink,Coffee", "drink", "count", "daily")
+            .done(plotCaffeineEvents)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
     };
     var plotBuildDurationEvents = function (buildDurationEvents) {
         result.buildDurationEvents = buildDurationEvents;
@@ -252,11 +256,11 @@ var qd = function () {
         var totalCaffeine = [];
         var sparkbarDataForDays = 14;
         result.caffeineEvents.map(function (caffeineEvent) {
-            totalCaffeine.push(caffeineEvent.caffeineCount);
+            totalCaffeine.push(caffeineEvent.value);
         });
 
         totalCaffeine = totalCaffeine.slice(totalCaffeine.length - sparkbarDataForDays, totalCaffeine.length);
-        console.log("sparking caffeine:", totalCaffeine)
+        console.log("sparking caffeine:", totalCaffeine);
         var sparkBar = window.oneSelf.toSparkBars(totalCaffeine);
         var tweetText = sparkBar + " my caffeine levels over the last 2 weeks. See yours at app.1self.co";
         var hashTags = ['coffee', 'coding'].join(',');

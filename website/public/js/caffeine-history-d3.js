@@ -23,7 +23,7 @@ window.qd.plotCaffeineHistory = function () {
             .rangeRound([0, width - margin.left - margin.right])
             .nice(4);
         var maxDataValue = d3.max(data, function (d) {
-            return d.caffeineCount;
+            return d.value;
         });
         var y = d3.scale.linear()
             .domain([0, maxDataValue])
@@ -49,7 +49,7 @@ window.qd.plotCaffeineHistory = function () {
             .append('g')
             .attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
         var tipText = function (d) {
-            return "<strong>" + d.caffeineCount + (d.caffeineCount === 1 ? " cup" : " cups") +
+            return "<strong>" + d.value + (d.value === 1 ? " cup" : " cups") +
                 "</strong> <span style='color:lightgrey'> on " + moment(d.date).format("ddd MMM DD") + "</span>";
         };
         var tooltipDivForMobile = d3.select("body").append("div")
@@ -72,11 +72,11 @@ window.qd.plotCaffeineHistory = function () {
                 return x(new Date(d.date));
             })
             .attr('y', function (d) {
-                return height - margin.top - margin.bottom - (height - margin.top - margin.bottom - y(d.caffeineCount))
+                return height - margin.top - margin.bottom - (height - margin.top - margin.bottom - y(d.value))
             })
             .attr('width', 10)
             .attr('height', function (d) {
-                return height - margin.top - margin.bottom - y(d.caffeineCount)
+                return height - margin.top - margin.bottom - y(d.value)
             })
             .on("click", function (d) {
                 if ($(window).width() < 768) {
