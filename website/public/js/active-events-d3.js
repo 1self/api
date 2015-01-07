@@ -1,7 +1,12 @@
-window.qd.plotActiveEvents = function() {
-    setTimeout(function() {
+window.qd.plotActiveEvents = function () {
+    setTimeout(function () {
         $('#active-event-history').empty();
-        var data = window.qd.activeEvents;
+        var convertMillisToMinutes = function (data) {
+            return _.each(data, function (d) {
+                d.value = d.value / (1000 * 60);
+            });
+        };
+        var data = convertMillisToMinutes(window.qd.activeEvents);
         var margin = {
             top: 20,
             right: 30,
@@ -10,12 +15,12 @@ window.qd.plotActiveEvents = function() {
         };
         var width = $('#active-event-history').width();
         var height = width / 1.61;
-        if ($(window).width() >645 &&  $(window).width() < 1030) {
-                height = (width / 2.7);
-            }
-            if ($(window).width() < 345) {
-                height = (width / 1);
-            }
+        if ($(window).width() > 645 && $(window).width() < 1030) {
+            height = (width / 2.7);
+        }
+        if ($(window).width() < 345) {
+            height = (width / 1);
+        }
         var oneMonthAgo = new Date(moment().subtract("month", 1).format("MM/DD/YYYY"));
         var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
         var x = d3.time.scale()

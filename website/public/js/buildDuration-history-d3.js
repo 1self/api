@@ -1,7 +1,12 @@
-window.qd.plotBuildDurationHistory = function() {
-    setTimeout(function() {
+window.qd.plotBuildDurationHistory = function () {
+    setTimeout(function () {
         $('#buildDuration-history').empty();
-        var data = window.qd.buildDurationEvents;
+        var convertMillisToSeconds = function (data) {
+            return _.each(data, function (d) {
+                d.value = d.value / 1000;
+            });
+        };
+        var data = convertMillisToSeconds(window.qd.buildDurationEvents);
         var margin = {
             top: 20,
             right: 30,
@@ -10,12 +15,12 @@ window.qd.plotBuildDurationHistory = function() {
         };
         var width = $('#buildDuration-history').width();
         var height = width / 1.61;
-        if ($(window).width() >645 &&  $(window).width() < 1030) {
-                height = (width / 2.5);
-            }
-            if ($(window).width() < 345) {
-                height = (width / 1);
-            }
+        if ($(window).width() > 645 && $(window).width() < 1030) {
+            height = (width / 2.5);
+        }
+        if ($(window).width() < 345) {
+            height = (width / 1);
+        }
         var oneMonthAgo = new Date(moment().subtract("month", 1).format("MM/DD/YYYY"));
         var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
         var x = d3.time.scale()
@@ -125,6 +130,6 @@ window.qd.plotBuildDurationHistory = function() {
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text("Build Duration(mins)");
+            .text("Build Duration(seconds)");
     }, 1000);
 };
