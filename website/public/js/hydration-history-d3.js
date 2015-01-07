@@ -23,7 +23,7 @@ window.qd.plotHydrationHistory = function () {
             .rangeRound([0, width - margin.left - margin.right])
             .nice(4);
         var maxDataValue = d3.max(data, function (d) {
-            return d.hydrationCount;
+            return d.value;
         });
         var y = d3.scale.linear()
             .domain([0, maxDataValue])
@@ -49,7 +49,7 @@ window.qd.plotHydrationHistory = function () {
             .append('g')
             .attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
         var tipText = function (d) {
-            return "<strong>" + d.hydrationCount + (d.hydrationCount === 1 ? " glass" : " glasses") +
+            return "<strong>" + d.value + (d.value === 1 ? " glass" : " glasses") +
                 "</strong> <span style='color:lightgrey'> on " + moment(d.date).format("ddd MMM DD") + "</span>";
         };
         var tooltipDivForMobile = d3.select("body").append("div")
@@ -72,11 +72,11 @@ window.qd.plotHydrationHistory = function () {
                 return x(new Date(d.date));
             })
             .attr('y', function (d) {
-                return height - margin.top - margin.bottom - (height - margin.top - margin.bottom - y(d.hydrationCount))
+                return height - margin.top - margin.bottom - (height - margin.top - margin.bottom - y(d.value))
             })
             .attr('width', 10)
             .attr('height', function (d) {
-                return height - margin.top - margin.bottom - y(d.hydrationCount)
+                return height - margin.top - margin.bottom - y(d.value)
             })
             .on("click", function (d) {
                 if ($(window).width() < 768) {

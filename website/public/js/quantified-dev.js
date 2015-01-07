@@ -82,7 +82,11 @@ var qd = function () {
         result.plotGraphWith('hydrationEvents', hydrationEvents, "#hydration-history-parent");
     };
     result.updateHydrationModel = function () {
-        postAjax("myhydration", plotHydrationEvents)
+        postV1Ajax("Drink,Water", "drink", "count", "daily")
+            .done(plotHydrationEvents)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
     };
     var plotCaffeineEvents = function (caffeineEvents) {
         result.caffeineEvents = caffeineEvents;
@@ -228,7 +232,7 @@ var qd = function () {
         var sparkbarDataForDays = 14;
 
         result.hydrationEvents.map(function (hydrationEvent) {
-            totalHydrations.push(hydrationEvent.hydrationCount);
+            totalHydrations.push(hydrationEvent.value);
         });
 
         totalHydrations = totalHydrations.slice(totalHydrations.length - sparkbarDataForDays, totalHydrations.length);
