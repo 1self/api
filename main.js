@@ -408,101 +408,6 @@ var getBuildEventsFromPlatform = function (streams) {
     return deferred.promise;
 };
 
-var getMyActiveDuration = function (streams) {
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var deferred = q.defer();
-    var lastMonth = moment().subtract('months', 1);
-
-    var groupQuery = {
-        "$groupBy": {
-            "fields": [
-                {
-                    "name": "payload.eventDateTime",
-                    "format": "MM/dd/yyyy"
-                }
-            ],
-            "filterSpec": {
-                "payload.streamid": {
-                    "$operator": {
-                        "in": streamids
-                    }
-                },
-                "payload.eventDateTime": {
-                    "$operator": {
-                        ">": {
-                            "$date": moment(lastMonth).format()
-                        }
-                    }
-                },
-                "payload.actionTags": "Develop"
-            },
-            "projectionSpec": {
-                "payload.eventDateTime": "date",
-                "payload.properties": "properties"
-            },
-            "orderSpec": {}
-        }
-    };
-    var sumOfActiveEvents = {
-        "$sum": {
-            "field": {
-                "name": "properties.duration"
-            },
-            "data": groupQuery,
-            "filterSpec": {},
-            "projectionSpec": {
-                "resultField": "totalActiveDuration"
-            }
-        }
-    };
-    var countOfActiveEvents = {
-        "$count": {
-            "data": groupQuery,
-            "filterSpec": {},
-            "projectionSpec": {
-                "resultField": "activeCount"
-            }
-        }
-    };
-    var query = {
-        spec: JSON.stringify([sumOfActiveEvents,
-            countOfActiveEvents
-        ]),
-        merge: true
-    };
-    var processResult = function (result) {
-        if (_.isEmpty(result)) {
-            deferred.resolve([]);
-        } else {
-            var defaulActiveDurationValues = [
-                {
-                    key: "totalActiveDuration",
-                    value: 0
-                },
-                {
-                    key: "inActiveCount",
-                    value: 0
-                }
-            ];
-            var activeDurationByDay = generateDatesFor(defaulActiveDurationValues);
-            for (var date in result) {
-                if (activeDurationByDay[date] !== undefined) {
-                    activeDurationByDay[date].totalActiveDuration = convertMillisToMinutes(result[date].totalActiveDuration);
-                    activeDurationByDay[date].inActiveCount = result[date].activeCount - 1;
-                }
-            }
-            deferred.resolve(rollupToArray(activeDurationByDay));
-        }
-    };
-    platformService.aggregate(query)
-        .then(processResult, function (err) {
-            deferred.reject(err);
-        });
-    return deferred.promise;
-};
-
 var generateQueryForBuildDuration = function (streams) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
@@ -1223,20 +1128,6 @@ app.get('/quantifieddev/hourlyCaffeineCount', function (req, res) {
         .then(function (response) {
             var result = transformPlatformDataToQDEvents(response[0]);
             res.send(result);
-        }).catch(function (error) {
-            res.status(404).send("stream not found");
-        });
-});
-
-app.get('/quantifieddev/myActiveEvents', function (req, res) {
-    var encodedUsername = req.headers.authorization;
-    var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername)
-        .then(function () {
-            return getStreamIdForUsername(encodedUsername, forUsername)
-        }).then(getMyActiveDuration)
-        .then(function (response) {
-            res.send(response);
         }).catch(function (error) {
             res.status(404).send("stream not found");
         });

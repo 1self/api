@@ -106,6 +106,17 @@ var qd = function () {
     result.updateBuildDurationModel = function () {
         postAjax("buildDuration", plotBuildDurationEvents)
     };
+    var plotActivity = function (activeEvents) {
+        result.activeEvents = activeEvents;
+        result.plotGraphWith('activeEvents', activeEvents, "#active-event-history-parent");
+    };
+    result.updateActiveEvents = function () {
+        postV1Ajax("Computer,Software","Develop", "sum(duration)", "daily")
+            .done(plotActivity)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
+    };
 
     var getEventCountForHourlyEvents = function (events) {
         return _.reduce(_.map(events, function (event) {
@@ -151,13 +162,6 @@ var qd = function () {
     };
     result.updateHourlyCaffeineHeatMap = function () {
         postAjax("hourlyCaffeineCount", plotHourlyCaffeineEvents)
-    };
-    var plotActivity = function (activeEvents) {
-        result.activeEvents = activeEvents;
-        result.plotGraphWith('activeEvents', activeEvents, "#active-event-history-parent");
-    };
-    result.updateActiveEvents = function () {
-        postAjax("myActiveEvents", plotActivity)
     };
 
     var hourlyGithubErrorCallback = function () {
@@ -294,7 +298,7 @@ var qd = function () {
         var totalActiveDuration = [];
         var sparkbarDataForDays = 14;
         result.activeEvents.map(function (activeEvent) {
-            totalActiveDuration.push(activeEvent.totalActiveDuration);
+            totalActiveDuration.push(activeEvent.value);
         });
 
         totalActiveDuration = totalActiveDuration.slice(totalActiveDuration.length - sparkbarDataForDays, totalActiveDuration.length);
