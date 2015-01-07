@@ -104,7 +104,11 @@ var qd = function () {
         result.plotGraphWith('buildDurationEvents', buildDurationEvents, "#buildDuration-history-parent");
     };
     result.updateBuildDurationModel = function () {
-        postAjax("buildDuration", plotBuildDurationEvents)
+        postV1Ajax("Computer,Software","Build,Finish", "mean(BuildDuration)", "daily")
+            .done(plotBuildDurationEvents)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
     };
     var plotActivity = function (activeEvents) {
         result.activeEvents = activeEvents;
@@ -279,7 +283,7 @@ var qd = function () {
         var totalBuildDuration = [];
         var sparkbarDataForDays = 14;
         result.buildDurationEvents.map(function (buildDurationEvent) {
-            totalBuildDuration.push(buildDurationEvent.avgBuildDuration);
+            totalBuildDuration.push(buildDurationEvent.value);
         });
         totalBuildDuration = totalBuildDuration.slice(totalBuildDuration.length - sparkbarDataForDays, totalBuildDuration.length);
         console.log("sparking totalBuildDuration:", totalBuildDuration)
