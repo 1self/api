@@ -843,14 +843,14 @@ app.get('/users_count', function (req, res) {
 });
 
 app.get('/recent_signups', function (req, res) {
-    mongoRespository.find('users', {
-        "githubUser.profileUrl": true
-    }, {
-        "sort": [
-            ["_id", -1]
-        ],
-        "limit": "10"
-    }).then(function (users) {
+        mongoRespository.find('users', {
+            "githubUser.profileUrl": { $exists: true }
+        }, {
+            "sort": [
+                ["_id", -1]
+            ],
+            "limit": "10"
+        }).then(function (users) {
         res.send(users);
     }).catch(function (err) {
         res.send(err);
