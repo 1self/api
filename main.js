@@ -830,6 +830,45 @@ app.get('/health', function (request, response) {
     response.send("I'm alive");
 });
 
+app.get('/users_count', function (req, res) {
+    mongoDbConnection(function (qdDb) {
+        qdDb.collection('users').count(function (err, count) {
+            if (err) {
+                console.log("Err", err);
+            } else {
+                res.send({
+                    count: count
+                });
+            }
+        });
+    });
+});
+
+app.get('/recent_signups', function (req, res) {
+    mongoDbConnection(function (qdDb) {
+        qdDb.collection('users').find({}, {
+            "githubUser.profileUrl": true
+        }, {
+            "sort": [
+                ["_id", -1]
+            ],
+            "limit": "10"
+        }, function (error, results) {
+            results.toArray(function (err, users) {
+                if (err) {
+                    console.log("Err", err);
+                } else {
+                    console.log("Data is", users);
+                    res.send(users);
+                }
+            });
+            if (error) {
+                console.log("Err", error);
+            }
+        });
+    });
+});
+
 var validateClient = function (appId, appSecret) {
     var deferred = q.defer();
     var query = {
