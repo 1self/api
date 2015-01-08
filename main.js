@@ -951,6 +951,17 @@ app.get('/event', function (req, res) {
         });
 });
 
+
+app.get('/eventsCount', function (req, res) {
+    platformService.getEventsCount()
+        .then(function (response) {
+            res.send(response);
+        }).catch(function (error) {
+            console.log("Err", error);
+            res.status(400).send("Invalid request");
+        });
+});
+
 app.post('/stream/:id/event', postEvent);
 
 app.post('/v1/streams/:id/events', validateRequest.validate, postEvent);

@@ -92,7 +92,33 @@ var filter = function (query) {
     return deferred.promise;
 };
 
+
+var getEventsCount = function () {
+    var deferred = q.defer();
+
+    var options = {
+        url: platformUri + '/rest/events/eventsCount',
+        auth: {
+            user: "",
+            password: encryptedPassword
+        },
+        method: 'GET'
+    };
+
+    var getEventsCountFromPlatform = function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var result = JSON.parse(body);
+            deferred.resolve(result);
+        } else {
+            deferred.reject(error);
+        }
+    };
+    requestModule(options, getEventsCountFromPlatform);
+    return deferred.promise;
+};
+
 exports.saveEvent = saveEvent;
 exports.saveBatchEvents = saveBatchEvents;
 exports.aggregate = aggregate;
 exports.filter = filter;
+exports.getEventsCount = getEventsCount;
