@@ -1290,7 +1290,12 @@ var getQueryForVisualizationAPI = function (streamIds, params, fromDate, toDate)
 app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/type/json", validateRequest.validateStreamIdAndReadToken,
     function (req, res) {
         console.log("validating");
-        var query = getQueryForVisualizationAPI([req.params.streamId], req.params);
+        var lastWeek = moment.utc().startOf('day').subtract('days', 6).format();
+        var today = moment.utc().endOf('day').format();
+        var fromDate = req.query.from || lastWeek;
+        var toDate = req.query.to || today;
+
+        var query = getQueryForVisualizationAPI([req.params.streamId], req.params, fromDate, toDate);
         platformService.aggregate(query)
             .then(function (response) {
                 console.log("trying to transform events");
