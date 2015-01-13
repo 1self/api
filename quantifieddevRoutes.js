@@ -50,6 +50,8 @@ module.exports = function (app) {
             res.status(404).send("*** This environment does not support this feature ***");
             return;
         }
+        // Always redirect to dashboard when user hits /signup
+        req.session.redirectUrl = "/dashboard";
 
         if (!(_.isEmpty(req.param('streamId')))) {
             req.session.redirectUrl = "/dashboard" + "?streamId=" + req.param('streamId');
