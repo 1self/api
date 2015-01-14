@@ -78,7 +78,7 @@ module.exports = function (app) {
 
                 mongoDbConnection(function (qdDb) {
                     qdDb.collection('registeredApps').update(byAppId, updateObject, function(){
-                        console.log("New user " + githubUser.username + " assigned to: " + req.session.api_key);
+                        console.log("New user " + githubUser.username + " assigned to: " + appId);
                     });
                 });
             };
