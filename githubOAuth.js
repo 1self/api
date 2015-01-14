@@ -66,18 +66,9 @@ module.exports = function (app) {
 
         var creditUserSignUpToApp = function(){
             var attributeUserToApp = function(){
-                // var updateObject = {
-                //     "$push": {
-                //         "users": {
-                //             "githubUsername": githubUser.username
-                //         }
-                //     }
-                // };
-
-
                 var updateObject = {
                     "$push": {
-                        "users": [githubUser.username]
+                        "users": githubUser.username
                     }
                 };
 
