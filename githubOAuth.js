@@ -65,8 +65,12 @@ module.exports = function (app) {
         };
 
         var creditUserSignUpToApp = function(){
-            var attributeUserToApp = function(){
-                var updateObject = {
+            var attributeUserToApp = function(appId){
+                var byAppId = {
+                    "appId": appId
+                },
+
+                updateObject = {
                     "$push": {
                         "users": githubUser.username
                     }
@@ -78,23 +82,27 @@ module.exports = function (app) {
                     });
                 });
             };
+
+            var mapUserAndAppUsingStream = function(){
+                var redirectUrl = req.session.redirectUrl;
+                if(redirectUrl.match("/v1/streams")) {
+                    var tokenisedUrl = redirectUrl.split("/"),
+                    byStreamId = {
+                        "streamid": tokenisedUrl[3]
+                    };
+                    
+                    mongoDbConnection(function(qdDb) {
+                        qdDb.collection('stream').findOne(byStreamId, function(err, stream){
+                            if(!err && stream){
+                                attributeUserToApp(stream.appId);
+                            }
+                        });
+                    });
+                }
+            };
             
             //main
-            if("undefined" === typeof req.session.api_key){
-                return;
-            }
-
-            var byAppId = {
-                "appId": req.session.api_key
-            };
-
-            mongoDbConnection(function (qdDb) {
-                qdDb.collection('registeredApps').findOne(byAppId, function (err, app) {
-                    if(!err && app){
-                        attributeUserToApp();
-                    }
-                });
-            });
+            mapUserAndAppUsingStream();
         }; //end creditUserSignUpToApp
 
 
@@ -156,10 +164,7 @@ module.exports = function (app) {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    app.get('/auth/github', function(req, res, next){
-        req.session.api_key = req.query.api_key;
-        next();
-    }, passport.authenticate('github', {
+    app.get('/auth/github', passport.authenticate('github', {
         scope: 'user:email'
     }));
 
