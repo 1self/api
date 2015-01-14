@@ -64,12 +64,57 @@ module.exports = function (app) {
             });
         };
 
+        var creditUserSignUpToApp = function(){
+            var attributeUserToApp = function(){
+                // var updateObject = {
+                //     "$push": {
+                //         "users": {
+                //             "githubUsername": githubUser.username
+                //         }
+                //     }
+                // };
+
+
+                var updateObject = {
+                    "$push": {
+                        "users": [githubUser.username]
+                    }
+                };
+
+                mongoDbConnection(function (qdDb) {
+                    qdDb.collection('registeredApps').update(byAppId, updateObject, function(){
+                        console.log("New user " + githubUser.username + " assigned to: " + req.session.api_key);
+                    });
+                });
+            };
+            
+            //main
+            if("undefined" === typeof req.session.api_key){
+                return;
+            }
+
+            var byAppId = {
+                "appId": req.session.api_key
+            };
+
+            mongoDbConnection(function (qdDb) {
+                qdDb.collection('registeredApps').findOne(byAppId, function (err, app) {
+                    if(!err && app){
+                        attributeUserToApp();
+                    }
+                });
+            });
+        }; //end creditUserSignUpToApp
+
+
+        //main
         var byGitHubUsername = {
             "githubUser.username": githubUser.username
         };
         mongoDbConnection(function (qdDb) {
             qdDb.collection('users').findOne(byGitHubUsername, function (err, user) {
                 if (isNewUser(user)) {
+                    creditUserSignUpToApp();
                     insertGithubProfileInDb();
                 } else if (isUserRegisteredWithOneself(user)) {
                     setSession(req, user);
@@ -120,7 +165,10 @@ module.exports = function (app) {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    app.get('/auth/github', passport.authenticate('github', {
+    app.get('/auth/github', function(req, res, next){
+        req.session.api_key = req.query.api_key;
+        next();
+    }, passport.authenticate('github', {
         scope: 'user:email'
     }));
 
