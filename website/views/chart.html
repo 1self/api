@@ -207,5 +207,34 @@
 <script src="/packages/d3/d3.geo.projection.v0.min.js"></script>
 <script src="/js/chart.js"></script>
 <script src="/js/barChart.js"></script>
+
+
+<script>
+ (function(i, s, o, g, r, a, m) {
+   i['GoogleAnalyticsObject'] = r;
+   i[r] = i[r] || function() {
+     (i[r].q = i[r].q || []).push(arguments)
+   }, i[r].l = 1 * new Date();
+   a = s.createElement(o),
+   m = s.getElementsByTagName(o)[0];
+   a.async = 1;
+   a.src = g;
+   m.parentNode.insertBefore(a, m)
+ })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+ ga('create', 'UA-54838479-1', 'none');
+ ga('send', 'pageview');
+
+ if(window.location.href.match(/streams/)){
+   ga('send', 'event', { eventCategory: 'Chart Visualization', eventAction: 'stream_url_visualization', eventLabel: 'opened'});
+ }
+
+ if(window.location.href.match(/users/)){
+   ga('send', 'event', { eventCategory: 'Chart Visualization', eventAction: 'user_url_visualization', eventLabel: 'opened'});
+ }
+ 
+</script>
+
+
 </body>
 </html>
