@@ -165,6 +165,13 @@ var showChartTitle = function () {
     }
 };
 
+var setBackgroundColor = function () {
+    var bgColor = getParameterByName('bgColor');
+    if (bgColor !== "") {
+        document.body.style.backgroundColor="#"+bgColor;
+    };
+};
+
 var submitShare = function () {
     var emailId = $("#emailId").val();
     var graphShareUrl = $("#graphShareHyperLink a:first-child").attr("href");
@@ -215,6 +222,8 @@ var displayCommentsSummary = function () {
 };
 
 $(document).ready(function () {
+
+    setBackgroundColor();
     showChartTitle();
     $.ajax({
         url: "/v1/comments",
