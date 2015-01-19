@@ -1496,6 +1496,18 @@ app.get("/v1/helptext/:topic", function (req, res) {
     });
 });
 
+app.get('/v1/app', function (req, res) {
+    //dont let customers access this
+    if(!req.query.token || process.env.DEV_TOKEN !== req.query.token){
+        res.send(400, "I will screw your life if you come here again!");
+    }
+
+    mongoRespository.find('registeredApps', {})
+        .then(function(data){
+            res.send(data);
+        });
+});
+
 app.options('*', function (request, response) {
     response.header('Access-Control-Allow-Origin', '*');
     response.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
@@ -1519,3 +1531,4 @@ var port = process.env.PORT || 5000;
 app.listen(port, function () {
     console.log("Listening on " + port);
 });
+
