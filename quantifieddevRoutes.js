@@ -763,22 +763,28 @@ module.exports = function (app) {
 
     app.get('/v1/graph/share', function (req, res) {
         var graphUrl = req.query.graphUrl;
+        var bgColor = req.query.bgColor;
+
+        var genShareUrl = function(graphShareObject) {
+            return graphShareObject.graphUrl + "?shareToken=" + graphShareObject.shareToken + "&bgColor=" + graphShareObject.bgColor;
+        };
 
         getAlreadySharedGraphObject(graphUrl)
             .then(function (graphShareObject) {
                 if (graphShareObject) {
-                    var graphShareUrl = graphShareObject.graphUrl + "?shareToken=" + graphShareObject.shareToken;
+                    var graphShareUrl = genShareUrl(graphShareObject);
                     res.send({graphShareUrl: graphShareUrl});
                 } else {
                     generateToken()
                         .then(function (token) {
                             var graphShareObject = {
                                 shareToken: token,
-                                graphUrl: graphUrl
+                                graphUrl: graphUrl,
+                                bgColor: bgColor
                             };
                             return insertGraphShareEntryInDb(graphShareObject)
                                 .then(function () {
-                                    var graphShareUrl = graphShareObject.graphUrl + "?shareToken=" + graphShareObject.shareToken;
+                                    var graphShareUrl = genShareUrl(graphShareObject);
                                     res.send({graphShareUrl: graphShareUrl});
                                 });
                         });
