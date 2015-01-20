@@ -763,22 +763,28 @@ module.exports = function (app) {
 
     app.get('/v1/graph/share', function (req, res) {
         var graphUrl = req.query.graphUrl;
+        var bgColor = req.query.bgColor;
+
+        var genShareUrl = function(graphShareObject) {
+            return graphShareObject.graphUrl + "?shareToken=" + graphShareObject.shareToken + "&bgColor=" + graphShareObject.bgColor;
+        };
 
         getAlreadySharedGraphObject(graphUrl)
             .then(function (graphShareObject) {
                 if (graphShareObject) {
-                    var graphShareUrl = graphShareObject.graphUrl + "?shareToken=" + graphShareObject.shareToken;
+                    var graphShareUrl = genShareUrl(graphShareObject);
                     res.send({graphShareUrl: graphShareUrl});
                 } else {
                     generateToken()
                         .then(function (token) {
                             var graphShareObject = {
                                 shareToken: token,
-                                graphUrl: graphUrl
+                                graphUrl: graphUrl,
+                                bgColor: bgColor
                             };
                             return insertGraphShareEntryInDb(graphShareObject)
                                 .then(function () {
-                                    var graphShareUrl = graphShareObject.graphUrl + "?shareToken=" + graphShareObject.shareToken;
+                                    var graphShareUrl = genShareUrl(graphShareObject);
                                     res.send({graphShareUrl: graphShareUrl});
                                 });
                         });
@@ -922,9 +928,14 @@ module.exports = function (app) {
     //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
     app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/:renderType", validateRequest.validateStreamIdAndReadToken, function (req, res) {
         if (req.session.username) {
+            var bgColorQueryParam = "";
+            if (req.param('bgColor')) {
+                bgColorQueryParam = "&bgColor=" + req.param('bgColor');
+            }
             var redirectUrl = "/v1/users/" + req.session.username + "/events/" +
                 req.param("objectTags") + "/" + req.param("actionTags") + "/" +
-                req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType") + "?streamId=" + req.param("streamId") + "&readToken=" + req.query.readToken;
+                req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType") + "?streamId=" + req.param("streamId")
+                + "&readToken=" + req.query.readToken + bgColorQueryParam;
             res.redirect(redirectUrl);
         } else {
             var queryString;

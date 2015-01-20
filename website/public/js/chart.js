@@ -115,7 +115,11 @@ var handleShareGraph = function () {
 
     if (isUserLoggedIn) {
         $.ajax({
-            url: "/v1/graph/share?graphUrl=" + window.location.pathname,
+            url: "/v1/graph/share",
+            data: {
+                graphUrl:window.location.pathname,
+                bgColor: getParameterByName('bgColor')
+            },
             success: function (data) {
                 $("#shareModal").modal({show: true});
                 $("#loadingDiv").hide();
