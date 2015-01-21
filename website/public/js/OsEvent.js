@@ -45,7 +45,7 @@
 
             //hack, if its not a number just display the string as it is.
             if(isNaN(valueCount)){
-                valueCount = valueString.split(":")[1];
+                valueCount = "'" + valueString.split(":")[1] + "'";
             }
 
             value = valueCount + " " + valueTitle.replace(/-/g, " ");
