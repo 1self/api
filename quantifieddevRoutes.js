@@ -39,6 +39,8 @@ module.exports = function (app) {
     };
 
     app.get("/signup", function (req, res) {
+        req.session.redirectUrl = "/dashboard";
+
         if ("sandbox" == process.env.NODE_ENV) {
             res.status(404).send("*** This environment does not support this feature ***");
             return;
@@ -292,7 +294,7 @@ module.exports = function (app) {
 
         isUsernameAvailable(oneselfUsername)
             .then(function () {
-                return encoder.encodeUsername(oneselfUsername)
+                return encoder.encodeUsername(oneselfUsername);
             }, redirectToClaimUsernameWithError)
             .then(updateUserRecord)
             .then(setSessionAndRedirectToDashboard)
@@ -520,6 +522,11 @@ module.exports = function (app) {
 
     app.get("/community", function (req, res) {
         res.render('community', getFilterValuesForCountry(req));
+    });
+
+    app.get("/set_dashboard_redirect", function(req, res) {
+        req.session.redirectUrl = "/dashboard";
+        res.send(200, "ok");
     });
 
     var generateToken = function () {
