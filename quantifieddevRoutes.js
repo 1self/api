@@ -39,6 +39,8 @@ module.exports = function (app) {
     };
 
     app.get("/signup", function (req, res) {
+        req.session.redirectUrl = "/dashboard";
+
         if ("sandbox" == process.env.NODE_ENV) {
             res.status(404).send("*** This environment does not support this feature ***");
             return;
