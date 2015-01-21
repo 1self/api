@@ -43,6 +43,11 @@
             valueTitle = valueString.split(":")[0],
             valueCount = parseFloat(valueString.split(":")[1]).toFixed(1);
 
+            //hack, if its not a number just display the string as it is.
+            if(isNaN(valueCount)){
+                valueCount = valueString.split(":")[1];
+            }
+
             value = valueCount + " " + valueTitle.replace(/-/g, " ");
         }
 
