@@ -349,7 +349,7 @@ var countOnParameters = function (groupQuery, filterSpec, resultField) {
                 "resultField": resultField
             }
         }
-    }
+    };
 };
 
 var transformPlatformDataToQDEvents = function (result) {
