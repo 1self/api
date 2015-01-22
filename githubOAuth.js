@@ -168,6 +168,13 @@ module.exports = function (app) {
         scope: 'user:email'
     }));
 
+    app.get('/auth/github/1self_website', function(req, res, next) {
+        req.session.redirectUrl = "/dashboard";
+        passport.authenticate('github', {
+            scope: 'user:email'
+        })(req, res, next);
+    });
+
     app.get('/auth/github/callback', passport.authenticate('github', {
         failureRedirect: CONTEXT_URI + '/signup'
     }), handleGithubCallback);
