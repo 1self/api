@@ -26,7 +26,7 @@ var qd = function () {
         wtfEvents: function () {
             result.plotWTFHistory();
         },
-        noiseEvents: function() {
+        noiseEvents: function () {
             result.plotNoiseEventsHistory();
         },
         hydrationEvents: function () {
@@ -104,7 +104,7 @@ var qd = function () {
         result.plotGraphWith('buildDurationEvents', buildDurationEvents, "#buildDuration-history-parent");
     };
     result.updateBuildDurationModel = function () {
-        postV1Ajax("Computer,Software","Build,Finish", "mean(BuildDuration)", "daily")
+        postV1Ajax("Computer,Software", "Build,Finish", "mean(BuildDuration)", "daily")
             .done(plotBuildDurationEvents)
             .fail(function (error) {
                 console.error("Error is: " + error);
@@ -115,7 +115,7 @@ var qd = function () {
         result.plotGraphWith('activeEvents', activeEvents, "#active-event-history-parent");
     };
     result.updateActiveEvents = function () {
-        postV1Ajax("Computer,Software","Develop", "sum(duration)", "daily")
+        postV1Ajax("Computer,Software", "Develop", "sum(duration)", "daily")
             .done(plotActivity)
             .fail(function (error) {
                 console.error("Error is: " + error);
@@ -198,10 +198,9 @@ var qd = function () {
     };
 
     result.tweetBuildSparkline = function () {
-        if (result.buildEvents === undefined) {
+        if (!result.buildEvents) {
             return;
         }
-
         var totalBuilds = [];
         var sparkbarDataForDays = 14;
         result.buildEvents.map(function (buildEvent) {
@@ -216,19 +215,31 @@ var qd = function () {
         ga('send', 'event', 'tweet_click', 'Build History');
     };
 
+    var generateTweetValues = function (events) {
+        var sparkbarDataForDays = 14;
+        var defaultTweetValues = _.range(0, sparkbarDataForDays)
+            .reverse()
+            .map(function (d) {
+                return {
+                    date: moment().subtract('days', d).format("MM/DD/YYYY"),
+                    value: 0
+                };
+            });
+        var tweetValues = defaultTweetValues.map(function (d) {
+            var e = _.findWhere(events, {"date": d.date});
+            if (e) {
+                return e.value;
+            }
+            return d.value;
+        });
+        return tweetValues;
+    };
     result.tweetWtfSparkline = function () {
-        if (result.wtfEvents === undefined) {
+        if (!result.wtfEvents) {
             return;
         }
-
-        var totalWtfs = [];
-        var sparkbarDataForDays = 14;
-        result.wtfEvents.map(function (wtfEvent) {
-            totalWtfs.push(wtfEvent.value);
-        });
-        totalWtfs = totalWtfs.slice(totalWtfs.length - sparkbarDataForDays, totalWtfs.length)
-        console.log("sparking wtfs:", totalWtfs)
-        var sparkBar = window.oneSelf.toSparkBars(totalWtfs);
+        var tweetValues = generateTweetValues(result.wtfEvents);
+        var sparkBar = window.oneSelf.toSparkBars(tweetValues);
         var tweetText = sparkBar + " my WTFs over the last 2 weeks. The only measure of code quality. See yours at app.1self.co";
         var hashTags = ['wtf', 'coding'].join(',');
         $('#tweetMyWtfs').attr('href', "https://twitter.com/share?url=''&hashtags=" + hashTags + "&text=" + tweetText);
@@ -236,20 +247,11 @@ var qd = function () {
     };
 
     result.tweetHydrationSparkline = function () {
-        if (result.hydrationEvents === undefined) {
+        if (!result.hydrationEvents) {
             return;
         }
-
-        var totalHydrations = [];
-        var sparkbarDataForDays = 14;
-
-        result.hydrationEvents.map(function (hydrationEvent) {
-            totalHydrations.push(hydrationEvent.value);
-        });
-
-        totalHydrations = totalHydrations.slice(totalHydrations.length - sparkbarDataForDays, totalHydrations.length);
-        console.log("sparking hydrations:", totalHydrations)
-        var sparkBar = window.oneSelf.toSparkBars(totalHydrations);
+        var tweetValues = generateTweetValues(result.hydrationEvents);
+        var sparkBar = window.oneSelf.toSparkBars(tweetValues);
         var tweetText = sparkBar + " my hydration levels over the last 2 weeks. See yours at app.1self.co";
         var hashTags = ['hydrate', 'coding'].join(',');
         $('#tweetMyHydration').attr('href', "https://twitter.com/share?url=''&hashtags=" + hashTags + "&text=" + tweetText);
@@ -257,19 +259,11 @@ var qd = function () {
     };
 
     result.tweetCaffeineSparkline = function () {
-        if (result.caffeineEvents === undefined) {
+        if (!result.caffeineEvents) {
             return;
         }
-
-        var totalCaffeine = [];
-        var sparkbarDataForDays = 14;
-        result.caffeineEvents.map(function (caffeineEvent) {
-            totalCaffeine.push(caffeineEvent.value);
-        });
-
-        totalCaffeine = totalCaffeine.slice(totalCaffeine.length - sparkbarDataForDays, totalCaffeine.length);
-        console.log("sparking caffeine:", totalCaffeine);
-        var sparkBar = window.oneSelf.toSparkBars(totalCaffeine);
+        var tweetValues = generateTweetValues(result.caffeineEvents);
+        var sparkBar = window.oneSelf.toSparkBars(tweetValues);
         var tweetText = sparkBar + " my caffeine levels over the last 2 weeks. See yours at app.1self.co";
         var hashTags = ['coffee', 'coding'].join(',');
         $('#tweetMyCaffeine').attr('href', "https://twitter.com/share?url=''&hashtags=" + hashTags + "&text=" + tweetText);
@@ -277,17 +271,11 @@ var qd = function () {
     };
 
     result.tweetBuildDurationSparkline = function () {
-        if (result.buildDurationEvents === undefined) {
+        if (!result.buildDurationEvents) {
             return;
         }
-        var totalBuildDuration = [];
-        var sparkbarDataForDays = 14;
-        result.buildDurationEvents.map(function (buildDurationEvent) {
-            totalBuildDuration.push(buildDurationEvent.value);
-        });
-        totalBuildDuration = totalBuildDuration.slice(totalBuildDuration.length - sparkbarDataForDays, totalBuildDuration.length);
-        console.log("sparking totalBuildDuration:", totalBuildDuration)
-        var sparkBar = window.oneSelf.toSparkBars(totalBuildDuration);
+        var tweetValues = generateTweetValues(result.buildDurationEvents);
+        var sparkBar = window.oneSelf.toSparkBars(tweetValues);
         var tweetText = sparkBar + " my build duration over the last 2 weeks. See yours at app.1self.co";
         var hashTags = ['buildDuration', 'coding'].join(',');
         $('#tweetMyBuildDuration').attr('href', "https://twitter.com/share?url=''&hashtags=" + hashTags + "&text=" + tweetText);
@@ -295,19 +283,11 @@ var qd = function () {
     };
 
     result.tweetActiveEventSparkline = function () {
-        if (result.activeEvents === undefined) {
+        if (!result.activeEvents) {
             return;
         }
-
-        var totalActiveDuration = [];
-        var sparkbarDataForDays = 14;
-        result.activeEvents.map(function (activeEvent) {
-            totalActiveDuration.push(activeEvent.value);
-        });
-
-        totalActiveDuration = totalActiveDuration.slice(totalActiveDuration.length - sparkbarDataForDays, totalActiveDuration.length);
-        console.log("sparking totalActiveDuration:", totalActiveDuration);
-        var sparkBar = window.oneSelf.toSparkBars(totalActiveDuration);
+        var tweetValues = generateTweetValues(result.activeEvents);
+        var sparkBar = window.oneSelf.toSparkBars(tweetValues);
         var tweetText = sparkBar + " my+%23programming+activity+over+the+last+2+weeks.+See+yours+at+app.1self.co";
         var hashTags = 'coding';
         var url = "https://twitter.com/intent/tweet?text=" + tweetText + "&hashtags=" + hashTags;
