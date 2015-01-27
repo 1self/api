@@ -46,6 +46,7 @@ var generateStream = function (appId) {
         if (ex) {
             deferred.reject(ex);
         }
+
         var streamid = [];
         for (var i = 0; i < buf.length; i++) {
             var charCode = String.fromCharCode((buf[i] % 26) + 65);
@@ -57,6 +58,7 @@ var generateStream = function (appId) {
             streamid: streamid.join(''),
             writeToken: writeToken,
             readToken: readToken,
+            callbackUrl: callbackUrl,
             appId: appId
         };
         deferred.resolve(stream);

@@ -1,3 +1,4 @@
+var requestModule = require('request');
 var sessionManager = require("./sessionManagement");
 var _ = require("underscore");
 var Q = require('q');
@@ -12,12 +13,18 @@ var ONESELF_EMAIL = process.env.ONESELF_EMAIL;
 var ObjectID = require('mongodb').ObjectID;
 var validateRequest = require("./validateRequest");
 var moment = require("moment");
+var PasswordEncrypt = require('./lib/PasswordEncrypt');
+var platformUri = process.env.PLATFORM_BASE_URI;
+
+var sharedSecret = process.env.SHARED_SECRET;
 var validator = require('validator');
 var mongoRepository = require('./mongoRepository.js');
 
 var emailConfigOptions = {
     root: path.join(__dirname, "/website/public/email_templates")
 };
+
+var encryptedPassword = PasswordEncrypt.encryptPassword(sharedSecret);
 
 module.exports = function (app) {
 
@@ -39,12 +46,12 @@ module.exports = function (app) {
     };
 
     app.get("/signup", function (req, res) {
-        req.session.redirectUrl = "/dashboard";
-
         if ("sandbox" == process.env.NODE_ENV) {
             res.status(404).send("*** This environment does not support this feature ***");
             return;
         }
+        // Always redirect to dashboard when user hits /signup
+        req.session.redirectUrl = "/dashboard";
 
         if (!(_.isEmpty(req.param('streamId')))) {
             req.session.redirectUrl = "/dashboard" + "?streamId=" + req.param('streamId');
@@ -821,21 +828,137 @@ module.exports = function (app) {
         sendEmail(graphShareUrl);
     });
 
-    app.post('/v1/app', function (req, res) {
+    app.post('/v1/app', function(req, res) {
         var appEmail = req.param('appEmail');
         if (appEmail === undefined) {
             res.status(401).send("Unauthorized request. Please pass valid app_email");
         }
         util.registerApp(appEmail)
-            .then(function (data) {
+            .then(function(data) {
                 return sendAppDetailsByEmail(data.appId, data.appSecret, data.appEmail)
-            }, function (err) {
+            }, function(err) {
                 res.status(500).send("Database error." + err)
             })
-            .then(function () {
+            .then(function() {
                 res.send("We have sent email containing your api key to '" + appEmail + "'. Thank You.");
             });
     });
+
+    app.get('/v1/sync/:username/:objectTags/:actionTags', function (req, res) {
+        var username = req.param("username");
+        var objectTags = req.param("objectTags");
+        var actionTags = req.param("actionTags");
+
+        var transformToStreamIds = function (result) {
+            return _.map(result.streams, function (el) {
+                return el.streamid;
+            });
+        };
+
+        var getStreamsFromPlatform = function (streams) {
+            var streamIds = transformToStreamIds(streams);
+
+            var deferred = Q.defer();
+            var filterSpec = {
+                'payload.streamid': {
+                    "$operator": {
+                        "in": streamIds
+                    }
+                },
+                'payload.objectTags': objectTags,
+                'payload.actionTags': actionTags
+            };
+            var options = {
+                url: platformUri + '/rest/events/findStreams',
+                auth: {
+                    user: "",
+                    password: encryptedPassword
+                },
+                qs: {
+                    'filterSpec': JSON.stringify(filterSpec)
+                },
+                method: 'GET'
+            };
+            var handleResponse = function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    console.log(body);
+                    var result = JSON.parse(body);
+                    deferred.resolve(result.streams);
+                } else {
+                    deferred.reject(error);
+                }
+            };
+            requestModule(options, handleResponse);
+            return deferred.promise;
+        };
+        getStreamsForUser(username)
+            .then(getStreamsFromPlatform)
+            .then(getStreamsForStreamIds)
+            .then(replaceTemplateVars)
+            .then(hitCallbackUrls)
+            .then(function () {
+                res.send("ok");
+            });
+    });
+
+    var replaceTemplateVars = function (streams) {
+        var deferred = Q.defer();
+        var callbackUrls = _.chain(streams).filter(function (stream) {
+            return stream.callbackUrl !== undefined;
+        }).map(function (stream) {
+            var callbackUrl = stream.callbackUrl.replace("{{streamId}}", stream.streamid)
+                .replace("{{writeToken}}", stream.writeToken)
+                .replace("{{latestEventSyncDate}}", stream.latestEventSyncDate.toISOString());
+            return callbackUrl;
+        }).value();
+        console.log(callbackUrls);
+        deferred.resolve(callbackUrls);
+        return deferred.promise;
+    };
+
+    var getStreamsForStreamIds = function (streamIds) {
+        var deferred = Q.defer();
+        console.log("aha: ", streamIds);
+        mongoDbConnection(function (qdDb) {
+            qdDb.collection('stream').find({
+                streamid: {$in: streamIds}
+            }, function (err, dbObjs) {
+                if (err) {
+                    deferred.reject("Error occurred", err);
+                }
+                dbObjs.toArray(function (err, streams) {
+                    console.log("stream before sending ", streams);
+                    deferred.resolve(streams);
+                });
+            });
+        });
+        return deferred.promise;
+    };
+
+    var request = function (url) {
+        var deferred = Q.defer();
+        requestModule(url, function (err, resp, body) {
+            console.log("Response for request is 112233", body);
+            deferred.resolve(resp);
+        });
+        return deferred.promise;
+    };
+
+    var hitCallbackUrls = function (urls) {
+        var deferred = Q.defer();
+        var requests = [];
+        _.each(urls, function (url) {
+            console.log("final callback url ", url);
+            requests.push(request(url));
+        });
+
+        Q.all(requests).then(function () {
+            deferred.resolve();
+        }).catch(function (err) {
+            console.log("Error occured", err);
+        });
+        return deferred.promise;
+    };
 
     var sendAppDetailsByEmail = function (appId, appSecret, toEmailId) {
         var deferred = Q.defer();
@@ -992,8 +1115,8 @@ module.exports = function (app) {
     var validateShareToken = function (req, res, next) {
         var shareToken = req.query.shareToken;
         var graphUrl = "/v1/users/" + req.param("username") + "/events/" +
-            req.param("objectTags") + "/" + req.param("actionTags") + "/" +
-            req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType");
+                req.param("objectTags") + "/" + req.param("actionTags") + "/" +
+                req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType");
 
         console.log("Graph Url is", graphUrl);
 
@@ -1066,6 +1189,7 @@ module.exports = function (app) {
                     }
                 });
         });
+
 
     app.get("/timeline", sessionManager.requiresSession, function (req, res) {
         res.render('timeline', {
