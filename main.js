@@ -900,7 +900,7 @@ app.post('/v1/streams', function (req, res) {
 
     validateClient(appId, appSecret)
         .then(function () {
-            return util.createV1Stream(appId);
+            return util.createV1Stream(appId, callbackUrl);
         })
         .then(function(data){
             delete data._id;

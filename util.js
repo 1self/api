@@ -40,7 +40,7 @@ Util.prototype.createStream = function (callback) {
     });
 };
 
-var generateStream = function (appId) {
+var generateStream = function (appId, callbackUrl) {
     var deferred = q.defer();
     crypto.randomBytes(16, function (ex, buf) {
         if (ex) {
@@ -66,8 +66,8 @@ var generateStream = function (appId) {
     return deferred.promise;
 };
 
-Util.prototype.createV1Stream = function (appId) {
-    return generateStream(appId)
+Util.prototype.createV1Stream = function (appId, callbackUrl) {
+    return generateStream(appId, callbackUrl)
         .then(function (stream) {
             return mongoRespository.insert('stream', stream);
         });
