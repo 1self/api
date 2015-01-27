@@ -63,7 +63,24 @@
             $('#graphShareLink').click(function () {
                 $(this).select();
             });
+
         });
+
+        function login(){
+            if(inIframe()){
+                window.open("/auth/github", "_blank");
+            }else{
+                window.location.href = "/auth/github";
+            }
+        }
+
+        function inIframe () {
+            try {
+                return window.self !== window.top;
+            } catch (e) {
+                return true;
+            }
+        }
     </script>
 </head>
 <body>
@@ -149,7 +166,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal"><span
                             class="font-size">Close</span></button>
-                    <a href="/auth/github" class="btn btn-primary"><span
+                    <a onclick="login()" class="btn btn-primary"><span
                             class="font-size">Login to 1self</span></a>
                 </div>
             </div>
