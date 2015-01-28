@@ -84,4 +84,23 @@ Util.prototype.registerApp = function (appEmail) {
     return mongoRespository.insert('registeredApps', appDetails);
 };
 
+Util.prototype.streamExists = function (streamId, readToken) {
+    var query = {
+        streamid: streamId,
+        readToken: readToken
+    };
+    var deferred = q.defer();
+    mongoRespository.findOne('stream', query)
+        .then(function (stream) {
+            if (stream) {
+                deferred.resolve(true);
+            } else {
+                deferred.resolve(false);
+            }
+        }, function (err) {
+            deferred.reject(err);
+        });
+    return deferred.promise;
+};
+
 module.exports = new Util();

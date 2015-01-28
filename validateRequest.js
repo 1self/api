@@ -1,37 +1,28 @@
-var mongoDbConnection = require('./lib/connection.js');
+var util = require('./util.js');
 var _ = require("underscore");
 
 exports.validate = function (req, res, next) {
-    if (req.headers["content-type"] !== "application/json"){
+    if (req.headers["content-type"] !== "application/json") {
         res.send(400, {message: "Invalid content type, are you missing application/json?"});
     } else {
         next();
     }
 };
 
-exports.validateStreamIdAndReadToken = function(req, res, next) {
-    var readToken = req.headers.authorization;
+exports.validateStreamIdAndReadToken = function (req, res, next) {
+    var readToken = req.headers.authorization; // REST endpoint has readToken in headers
+    var streamId = req.params.streamId;
     if (_.isEmpty(readToken)) {
-        readToken  = req.query.readToken;
+        readToken = req.query.readToken; // website has readToken in query params
     }
-
-    var spec = {
-        streamid: req.params.streamId
-    };
-    mongoDbConnection(function (qdDb) {
-        qdDb.collection('stream').find(spec, function (err, docs) {
-            docs.toArray(function (err, streamArray) {
-                var stream = streamArray[0] || {};
-                if (stream.readToken !== readToken) {
-                    // TODO Throw error when it's invalid streamId/readToken combination.
-                    console.log("\nWARNING: Invalid streamId/readToken combination; still continuing\n");
-                    next();
-                    // res.send(400, {message: "Invalid stream/readToken combination"});
-                } else {
-                    console.log("\nValid stream/readToken combination\n");
-                    next();
-                }
-            });
+    util.streamExists(streamId, readToken)
+        .then(function (streamFound) {
+            if (!streamFound) {
+                res.status(401).send("It looks like you are using an old version of the app. Please upgrade the app to see your visualizations.");
+            }
+            next();
+        }, function (err) {
+            console.error(err);
+            res.status(500).send({message: "Error while validating streamId/readToken combination"});
         });
-    });
 };
