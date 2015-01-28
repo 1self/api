@@ -66,21 +66,6 @@
 
         });
 
-        function login(){
-            if(inIframe()){
-                window.open("/auth/github", "_blank");
-            }else{
-                window.location.href = "/auth/github";
-            }
-        }
-
-        function inIframe () {
-            try {
-                return window.self !== window.top;
-            } catch (e) {
-                return true;
-            }
-        }
     </script>
 </head>
 <body>
@@ -102,7 +87,7 @@
   {% if isUserLoggedIn %}
   <a href="/timeline"><button type="button" class="button1self" ><img src="/img/1selfbutton.png"></button></a>
   {% else %}
-  <a href="/auth/github"><button type="button" class="button1self" ><img src="/img/1selfbutton.png"></button></a>
+  <a href="/signup"><button type="button" class="button1self" ><img src="/img/1selfbutton.png"></button></a>
   {% endif %}
      <button type="button" class="shareGraphButton" onclick="handleShareGraph()"><i class="fa fa-share-alt"></i></button>
 </div>
@@ -166,7 +151,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal"><span
                             class="font-size">Close</span></button>
-                    <a onclick="login()" class="btn btn-primary"><span
+                    <a href="/signup" class="btn btn-primary"><span
                             class="font-size">Login to 1self</span></a>
                 </div>
             </div>
