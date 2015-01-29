@@ -531,7 +531,7 @@ module.exports = function (app) {
         res.render('community', getFilterValuesForCountry(req));
     });
 
-    app.get("/set_dashboard_redirect", function(req, res) {
+    app.get("/set_dashboard_redirect", function (req, res) {
         req.session.redirectUrl = "/dashboard";
         res.send(200, "ok");
     });
@@ -779,7 +779,7 @@ module.exports = function (app) {
         var graphUrl = req.query.graphUrl;
         var bgColor = req.query.bgColor;
 
-        var genShareUrl = function(graphShareObject) {
+        var genShareUrl = function (graphShareObject) {
             return graphShareObject.graphUrl + "?shareToken=" + graphShareObject.shareToken + "&bgColor=" + graphShareObject.bgColor;
         };
 
@@ -828,18 +828,18 @@ module.exports = function (app) {
         sendEmail(graphShareUrl);
     });
 
-    app.post('/v1/app', function(req, res) {
+    app.post('/v1/app', function (req, res) {
         var appEmail = req.param('appEmail');
         if (appEmail === undefined) {
             res.status(401).send("Unauthorized request. Please pass valid app_email");
         }
         util.registerApp(appEmail)
-            .then(function(data) {
+            .then(function (data) {
                 return sendAppDetailsByEmail(data.appId, data.appSecret, data.appEmail)
-            }, function(err) {
+            }, function (err) {
                 res.status(500).send("Database error." + err)
             })
-            .then(function() {
+            .then(function () {
                 res.send("We have sent email containing your api key to '" + appEmail + "'. Thank You.");
             });
     });
@@ -881,8 +881,8 @@ module.exports = function (app) {
             };
             var handleResponse = function (error, response, body) {
                 if (!error && response.statusCode == 200) {
-                    console.log(body);
                     var result = JSON.parse(body);
+                    console.log("streams from plaform : " + result.streams);
                     deferred.resolve(result.streams);
                 } else {
                     deferred.reject(error);
@@ -907,38 +907,34 @@ module.exports = function (app) {
             return stream.callbackUrl !== undefined;
         }).map(function (stream) {
             var callbackUrl = stream.callbackUrl.replace("{{streamId}}", stream.streamid)
-                .replace("{{writeToken}}", stream.writeToken)
                 .replace("{{latestEventSyncDate}}", stream.latestEventSyncDate.toISOString());
-            return callbackUrl;
+            return { callbackUrl: callbackUrl, writeToken: stream.writeToken};
         }).value();
-        console.log(callbackUrls);
+        console.log("callback Urls : " + JSON.stringify(callbackUrls));
         deferred.resolve(callbackUrls);
         return deferred.promise;
     };
 
     var getStreamsForStreamIds = function (streamIds) {
-        var deferred = Q.defer();
-        console.log("aha: ", streamIds);
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection('stream').find({
-                streamid: {$in: streamIds}
-            }, function (err, dbObjs) {
-                if (err) {
-                    deferred.reject("Error occurred", err);
-                }
-                dbObjs.toArray(function (err, streams) {
-                    console.log("stream before sending ", streams);
-                    deferred.resolve(streams);
-                });
-            });
-        });
-        return deferred.promise;
+        console.log("streamIds : ", streamIds);
+        var query = {
+            streamid: {$in: streamIds}
+        };
+        return mongoRepository.find('stream', query)
     };
 
-    var request = function (url) {
+    var request = function (url, writeToken) {
         var deferred = Q.defer();
-        requestModule(url, function (err, resp, body) {
-            console.log("Response for request is 112233", body);
+        var options = {
+            url: url,
+            headers: {
+                'Authorization': writeToken
+            },
+            method: 'GET'
+        };
+
+        requestModule(options, function (err, resp, body) {
+            console.log("Response for request is ", body);
             deferred.resolve(resp);
         });
         return deferred.promise;
@@ -949,13 +945,13 @@ module.exports = function (app) {
         var requests = [];
         _.each(urls, function (url) {
             console.log("final callback url ", url);
-            requests.push(request(url));
+            requests.push(request(url.callbackUrl, url.writeToken));
         });
 
         Q.all(requests).then(function () {
             deferred.resolve();
         }).catch(function (err) {
-            console.log("Error occured", err);
+            console.log("Error occurred", err);
         });
         return deferred.promise;
     };
@@ -1115,8 +1111,8 @@ module.exports = function (app) {
     var validateShareToken = function (req, res, next) {
         var shareToken = req.query.shareToken;
         var graphUrl = "/v1/users/" + req.param("username") + "/events/" +
-                req.param("objectTags") + "/" + req.param("actionTags") + "/" +
-                req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType");
+            req.param("objectTags") + "/" + req.param("actionTags") + "/" +
+            req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType");
 
         console.log("Graph Url is", graphUrl);
 
