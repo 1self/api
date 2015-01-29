@@ -1,40 +1,75 @@
 <!DOCTYPE html>
 <html>
   <head lang="en">
-    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no"/>
+    <title>1self - Live smarter</title>
     <meta charset="UTF-8"/>
-    <title></title>
-    <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
-    <link href="/css/chart.css" rel="stylesheet" media="screen"/>
-    <link href="/css/barChart.css" rel="stylesheet" media="screen"/> 
-    <link href="/css/timeline.css" rel="stylesheet" media="screen"/>
-
-    <script src="/js/jquery.js"></script>
-    <script src="/js/underscore-min.js"></script>
-    <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/daterange/moment-with-locales.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1" />
+    <meta name="description" content="1self Dev Community View"/>
+    <meta name="keywords"
+          content="Admin, Dashboard, Bootstrap3, Sass, transform, CSS3, HTML5, Web design, UI Design, Responsive Dashboard, Responsive Admin, Admin Theme, Best Admin UI, Bootstrap Theme, Wrapbootstrap, Bootstrap"/>
+    <meta name="author" content="Bootstrap Gallery"/>
+    <link rel="shortcut icon" href="/img/fav.ico" />
+    <link href="/css/import.css" rel="stylesheet" media="screen" />
+    <link href="/fonts/font-awesome.css" rel="stylesheet" />
+    <!--[if IE 7]>
+        <link rel="stylesheet" href="fonts/font-awesome.css" />
+        <![endif]-->
+    <!-- HTML5 shiv and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="js/html5shiv.js"></script>
+        <script src="js/respond.min.js"></script>
+        <![endif]-->
 
     <script type="text/javascript">
       var eun = "{{encodedUsername}}",
       username = "{{username}}";
     </script>
+  </head>
+  <body class="animated fadeInDown" ng-app>
+    {% include "./templates/_qd_header.html" %}
+    <aside id="sidebar">
+      <div>
+        {% include "./templates/_menu.html" %}
+      </div>
+    </aside>
+
+    <div class="dashboard-wrapper">
+      <div class="page-title">
+        <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+          <h2>Timeline</h2>
+          <ul class="breadcrumb">
+            <li>Home</li>
+            <li>Timeline</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="container">
+        <div id="timeline"></div>
+      </div>
+    </div>
+
+    <div class="modal fade modal-overflow in" id="display_chart_modal" tabindex="-1" role="dialog" aria-hidden="false" style="display: none;margin-top: 0px;">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div id="modal_close_button">x</div>
+          <div class="modal-body">
+            <iframe id="show_chart_iframe"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <link href="/css/timeline.css" rel="stylesheet" media="screen"/>
+    <script src="/js/jquery.js"></script>
+    <script src="/js/underscore-min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/jquery-ui-v1.10.3.js"></script>
+    <script src="/js/sparkline.js"></script>
+    <script src="/js/daterange/moment-with-locales.min.js"></script>
+    <script src="/js/slidebars.js"></script>
     <script src="/js/OsEvent.js"></script>
     <script type="text/javascript" src="/js/timeline.js"></script>
-  </head>
-  <body>
-    <table class="header-main">
-      <tr>
-        <td id="mainTitle" class="page-title">
-          1Self
-        </td>
-        <td id="avatar" class="avatar"><img src='{{avatarUrl}}'/></td>
-      </tr>
-    </table>
-
-    <div class="page-header text-center">
-      <h1>TIMELINE</h1>
-    </div>
-    <div id="timeline"></div>
-
   </body>
 </html>

@@ -66,10 +66,9 @@
             operation = "sum(" + first_value  + ")";
         }
 
-        return "window.location.href = " + 
-            "'/v1/users/" + username + "/events/" + evt.objectTags.join(',') +
+        return "/v1/users/" + username + "/events/" + evt.objectTags.join(',') +
             "/" + evt.actionTags.join(',') + "/" + operation +
-            "/daily/barchart'";
+            "/daily/barchart";
     };
     
     window.OsEvent = Event;

@@ -1,5 +1,8 @@
 $(document).ready(function(){
     getEvents();
+    $('#modal_close_button').click(function(){
+        $('#display_chart_modal').hide();
+    });
 });
 
 function setHeader(xhr) {
@@ -35,7 +38,7 @@ var insertEvents = function(data){
             var current_event = listOfEvents[i],
             os_event = new OsEvent(current_event);
 
-            html += '<li onclick="' + os_event.url  + '" class="list-group-item"><span class="event_title">' + os_event.name  + '</span>';
+            html += '<li onclick="openInModal(\'' + os_event.url  + '\');" class="list-group-item"><span class="event_title">' + os_event.name  + '</span>';
 
             html += '<div class="event_property">' + os_event.humanizedValue() + '</div>';
             
@@ -81,3 +84,11 @@ var formatDate = function(date){
     
     return moment(date).calendar();
 }
+
+var openInModal = function(url){
+    $('#show_chart_iframe').attr('src', url);
+    
+    $('#display_chart_modal')
+        .css('top', $(document).scrollTop() + "70" + "px")
+        .show();
+};
