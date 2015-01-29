@@ -1,26 +1,40 @@
 var request = require("request");
 var passport = require('passport');
 var githubStrategy = require('passport-github').Strategy;
-
+var q = require('q');
 var GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 var GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 var CONTEXT_URI = process.env.CONTEXT_URI;
-var mongoDbConnection = require('./lib/connection.js');
-
+var mongoRepository = require('./mongoRepository.js');
 
 module.exports = function (app) {
-
     var setSession = function (req, user) {
         req.session.username = user.username;
         req.session.encodedUsername = user.encodedUsername;
         req.session.githubUsername = user.githubUser.username;
         req.session.avatarUrl = user.githubUser._json.avatar_url;
     };
-
+    var fetchGithubUserEmails = function (accessToken) {
+        var deferred = q.defer();
+        var options = {
+            url: "https://api.github.com/user/emails?access_token=" + accessToken,
+            headers: {
+                "User-Agent": "Quantified Dev Localhost"
+            }
+        };
+        request(options, function (err, res, body) {
+            if (!err) {
+                deferred.resolve(JSON.parse(body));
+            }
+            else {
+                deferred.reject(err);
+            }
+        });
+        return deferred.promise;
+    };
     var handleGithubCallback = function (req, res) {
         var githubUser = req.user.profile;
         req.session.githubAccessToken = req.user.accessToken;
-
         var isNewUser = function (user) {
             return !user;
         };
@@ -31,87 +45,66 @@ module.exports = function (app) {
             res.redirect(CONTEXT_URI + url + "?username=" + user.username);
         };
         var insertGithubProfileInDb = function () {
-            var options = {
-                url: "https://api.github.com/user/emails?access_token=" + req.user.accessToken,
-                headers: {
-                    "User-Agent": "Quantified Dev Localhost"
-                }
-            };
-            request(options, function (err, res, body) {
-                if (!err) {
-                    var userEmails = JSON.parse(body);
+            fetchGithubUserEmails(req.user.accessToken)
+                .then(function (userEmails) {
                     for (var i in userEmails) {
                         githubUser.emails.push(userEmails[i]);
                     }
-                    var githubUserRecord = {
+                    return {
                         githubUser: githubUser,
                         registeredOn: new Date()
                     };
-                    mongoDbConnection(function (qdDb) {
-                        qdDb.collection('users').insert(githubUserRecord, function (err, insertedRecords) {
-                            if (err) {
-                                res.status(500).send("Database error");
-                            } else {
-                                req.session.githubUsername = githubUser.username;
-                                req.session.avatarUrl = githubUser._json.avatar_url;
-                                redirect(githubUser, "/claimUsername");
-                            }
-                        });
-                    });
-                } else {
+                }, function (err) {
                     res.status(500).send("Could not fetch email addresses for user.");
-                }
-            });
+                }).then(function (githubUserRecord) {
+                    return mongoRepository.insert('users', githubUserRecord);
+                }).then(function (docs) {
+                    req.session.githubUsername = githubUser.username;
+                    req.session.avatarUrl = githubUser._json.avatar_url;
+                    redirect(githubUser, "/claimUsername");
+                }, function (err) {
+                    res.status(500).send("Database error");
+                });
         };
-
-        var creditUserSignUpToApp = function(){
-            var attributeUserToApp = function(appId){
+        var creditUserSignUpToApp = function () {
+            var attributeUserToApp = function (appId) {
                 var byAppId = {
-                    "appId": appId
-                },
-
-                updateObject = {
-                    "$push": {
-                        "users": githubUser.username
-                    }
-                };
-
-                mongoDbConnection(function (qdDb) {
-                    qdDb.collection('registeredApps').update(byAppId, updateObject, function(){
+                        "appId": appId
+                    },
+                    updateObject = {
+                        "$push": {
+                            "users": githubUser.username
+                        }
+                    };
+                mongoRepository.update('registeredApps', byAppId, updateObject)
+                    .then(function () {
                         console.log("New user " + githubUser.username + " assigned to: " + appId);
                     });
-                });
             };
 
-            var mapUserAndAppUsingStream = function(){
+            var mapUserAndAppUsingStream = function () {
                 var redirectUrl = req.session.redirectUrl;
-                if(redirectUrl.match("/v1/streams")) {
+                if (redirectUrl.match("/v1/streams")) {
                     var tokenisedUrl = redirectUrl.split("/"),
-                    byStreamId = {
-                        "streamid": tokenisedUrl[3]
-                    };
-                    
-                    mongoDbConnection(function(qdDb) {
-                        qdDb.collection('stream').findOne(byStreamId, function(err, stream){
-                            if(!err && stream){
-                                attributeUserToApp(stream.appId);
-                            }
+                        byStreamId = {
+                            "streamid": tokenisedUrl[3]
+                        };
+                    mongoRepository.findOne('stream', byStreamId)
+                        .then(function (stream) {
+                            attributeUserToApp(stream.appId);
+                        }, function (err) {
                         });
-                    });
                 }
             };
-            
+
             //main
             mapUserAndAppUsingStream();
         }; //end creditUserSignUpToApp
-
-
-        //main
         var byGitHubUsername = {
             "githubUser.username": githubUser.username
         };
-        mongoDbConnection(function (qdDb) {
-            qdDb.collection('users').findOne(byGitHubUsername, function (err, user) {
+        mongoRepository.findOne('users', byGitHubUsername)
+            .then(function (user) {
                 if (isNewUser(user)) {
                     creditUserSignUpToApp();
                     insertGithubProfileInDb();
@@ -120,7 +113,7 @@ module.exports = function (app) {
                     if (req.session.redirectUrl) {
                         var redirectUrl = req.session.redirectUrl;
                         delete req.session.redirectUrl;
-                        if(redirectUrl.match("/v1/streams")) {
+                        if (redirectUrl.match("/v1/streams")) {
                             var tokenisedUrl = redirectUrl.split("/");
                             tokenisedUrl[2] = "users";
                             tokenisedUrl[3] = req.session.username;
@@ -137,7 +130,6 @@ module.exports = function (app) {
                     redirect(githubUser, "/claimUsername");
                 }
             });
-        });
     };
 
     passport.serializeUser(function (user, done) {
