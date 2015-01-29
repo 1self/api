@@ -843,14 +843,14 @@ app.get('/users_count', function (req, res) {
 });
 
 app.get('/recent_signups', function (req, res) {
-        mongoRespository.find('users', {
-            "githubUser.profileUrl": { $exists: true }
-        }, {
-            "sort": [
-                ["_id", -1]
-            ],
-            "limit": "10"
-        }).then(function (users) {
+    mongoRespository.find('users', {
+        "githubUser.profileUrl": { $exists: true }
+    }, {
+        "sort": [
+            ["_id", -1]
+        ],
+        "limit": "10"
+    }).then(function (users) {
         res.send(users);
     }).catch(function (err) {
         res.send(err);
@@ -890,6 +890,7 @@ app.post('/stream', function (req, res) {
 
 app.post('/v1/streams', function (req, res) {
     var auth = req.headers.authorization;
+    var callbackUrl = req.body.callbackUrl;
     console.log("auth is " + auth);
     if (auth === undefined) {
         res.send(401, "Unauthorized request. Please pass valid appId and appSecret");
@@ -899,15 +900,14 @@ app.post('/v1/streams', function (req, res) {
 
     validateClient(appId, appSecret)
         .then(function () {
-            return util.createV1Stream(appId)
-                .then(function (data) {
-                    delete data._id;
-                    delete data.appId;
-                    res.send(data);
-                }, function (err) {
-                    res.status(500).send("Database error.");
-                });
-        }).catch(function () {
+            return util.createV1Stream(appId, callbackUrl);
+        })
+        .then(function(data){
+            delete data._id;
+            delete data.appId;
+            res.send(data);
+        })
+        .catch(function () {
             res.status(401).send("Unauthorized request. Invalid appId and appSecret");
         });
 });
@@ -985,9 +985,31 @@ var saveBatchEvents = function (myEvents, stream) {
             'payload': myEvent
         };
     });
+    var responseBody = undefined;
     platformService.saveBatchEvents(myEventsWithPayload)
         .then(function (result) {
-            deferred.resolve(result);
+            responseBody = result;
+            var latestEventDate = moment(formatEventDateTime(myEvents[myEvents.length - 1].dateTime)).toDate();
+            return updateLatestEventSyncDate(stream.streamid, latestEventDate);
+        })
+        .then(function(){
+            deferred.resolve(responseBody)
+        }, function (err) {
+            deferred.reject(err);
+        });
+    return deferred.promise;
+};
+
+var updateLatestEventSyncDate = function(streamId, latestEventDate) {
+    var deferred = q.defer();
+
+    var query = {"streamid": streamId};
+    var updateObject = {
+        $set: {"latestEventSyncDate": latestEventDate}
+    };
+    mongoRespository.update('stream', query, updateObject)
+        .then(function () {
+            deferred.resolve(updateObject);
         }, function (err) {
             deferred.reject(err);
         });
