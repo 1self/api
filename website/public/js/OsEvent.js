@@ -68,7 +68,7 @@
 
         return "/v1/users/" + username + "/events/" + evt.objectTags.join(',') +
             "/" + evt.actionTags.join(',') + "/" + operation +
-            "/daily/barchart";
+            "/daily/barchart?bgColor=1B1B1A";
     };
     
     window.OsEvent = Event;
