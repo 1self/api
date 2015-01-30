@@ -89,6 +89,6 @@ var openInModal = function(url){
     $('#show_chart_iframe').attr('src', url);
     
     $('#display_chart_modal')
-        .css('top', $(document).scrollTop() + 20 + "px")
+        .css('top', $(document).scrollTop() + 70 + "px")
         .show();
 };
