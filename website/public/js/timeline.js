@@ -15,7 +15,7 @@ var getEvents = function(){
         type: 'GET',
         dataType: 'json',
         success: insertEvents,
-        error: function() { alert('Some problem dude!'); },
+        error: function() { console.log('Problem while fetching timeline events!'); },
         beforeSend: setHeader
     });
 };

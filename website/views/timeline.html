@@ -3,7 +3,7 @@
   <head lang="en">
     <title>1self - Live smarter</title>
     <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="1self Dev Community View"/>
     <meta name="keywords"
           content="Admin, Dashboard, Bootstrap3, Sass, transform, CSS3, HTML5, Web design, UI Design, Responsive Dashboard, Responsive Admin, Admin Theme, Best Admin UI, Bootstrap Theme, Wrapbootstrap, Bootstrap"/>
@@ -20,6 +20,7 @@
         <script src="js/respond.min.js"></script>
         <![endif]-->
 
+    <link href="/css/timeline.css" rel="stylesheet" media="screen"/>
     <script type="text/javascript">
       var eun = "{{encodedUsername}}",
       username = "{{username}}";
@@ -34,18 +35,20 @@
     </aside>
 
     <div class="dashboard-wrapper">
-      <div class="page-title">
-        <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-          <h2>Timeline</h2>
-          <ul class="breadcrumb">
-            <li>Home</li>
-            <li>Timeline</li>
-          </ul>
-        </div>
-      </div>
-
       <div class="container">
+
+        <div class="row page-title">
+          <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+            <h2>Timeline</h2>
+            <ul class="breadcrumb">
+              <li>Home</li>
+              <li>Timeline</li>
+            </ul>
+          </div>
+        </div>
+
         <div id="timeline"></div>
+
       </div>
     </div>
 
@@ -60,16 +63,19 @@
       </div>
     </div>
 
-
-    <link href="/css/timeline.css" rel="stylesheet" media="screen"/>
     <script src="/js/jquery.js"></script>
+    <script src="/js/sparkline.js"></script>
     <script src="/js/underscore-min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/jquery-ui-v1.10.3.js"></script>
-    <script src="/js/sparkline.js"></script>
     <script src="/js/daterange/moment-with-locales.min.js"></script>
+    <script src="/js/bootstrap-modal.js"></script>
+    <script src="/js/bootstrap-modalmanager.js"></script>
+    <script src="/js/jquery-ui-v1.10.3.js"></script>
+    <script src="/js/daterange/daterangepicker.js"></script>
     <script src="/js/slidebars.js"></script>
+    <script src="/js/custom.js"></script>
     <script src="/js/OsEvent.js"></script>
     <script type="text/javascript" src="/js/timeline.js"></script>
+
   </body>
 </html>
