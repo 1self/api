@@ -69,45 +69,6 @@ module.exports = function (app) {
         }).length > 0;
     };
 
-    var streamExists = function (streamid) {
-        var byStreamId = {
-            "streamid": streamid
-        };
-        var deferred = Q.defer();
-        mongoRepository.findOne('stream', byStreamId)
-            .then(function (stream) {
-                if (stream) {
-                    deferred.resolve(true);
-                } else {
-                    deferred.resolve(false);
-                }
-            }, function (err) {
-                deferred.reject(err);
-            });
-        return deferred.promise;
-    };
-
-    var streamIdAndReadTokenExists = function (streamId, readToken) {
-        console.log("streamIdAndReadTokenExists :: streamId is", streamId);
-        console.log("streamIdAndReadTokenExists :: readToken is", readToken);
-        // TODO Include readToken as part of mongo query object
-        var byStreamId = {
-            "streamid": streamId
-        };
-        var deferred = Q.defer();
-        mongoRepository.findOne('stream', byStreamId)
-            .then(function (stream) {
-                if (stream) {
-                    deferred.resolve(true);
-                } else {
-                    deferred.resolve(false);
-                }
-            }, function (err) {
-                deferred.reject(err);
-            });
-        return deferred.promise;
-    };
-
     var getStreamsForUser = function (oneselfUsername) {
         var streamidUsernameMapping = {
             "username": oneselfUsername.toLowerCase()
@@ -159,9 +120,9 @@ module.exports = function (app) {
 
     app.get("/dashboard", sessionManager.requiresSession, function (req, res) {
         var streamId = req.query.streamId ? req.query.streamId : "";
-
-        if (streamId) {
-            streamExists(streamId)
+        var readToken = req.query.readToken ? req.query.readToken : "";
+        if (streamId && readToken) {
+            util.streamExists(streamId, readToken)
                 .then(function (exists) {
                     if (exists) {
                         getStreamsForUser(req.session.username).then(function (user) {
@@ -1167,7 +1128,7 @@ module.exports = function (app) {
                 });
             };
 
-            streamIdAndReadTokenExists(streamId, readToken)
+            util.streamExists(streamId, readToken)
                 .then(function (exists) {
                     if (exists) {
                         getStreamsForUser(req.param('username'))
