@@ -26,6 +26,7 @@
 
     Event.prototype.humanizedValue = function(){
         var value = "";
+        if("" == this.values.trim()) return value;
 
         //dirty hack for "duration"
         if("duration" == this.values.split(':')[0]){
