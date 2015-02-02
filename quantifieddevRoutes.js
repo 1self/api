@@ -51,8 +51,11 @@ module.exports = function (app) {
             return;
         }
         // Always redirect to dashboard when user hits /signup
-        req.session.redirectUrl = "/dashboard";
-
+        if (req.query.redirectUrl) {
+            req.session.redirectUrl = req.query.redirectUrl;
+        } else {
+            req.session.redirectUrl = "/dashboard";
+        }
         if (!(_.isEmpty(req.param('streamId')))) {
             req.session.redirectUrl = "/dashboard" + "?streamId=" + req.param('streamId');
         }
@@ -1037,6 +1040,7 @@ module.exports = function (app) {
             var graphInfo = getGraphInfo(req.param("objectTags"), req.param("actionTags"), req.param("operation"));
             res.render('chart', {
                 readToken: req.param("readToken"),
+                oneselfAppUrl: process.env.CONTEXT_URI,
                 isUserLoggedIn: false,
                 title: graphInfo.title,
                 streamId: req.param("streamId"),
@@ -1114,6 +1118,7 @@ module.exports = function (app) {
                 var isUserLoggedIn = (req.session.username !== undefined);
                 res.render('chart', {
                     isUserLoggedIn: isUserLoggedIn,
+                    oneselfAppUrl: process.env.CONTEXT_URI,
                     title: graphInfo.title,
                     graphOwner: req.param("username"),
                     username: req.param("username"),
