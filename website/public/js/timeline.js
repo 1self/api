@@ -40,7 +40,7 @@ var insertEvents = function(data){
 
             html += '<li onclick="openInModal(\'' + os_event.url  + '\');" class="list-group-item"><span class="event_title">' + os_event.name  + '</span>';
 
-            html += '<div class="event_property">' + os_event.humanizedValue() + '</div>';
+            html += '<div class="event_property">' + os_event.displayValue + '</div>';
             
             html += '</li>';
         }
