@@ -229,12 +229,16 @@ var displayCommentsSummary = function () {
 $(document).ready(function () {
 
     $("#login").click(function () {
-        var parentWindow = window.parent;
-        var msg = {
-            loginUrl: oneselfAppUrl + "/signup",
-            oneselfAppUrl: oneselfAppUrl
-        };
-        parentWindow.postMessage(msg, "*");
+        if (window.parent !== window) {
+            var parentWindow = window.parent;
+            var msg = {
+                loginUrl: oneselfAppUrl + "/signup",
+                oneselfAppUrl: oneselfAppUrl
+            };
+            parentWindow.postMessage(msg, "*");
+        } else {
+            $("#login").attr('href', '/signup?redirectUrl=' + window.location.href);
+        }
     });
 
     setBackgroundColor();
