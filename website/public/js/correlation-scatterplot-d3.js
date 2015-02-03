@@ -76,7 +76,7 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 				.attr("cx", xMap)
 				.attr("cy", yMap)
 				.style("fill", function(d) {
-					return (d.x === 0 || d.y === 0) ? "lightgrey" : "blue";
+					return (d.x === 0 || d.y === 0) ? "lightgrey" : "#00a2d4";
 				})
 				.on("click", function(d) {
 					if ($(window).width() < 768) {

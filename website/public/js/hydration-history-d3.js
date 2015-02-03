@@ -66,8 +66,8 @@ window.qd.plotHydrationHistory = function () {
             .data(data)
             .enter().append('rect')
             .attr('class', 'bar')
-            .style("fill", "lightblue")
-            .style("stroke", d3.rgb("lightblue").darker())
+            .style("fill", "#00a2d4")
+            .style("stroke", d3.rgb("#00a2d4").darker())
             .attr('x', function (d) {
                 return x(new Date(d.date));
             })
