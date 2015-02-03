@@ -212,7 +212,6 @@ header {
     padding: 0;
     margin: 0;
     height: 60px;
-    font-family: Raleway;
 }
 
 .top-bar .dropdown-menu {
@@ -997,6 +996,7 @@ aside#sidebar ul.recent-visits li:last-child {
 }
 
 .panel-title {
+    font-family:Raleway;
     font-size: 16px;
     display: inline-block;
     font-weight: 300;
