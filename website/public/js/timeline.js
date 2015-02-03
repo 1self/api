@@ -1,5 +1,12 @@
 $(document).ready(function(){
     getEvents();
+    
+    $('#more_events_button').click(function(){
+        ++timeline_page_number;
+        $(this).hide();
+        getEvents();
+    });
+
     $('#modal_close_button').click(function(){
         $('#display_chart_modal').hide();
     });
@@ -9,9 +16,11 @@ function setHeader(xhr) {
     xhr.setRequestHeader('Authorization', eun);
 }
 
+var timeline_page_number = 1;
+
 var getEvents = function(){
     $.ajax({
-        url: '/event',
+        url: '/event?page=' + timeline_page_number,
         type: 'GET',
         dataType: 'json',
         success: insertEvents,
@@ -50,7 +59,8 @@ var insertEvents = function(data){
             '</div>';
     }
 
-    timeline_container.html(html);
+    timeline_container.append(html);
+    $('#more_events_button').show();
 };
 
 var groupEventsByDate = function(data){

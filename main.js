@@ -912,7 +912,7 @@ app.post('/v1/streams', function (req, res) {
         });
 });
 
-var getEventsForStreams = function (streams) {
+var getEventsForStreams = function (streams, fromDate, toDate) {
     var deferred = q.defer();
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
@@ -921,6 +921,16 @@ var getEventsForStreams = function (streams) {
         'payload.streamid': {
             "$operator": {
                 "in": streamids
+            }
+        },
+        "payload.eventDateTime": {
+            "$operator": {
+                ">": {
+                    "$date": fromDate
+                },
+                "<": {
+                    "$date": toDate
+                }
             }
         }
     };
@@ -938,12 +948,20 @@ var getEventsForStreams = function (streams) {
 
 
 app.get('/event', function (req, res) {
+    const numberOfDaysToReport = 15;
+    var page_number = req.query.page || 1;
+    
+    var fromDate = moment.utc().startOf('day').subtract(numberOfDaysToReport * page_number, 'days').format();
+    var toDate = moment.utc().endOf('day').subtract(numberOfDaysToReport * (page_number - 1) , 'days').format();
+
     var encodedUsername = req.headers.authorization;
     validEncodedUsername(encodedUsername)
         .then(function () {
-            return getStreamIdForUsername(encodedUsername, req.query.forUsername)
+            return getStreamIdForUsername(encodedUsername, req.query.forUsername);
         })
-        .then(getEventsForStreams)
+        .then(function(streams){
+            return getEventsForStreams(streams, fromDate, toDate);
+        })
         .then(function (response) {
             res.send(response);
         }).catch(function (error) {

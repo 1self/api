@@ -100,3 +100,12 @@ body {
         width: 319px;
     }
 }
+
+.more_events_button_wrapper{
+    margin: 20px auto;
+    text-align: center;
+}
+
+.rounded-button{
+    border-radius: 10px;
+}
