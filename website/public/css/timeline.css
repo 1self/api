@@ -109,3 +109,7 @@ body {
 .rounded-button{
     border-radius: 10px;
 }
+
+#more_events_button {
+    display: none;
+}
