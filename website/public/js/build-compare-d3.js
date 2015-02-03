@@ -254,24 +254,24 @@ window.qd.plotComparison = function(divId, myBuildEvents, withBuildEvents) {
 
 	if (myPassedBuildEvents.length > 0) {
 		//My Successful Builds:
-		_plotLineGraph("#2e4174", false, myPassedBuildEvents);
+		_plotLineGraph("#00a2d4", false, myPassedBuildEvents);
 	}
 	if (myFailedBuildEvents.length > 0) {
 		//My Failed Builds:
-		_plotLineGraph("#ED1C25", false, myFailedBuildEvents);
+		_plotLineGraph("#dd2649", false, myFailedBuildEvents);
 	}
 	if (withPassedBuildEvents.length > 0) {
 		//With Successful Builds:
-		_plotLineGraph("#73b9e6", true, withPassedBuildEvents);
+		_plotLineGraph("#00b8e7", true, withPassedBuildEvents);
 	}
 	if (withFailedBuildEvents.length > 0) {
 		//With Failed Builds:
-		_plotLineGraph("#F2555C", true, withFailedBuildEvents);
+		_plotLineGraph("#e93e5a", true, withFailedBuildEvents);
 	}
 	_createLegends([
-		["My Passed", "#2e4174"],
-		["My Failed", "#ED1C25"],
-		["Their Passed", "#73b9e6"],
-		["Their Failed", "#F2555C"]
+		["My Passed", "#00a2d4"],
+		["My Failed", "#dd2649"],
+		["Their Passed", "#00b8e7"],
+		["Their Failed", "#e93e5a"]
 	]);
 };

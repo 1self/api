@@ -30,7 +30,7 @@ window.qd.plotDailyComparison = function(divId, myDailyEvents, theirDailyEvents)
     .range([height, 0]);
 
   var color = d3.scale.ordinal()
-    .range(["rgba(11,94,215,.8)", "rgba(245, 143, 8, 0.8)"]);
+    .range(["#00a2d4", "#dd2649"]);
 
   var xAxis = d3.svg.axis()
     .scale(x0)
