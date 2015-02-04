@@ -530,6 +530,10 @@ ul#mini-nav .dropdown-menu:before {
     color: #f2ae1c;
 }
 
+.li-green {
+    color: #61b346;
+}
+
 .page-title #reportrange {
     float: right;
     display: inline-block;
