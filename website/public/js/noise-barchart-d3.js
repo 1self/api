@@ -61,8 +61,8 @@ window.qd.plotNoiseEventsHistory = function() {
             .enter()
             .append('rect')
             .attr('class', 'bar')
-            .style("fill", "#dd2649")
-            .style("stroke", d3.rgb("#dd2649").darker())
+            .style("fill", "#e93e5a")
+            .style("stroke", d3.rgb("#e93e5a").darker())
             .attr('x', function (d) {
                 return x(new Date(d.date));
             })

@@ -71,8 +71,8 @@ window.qd.plotActiveEvents = function () {
             .data(data)
             .enter().append('rect')
             .attr('class', 'bar')
-            .style("fill", "#00a2d4")
-            .style("stroke", d3.rgb("#00a2d4").darker())
+            .style("fill", "#e93e5a")
+            .style("stroke", d3.rgb("#e93e5a").darker())
             .attr('x', function (d) {
                 return x(new Date(d.date));
             })
