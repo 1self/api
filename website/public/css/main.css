@@ -2254,3 +2254,25 @@ a.twitter-share-button {
     }
 }
 
+aside#sidebar #menu > ul > li.selected,
+#dashboard{
+    background-color: #e93e5a
+}
+
+#dashboard h2,
+#dashboard .breadcrumb > li{
+    color: white;
+}
+
+aside#sidebar #menu > ul > li.selected > a > i,
+aside#sidebar #menu > ul > li.selected > i{
+    color: white
+}
+
+aside#sidebar #menu > ul > li.selected > *{
+    color: white
+}
+
+#dashboard .panel-secondary > .panel-heading{
+    border-color: #00b8e7;
+}
