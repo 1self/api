@@ -2254,7 +2254,7 @@ a.twitter-share-button {
     }
 }
 
-aside#sidebar #menu > ul > li.selected,
+aside#sidebar #menu > ul > li.selected#dashboardmenuitem,
 #dashboard{
     background-color: #e93e5a
 }
@@ -2269,10 +2269,19 @@ aside#sidebar #menu > ul > li.selected > i{
     color: white
 }
 
-aside#sidebar #menu > ul > li.selected > *{
-    color: white
-}
-
 #dashboard .panel-secondary > .panel-heading{
     border-color: #00b8e7;
+}
+
+aside#sidebar #menu > ul > li.selected#rivermenuitem,
+#river{
+    background-color: #367ec0
+}
+
+.page-title h2,
+.page-title ul.breadcrumb li,
+#river .panel-title{
+    color: white;
+}
+
 }

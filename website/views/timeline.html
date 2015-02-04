@@ -47,12 +47,59 @@
     {% include "./templates/_qd_header.html" %}
     <aside id="sidebar">
       <div>
-        {% include "./templates/_menu.html" %}
+        <div class="custom-Menu">
+    <h3 class="menu-side">Menu</h3>
+</div>
+<!-- Menu bar end -->
+<div id='menu'>
+    <ul>
+        <li class="highlight" "dashboardmenuitem">
+            <a href='dashboard'>
+                <i class="icon-dashboard" style="color:#dd2649"></i>
+                <span>Dashboard</span>
+                <!-- <em class="arrow-active"></em> -->
+            </a>
+        </li>
+        <li class="selected" id='rivermenuitem'>
+            <a href='timeline'>
+                <i class="glyphicon glyphicon-time" style="color:#00a2d4"></i>
+                <span>Timeline</span>
+                <!-- <em class="arrow-active"></em> -->
+            </a>
+        </li>
+        <li class="highlight" id='linkdatamenuitem'>
+            <a href='javascript://'>
+                <i class="glyphicon glyphicon-link" style="color:#e93d31"></i>
+                <span data-toggle="modal" data-target="#noDataSourceMessage">Link Data</span>
+            </a>
+        </li>
+        <li class="highlight" id='blogmenuitem'>
+            <a href='http://blog.1self.co/' target="_blank">
+                <i class="glyphicon glyphicon-edit" style="color:#00ad87"></i>
+                <span>Blog</span>
+            </a>
+        </li>
+        <li class="highlight" id='askusmenuitem'>
+            <a href='http://1self.uservoice.com/' target="_blank">
+                <i class="glyphicon glyphicon-comment" style="color:#cf4b9a"></i>
+                <span>Ask Us Anything</span>
+            </a>
+        </li>
+        <li class="highlight" id='getinvolvedmenuitem'>
+            <a href='http://www.1self.co/developer' target="_blank">
+                <i class="fa fa-github-alt" style="color:#367ec0"></i>
+                <span>Get Involved</span>
+            </a>
+        </li>
+    </ul>
+</div>
+<!-- Menu End -->
+
       </div>
     </aside>
 
     <div class="dashboard-wrapper">
-      <div class="container">
+      <div class="container" id="river">
 
         <div class="row page-title">
           <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
