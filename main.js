@@ -891,6 +891,7 @@ app.post('/stream', function (req, res) {
 app.post('/v1/streams', function (req, res) {
     var auth = req.headers.authorization;
     var callbackUrl = req.body.callbackUrl;
+    console.log(callbackUrl)
     console.log("auth is " + auth);
     if (auth === undefined) {
         res.send(401, "Unauthorized request. Please pass valid appId and appSecret");

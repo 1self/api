@@ -9,14 +9,20 @@
 .axis path {
     fill: none;
     /*stroke: #fff;*/
-    stroke: rgba(117, 117, 117, 0.62);
+    stroke: rgba(255, 255, 255, 0.7);
 }
 
 text {
-    fill: rgba(239, 239, 239, 0.62);
-    text-shadow: 2px 2px rgb(147, 147, 147);
+    fill: rgba(255, 255, 255, 0.9);
     font-size: 0.8em;
+    font-family: "Raleway-Thin", "helvetica neue", helvetica, arial
 }
+
+.overlay {
+    text-shadow: 0px 0px 9px rgba(0, 0, 0, 0.5);
+}
+
+
 
 .d3-tip, .tooltip {
     line-height: 1;
