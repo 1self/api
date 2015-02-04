@@ -35,6 +35,7 @@
         var shareToken = "{{shareToken}}";
         var renderType = "{{renderType}}";
         var readToken = "{{readToken}}";
+        var oneselfAppUrl = "{{oneselfAppUrl}}";
 
         //ZeroClipBoard config
         ZeroClipboard.config({
@@ -63,7 +64,9 @@
             $('#graphShareLink').click(function () {
                 $(this).select();
             });
+
         });
+
     </script>
 </head>
 <body>
@@ -85,13 +88,13 @@
   {% if isUserLoggedIn %}
   <a href="/timeline"><button type="button" class="button1self" ><img src="/img/1selfbutton.png"></button></a>
   {% else %}
-  <a href="/auth/github"><button type="button" class="button1self" ><img src="/img/1selfbutton.png"></button></a>
+  <a href="/signup"><button type="button" class="button1self" ><img src="/img/1selfbutton.png"></button></a>
   {% endif %}
      <button type="button" class="shareGraphButton" onclick="handleShareGraph()"><i class="fa fa-share-alt"></i></button>
 </div>
 
 <div class="no-data" style="display:none">
-    No data logged for this activity.
+    No activity logged for the current week.
 </div>
 
 <div id="chart" class="chart">
@@ -149,7 +152,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal"><span
                             class="font-size">Close</span></button>
-                    <a href="/auth/github" class="btn btn-primary"><span
+                    <a id="login" class="btn btn-primary"><span
                             class="font-size">Login to 1self</span></a>
                 </div>
             </div>

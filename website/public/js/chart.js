@@ -32,7 +32,7 @@ var plotChart = function (events) {
 charts.addComment = function () {
     var commentText = $("#commentText").val();
 
-    if("" == commentText.trim()) return;
+    if ("" == commentText.trim()) return;
 
     var comment = {
         text: commentText,
@@ -52,7 +52,7 @@ charts.addComment = function () {
     };
 
     //disable further commenting until current one completes
-    $('#commentAddButton').attr('disabled','disabled');
+    $('#commentAddButton').attr('disabled', 'disabled');
     $('#addText').hide();
     $('.sending_comment_loader').show();
 
@@ -100,7 +100,7 @@ $("#addCommentInput").keyup(function (e) {
 
 var handleAddComment = function () {
     if (isUserLoggedIn) {
-        $("#addCommentInput").show();   
+        $("#addCommentInput").show();
     }
     else {
         window.localStorage.selectedDate = charts.selectedDate;
@@ -117,14 +117,14 @@ var handleShareGraph = function () {
         $.ajax({
             url: "/v1/graph/share",
             data: {
-                graphUrl:window.location.pathname,
+                graphUrl: window.location.pathname,
                 bgColor: getParameterByName('bgColor')
             },
             success: function (data) {
                 $("#shareModal").modal({show: true});
                 $("#loadingDiv").hide();
                 var link = window.location.origin + data.graphShareUrl;
-                var graphShareLink = "<a href='"+link+"'> "+link+" </a>";
+                var graphShareLink = "<a href='" + link + "'> " + link + " </a>";
                 $("#graphShareHyperLink").html(graphShareLink);
                 $("#graphShareLink").html(link);
                 $("#shareModal").modal({show: true});
@@ -142,7 +142,7 @@ var handleShareGraph = function () {
                 $("#shareModal").modal({show: true});
                 $("#loadingDiv").hide();
                 var link = window.location.origin + data.graphShareUrl;
-                var graphShareLink = "<a href='"+link+"'>"+link+"</a>";
+                var graphShareLink = "<a href='" + link + "'>" + link + "</a>";
                 $("#graphShareHyperLink").html(graphShareLink);
                 $("#graphShareLink").html(link);
             },
@@ -172,8 +172,9 @@ var showChartTitle = function () {
 var setBackgroundColor = function () {
     var bgColor = getParameterByName('bgColor');
     if (bgColor !== "") {
-        document.body.style.backgroundColor="#"+bgColor;
-    };
+        document.body.style.backgroundColor = "#" + bgColor;
+    }
+    ;
 };
 
 var submitShare = function () {
@@ -227,6 +228,19 @@ var displayCommentsSummary = function () {
 
 $(document).ready(function () {
 
+    $("#login").click(function () {
+        if (window.parent !== window) {
+            var parentWindow = window.parent;
+            var msg = {
+                loginUrl: oneselfAppUrl + "/signup",
+                oneselfAppUrl: oneselfAppUrl
+            };
+            parentWindow.postMessage(msg, "*");
+        } else {
+            $("#login").attr('href', '/signup?redirectUrl=' + window.location.href);
+        }
+    });
+
     setBackgroundColor();
     showChartTitle();
     $.ajax({
@@ -252,14 +266,14 @@ $(document).ready(function () {
 
     var cw = $('.avatar_group').width();
     var ch = $(window).width() * (cw / 100);
-    $('.avatar_group').css({'height': ch+'px'});
+    $('.avatar_group').css({'height': ch + 'px'});
 
-    setTimeout(function(){
+    setTimeout(function () {
         charts.showComments();
-        if(isUserLoggedIn){
-        if(window.localStorage.selectedDate) {
-            delete window.localStorage.selectedDate;
+        if (isUserLoggedIn) {
+            if (window.localStorage.selectedDate) {
+                delete window.localStorage.selectedDate;
+            }
         }
-    }
     }, 3000)
 });

@@ -275,14 +275,14 @@ window.qd.plotComparisonAgainstAvgOfRestOfTheWorld = function(divId, events) {
 
 	//My Active Events:
 	if (myEvents.length > 0) {
-		_plotLineGraph("#2e4174", false, myEvents);
+		_plotLineGraph("#00a2d4", false, myEvents);
 	}
 	//Their Active Events:
 	if (worldAvgEvents.length > 0) {
-		_plotLineGraph("#F2555C", true, worldAvgEvents);
+		_plotLineGraph("#dd2649", true, worldAvgEvents);
 	}
 	_createLegends([
-		["My Events", "#2e4174"],
-		["Rest Of The World Average Events", "#F2555C"]
+		["My Events", "#00a2d4"],
+		["Rest Of The World Average Events", "#dd2649"]
 	]);
 };

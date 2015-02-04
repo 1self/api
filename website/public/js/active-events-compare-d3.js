@@ -269,14 +269,14 @@ window.qd.plotComparisonForActiveEvents = function(divId, myActiveEvents, theirA
 
 	//My Active Events:
 	if (myActiveEvents.length > 0) {
-		_plotLineGraph("#2e4174", false, myActiveEvents);
+		_plotLineGraph("#00a2d4", false, myActiveEvents);
 	}
 	//Their Active Events:
 	if (theirActiveEvents.length > 0) {
-		_plotLineGraph("#F2555C", true, theirActiveEvents);
+		_plotLineGraph("#dd2649", true, theirActiveEvents);
 	}
 	_createLegends([
-		["My Active", "#2e4174"],
-		["Their Active", "#F2555C"]
+		["My Active", "#00a2d4"],
+		["Their Active", "#dd2649"]
 	]);
 };

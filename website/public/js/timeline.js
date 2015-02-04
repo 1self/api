@@ -1,18 +1,30 @@
 $(document).ready(function(){
     getEvents();
+    
+    $('#more_events_button').click(function(){
+        ++timeline_page_number;
+        $(this).hide();
+        getEvents();
+    });
+
+    $('#modal_close_button').click(function(){
+        $('#display_chart_modal').hide();
+    });
 });
 
 function setHeader(xhr) {
     xhr.setRequestHeader('Authorization', eun);
 }
 
+var timeline_page_number = 1;
+
 var getEvents = function(){
     $.ajax({
-        url: '/event',
+        url: '/event?page=' + timeline_page_number,
         type: 'GET',
         dataType: 'json',
         success: insertEvents,
-        error: function() { alert('Some problem dude!'); },
+        error: function() { console.log('Problem while fetching timeline events!'); },
         beforeSend: setHeader
     });
 };
@@ -35,9 +47,9 @@ var insertEvents = function(data){
             var current_event = listOfEvents[i],
             os_event = new OsEvent(current_event);
 
-            html += '<li onclick="' + os_event.url  + '" class="list-group-item"><span class="event_title">' + os_event.name  + '</span>';
+            html += '<li onclick="openInModal(\'' + os_event.url  + '\');" class="list-group-item"><span class="event_title">' + os_event.name  + '</span>';
 
-            html += '<div class="event_property">' + os_event.humanizedValue() + '</div>';
+            html += '<div class="event_property">' + os_event.displayValue + '</div>';
             
             html += '</li>';
         }
@@ -47,7 +59,8 @@ var insertEvents = function(data){
             '</div>';
     }
 
-    timeline_container.html(html);
+    timeline_container.append(html);
+    $('#more_events_button').show();
 };
 
 var groupEventsByDate = function(data){
@@ -81,3 +94,11 @@ var formatDate = function(date){
     
     return moment(date).calendar();
 }
+
+var openInModal = function(url){
+    $('#show_chart_iframe').attr('src', url);
+    
+    $('#display_chart_modal')
+        .css('top', $(document).scrollTop() + 70 + "px")
+        .show();
+};

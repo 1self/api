@@ -40,6 +40,23 @@
        // For production
        window.location.replace("https://app.1self.co" + window.location.search);
      }
+
+    function login(){
+        if(inIframe()){
+            window.open("/auth/github", "_blank");
+        }else{
+            window.location.href = "/auth/github";
+        }
+    }
+
+    function inIframe () {
+        try {
+            return window.self !== window.top;
+        } catch (e) {
+            return true;
+        }
+    }
+
     </script>
 
   </head>
@@ -59,13 +76,13 @@
         </div>
         <div class="row margin-top-five">
           <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <a class="btn btn-lg signup-button" id="signup_with_github" href="/auth/github">Signup with GitHub</a>
+            <a class="btn btn-lg signup-button" id="signup_with_github">Signup with GitHub</a>
           </div>
         </div>
         <div class="row login-link-container">
           <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <span class="signup-details">Already have an account?</span>
-            <a id="login_with_github" href="/auth/github">Log in</a>
+            <a id="login_with_github">Log in</a>
           </div>
         </div>
         <div class="row signup-message">
@@ -82,9 +99,11 @@
      $(document).ready(function() {
        $("#signup_with_github").click(function(){
          ga('send', 'event', 'signup', 'signup_with_github');
+           login();
        })
        $("#login_with_github").click(function(){
          ga('send', 'event', 'login', 'login_with_github');
+           login();
        })
      });
 

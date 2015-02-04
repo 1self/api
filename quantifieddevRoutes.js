@@ -51,8 +51,11 @@ module.exports = function (app) {
             return;
         }
         // Always redirect to dashboard when user hits /signup
-        req.session.redirectUrl = "/dashboard";
-
+        if (req.query.redirectUrl) {
+            req.session.redirectUrl = req.query.redirectUrl;
+        } else {
+            req.session.redirectUrl = "/dashboard";
+        }
         if (!(_.isEmpty(req.param('streamId')))) {
             req.session.redirectUrl = "/dashboard" + "?streamId=" + req.param('streamId');
         }
@@ -67,45 +70,6 @@ module.exports = function (app) {
         return _.where(user.streams, {
             "streamid": streamid
         }).length > 0;
-    };
-
-    var streamExists = function (streamid) {
-        var byStreamId = {
-            "streamid": streamid
-        };
-        var deferred = Q.defer();
-        mongoRepository.findOne('stream', byStreamId)
-            .then(function (stream) {
-                if (stream) {
-                    deferred.resolve(true);
-                } else {
-                    deferred.resolve(false);
-                }
-            }, function (err) {
-                deferred.reject(err);
-            });
-        return deferred.promise;
-    };
-
-    var streamIdAndReadTokenExists = function (streamId, readToken) {
-        console.log("streamIdAndReadTokenExists :: streamId is", streamId);
-        console.log("streamIdAndReadTokenExists :: readToken is", readToken);
-        // TODO Include readToken as part of mongo query object
-        var byStreamId = {
-            "streamid": streamId
-        };
-        var deferred = Q.defer();
-        mongoRepository.findOne('stream', byStreamId)
-            .then(function (stream) {
-                if (stream) {
-                    deferred.resolve(true);
-                } else {
-                    deferred.resolve(false);
-                }
-            }, function (err) {
-                deferred.reject(err);
-            });
-        return deferred.promise;
     };
 
     var getStreamsForUser = function (oneselfUsername) {
@@ -159,9 +123,9 @@ module.exports = function (app) {
 
     app.get("/dashboard", sessionManager.requiresSession, function (req, res) {
         var streamId = req.query.streamId ? req.query.streamId : "";
-
-        if (streamId) {
-            streamExists(streamId)
+        var readToken = req.query.readToken ? req.query.readToken : "";
+        if (streamId && readToken) {
+            util.streamExists(streamId, readToken)
                 .then(function (exists) {
                     if (exists) {
                         getStreamsForUser(req.session.username).then(function (user) {
@@ -1076,6 +1040,7 @@ module.exports = function (app) {
             var graphInfo = getGraphInfo(req.param("objectTags"), req.param("actionTags"), req.param("operation"));
             res.render('chart', {
                 readToken: req.param("readToken"),
+                oneselfAppUrl: process.env.CONTEXT_URI,
                 isUserLoggedIn: false,
                 title: graphInfo.title,
                 streamId: req.param("streamId"),
@@ -1153,6 +1118,7 @@ module.exports = function (app) {
                 var isUserLoggedIn = (req.session.username !== undefined);
                 res.render('chart', {
                     isUserLoggedIn: isUserLoggedIn,
+                    oneselfAppUrl: process.env.CONTEXT_URI,
                     title: graphInfo.title,
                     graphOwner: req.param("username"),
                     username: req.param("username"),
@@ -1167,7 +1133,7 @@ module.exports = function (app) {
                 });
             };
 
-            streamIdAndReadTokenExists(streamId, readToken)
+            util.streamExists(streamId, readToken)
                 .then(function (exists) {
                     if (exists) {
                         getStreamsForUser(req.param('username'))

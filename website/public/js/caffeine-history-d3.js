@@ -66,8 +66,8 @@ window.qd.plotCaffeineHistory = function () {
             .data(data)
             .enter().append('rect')
             .attr('class', 'bar')
-            .style("fill", "brown")
-            .style("stroke", d3.rgb("brown").darker())
+            .style("fill", "#e93d31")
+            .style("stroke", d3.rgb("#e93d31").darker())
             .attr('x', function (d) {
                 return x(new Date(d.date));
             })
