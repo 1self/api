@@ -49,11 +49,11 @@
                 <h2>Comparison</h2>
                 <ul class="breadcrumb">
                     <li>Home</li>
-                    <li>Comparison</li>
+                    <li class="li-yellow">Comparison</li>
                 </ul>
             </div>
             <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 mobile-margin-bottom-five">
-                <button data-toggle="modal" class="btn btn-info" id="compare-btn">Send Comparison Request</button>
+                <button data-toggle="modal" class="btn btn-warning" id="compare-btn">Send Comparison Request</button>
                 <div>{% include "./templates/_compare_request_popup.html" %}</div>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
@@ -85,7 +85,7 @@
         </div>
         <div class="row graph-container-row compare-graph-container-row">
             <div id="compare-build-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-                <div class="panel panel-secondary fixed-height">
+                <div class="panel panel-secondary fixed-height panel-yellow-border">
                     <div class="panel-heading cursor-move">
                         <h3 class="panel-title"><i class="icon-bar-chart"></i>Side By Side Build History</h3>
                     </div>
@@ -97,7 +97,7 @@
                 </div>
             </div>
             <div id="compare-active-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-                <div class="panel panel-secondary fixed-height">
+                <div class="panel panel-secondary fixed-height panel-yellow-border">
                     <div class="panel-heading cursor-move">
                         <h3 class="panel-title"><i class="icon-bar-chart"></i>Side By Side IDE Active Work History</h3>
                     </div>
@@ -110,7 +110,7 @@
             </div>
             <div id="diff-hourly-github-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12"
                  style="display:none;">
-                <div class="panel panel-secondary fixed-height">
+                <div class="panel panel-secondary fixed-height panel-yellow-border">
                     <div class="panel-heading cursor-move">
                         <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Github Push Events Difference
                             HeatMap</h3>
@@ -124,7 +124,7 @@
             </div>
             <div id="daily-github-event-compare-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12"
                  style="display:none;">
-                <div class="panel panel-secondary fixed-height">
+                <div class="panel panel-secondary fixed-height panel-yellow-border">
                     <div class="panel-heading cursor-move">
                         <h3 class="panel-title"><i class="icon-bar-chart"></i>Daily Github Push Event Comparison</h3>
                     </div>
@@ -136,7 +136,7 @@
                 </div>
             </div>
             <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-                <div class="panel panel-secondary fixed-height">
+                <div class="panel panel-secondary fixed-height panel-yellow-border">
                     <div class="panel-heading cursor-move">
                         <h3 class="panel-title"><i class="icon-bar-chart"></i>My Github Push Events vs Avg of the Rest
                             of the World</h3>
@@ -149,7 +149,7 @@
                 </div>
             </div>
             <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-                <div class="panel panel-secondary fixed-height">
+                <div class="panel panel-secondary fixed-height panel-yellow-border">
                     <div class="panel-heading cursor-move">
                         <h3 class="panel-title"><i class="icon-bar-chart"></i>My IDE Activity vs Avg of the Rest of the
                             World</h3>

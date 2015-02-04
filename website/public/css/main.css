@@ -511,13 +511,23 @@ ul#mini-nav .dropdown-menu:before {
     padding: 2px 4px 0 0;
     list-style: none;
     display: inline-block;
-    color: #999999;
 }
 
 .page-title ul.breadcrumb li:last-child {
-    color: #1e91cf;
     font-size: 12px;
     font-weight: 500;
+}
+
+.li-blue {
+    color: #1e91cf;
+}
+
+.li-red {
+    color: #dd2649;
+}
+
+.li-yellow {
+    color: #f2ae1c;
 }
 
 .page-title #reportrange {
@@ -1104,15 +1114,32 @@ aside#sidebar ul.recent-visits li:last-child {
     color: #777777;
 }
 
+.panel-red-border {
+    border: 1px solid #dd2649;
+    border-top: 2px solid #dd2649;
+}
+
+.panel-yellow-border {
+    border: 1px solid #f2ae1c;
+    border-top: 2px solid #f2ae1c;
+}
+
 .panel-secondary {
-    border: 1px solid #c3e4f6;
-    border-top: 2px solid #5cb7e7;
+
+}
+
+.panel-red-border > .panel-heading {
+    color: #dd2649;
+    border-color: #dd2649;
+}
+
+.panel-yellow-border > .panel-heading {
+    color: #f2ae1c;
+    border-color: #f2ae1c;
 }
 
 .panel-secondary > .panel-heading {
-    color: #1e91cf;
     background: white;
-    border-color: #96d0f0;
     min-height: 65px;
 }
 
@@ -1820,18 +1847,18 @@ aside#sidebar ul.recent-visits li:last-child {
 
 .btn-warning {
     color: white;
-    background-color: #f38733;
-    border-color: #f2791b;
+    background-color: #f2ae1c;
+    border-color: #f2ae1c;
 }
 
 .btn-warning:hover, .btn-warning:focus, .btn-warning:active, .btn-warning.active, .open .dropdown-toggle.btn-warning {
     color: white;
-    background-color: #f2791b;
-    border-color: #f17311;
+    background-color: #f2ae1c;
+    border-color: #f2ae1c;
 }
 
 .btn-warning.disabled, .btn-warning[disabled], fieldset[disabled] .btn-warning, .btn-warning.disabled:hover, .btn-warning[disabled]:hover, fieldset[disabled] .btn-warning:hover, .btn-warning.disabled:focus, .btn-warning[disabled]:focus, fieldset[disabled] .btn-warning:focus, .btn-warning.disabled:active, .btn-warning[disabled]:active, fieldset[disabled] .btn-warning:active, .btn-warning.disabled.active, .btn-warning[disabled].active, fieldset[disabled] .btn-warning.active {
-    background-color: #f2791b;
+    background-color: #f2ae1c;
     border-color: #2b2b2b;
 }
 
