@@ -2265,7 +2265,8 @@ aside#sidebar #menu > ul > li.selected#dashboardmenuitem,
 }
 
 aside#sidebar #menu > ul > li.selected > a > i,
-aside#sidebar #menu > ul > li.selected > i{
+aside#sidebar #menu > ul > li.selected > i,
+aside#sidebar #menu > ul > li.selected > a{
     color: white
 }
 
