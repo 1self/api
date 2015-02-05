@@ -118,7 +118,7 @@ var handleShareGraph = function () {
             url: "/v1/graph/share",
             data: {
                 graphUrl: window.location.pathname,
-                bgColor: getParameterByName('bgColor')
+                bgColor: getParameterByName('bgColor') || "fdc526"
             },
             success: function (data) {
                 $("#shareModal").modal({show: true});
@@ -170,11 +170,8 @@ var showChartTitle = function () {
 };
 
 var setBackgroundColor = function () {
-    var bgColor = getParameterByName('bgColor');
-    if (bgColor !== "") {
-        document.body.style.backgroundColor = "#" + bgColor;
-    }
-    ;
+    var bgColor = getParameterByName('bgColor') || "fdc526";
+    document.body.style.backgroundColor = "#" + bgColor;
 };
 
 var submitShare = function () {
