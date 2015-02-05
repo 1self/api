@@ -17,6 +17,8 @@ function setHeader(xhr) {
 }
 
 var timeline_page_number = 1;
+var data_fetch_retry_count = 0;
+const max_data_fetch_retry_count = 5;
 
 var getEvents = function(){
     $.ajax({
@@ -30,6 +32,17 @@ var getEvents = function(){
 };
 
 var insertEvents = function(data){
+    if(0 === data.length){
+        if(data_fetch_retry_count >= max_data_fetch_retry_count) return;
+
+        ++timeline_page_number;
+        ++data_fetch_retry_count;
+        getEvents();
+        return;
+    }
+
+    data_fetch_retry_count = 0; //reset counter if we have data
+
     var dateGroupedEvents = groupEventsByDate(data.reverse()),
     timeline_container = $('#timeline'),
     html = "";
