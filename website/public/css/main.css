@@ -2275,8 +2275,14 @@ aside#sidebar #menu > ul > li.selected > a{
 }
 
 aside#sidebar #menu > ul > li.selected#rivermenuitem,
-#river{
+#river,
+#riverbody{
     background-color: #367ec0
+}
+
+#riverbody,
+#river {
+    min-height: 2000px;
 }
 
 .page-title h2,
