@@ -88,8 +88,8 @@ Util.prototype.registerApp = function (appEmail) {
 
 Util.prototype.streamExists = function (streamId, readToken) {
     var query = {
-        streamid: streamId,
-        readToken: readToken
+        streamid: streamId
+        , readToken: readToken
     };
     var deferred = q.defer();
     mongoRespository.findOne('stream', query)
