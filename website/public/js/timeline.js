@@ -1,13 +1,14 @@
-$(document).ready(function(){
-    getEvents();
-    
-    $('#more_events_button').click(function(){
-        ++timeline_page_number;
-        $(this).hide();
-        getEvents();
-    });
+var skip = 0;
+const limit = 50; // per page 50 records
 
-    $('#modal_close_button').click(function(){
+$(document).ready(function () {
+    getEvents(skip, limit);
+    $('#more_events_button').click(function () {
+        $(this).hide();
+        skip += 50;
+        getEvents(skip, limit);
+    });
+    $('#modal_close_button').click(function () {
         $('#display_chart_modal').hide();
     });
 });
@@ -16,38 +17,29 @@ function setHeader(xhr) {
     xhr.setRequestHeader('Authorization', eun);
 }
 
-var timeline_page_number = 1;
-var data_fetch_retry_count = 0;
-const max_data_fetch_retry_count = 5;
-
-var getEvents = function(){
+var getEvents = function (skip, limit) {
     $.ajax({
-        url: '/event?page=' + timeline_page_number,
+        url: "/v1/users/" + username + "/events?skip=" + skip + "&limit=" + limit,
         type: 'GET',
         dataType: 'json',
-        success: insertEvents,
-        error: function() { console.log('Problem while fetching timeline events!'); },
+        success: displayEventsOnTimeline,
+        error: function () {
+            console.error('Problem while fetching timeline events!');
+        },
         beforeSend: setHeader
     });
 };
 
-var insertEvents = function(data){
-    if(0 === data.length){
-        if(data_fetch_retry_count >= max_data_fetch_retry_count) return;
-
-        ++timeline_page_number;
-        ++data_fetch_retry_count;
-        getEvents();
+var displayEventsOnTimeline = function (data) {
+    if (0 === data.length) {
         return;
     }
 
-    data_fetch_retry_count = 0; //reset counter if we have data
+    var dateGroupedEvents = groupEventsByDate(data);
+    var timeline_container = $('#timeline');
+    var html = "";
 
-    var dateGroupedEvents = groupEventsByDate(data.reverse()),
-    timeline_container = $('#timeline'),
-    html = "";
-
-    for(var date in dateGroupedEvents){
+    for (var date in dateGroupedEvents) {
         html += '<div class="panel panel-primary">' +
             '<div class="panel-heading">' +
             '<h3 class="panel-title">' + formatDate(date) + '</h3>' +
@@ -56,17 +48,14 @@ var insertEvents = function(data){
             '<ul class="list-group">';
 
         var listOfEvents = dateGroupedEvents[date];
-        for(i = 0; i < listOfEvents.length; i++){
-            var current_event = listOfEvents[i],
-            os_event = new OsEvent(current_event);
 
-            html += '<li onclick="openInModal(\'' + os_event.url  + '\');" class="list-group-item"><span class="event_title">' + os_event.name  + '</span>';
-
+        listOfEvents.forEach(function (current_event) {
+            var os_event = new OsEvent(current_event);
+            html += '<li onclick="openInModal(\'' + os_event.url + '\');" class="list-group-item"><span class="event_title">' + os_event.name + '</span>';
             html += '<div class="event_property">' + os_event.displayValue + '</div>';
-            
             html += '</li>';
-        }
-        
+        });
+
         html += '</ul>' +
             '</div>' +
             '</div>';
@@ -76,26 +65,25 @@ var insertEvents = function(data){
     $('#more_events_button').show();
 };
 
-var groupEventsByDate = function(data){
+var groupEventsByDate = function (data) {
     var groups = {};
 
-    data.forEach(function(event){
-        try{
+    data.forEach(function (event) {
+        try {
             var date = event.payload.eventDateTime.split('T')[0];
-        }catch(e){
+        } catch (e) {
             console.log(JSON.stringify(event));
         }
-        if(!groups[date]){
+        if (!groups[date]) {
             groups[date] = [];
         }
-        
         groups[date].unshift(event);
     });
-    
+
     return groups;
 };
 
-var formatDate = function(date){
+var formatDate = function (date) {
     moment.locale('en', {
         calendar: {
             lastDay: '[Yesterday]',
@@ -104,13 +92,12 @@ var formatDate = function(date){
             sameElse: 'ddd ll'
         }
     });
-    
     return moment(date).calendar();
-}
+};
 
-var openInModal = function(url){
+var openInModal = function (url) {
     $('#show_chart_iframe').attr('src', url);
-    
+
     $('#display_chart_modal')
         .css('top', $(document).scrollTop() + 70 + "px")
         .show();
