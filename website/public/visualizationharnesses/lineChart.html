@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <title>1self line chart</title>
+    
+    <link rel="stylesheet" href="../css/fonts/Raleway/fonts.css">
+    <link rel="stylesheet" href="../css/lineChart.css">
+
+    <script src="../js/jquery.js"></script>
+    <script src="../js/daterange/moment.js"></script>
+    <script src="../js/underscore-min.js"></script>
+    <script src="../packages/d3/d3.js"></script>
+    <script src="../js/lineChart.js"></script>
+    <script>
+        var events = [];
+
+        events.push({
+            date: new Date(moment().subtract('days', 0).format('MM/DD/YYYY')),
+            value: 42
+        });
+        events.push({
+            date: new Date(moment().subtract('days', 1).format('MM/DD/YYYY')),
+            value: 13
+        });
+        events.push({
+            date: new Date(moment().subtract('days', 2).format('MM/DD/YYYY')),
+            value: 76
+        });
+        events.push({
+            date: new Date(moment().subtract('days', 3).format('MM/DD/YYYY')),
+            value: 15
+        });
+        events.push({
+            date: new Date(moment().subtract('days', 4).format('MM/DD/YYYY')),
+            value: 67
+        });
+        events.push({
+            date: new Date(moment().subtract('days', 5).format('MM/DD/YYYY')),
+            value: 24
+        });
+        events.push({
+            date: new Date(moment().subtract('days', 6).format('MM/DD/YYYY')),
+            value: 52
+        });
+
+        $(function () {
+            charts.plotLineChart('#chart', events, {
+                units: 'units',
+                x: 'date',
+                y: 'value',
+                duration: 5000
+            });
+        });
+    </script>
+</head>
+<body> <!-- style="background: #3a5795" facebook: 3a5795; spotify: 84bd00; -->
+    <div id="chart"></div>
+</body>
+</html>

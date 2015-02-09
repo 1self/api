@@ -1,0 +1,33 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+.axis path {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.7);
+}
+
+text {
+    fill: rgba(255, 255, 255, 0.9);
+    font-size: 0.8em;
+    font-family: "Raleway", "helvetica neue", helvetica, arial
+}
+
+.point {
+    transition: fill .5s ease;
+    cursor: pointer;
+}
+
+.point:hover {
+    fill: white;
+    opacity: 1;
+}
+
+/* Possible solution for labels on phones getting too cluttered */
+@media screen and (max-width: 600px) {
+    /* Hide the odd labels so only half are displayed */
+    .x.axis .tick:nth-child(odd) text {
+        display: none;
+    }
+}
