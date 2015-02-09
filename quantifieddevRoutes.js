@@ -59,7 +59,30 @@ module.exports = function (app) {
         if (!(_.isEmpty(req.param('streamId')))) {
             req.session.redirectUrl = "/dashboard" + "?streamId=" + req.param('streamId');
         }
-        res.render('signup');
+
+        // TODO encapsulate following logic into new intent manager
+        // Store the intent into session if intent is provided and redirect to /auth/github
+        if(!(_.isEmpty(req.query.intent))){
+            req.session.intent = req.query.intent;
+            console.log("Setting up session 111");
+            req.session.oneselfUsername = req.query.oneselfUsername;
+            res.redirect("/auth/github");
+            console.log("Session username is 111", req.session.oneselfUsername);
+        } else {
+            res.render('signup');
+        };
+
+    });
+
+    app.get("/signup_complete", function(req, res){
+        var intent = req.session.intent;
+        if (intent === "website_signup") {
+            //res.render("signup_complete");
+            res.redirect("http://www.1self.co/confirmation.html");
+        }
+        else{
+            res.redirect("comment_url");
+        }
     });
 
     app.get("/community/globe", function (req, res) {

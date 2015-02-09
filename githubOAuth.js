@@ -6,6 +6,8 @@ var GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 var GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 var CONTEXT_URI = process.env.CONTEXT_URI;
 var mongoRepository = require('./mongoRepository.js');
+var encoder = require("./encoder");
+
 
 module.exports = function (app) {
     var setSession = function (req, user) {
@@ -32,6 +34,7 @@ module.exports = function (app) {
         });
         return deferred.promise;
     };
+
     var handleGithubCallback = function (req, res) {
         var githubUser = req.user.profile;
         req.session.githubAccessToken = req.user.accessToken;
@@ -66,6 +69,7 @@ module.exports = function (app) {
                     res.status(500).send("Database error");
                 });
         };
+        // TODO move it to separate place.
         var creditUserSignUpToApp = function () {
             var attributeUserToApp = function (appId) {
                 var byAppId = {
@@ -132,6 +136,48 @@ module.exports = function (app) {
             });
     };
 
+    var handleGithubCallbackWithIntent = function (req, res) {
+        var githubUser = req.user.profile;
+        var oneselfUsername = req.session.oneselfUsername;
+
+        var encodeUsername = function (oneselfUsername) {
+            var deferred = q.defer();
+            deferred.resolve(encoder.encodeUsername(oneselfUsername));
+            return deferred.promise;
+        };
+
+        var signupComplete = function(){
+            res.redirect("/signup_complete");
+        };
+
+        var createUser = function (encUserObj) {
+            var deferred = q.defer();
+            fetchGithubUserEmails(req.user.accessToken)
+                .then(function (userEmails) {
+                    for (var i in userEmails) {
+                        githubUser.emails.push(userEmails[i]);
+                    }
+                    return {
+                        githubUser: githubUser,
+                        registeredOn: new Date(),
+                        username: oneselfUsername,
+                        encodedUsername: encUserObj.encodedUsername,
+                        salt: encUserObj.salt
+                    };
+                }, function (err) {
+                    res.status(500).send("Could not fetch email addresses for user.");
+                }).then(function (githubUserRecord) {
+                    mongoRepository.insert('users', githubUserRecord);
+                    deferred.resolve();
+                })
+            return deferred.promise;
+        };
+
+        encodeUsername(oneselfUsername)
+            .then(createUser)
+            .then(signupComplete);
+    };
+
     passport.serializeUser(function (user, done) {
         done(null, user);
     });
@@ -169,5 +215,5 @@ module.exports = function (app) {
 
     app.get('/auth/github/callback', passport.authenticate('github', {
         failureRedirect: CONTEXT_URI + '/signup'
-    }), handleGithubCallback);
+    }), handleGithubCallbackWithIntent);
 };
