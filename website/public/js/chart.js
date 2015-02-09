@@ -118,7 +118,7 @@ var handleShareGraph = function () {
             url: "/v1/graph/share",
             data: {
                 graphUrl: window.location.pathname,
-                bgColor: getParameterByName('bgColor') || "fdc526"
+                bgColor: getBackgroundColor()
             },
             success: function (data) {
                 $("#shareModal").modal({show: true});
@@ -169,9 +169,17 @@ var showChartTitle = function () {
     }
 };
 
+var getBackgroundColor = function () {
+    var colorFromQueryParam = getParameterByName('bgColor');
+    if (colorFromQueryParam && colorFromQueryParam !== 'undefined') {
+        return colorFromQueryParam;
+    } else {
+        return "fdc526";
+    }
+};
+
 var setBackgroundColor = function () {
-    var bgColor = getParameterByName('bgColor') || "fdc526";
-    document.body.style.backgroundColor = "#" + bgColor;
+    document.body.style.backgroundColor = "#" + getBackgroundColor();
 };
 
 var submitShare = function () {
