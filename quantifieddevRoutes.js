@@ -72,15 +72,12 @@ module.exports = function (app) {
             }
         } else {
             res.render('signup');
-        }
-        ;
-
+        };
     });
 
     app.get("/signup_complete", function (req, res) {
         var intent = req.session.intent;
         if (intent === "website_signup") {
-            //res.render("signup_complete");
             res.redirect("http://www.1self.co/confirmation.html");
         }
         else {

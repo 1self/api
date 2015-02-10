@@ -232,7 +232,7 @@ module.exports = function (app) {
                 return deferred.promise;
             }
 
-            var redirectToDashboard = function () {
+            var loginComplete = function () {
                 if (req.session.redirectUrl) {
                     var redirectUrl = req.session.redirectUrl;
                     delete req.session.redirectUrl;
@@ -252,7 +252,7 @@ module.exports = function (app) {
             findUser(byGitHubUsername)
                 .then(setSessionData)
                 .then(function () {
-                    redirectToDashboard();
+                    loginComplete();
                 }).catch(function (error) {
                     console.log("Error occurred", error);
                 })
