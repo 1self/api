@@ -1,12 +1,12 @@
 window.qd.plotActiveEvents = function () {
     setTimeout(function () {
         $('#active-event-history').empty();
-        var convertMillisToMinutes = function (data) {
-            return _.each(data, function (d) {
-                d.value = d.value / (1000 * 60);
+        var convertSecondsToMinutes = function (data) {
+            return data.map(function (d) {
+                return d.value / 60;
             });
         };
-        var data = convertMillisToMinutes(window.qd.activeEvents);
+        var data = convertSecondsToMinutes(window.qd.activeEvents);
         var margin = {
             top: 20,
             right: 30,
