@@ -140,6 +140,15 @@ module.exports = function (app) {
         var githubUser = req.user.profile;
         var oneselfUsername = req.session.oneselfUsername;
 
+        var isNewUser = function (user) {
+            return !user;
+        };
+
+        var handleError = function(error){
+            console.log(error);
+            res.send(400, "Username you are tyring to use already exists");
+        };
+
         var encodeUsername = function (oneselfUsername) {
             var deferred = q.defer();
             deferred.resolve(encoder.encodeUsername(oneselfUsername));
@@ -149,6 +158,19 @@ module.exports = function (app) {
         var signupComplete = function(){
             res.redirect("/signup_complete");
         };
+
+        var findUser = function(byGitHubUsername) {
+            var deferred = q.defer();
+            mongoRepository.findOne('users', byGitHubUsername)
+                .then(function (user) {
+                    if (isNewUser(user)) {
+                        deferred.resolve(byGitHubUsername["githubUser.username"]);
+                    } else {
+                        deferred.reject("User alredy exists");
+                    }
+                });
+            return deferred.promise;
+        }
 
         var createUser = function (encUserObj) {
             var deferred = q.defer();
@@ -173,9 +195,14 @@ module.exports = function (app) {
             return deferred.promise;
         };
 
-        encodeUsername(oneselfUsername)
+        var byGitHubUsername = {
+            "githubUser.username": githubUser.username
+        };
+        findUser(byGitHubUsername)
+            .then(encodeUsername)
             .then(createUser)
-            .then(signupComplete);
+            .then(signupComplete)
+            .then().catch(handleError);
     };
 
     passport.serializeUser(function (user, done) {
