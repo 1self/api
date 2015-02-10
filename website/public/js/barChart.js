@@ -391,8 +391,8 @@ charts.plotBarChart = function(divId, events, fromTime, tillTime, units) {
             }
 
             if ("duration" === value_unit) {
-                var str = humanizeDuration(eventValue, {
-                    units: ["hours", "minutes", "seconds", "millisecond"]
+                var str = humanizeDuration(eventValue * 1000, {
+                    units: ["hours", "minutes", "seconds"]
                 })
                 var ind = str.length;
                 if (str.search("milli") > 0 && str.lastIndexOf(',') > 0) {
