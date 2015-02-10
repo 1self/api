@@ -228,11 +228,11 @@ module.exports = function (app) {
                 var deferred = q.defer();
                 setSession(req, user)
                 console.log("SEt session data correctly");
-                deferred.resolve();
+                deferred.resolve(user);
                 return deferred.promise;
             }
 
-            var loginComplete = function () {
+            var loginComplete = function (user) {
                 if (req.session.redirectUrl) {
                     var redirectUrl = req.session.redirectUrl;
                     delete req.session.redirectUrl;
