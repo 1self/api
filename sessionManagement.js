@@ -12,10 +12,17 @@ exports.requiresSession = function (req, res, next) {
         }
     } else {
         req.session.redirectUrl = CONTEXT_URI + req.originalUrl;
-        if ( req.url.split('?')[1] !== undefined) {
+        if (req.url.split('?')[1] !== undefined) {
             res.redirect(CONTEXT_URI + "/signup" + "?" + req.url.split('?')[1]);
         } else {
             res.redirect(CONTEXT_URI + "/signup");
         }
     }
+};
+
+exports.setSession = function (req, user) {
+    req.session.username = user.username;
+    req.session.encodedUsername = user.encodedUsername;
+    req.session.githubUsername = user.githubUser.username;
+    req.session.avatarUrl = user.githubUser._json.avatar_url;
 };
