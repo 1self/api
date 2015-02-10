@@ -2,8 +2,8 @@ window.qd.plotActiveEvents = function () {
     setTimeout(function () {
         $('#active-event-history').empty();
         var convertSecondsToMinutes = function (data) {
-            return data.map(function (d) {
-                return d.value / 60;
+            return _.each(data, function (d) {
+                d.value = d.value / 60;
             });
         };
         var data = convertSecondsToMinutes(window.qd.activeEvents);
