@@ -62,25 +62,28 @@ module.exports = function (app) {
 
         // TODO encapsulate following logic into new intent manager
         // Store the intent into session if intent is provided and redirect to /auth/github
-        if(!(_.isEmpty(req.query.intent))){
+        if (!(_.isEmpty(req.query.intent))) {
             req.session.intent = req.query.intent;
-            console.log("Setting up session 111");
             req.session.oneselfUsername = req.query.oneselfUsername;
-            res.redirect("/auth/github");
-            console.log("Session username is 111", req.session.oneselfUsername);
+            if (req.query.intent == "website_signup") {
+                res.redirect("/auth/github");
+            } else if (req.query.intent === "login") {
+                res.redirect("/auth/github");
+            }
         } else {
             res.render('signup');
-        };
+        }
+        ;
 
     });
 
-    app.get("/signup_complete", function(req, res){
+    app.get("/signup_complete", function (req, res) {
         var intent = req.session.intent;
         if (intent === "website_signup") {
             //res.render("signup_complete");
             res.redirect("http://www.1self.co/confirmation.html");
         }
-        else{
+        else {
             res.redirect("comment_url");
         }
     });
@@ -91,8 +94,8 @@ module.exports = function (app) {
 
     var isStreamAlreadyLinkedToUser = function (streamid, user) {
         return _.where(user.streams, {
-            "streamid": streamid
-        }).length > 0;
+                "streamid": streamid
+            }).length > 0;
     };
 
     var getStreamsForUser = function (oneselfUsername) {
@@ -895,7 +898,7 @@ module.exports = function (app) {
         }).map(function (stream) {
             var callbackUrl = stream.callbackUrl.replace("{{streamId}}", stream.streamid)
                 .replace("{{latestEventSyncDate}}", stream.latestEventSyncDate.toISOString());
-            return { callbackUrl: callbackUrl, writeToken: stream.writeToken};
+            return {callbackUrl: callbackUrl, writeToken: stream.writeToken};
         }).value();
         console.log("callback Urls : " + JSON.stringify(callbackUrls));
         deferred.resolve(callbackUrls);
