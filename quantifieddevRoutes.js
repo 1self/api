@@ -63,16 +63,26 @@ module.exports = function (app) {
         // TODO encapsulate following logic into new intent manager
         // Store the intent into session if intent is provided and redirect to /auth/github
         if (!(_.isEmpty(req.query.intent))) {
-            req.session.intent = req.query.intent;
-            req.session.oneselfUsername = req.query.oneselfUsername;
-            if (req.query.intent == "website_signup") {
-                res.redirect("/auth/github");
-            } else if (req.query.intent === "login") {
+            req.session.intent = {};
+            req.session.intent.name = req.query.intent;
+            req.session.intent.data = {url: req.query.redirectUrl};
+            req.session.oneselfUsername = "user123";// req.query.oneselfUsername;
+
+            if (req.session.intent.name == "website_signup") {
                 res.redirect("/auth/github");
             }
+            else  {
+                res.render('signup');
+            }
+
         } else {
             res.render('signup');
         };
+    });
+
+    app.post("/captureUsername", function(req, res){
+        req.session.oneselfUsername = req.body.username;
+        res.redirect("/auth/github");
     });
 
     app.get("/signup_complete", function (req, res) {

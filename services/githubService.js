@@ -1,4 +1,3 @@
-var CONTEXT_URI = process.env.CONTEXT_URI;
 var request = require("request");
 var q = require('q');
 

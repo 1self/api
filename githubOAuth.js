@@ -9,18 +9,55 @@ var encoder = require("./encoder");
 
 var SignupModule = require("./modules/signupModule.js");
 var LoginModule = require("./modules/loginModule.js");
+var IntentManager = require('./modules/intentManager.js');
+var mongoRepository = require('./mongoRepository.js');
 
 module.exports = function (app) {
 
     var handleGithubCallbackWithIntent = function (req, res) {
-        // TODO Move it to intent manager
-        var intent = req.session.intent;
-        if (intent === "website_signup") {
-            SignupModule.signup(req, res);
-        }
-        else {
-            LoginModule.login(req, res);
-        }
+
+        var isNewUser = function (user) {
+            return !user;
+        };
+
+        var checkUserPresent = function (byOneSelfUsername) {
+            var deferred = q.defer();
+            mongoRepository.findOne('users', byOneSelfUsername)
+                .then(function (user) {
+                    if (isNewUser(user)) {
+                        deferred.resolve(false);
+                    } else {
+                        deferred.resolve(true);
+                    }
+
+                });
+            return deferred.promise;
+        };
+
+        var byOneSelfUsername = {
+            "username": req.session.oneselfUsername
+        };
+
+        var doAuth = function (status) {
+            var deferred = q.defer();
+            if (status) {
+                LoginModule.login(req, res).then(function () {
+                    deferred.resolve();
+                });
+            }
+            else {
+                SignupModule.signup(req, res).then(function () {
+                    deferred.resolve();
+                });
+            }
+            return deferred.promise;
+        };
+
+        checkUserPresent(byOneSelfUsername)
+            .then(doAuth)
+            .then(function () {
+                IntentManager.process(req.session.intent, req, res);
+            })
     };
 
     passport.serializeUser(function (user, done) {

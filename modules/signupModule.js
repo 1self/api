@@ -1,16 +1,19 @@
 var request = require("request");
 var passport = require('passport');
 var q = require('q');
-var CONTEXT_URI = process.env.CONTEXT_URI;
 var mongoRepository = require('../mongoRepository.js');
 var encoder = require("../encoder");
 var githubService = require("../services/githubService.js");
+var CreditUserSignup = require('./creditUserSignup.js')
 
 var SignupModule = function () {
 };
 
 SignupModule.prototype.signup = function (req, res) {
+    var deferredOuter = q.defer();
+
     var githubUser = req.user.profile;
+
 
     var byGitHubUsername = {
         "githubUser.username": githubUser.username
@@ -52,8 +55,7 @@ SignupModule.prototype.signup = function (req, res) {
         };
 
         var signupComplete = function () {
-            console.log("5\n")
-            res.redirect("/signup_complete");
+            deferredOuter.resolve();
         };
 
         var checkIfNewUser = function (user) {
@@ -66,7 +68,22 @@ SignupModule.prototype.signup = function (req, res) {
                 deferred.reject("User already exists")
             }
             return deferred.promise;
-        }
+        };
+
+        var insertUser = function (githubUserRecord) {
+            var deferred = q.defer();
+            mongoRepository.insert('users', githubUserRecord);
+            deferred.resolve();
+            return deferred.resolve;
+        };
+
+        var creditUserSignup = function () {
+            var deferred = q.defer();
+            CreditUserSignup.creditUserSignUpToApp(oneselfUsername, req.session.redirectUrl).then(function () {
+                deferred.resolve();
+            });
+            return deferred.promise;
+        };
 
         var createUser = function (encUserObj) {
             var deferred = q.defer();
@@ -86,10 +103,13 @@ SignupModule.prototype.signup = function (req, res) {
                 }, function (err) {
                     console.log("Error occurred", err);
                     res.status(500).send("Could not fetch email addresses for user.");
-                }).then(function (githubUserRecord) {
-                    mongoRepository.insert('users', githubUserRecord);
-                    deferred.resolve();
                 })
+                .then(insertUser)
+                .then(creditUserSignup)
+                .then(function () {
+                    deferred.resolve();
+                });
+
             return deferred.promise;
         };
 
@@ -102,6 +122,8 @@ SignupModule.prototype.signup = function (req, res) {
     }
 
     doSignup();
+
+    return deferredOuter.promise;
 }
 
 module.exports = new SignupModule();

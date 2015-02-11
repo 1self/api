@@ -10,6 +10,8 @@ var LoginModule = function () {
 };
 
 LoginModule.prototype.login = function (req, res) {
+    var deferred = q.defer();
+
     var githubUser = req.user.profile;
 
     var byGitHubUsername = {
@@ -34,38 +36,40 @@ LoginModule.prototype.login = function (req, res) {
         var setSessionData = function (user) {
             var deferred = q.defer();
             sessionManager.setSession(req, user)
-            console.log("SEt session data correctly");
             deferred.resolve(user);
             return deferred.promise;
         }
 
-        var loginComplete = function (user) {
-            if (req.session.redirectUrl) {
-                var redirectUrl = req.session.redirectUrl;
-                delete req.session.redirectUrl;
-                if (redirectUrl.match("/v1/streams")) {
-                    var tokenisedUrl = redirectUrl.split("/");
-                    tokenisedUrl[2] = "users";
-                    tokenisedUrl[3] = req.session.username;
-                    redirectUrl = tokenisedUrl.join("/");
-                }
-                res.cookie('_eun', req.session.encodedUsername);
-                res.redirect(redirectUrl);
-            } else {
-                redirect(user, "/dashboard");
-            }
-        };
+        //
+        //var loginComplete = function (user) {
+        //    if (req.session.redirectUrl) {
+        //        var redirectUrl = req.session.redirectUrl;
+        //        delete req.session.redirectUrl;
+        //        if (redirectUrl.match("/v1/streams")) {
+        //            var tokenisedUrl = redirectUrl.split("/");
+        //            tokenisedUrl[2] = "users";
+        //            tokenisedUrl[3] = req.session.username;
+        //            redirectUrl = tokenisedUrl.join("/");
+        //        }
+        //        res.cookie('_eun', req.session.encodedUsername);
+        //        res.redirect(redirectUrl);
+        //    } else {
+        //        redirect(user, "/dashboard");
+        //    }
+        //};
 
         findUser(byGitHubUsername)
             .then(setSessionData)
             .then(function () {
-                loginComplete();
+                deferred.resolve();
             }).catch(function (error) {
                 console.log("Error occurred", error);
             })
     }
 
     doLogin();
+
+    return deferred.promise;
 };
 
 
