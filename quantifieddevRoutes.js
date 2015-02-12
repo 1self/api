@@ -50,6 +50,8 @@ module.exports = function (app) {
             res.status(404).send("*** This environment does not support this feature ***");
             return;
         }
+        req.session.auth = 'github.signup';
+        
         // Always redirect to dashboard when user hits /signup
         if (req.query.redirectUrl) {
             req.session.redirectUrl = req.query.redirectUrl;

@@ -75,6 +75,8 @@ module.exports = function (app) {
             "githubUser.username": githubUser.username
         };
 
+        console.log(byGitHubUsername);
+
         checkUserPresent(byGitHubUsername)
             .then(validateUserAction)
             .then(doAuth)
