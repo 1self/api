@@ -67,10 +67,13 @@ module.exports = function (app) {
             req.session.intent.name = req.query.intent;
             req.session.intent.data = {url: req.query.redirectUrl};
             req.session.oneselfUsername = req.query.oneselfUsername;
-            req.session.auth = 'github.signup'; 
+            req.session.auth = 'github.signup';
 
             if (req.session.intent.name == "website_signup") {
                 res.redirect("/auth/github");
+            }
+            else if (req.session.intent.name == "login") {
+                res.redirect('/login');
             }
             else  {
                 res.render('signup');
@@ -82,41 +85,17 @@ module.exports = function (app) {
     });
 
     app.get("/login", function (req, res) {
-        if ("sandbox" == process.env.NODE_ENV) {
-            res.status(404).send("*** This environment does not support this feature ***");
-            return;
-        }
-        // Always redirect to dashboard when user hits /signup
-        if (req.query.redirectUrl) {
-            req.session.redirectUrl = req.query.redirectUrl;
-        } else {
-            req.session.redirectUrl = "/dashboard";
-        }
-        if (!(_.isEmpty(req.param('streamId')))) {
-            req.session.redirectUrl = "/dashboard" + "?streamId=" + req.param('streamId');
-        }
-
         req.session.auth = 'github.login';
         console.log(req.session.auth);
+        res.render('login', {
+            "username": req.session.oneselfUsername
+        });
+    });
 
-        // TODO encapsulate following logic into new intent manager
-        // Store the intent into session if intent is provided and redirect to /auth/github
-        if (!(_.isEmpty(req.query.intent))) {
-            req.session.intent = {};
-            req.session.intent.name = req.query.intent;
-            req.session.intent.data = {url: req.query.redirectUrl};
-
-
-            if (req.session.intent.name == "website_signup") {
-                res.redirect("/auth/github");
-            }
-            else  {
-                res.render('login');
-            }
-
-        } else {
-            res.render('login');
-        };
+    app.post('/login', function(req, res){
+        req.session.oneselfUsername = req.body.username;
+        // Redirect to oauth provider from here.
+        res.redirect('/auth/github');
     });
 
     app.get("/unknownLogin", function (req, res) {

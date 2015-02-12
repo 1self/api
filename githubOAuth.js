@@ -17,11 +17,11 @@ module.exports = function (app) {
 
     var handleGithubCallbackWithIntent = function (req, res) {
 
-        var isNewUser = function (user) {
+        var isEmpty = function (user) {
             return !user;
         };
 
-        var setSessionData = function(user){
+        var setSessionData = function (user) {
             console.log("USER HERE IS", JSON.stringify(user));
             var deferred = q.defer();
             sessionManager.setSession(req, user);
@@ -38,32 +38,26 @@ module.exports = function (app) {
             return deferred.promise;
         };
 
-        var byOneSelfUsername = {
-            "username": req.session.oneselfUsername
+        var validateUserAction = function (user) {
+            var deferred = q.defer();
+            if (req.session.auth === 'github.login' && isEmpty(user)) {
+                deferred.reject("invalid_username")
+            } else {
+                deferred.resolve(user);
+            }
+            return deferred.promise;
         };
 
         var doAuth = function (user) {
             var deferred = q.defer();
-            console.log("user is " + user);
 
-            // detect whether someone is trying to login 
-            // before they have joined
-
-            console.log("testing user");
-            console.log(req.session.auth);
-            console.log((byOneSelfUsername.username === undefined || byOneSelfUsername.username === null));
-            if(req.session.auth === 'github.login' && (byOneSelfUsername.username === undefined || byOneSelfUsername.username === null)){
-                console.log('user tried to login with unknown github');
-                res.redirect('/unknownLogin');
-            }
-
-            if (isNewUser(user)) {
+            if (isEmpty(user)) {
                 console.log("auth process is signup");
                 SignupModule.signup(req, res).then(function (userRecord) {
                     deferred.resolve(userRecord);
                 });
             }
-            else {    
+            else {
                 console.log("auth process is login");
                 LoginModule.login(req, res).then(function () {
                     deferred.resolve(user);
@@ -72,14 +66,23 @@ module.exports = function (app) {
             return deferred.promise;
         };
 
+        var byOneSelfUsername = {
+            "username": req.session.oneselfUsername
+        };
+
         checkUserPresent(byOneSelfUsername)
+            .then(validateUserAction)
             .then(doAuth)
             .then(setSessionData)
             .then(function () {
                 IntentManager.process(req.session.intent, req, res);
-            }).catch(function(error){
-                console.log("Error occurred", error);
-                res.send(400, "Error occurred");
+            }).catch(function (error) {
+                if (error === "invalid_username") {
+                    res.redirect('/unknownLogin');
+                } else {
+                    console.log("Error occurred", error);
+                    res.send(400, "Error occurred");
+                }
             })
     };
 
