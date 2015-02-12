@@ -82,12 +82,8 @@ require('./quantifieddevRoutes')(app);
 // Please keep it below inclusion of quantifieddevRoutes file.
 app.use(opbeat.middleware.express(client));
 
-var convertMillisToMinutes = function (milliseconds) {
-    return Math.round(milliseconds / (1000 * 60) * 100) / 100;
-};
-
-var convertMillisToSecs = function (milliseconds) {
-    return Math.round(milliseconds / (1000) * 100) / 100;
+var convertSecsToMinutes = function (seconds) {
+    return Math.round(seconds / 60 * 100) / 100;
 };
 
 var validEncodedUsername = function (encodedUsername) {
@@ -693,8 +689,8 @@ var getIdeActivityDurationForCompare = function (params) {
                 if (result[date].restOfTheWorldIdeActivityDuration === undefined) {
                     result[date].restOfTheWorldIdeActivityDuration = 0;
                 }
-                ideActivityDurationForCompare[date].my = convertMillisToMinutes(result[date].myIdeActivityDuration);
-                var durationInMins = convertMillisToMinutes(result[date].restOfTheWorldIdeActivityDuration);
+                ideActivityDurationForCompare[date].my = convertSecsToMinutes(result[date].myIdeActivityDuration);
+                var durationInMins = convertSecsToMinutes(result[date].restOfTheWorldIdeActivityDuration);
                 ideActivityDurationForCompare[date].avg = durationInMins / (totalUsers - 1);
             }
         }
@@ -781,7 +777,7 @@ var correlateGithubPushesAndIDEActivity = function (streams, firstEvent, secondE
             "data": getQueryForStreamIdActionTagAndObjectTag(streamids, firstEvent),
             "filterSpec": {},
             "projectionSpec": {
-                "resultField": "activeTimeInMillis"
+                "resultField": "activeTimeInSecs"
             }
         }
     };
@@ -803,13 +799,13 @@ var correlateGithubPushesAndIDEActivity = function (streams, firstEvent, secondE
             deferred.resolve([]);
         } else {
             for (var date in result) {
-                if (result[date].activeTimeInMillis === undefined) {
-                    result[date].activeTimeInMillis = 0;
+                if (result[date].activeTimeInSecs === undefined) {
+                    result[date].activeTimeInSecs = 0;
                 }
                 if (result[date].githubPushEventCount === undefined) {
                     result[date].githubPushEventCount = 0;
                 }
-                result[date].activeTimeInMinutes = convertMillisToMinutes(result[date].activeTimeInMillis);
+                result[date].activeTimeInMinutes = convertSecsToMinutes(result[date].activeTimeInSecs);
                 result[date].date = date;
             }
             deferred.resolve(result);
@@ -903,7 +899,7 @@ app.post('/v1/streams', function (req, res) {
         .then(function () {
             return util.createV1Stream(appId, callbackUrl);
         })
-        .then(function(data){
+        .then(function (data) {
             delete data._id;
             delete data.appId;
             res.send(data);
@@ -913,7 +909,7 @@ app.post('/v1/streams', function (req, res) {
         });
 });
 
-var getEventsForStreams = function (streams, fromDate, toDate) {
+var getEventsForStreams = function (streams, skipCount, limitCount) {
     var deferred = q.defer();
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
@@ -923,20 +919,19 @@ var getEventsForStreams = function (streams, fromDate, toDate) {
             "$operator": {
                 "in": streamids
             }
-        },
-        "payload.eventDateTime": {
-            "$operator": {
-                ">": {
-                    "$date": fromDate
-                },
-                "<": {
-                    "$date": toDate
-                }
-            }
         }
     };
+    var orderSpec = {
+        "payload.eventDateTime": -1
+    };
+    var options = {
+        "skip": skipCount,
+        "limit": limitCount
+    };
     var query = {
-        'filterSpec': JSON.stringify(filterSpec)
+        'filterSpec': JSON.stringify(filterSpec),
+        'orderSpec': JSON.stringify(orderSpec),
+        'options': JSON.stringify(options)
     };
     platformService.filter(query)
         .then(function (result) {
@@ -947,21 +942,17 @@ var getEventsForStreams = function (streams, fromDate, toDate) {
     return deferred.promise;
 };
 
-
-app.get('/event', function (req, res) {
-    const numberOfDaysToReport = 15;
-    var page_number = req.query.page || 1;
-    
-    var fromDate = moment.utc().startOf('day').subtract(numberOfDaysToReport * page_number, 'days').format();
-    var toDate = moment.utc().endOf('day').subtract(numberOfDaysToReport * (page_number - 1) , 'days').format();
+app.get('/v1/users/:username/events', function (req, res) {
+    var skipCount = parseInt(req.query.skip) || 0;
+    var limitCount = parseInt(req.query.limit) || 50; // by default show only 50 events per page
 
     var encodedUsername = req.headers.authorization;
     validEncodedUsername(encodedUsername)
         .then(function () {
             return getStreamIdForUsername(encodedUsername, req.query.forUsername);
         })
-        .then(function(streams){
-            return getEventsForStreams(streams, fromDate, toDate);
+        .then(function (streams) {
+            return getEventsForStreams(streams, skipCount, limitCount);
         })
         .then(function (response) {
             res.send(response);
@@ -1011,7 +1002,7 @@ var saveBatchEvents = function (myEvents, stream) {
             var latestEventDate = moment(formatEventDateTime(myEvents[myEvents.length - 1].dateTime)).toDate();
             return updateLatestEventSyncDate(stream.streamid, latestEventDate);
         })
-        .then(function(){
+        .then(function () {
             deferred.resolve(responseBody)
         }, function (err) {
             deferred.reject(err);
@@ -1019,7 +1010,7 @@ var saveBatchEvents = function (myEvents, stream) {
     return deferred.promise;
 };
 
-var updateLatestEventSyncDate = function(streamId, latestEventDate) {
+var updateLatestEventSyncDate = function (streamId, latestEventDate) {
     var deferred = q.defer();
 
     var query = {"streamid": streamId};
@@ -1539,12 +1530,12 @@ app.get("/v1/helptext/:topic", function (req, res) {
 
 app.get('/v1/app', function (req, res) {
     //dont let customers access this
-    if(!req.query.token || process.env.DEV_TOKEN !== req.query.token){
+    if (!req.query.token || process.env.DEV_TOKEN !== req.query.token) {
         res.send(400, "I am sorry :( You can't access this page.");
     }
 
     mongoRespository.find('registeredApps', {})
-        .then(function(data){
+        .then(function (data) {
             res.send(data);
         });
 });
