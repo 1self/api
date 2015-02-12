@@ -18,10 +18,10 @@ LoginModule.prototype.login = function (req, res) {
         "githubUser.username": githubUser.username
     };
 
-    var redirect = function (user, url) {
-        console.log("And CONTEXT URI IS ->", CONTEXT_URI);
-        res.redirect(CONTEXT_URI + url + "?username=" + user.username);
-    };
+    //var redirect = function (user, url) {
+    //    console.log("And CONTEXT URI IS ->", CONTEXT_URI);
+    //    res.redirect(CONTEXT_URI + url + "?username=" + user.username);
+    //};
 
     var findUser = function (byGitHubUsername) {
         var deferred = q.defer();
@@ -71,6 +71,5 @@ LoginModule.prototype.login = function (req, res) {
 
     return deferred.promise;
 };
-
 
 module.exports = new LoginModule();

@@ -6,6 +6,7 @@ var GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 var GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 var CONTEXT_URI = process.env.CONTEXT_URI;
 var encoder = require("./encoder");
+var sessionManager = require("./sessionManagement");
 
 var SignupModule = require("./modules/signupModule.js");
 var LoginModule = require("./modules/loginModule.js");
@@ -20,16 +21,19 @@ module.exports = function (app) {
             return !user;
         };
 
+        var setSessionData = function(user){
+            console.log("USER HERE IS", JSON.stringify(user));
+            var deferred = q.defer();
+            sessionManager.setSession(req, user);
+            deferred.resolve();
+            return deferred.promise;
+        }
+
         var checkUserPresent = function (byOneSelfUsername) {
             var deferred = q.defer();
             mongoRepository.findOne('users', byOneSelfUsername)
                 .then(function (user) {
-                    if (isNewUser(user)) {
-                        deferred.resolve(false);
-                    } else {
-                        deferred.resolve(true);
-                    }
-
+                    deferred.resolve(user);
                 });
             return deferred.promise;
         };
@@ -38,16 +42,16 @@ module.exports = function (app) {
             "username": req.session.oneselfUsername
         };
 
-        var doAuth = function (status) {
+        var doAuth = function (user) {
             var deferred = q.defer();
-            if (status) {
-                LoginModule.login(req, res).then(function () {
-                    deferred.resolve();
+            if (isNewUser(user)) {
+                SignupModule.signup(req, res).then(function (userRecord) {
+                    deferred.resolve(userRecord);
                 });
             }
             else {
-                SignupModule.signup(req, res).then(function () {
-                    deferred.resolve();
+                LoginModule.login(req, res).then(function () {
+                    deferred.resolve(user);
                 });
             }
             return deferred.promise;
@@ -55,8 +59,12 @@ module.exports = function (app) {
 
         checkUserPresent(byOneSelfUsername)
             .then(doAuth)
+            .then(setSessionData)
             .then(function () {
                 IntentManager.process(req.session.intent, req, res);
+            }).catch(function(error){
+                console.log("Error occurred", error);
+                res.send(400, "Error occurred");
             })
     };
 
