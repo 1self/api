@@ -53,6 +53,7 @@ module.exports = function (app) {
         // Always redirect to dashboard when user hits /signup
         if (req.query.redirectUrl) {
             req.session.redirectUrl = req.query.redirectUrl;
+            console.log('redirect url captured: ' + req.session.redirectUrl)
         } else {
             req.session.redirectUrl = "/dashboard";
         }

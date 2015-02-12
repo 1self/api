@@ -237,8 +237,10 @@ $(document).ready(function () {
         if (window.parent !== window) {
             var parentWindow = window.parent;
             var msg = {
+                msgType: 'auth',
                 loginUrl: oneselfAppUrl + "/signup",
-                oneselfAppUrl: oneselfAppUrl
+                oneselfAppUrl: oneselfAppUrl,
+                intent: 'chart.comment'
             };
             parentWindow.postMessage(msg, "*");
         } else {
