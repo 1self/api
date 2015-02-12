@@ -68,48 +68,23 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                <h2 class="header-text">Signup</h2>
-            </div>
-            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                <h6 class="pull-right signup-details step-heading">Step 1 of 2</h6>
-            </div>
-        </div>
-        <div class="row margin-top-five">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <span class="signup-details signup-stpe2-label">Pick a username, so that others can find you</span>
+                <h2 class="header-text">Login</h2>
             </div>
         </div>
         <form class="form-horizontal well signup-form" name="username-form" action="/captureUsername" method="post">
             <div class="row margin-top-five">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <input class="form-control" name="username" type="text" required value="{{ username}}">
-                    {% if error %}
-                    <span class="error custom-error">{{ error }}</span>
-                    {% endif %}
-
-                </div>
-            </div>
-
-            <div class="row margin-top-five">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <!--<a class="btn btn-lg signup-button" id="signup_with_github">Signup with GitHub</a>-->
-                    <button class="btn btn-lg signup-button" type="submit">Signup with GitHub</button>
+                    <button class="btn btn-lg signup-button" type="submit">Login with GitHub</button>
                 </div>
             </div>
         </form>
         <div class="row login-link-container">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <span class="signup-details">Already have an account?</span>
-                <a id="login_with_github">Log in</a>
+                <span class="signup-details">Don't have an account?</span>
+                <a id="signup_with_github">Join 1self</a>
             </div>
         </div>
-        <div class="row signup-message">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <span class="signup-details">We'll use your GitHub email address to talk to you when important things happen. We'll never share it or use it to spam you.</span>
-            </div>
-        </div>
-
-
     </div>
 </div>
 
@@ -118,8 +93,8 @@
 
     $(document).ready(function () {
         $("#signup_with_github").click(function () {
-            ga('send', 'event', 'signup', 'signup_with_github');
-            login();
+            ga('send', 'event', 'login switch to signup', 'signup_with_github');
+            window.location.href = "/signup";
         })
         $("#login_with_github").click(function () {
             ga('send', 'event', 'login', 'login_with_github');
