@@ -44,12 +44,27 @@ module.exports = function (app) {
 
         var doAuth = function (user) {
             var deferred = q.defer();
+            console.log("user is " + user);
+
+            // detect whether someone is trying to login 
+            // before they have joined
+
+            console.log("testing user");
+            console.log(req.session.auth);
+            console.log((byOneSelfUsername.username === undefined || byOneSelfUsername.username === null));
+            if(req.session.auth === 'github.login' && (byOneSelfUsername.username === undefined || byOneSelfUsername.username === null)){
+                console.log('user tried to login with unknown github');
+                res.redirect('/unknownLogin');
+            }
+
             if (isNewUser(user)) {
+                console.log("auth process is signup");
                 SignupModule.signup(req, res).then(function (userRecord) {
                     deferred.resolve(userRecord);
                 });
             }
-            else {
+            else {    
+                console.log("auth process is login");
                 LoginModule.login(req, res).then(function () {
                     deferred.resolve(user);
                 });
