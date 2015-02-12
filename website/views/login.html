@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>1self - Live smarter</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1">
+    <meta name="description" content="1self signup"/>
+    <meta name="keywords" content="1self Quantified Dev Development QuantifiedSelf Quantified Self"/>
+    <meta name="author" content="1self"/>
+    <link rel="shortcut icon" href="/img/fav.ico">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/signup.css" rel="stylesheet">
+    <link href="/css/animate.css" rel="stylesheet">
+    <link href="/fonts/font-awesome.css" rel="stylesheet">
+    <script src="js/jquery.js"></script>
+    <script src="js/jquery-ui-v1.10.3.js"></script>
+
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                    m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+        ga('create', 'UA-49828181-1', 'quantifieddev.org');
+        ga('send', 'pageview');
+    </script>
+
+    <script>
+        // Always redirect to 1self.co from quantifieddev domain
+        if (window.location.href.match(/staging.quantifieddev.org/) !== null) {
+            // For staging
+            window.location.replace("https://app-staging.1self.co" + window.location.search);
+        } else if (window.location.href.match(/quantifieddev.org/) !== null) {
+            // For production
+            window.location.replace("https://app.1self.co" + window.location.search);
+        }
+
+        function login() {
+            if (inIframe()) {
+                window.open("/auth/github", "_blank");
+            } else {
+                window.location.href = "/auth/github";
+            }
+        }
+
+        function inIframe() {
+            try {
+                return window.self !== window.top;
+            } catch (e) {
+                return true;
+            }
+        }
+
+    </script>
+
+</head>
+<body class="animated fadeInDown">
+<div class="top-bar" style="background: #373737">
+    <a href="http://www.1self.co" target="_blank" class="logo"><img src="/img/logo.png"/></a>
+</div>
+<div class="jumbotron white-background">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                <h2 class="header-text">Signup</h2>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                <h6 class="pull-right signup-details step-heading">Step 1 of 2</h6>
+            </div>
+        </div>
+        <div class="row margin-top-five">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <span class="signup-details signup-stpe2-label">Pick a username, so that others can find you</span>
+            </div>
+        </div>
+        <form class="form-horizontal well signup-form" name="username-form" action="/captureUsername" method="post">
+            <div class="row margin-top-five">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <input class="form-control" name="username" type="text" required value="{{ username}}">
+                    {% if error %}
+                    <span class="error custom-error">{{ error }}</span>
+                    {% endif %}
+
+                </div>
+            </div>
+
+            <div class="row margin-top-five">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <!--<a class="btn btn-lg signup-button" id="signup_with_github">Signup with GitHub</a>-->
+                    <button class="btn btn-lg signup-button" type="submit">Signup with GitHub</button>
+                </div>
+            </div>
+        </form>
+        <div class="row login-link-container">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <span class="signup-details">Already have an account?</span>
+                <a id="login_with_github">Log in</a>
+            </div>
+        </div>
+        <div class="row signup-message">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <span class="signup-details">We'll use your GitHub email address to talk to you when important things happen. We'll never share it or use it to spam you.</span>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+<script>
+
+    $(document).ready(function () {
+        $("#signup_with_github").click(function () {
+            ga('send', 'event', 'signup', 'signup_with_github');
+            login();
+        })
+        $("#login_with_github").click(function () {
+            ga('send', 'event', 'login', 'login_with_github');
+            login();
+        })
+    });
+
+</script>
+
+</body>
+</html>

@@ -80,6 +80,41 @@ module.exports = function (app) {
         };
     });
 
+    app.get("/login", function (req, res) {
+        if ("sandbox" == process.env.NODE_ENV) {
+            res.status(404).send("*** This environment does not support this feature ***");
+            return;
+        }
+        // Always redirect to dashboard when user hits /signup
+        if (req.query.redirectUrl) {
+            req.session.redirectUrl = req.query.redirectUrl;
+        } else {
+            req.session.redirectUrl = "/dashboard";
+        }
+        if (!(_.isEmpty(req.param('streamId')))) {
+            req.session.redirectUrl = "/dashboard" + "?streamId=" + req.param('streamId');
+        }
+
+        // TODO encapsulate following logic into new intent manager
+        // Store the intent into session if intent is provided and redirect to /auth/github
+        if (!(_.isEmpty(req.query.intent))) {
+            req.session.intent = {};
+            req.session.intent.name = req.query.intent;
+            req.session.intent.data = {url: req.query.redirectUrl};
+            req.session.oneselfUsername = req.query.oneselfUsername;
+
+            if (req.session.intent.name == "website_signup") {
+                res.redirect("/auth/github");
+            }
+            else  {
+                res.render('login');
+            }
+
+        } else {
+            res.render('login');
+        };
+    });
+
     app.post("/captureUsername", function(req, res){
         req.session.oneselfUsername = req.body.username;
         res.redirect("/auth/github");
