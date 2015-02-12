@@ -11,9 +11,7 @@ var SignupModule = function () {
 
 SignupModule.prototype.signup = function (req, res) {
     var deferredOuter = q.defer();
-
     var githubUser = req.user.profile;
-
 
     var byGitHubUsername = {
         "githubUser.username": githubUser.username
@@ -54,8 +52,8 @@ SignupModule.prototype.signup = function (req, res) {
             return deferred.promise;
         };
 
-        var signupComplete = function () {
-            deferredOuter.resolve();
+        var signupComplete = function (userRecord) {
+            deferredOuter.resolve(userRecord);
         };
 
         var checkIfNewUser = function (user) {
@@ -70,17 +68,17 @@ SignupModule.prototype.signup = function (req, res) {
             return deferred.promise;
         };
 
-        var insertUser = function (githubUserRecord) {
+        var insertUser = function (userRecord) {
             var deferred = q.defer();
-            mongoRepository.insert('users', githubUserRecord);
-            deferred.resolve();
-            return deferred.resolve;
+            mongoRepository.insert('users', userRecord);
+            deferred.resolve(userRecord);
+            return deferred.promise;
         };
 
-        var creditUserSignup = function () {
+        var creditUserSignup = function (userRecord) {
             var deferred = q.defer();
-            CreditUserSignup.creditUserSignUpToApp(oneselfUsername, req.session.redirectUrl).then(function () {
-                deferred.resolve();
+            CreditUserSignup.creditUserSignUpToApp(userRecord.oneselfUsername, req.session.redirectUrl).then(function () {
+                deferred.resolve(userRecord);
             });
             return deferred.promise;
         };
@@ -93,22 +91,17 @@ SignupModule.prototype.signup = function (req, res) {
                     for (var i in userEmails) {
                         githubUser.emails.push(userEmails[i]);
                     }
-                    return {
+                    var userEntry = {
                         githubUser: githubUser,
                         registeredOn: new Date(),
                         username: oneselfUsername,
                         encodedUsername: encUserObj.encodedUsername,
                         salt: encUserObj.salt
                     };
-                }, function (err) {
-                    console.log("Error occurred", err);
-                    res.status(500).send("Could not fetch email addresses for user.");
+                    deferred.resolve(userEntry);
+                }).catch(function (error) {
+                    deferred.reject(error);
                 })
-                .then(insertUser)
-                .then(creditUserSignup)
-                .then(function () {
-                    deferred.resolve();
-                });
 
             return deferred.promise;
         };
@@ -117,6 +110,8 @@ SignupModule.prototype.signup = function (req, res) {
             .then(checkIfNewUser)
             .then(encodeUsername)
             .then(createUser)
+            .then(insertUser)
+            .then(creditUserSignup)
             .then(signupComplete)
             .catch(handleError);
     }
