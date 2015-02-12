@@ -82,12 +82,8 @@ require('./quantifieddevRoutes')(app);
 // Please keep it below inclusion of quantifieddevRoutes file.
 app.use(opbeat.middleware.express(client));
 
-var convertMillisToMinutes = function (milliseconds) {
-    return Math.round(milliseconds / (1000 * 60) * 100) / 100;
-};
-
-var convertMillisToSecs = function (milliseconds) {
-    return Math.round(milliseconds / (1000) * 100) / 100;
+var convertSecsToMinutes = function (seconds) {
+    return Math.round(seconds / 60 * 100) / 100;
 };
 
 var validEncodedUsername = function (encodedUsername) {
@@ -693,8 +689,8 @@ var getIdeActivityDurationForCompare = function (params) {
                 if (result[date].restOfTheWorldIdeActivityDuration === undefined) {
                     result[date].restOfTheWorldIdeActivityDuration = 0;
                 }
-                ideActivityDurationForCompare[date].my = convertMillisToMinutes(result[date].myIdeActivityDuration);
-                var durationInMins = convertMillisToMinutes(result[date].restOfTheWorldIdeActivityDuration);
+                ideActivityDurationForCompare[date].my = convertSecsToMinutes(result[date].myIdeActivityDuration);
+                var durationInMins = convertSecsToMinutes(result[date].restOfTheWorldIdeActivityDuration);
                 ideActivityDurationForCompare[date].avg = durationInMins / (totalUsers - 1);
             }
         }
@@ -781,7 +777,7 @@ var correlateGithubPushesAndIDEActivity = function (streams, firstEvent, secondE
             "data": getQueryForStreamIdActionTagAndObjectTag(streamids, firstEvent),
             "filterSpec": {},
             "projectionSpec": {
-                "resultField": "activeTimeInMillis"
+                "resultField": "activeTimeInSecs"
             }
         }
     };
@@ -803,13 +799,13 @@ var correlateGithubPushesAndIDEActivity = function (streams, firstEvent, secondE
             deferred.resolve([]);
         } else {
             for (var date in result) {
-                if (result[date].activeTimeInMillis === undefined) {
-                    result[date].activeTimeInMillis = 0;
+                if (result[date].activeTimeInSecs === undefined) {
+                    result[date].activeTimeInSecs = 0;
                 }
                 if (result[date].githubPushEventCount === undefined) {
                     result[date].githubPushEventCount = 0;
                 }
-                result[date].activeTimeInMinutes = convertMillisToMinutes(result[date].activeTimeInMillis);
+                result[date].activeTimeInMinutes = convertSecsToMinutes(result[date].activeTimeInSecs);
                 result[date].date = date;
             }
             deferred.resolve(result);
