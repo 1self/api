@@ -86,14 +86,10 @@ module.exports = function (app) {
 
     app.get("/login", function (req, res) {
         req.session.auth = 'github.login';
-        console.log(req.session.auth);
-        res.render('login', {
-            "username": req.session.oneselfUsername
-        });
+        res.render('login');
     });
 
     app.post('/login', function(req, res){
-        req.session.oneselfUsername = req.body.username;
         // Redirect to oauth provider from here.
         res.redirect('/auth/github');
     });

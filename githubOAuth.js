@@ -16,6 +16,7 @@ var mongoRepository = require('./mongoRepository.js');
 module.exports = function (app) {
 
     var handleGithubCallbackWithIntent = function (req, res) {
+        var githubUser = req.user.profile;
 
         var isEmpty = function (user) {
             return !user;
@@ -65,12 +66,16 @@ module.exports = function (app) {
             }
             return deferred.promise;
         };
+        //
+        //var byOneSelfUsername = {
+        //    "username": req.session.oneselfUsername
+        //};
 
-        var byOneSelfUsername = {
-            "username": req.session.oneselfUsername
+        var byGitHubUsername = {
+            "githubUser.username": githubUser.username
         };
 
-        checkUserPresent(byOneSelfUsername)
+        checkUserPresent(byGitHubUsername)
             .then(validateUserAction)
             .then(doAuth)
             .then(setSessionData)
