@@ -25,7 +25,7 @@ module.exports = function (app) {
         var setSessionData = function (user) {
             console.log("USER HERE IS", JSON.stringify(user));
             var deferred = q.defer();
-            sessionManager.setSession(req, user);
+            sessionManager.setSession(req, res, user);
             deferred.resolve();
             return deferred.promise;
         }
@@ -66,10 +66,6 @@ module.exports = function (app) {
             }
             return deferred.promise;
         };
-        //
-        //var byOneSelfUsername = {
-        //    "username": req.session.oneselfUsername
-        //};
 
         var byGitHubUsername = {
             "githubUser.username": githubUser.username
