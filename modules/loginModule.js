@@ -35,12 +35,12 @@ LoginModule.prototype.login = function (req, res) {
     var doLogin = function () {
         var setSessionData = function (user) {
             var deferred = q.defer();
-            sessionManager.setSession(req, user)
+            sessionManager.setSession(req, res, user)
             deferred.resolve(user);
             return deferred.promise;
         }
 
-        //
+
         //var loginComplete = function (user) {
         //    if (req.session.redirectUrl) {
         //        var redirectUrl = req.session.redirectUrl;

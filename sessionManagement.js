@@ -20,9 +20,20 @@ exports.requiresSession = function (req, res, next) {
     }
 };
 
-exports.setSession = function (req, user) {
+exports.setSession = function (req, res, user) {
     req.session.username = user.username;
     req.session.encodedUsername = user.encodedUsername;
     req.session.githubUsername = user.githubUser.username;
     req.session.avatarUrl = user.githubUser._json.avatar_url;
+    res.cookie('_eun', req.session.encodedUsername);
+};
+
+
+exports.resetSession = function(req){
+    req.session.auth = null;
+    req.session.intent = null;
+    req.session.oneselfUsername = null;
+    req.session.username = null;
+    req.session.githubUsername = null;
+    req.session.avatarUrl = null;
 };

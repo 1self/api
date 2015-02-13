@@ -46,6 +46,8 @@ module.exports = function (app) {
     };
 
     app.get("/signup", function (req, res) {
+        sessionManager.resetSession(req);
+
         if ("sandbox" == process.env.NODE_ENV) {
             res.status(404).send("*** This environment does not support this feature ***");
             return;
