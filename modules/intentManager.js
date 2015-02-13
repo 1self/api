@@ -21,7 +21,7 @@ IntentManager.prototype.process = function (intent, req, res) {
 
         console.log("intentName -#-#->", intentName);
         if (intentName === "website_signup") {
-            res.redirect("http://1self.co/confirmation.html");
+            res.redirect("http://www-staging.1self.co/confirmation.html");
         } else if (intentName === "chart.comment") {
             res.redirect(intentData.url);
         } else {
