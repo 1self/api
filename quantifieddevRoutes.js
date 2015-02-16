@@ -72,7 +72,6 @@ module.exports = function (app) {
             req.session.intent.name = req.query.intent;
             req.session.intent.data = {url: req.query.redirectUrl};
             req.session.oneselfUsername = req.query.oneselfUsername;
-            req.session.auth = 'github.signup';
 
             if (req.session.intent.name == "website_signup") {
                 res.redirect("/auth/github");
