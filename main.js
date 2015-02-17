@@ -4,7 +4,6 @@ var url = require('url');
 var swig = require('swig');
 var path = require('path');
 var _ = require("underscore");
-var opbeat = require('opbeat');
 var session = require("express-session");
 var q = require('q');
 var util = require('./util');
@@ -18,13 +17,6 @@ var validateRequest = require("./validateRequest");
 var validator = require('validator');
 var mongoRespository = require('./mongoRepository.js');
 var platformService = require('./platformService.js');
-
-var opbeatOptions = {
-    organization_id: process.env.OPBEAT_ORGANIZATION_ID,
-    app_id: process.env.OPBEAT_APP_ID,
-    secret_token: process.env.OPBEAT_SECRET_TOKEN
-};
-var client = opbeat.createClient(opbeatOptions);
 
 var app = express();
 
@@ -79,8 +71,6 @@ app.all('*', function (req, res, next) {
 
 require('./quantifieddevRoutes')(app);
 
-// Please keep it below inclusion of quantifieddevRoutes file.
-app.use(opbeat.middleware.express(client));
 
 var convertSecsToMinutes = function (seconds) {
     return Math.round(seconds / 60 * 100) / 100;
