@@ -5,6 +5,10 @@ var mongoRepository = require('../mongoRepository.js');
 var encoder = require("../encoder");
 var githubService = require("../services/githubService.js");
 var CreditUserSignup = require('./creditUserSignup.js');
+var MAILCHIMP_API_KEY = process.env.MAILCHIMP_API_KEY;
+var MAILCHIMP_LIST_ID = process.env.MAILCHIMP_LIST_ID;
+
+var _ = require('underscore');
 
 var SignupModule = function () {
 };
@@ -12,7 +16,6 @@ var SignupModule = function () {
 SignupModule.prototype.signup = function (req, res) {
     var deferredOuter = q.defer();
     var githubUser = req.user.profile;
-
 
     //var redirect = function (user, url) {
     //    console.log("And CONTEXT URI IS ->", CONTEXT_URI);
@@ -57,6 +60,7 @@ SignupModule.prototype.signup = function (req, res) {
             deferredOuter.resolve(userRecord);
         };
 
+
         var checkIfNewUser = function (user) {
             console.log("2\n")
 
@@ -73,6 +77,31 @@ SignupModule.prototype.signup = function (req, res) {
             var deferred = q.defer();
             mongoRepository.insert('users', userRecord);
             deferred.resolve(userRecord);
+            return deferred.promise;
+        };
+
+        var subscribeToMailChimp = function (user) {
+            var deferred = q.defer();
+            var MailChimpAPI = require('mailchimp').MailChimpAPI;
+            var mailChimpAPIKey = MAILCHIMP_API_KEY;
+            var primaryEmailRec = _.filter(user.githubUser.emails, function(rec){ return rec.primary;})
+            try {
+                var api = new MailChimpAPI(mailChimpAPIKey, {version: '2.0'});
+                var data = {
+                    "id": MAILCHIMP_LIST_ID,
+                    "email": {email: primaryEmailRec[0].email},
+                    "double_optin": false
+                };
+                api.lists_subscribe(data, function (err, result) {
+                    if(err){
+                        console.log("Error is", err);
+                    }
+                    deferred.resolve(user);
+                });
+            } catch (error) {
+                console.log("Error occurred", error);
+                deferred.reject(error)
+            }
             return deferred.promise;
         };
 
@@ -116,6 +145,7 @@ SignupModule.prototype.signup = function (req, res) {
             .then(encodeUsername)
             .then(createUser)
             .then(insertUser)
+            .then(subscribeToMailChimp)
             .then(creditUserSignup)
             .then(signupComplete)
             .catch(handleError);

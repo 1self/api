@@ -28,7 +28,6 @@ module.exports = function (app) {
         };
 
         var setSessionData = function (user) {
-            console.log("USER HERE IS", JSON.stringify(user));
             var deferred = q.defer();
             sessionManager.setSession(req, res, user);
             deferred.resolve();
