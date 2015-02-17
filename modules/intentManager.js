@@ -12,19 +12,18 @@ IntentManager.prototype.process = function (intent, req, res) {
         res.redirect(CONTEXT_URI + url + "?username=" + req.session.oneselfUsername);
     };
 
-
     if (_.isEmpty(intent)) {
         res.redirect("/dashboard");
     } else {
         var intentName = intent.name;
         var intentData = intent.data;
-
-
-
         console.log("intentName -#-#->", intentName);
         console.log("intentData -#-#->", intentData);
         if (intentName === "website_signup") {
             res.redirect(intentData.url);
+        }
+        else if (intentName === "website_login"){
+            res.redirect("/dashboard");
         } else if (intentName === "chart.comment") {
             res.redirect(intentData.url);
         } else {

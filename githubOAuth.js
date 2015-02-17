@@ -1,7 +1,8 @@
 var request = require("request");
 var passport = require('passport');
 var githubStrategy = require('passport-github').Strategy;
-var q = require('q');
+var q = require("q");
+var _ = require("underscore");
 var GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 var GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 var CONTEXT_URI = process.env.CONTEXT_URI;
@@ -28,11 +29,11 @@ module.exports = function (app) {
             sessionManager.setSession(req, res, user);
             deferred.resolve();
             return deferred.promise;
-        }
+        };
 
-        var checkUserPresent = function (byOneSelfUsername) {
+        var checkUserPresent = function (userQuery) {
             var deferred = q.defer();
-            mongoRepository.findOne('users', byOneSelfUsername)
+            mongoRepository.findOne('users', userQuery)
                 .then(function (user) {
                     deferred.resolve(user);
                 });
@@ -41,8 +42,8 @@ module.exports = function (app) {
 
         var validateUserAction = function (user) {
             var deferred = q.defer();
-            if (req.session.auth === 'github.login' && isEmpty(user)) {
-                deferred.reject("invalid_username")
+            if ((req.session.auth === 'github.login') && isEmpty(user)) {
+                deferred.reject("invalid_username");
             } else {
                 deferred.resolve(user);
             }
@@ -67,13 +68,17 @@ module.exports = function (app) {
             return deferred.promise;
         };
 
-        var byGitHubUsername = {
+        var userQuery = {
             "githubUser.username": githubUser.username
         };
 
-        console.log(byGitHubUsername);
+        if (!(_.isEmpty(req.session.oneselfUsername))) {
+            userQuery["username"] = req.session.oneselfUsername;
+        };
 
-        checkUserPresent(byGitHubUsername)
+        console.log("User query is ",userQuery);
+
+        checkUserPresent(userQuery)
             .then(validateUserAction)
             .then(doAuth)
             .then(setSessionData)
@@ -86,7 +91,7 @@ module.exports = function (app) {
                     console.log("Error occurred", error);
                     res.send(400, "Error occurred");
                 }
-            })
+            });
     };
 
     passport.serializeUser(function (user, done) {

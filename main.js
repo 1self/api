@@ -984,6 +984,31 @@ var formatEventDateTime = function (datetime) {
     }
 };
 
+var getLatestEventDate = function (streamId) {
+    var deferred = q.defer();
+    var filterSpec = {
+        'payload.streamid': streamId
+    };
+    var orderSpec = {
+        "payload.eventDateTime": -1
+    };
+    var options = {
+        "limit": 1
+    };
+    var query = {
+        'filterSpec': JSON.stringify(filterSpec),
+        'orderSpec': JSON.stringify(orderSpec),
+        'options': JSON.stringify(options)
+    };
+    platformService.filter(query)
+        .then(function (result) {
+            deferred.resolve(result[0].payload.eventDateTime);
+        }, function (err) {
+            deferred.reject(err);
+        });
+    return deferred.promise;
+};
+
 var saveBatchEvents = function (myEvents, stream) {
     var deferred = q.defer();
     var myEventsWithPayload = _.map(myEvents, function (myEvent) {
@@ -999,8 +1024,10 @@ var saveBatchEvents = function (myEvents, stream) {
     platformService.saveBatchEvents(myEventsWithPayload)
         .then(function (result) {
             responseBody = result;
-            var latestEventDate = moment(formatEventDateTime(myEvents[myEvents.length - 1].dateTime)).toDate();
-            return updateLatestEventSyncDate(stream.streamid, latestEventDate);
+            return getLatestEventDate(stream.streamid)
+                .then(function (latestEventDate) {
+                    return updateLatestEventSyncDate(stream.streamid, latestEventDate);
+                });
         })
         .then(function () {
             deferred.resolve(responseBody)
@@ -1012,7 +1039,6 @@ var saveBatchEvents = function (myEvents, stream) {
 
 var updateLatestEventSyncDate = function (streamId, latestEventDate) {
     var deferred = q.defer();
-
     var query = {"streamid": streamId};
     var updateObject = {
         $set: {"latestEventSyncDate": latestEventDate}

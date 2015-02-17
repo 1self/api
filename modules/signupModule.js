@@ -4,7 +4,7 @@ var q = require('q');
 var mongoRepository = require('../mongoRepository.js');
 var encoder = require("../encoder");
 var githubService = require("../services/githubService.js");
-var CreditUserSignup = require('./creditUserSignup.js')
+var CreditUserSignup = require('./creditUserSignup.js');
 
 var SignupModule = function () {
 };
@@ -42,7 +42,11 @@ SignupModule.prototype.signup = function (req, res) {
         var handleError = function (error) {
             console.log("6\n")
             console.log(error);
-            res.send(400, "Invalid request");
+            if (error === "user_exists") {
+                res.send(400, "User already exists for the passed auth details");
+            } else {
+                res.send(400, "Invalid request");
+            }
         };
 
         var encodeUsername = function (oneselfUsername) {
@@ -63,7 +67,7 @@ SignupModule.prototype.signup = function (req, res) {
             if (isNewUser(user)) {
                 deferred.resolve(oneselfUsername);
             } else {
-                deferred.reject("User already exists")
+                deferred.reject("user_exists");
             }
             return deferred.promise;
         };
