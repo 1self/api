@@ -13,9 +13,6 @@ SignupModule.prototype.signup = function (req, res) {
     var deferredOuter = q.defer();
     var githubUser = req.user.profile;
 
-    var byGitHubUsername = {
-        "githubUser.username": githubUser.username
-    };
 
     //var redirect = function (user, url) {
     //    console.log("And CONTEXT URI IS ->", CONTEXT_URI);
@@ -108,6 +105,10 @@ SignupModule.prototype.signup = function (req, res) {
                 })
 
             return deferred.promise;
+        };
+
+        var byGitHubUsername = {
+            "githubUser.username": githubUser.username
         };
 
         findUser(byGitHubUsername)

@@ -53,7 +53,7 @@ module.exports = function (app) {
             return;
         }
         req.session.auth = 'github.signup';
-        
+
         // Always redirect to dashboard when user hits /signup
         if (req.query.redirectUrl) {
             req.session.redirectUrl = req.query.redirectUrl;
@@ -90,13 +90,17 @@ module.exports = function (app) {
 
     app.get("/login", function (req, res) {
         req.session.auth = 'github.login';
+        var authExists = req.query.authExists;
+
         // Make sure to delete any oneselfUsername in session as it's used only while signup
         delete req.session.oneselfUsername;
         if (!(_.isEmpty(req.query.intent))){
             req.session.intent = {};
             req.session.intent.name = req.query.intent;
         }
-        res.render('login');
+        res.render('login', {
+            authExists: authExists
+        });
     });
 
     app.post('/login', function(req, res){
@@ -106,6 +110,10 @@ module.exports = function (app) {
 
     app.get("/unknownLogin", function (req, res) {
         res.render('unknownLogin');
+    });
+
+    app.get("/signupError", function (req, res) {
+        res.render('signupError');
     });
 
     app.post("/captureUsername", function(req, res){

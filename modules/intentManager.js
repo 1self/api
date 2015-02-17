@@ -22,7 +22,7 @@ IntentManager.prototype.process = function (intent, req, res) {
         if (intentName === "website_signup") {
             res.redirect(intentData.url);
         }
-        else if (intentName === "website_login"){
+        else if (intentName === "website_login") {
             res.redirect("/dashboard");
         } else if (intentName === "chart.comment") {
             res.redirect(intentData.url);
@@ -30,7 +30,17 @@ IntentManager.prototype.process = function (intent, req, res) {
             redirect("/dashboard");
         }
     }
-
 };
+
+IntentManager.prototype.handleError = function (errorCode, req, res) {
+    if (errorCode === "invalid_username") {
+        res.redirect('/unknownLogin');
+    } else if (errorCode === "auth_exists_cant_signup") {
+        res.redirect('/signupError');
+    } else {
+        console.log("Error occurred", errorCode);
+        res.send(400, "Error occurred");
+    }
+}
 
 module.exports = new IntentManager();

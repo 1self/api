@@ -23,6 +23,10 @@ module.exports = function (app) {
             return !user;
         };
 
+        var isNotEmpty = function (user) {
+            return !!user;
+        };
+
         var setSessionData = function (user) {
             console.log("USER HERE IS", JSON.stringify(user));
             var deferred = q.defer();
@@ -44,6 +48,16 @@ module.exports = function (app) {
             var deferred = q.defer();
             if ((req.session.auth === 'github.login') && isEmpty(user)) {
                 deferred.reject("invalid_username");
+            } else {
+                deferred.resolve(user);
+            }
+            return deferred.promise;
+        };
+
+        var checkSignupWithExistingAuth = function(user) {
+            var deferred = q.defer();
+            if (!(_.isEmpty(req.session.oneselfUsername)) && isNotEmpty(user)){
+                deferred.reject("auth_exists_cant_signup");
             } else {
                 deferred.resolve(user);
             }
@@ -72,25 +86,18 @@ module.exports = function (app) {
             "githubUser.username": githubUser.username
         };
 
-        if (!(_.isEmpty(req.session.oneselfUsername))) {
-            userQuery["username"] = req.session.oneselfUsername;
-        };
-
         console.log("User query is ",userQuery);
 
         checkUserPresent(userQuery)
             .then(validateUserAction)
+            .then(checkSignupWithExistingAuth)
             .then(doAuth)
             .then(setSessionData)
             .then(function () {
                 IntentManager.process(req.session.intent, req, res);
-            }).catch(function (error) {
-                if (error === "invalid_username") {
-                    res.redirect('/unknownLogin');
-                } else {
-                    console.log("Error occurred", error);
-                    res.send(400, "Error occurred");
-                }
+            }).catch(function (errorCode) {
+                console.log("ERROR CODE IS,", errorCode);
+                IntentManager.handleError(errorCode, req, res);
             });
     };
 
