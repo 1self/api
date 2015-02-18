@@ -77,7 +77,7 @@ var groupEventsByDate = function (data) {
         if (!groups[date]) {
             groups[date] = [];
         }
-        groups[date].unshift(event);
+        groups[date].push(event);
     });
 
     return groups;
