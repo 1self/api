@@ -283,7 +283,7 @@ var groupByOnParametersForLastMonth = function (streamids, actionTag, objectTag)
                 "payload.eventDateTime": {
                     "$operator": {
                         ">": {
-                            "$date": moment(lastMonth).format()
+                            "$date": moment(lastMonth).toISOString()
                         }
                     }
                 },
@@ -511,7 +511,7 @@ var getGithubPushEventCountForCompare = function (params) {
         "payload.eventDateTime": {
             "$operator": {
                 ">": {
-                    "$date": moment(lastMonth).format()
+                    "$date": moment(lastMonth).toISOString()
                 }
             }
         },
@@ -526,7 +526,7 @@ var getGithubPushEventCountForCompare = function (params) {
         "payload.eventDateTime": {
             "$operator": {
                 ">": {
-                    "$date": moment(lastMonth).format()
+                    "$date": moment(lastMonth).toISOString()
                 }
             }
         },
@@ -616,7 +616,7 @@ var getIdeActivityDurationForCompare = function (params) {
                 "payload.eventDateTime": {
                     "$operator": {
                         ">": {
-                            "$date": moment(lastMonth).format()
+                            "$date": moment(lastMonth).toISOString()
                         }
                     }
                 },
@@ -643,7 +643,7 @@ var getIdeActivityDurationForCompare = function (params) {
                 "payload.eventDateTime": {
                     "$operator": {
                         ">": {
-                            "$date": moment(lastMonth).format()
+                            "$date": moment(lastMonth).toISOString()
                         }
                     }
                 },
@@ -877,7 +877,7 @@ app.post('/stream', function (req, res) {
 app.post('/v1/streams', function (req, res) {
     var auth = req.headers.authorization;
     var callbackUrl = req.body.callbackUrl;
-    console.log(callbackUrl)
+    console.log(callbackUrl);
     console.log("auth is " + auth);
     if (auth === undefined) {
         res.send(401, "Unauthorized request. Please pass valid appId and appSecret");
@@ -968,19 +968,19 @@ app.post('/v1/streams/:id/events', validateRequest.validate, postEvent);
 
 var formatEventDateTime = function (datetime) {
     if (typeof datetime !== 'undefined') {
-        return moment(datetime).format();
+        return moment(datetime).toISOString();
     } else {
-        return moment(new Date()).format();
+        return moment(new Date()).toISOString();
     }
 };
 
-var getLatestEventDate = function (streamId) {
+var getLatestSyncField = function (streamId) {
     var deferred = q.defer();
     var filterSpec = {
         'payload.streamid': streamId
     };
     var orderSpec = {
-        "payload.eventDateTime": -1
+        "payload.latestSyncField": -1
     };
     var options = {
         "limit": 1
@@ -992,7 +992,7 @@ var getLatestEventDate = function (streamId) {
     };
     platformService.filter(query)
         .then(function (result) {
-            deferred.resolve(result[0].payload.eventDateTime);
+            deferred.resolve(result[0].payload.latestSyncField);
         }, function (err) {
             deferred.reject(err);
         });
@@ -1014,9 +1014,9 @@ var saveBatchEvents = function (myEvents, stream) {
     platformService.saveBatchEvents(myEventsWithPayload)
         .then(function (result) {
             responseBody = result;
-            return getLatestEventDate(stream.streamid)
-                .then(function (latestEventDate) {
-                    return updateLatestEventSyncDate(stream.streamid, latestEventDate);
+            return getLatestSyncField(stream.streamid)
+                .then(function (latestSyncField) {
+                    return updateLatestSyncField(stream.streamid, latestSyncField);
                 });
         })
         .then(function () {
@@ -1027,11 +1027,11 @@ var saveBatchEvents = function (myEvents, stream) {
     return deferred.promise;
 };
 
-var updateLatestEventSyncDate = function (streamId, latestEventDate) {
+var updateLatestSyncField = function (streamId, latestSyncField) {
     var deferred = q.defer();
     var query = {"streamid": streamId};
     var updateObject = {
-        $set: {"latestEventSyncDate": latestEventDate}
+        $set: {"latestSyncField": latestSyncField}
     };
     mongoRespository.update('stream', query, updateObject)
         .then(function () {
@@ -1071,7 +1071,7 @@ app.get('/live/devbuild/:durationMins', function (req, res) {
     var filterSpec = {
         "payload.eventDateTime": {
             "$gte": {
-                "$date": moment(cutoff).format()
+                "$date": moment(cutoff).toISOString()
             }
         },
         "payload.actionTags": ["Build", "wtf"]
@@ -1338,8 +1338,8 @@ var getQueryForVisualizationAPI = function (streamIds, params, fromDate, toDate)
 app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/type/json", validateRequest.validateStreamIdAndReadToken,
     function (req, res) {
         console.log("validating");
-        var lastWeek = moment.utc().startOf('day').subtract('days', 6).format();
-        var today = moment.utc().endOf('day').format();
+        var lastWeek = moment.utc().startOf('day').subtract('days', 6).toISOString();
+        var today = moment.utc().endOf('day').toISOString();
         var fromDate = req.query.from || lastWeek;
         var toDate = req.query.to || today;
 
@@ -1384,8 +1384,8 @@ var authorizeUser = function (req, res, next) {
 };
 
 app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/type/json", authorizeUser, function (req, res) {
-    var lastWeek = moment.utc().startOf('day').subtract('days', 6).format();
-    var today = moment.utc().endOf('day').format();
+    var lastWeek = moment.utc().startOf('day').subtract('days', 6).toISOString();
+    var today = moment.utc().endOf('day').toISOString();
     var fromDate = req.query.from || lastWeek;
     var toDate = req.query.to || today;
     getStreamIdForUsername(req.headers.authorization, req.forUsername)
