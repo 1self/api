@@ -4,16 +4,12 @@ exports.requiresSession = function (req, res, next) {
     if (req.session.encodedUsername) {
         res.cookie('_eun', req.session.encodedUsername);
         next();
-    } else if (req.session.githubUsername) {
-        if (req.url.indexOf('claimUsername') > -1) {
-            next();
-        } else {
-            res.redirect(CONTEXT_URI + "/claimUsername?username=" + req.session.githubUsername);
-        }
     } else {
         req.session.redirectUrl = CONTEXT_URI + req.originalUrl;
         if (req.url.split('?')[1] !== undefined) {
-            res.redirect(CONTEXT_URI + "/signup" + "?" + req.url.split('?')[1]);
+            var intent = "session.redirect";
+            var redirectUrl = CONTEXT_URI + req.url;
+            res.redirect(CONTEXT_URI + "/signup" + "?intent=" + intent + "&redirectUrl=" + encodeURIComponent(redirectUrl));
         } else {
             res.redirect(CONTEXT_URI + "/signup");
         }
@@ -29,7 +25,7 @@ exports.setSession = function (req, res, user) {
 };
 
 
-exports.resetSession = function(req){
+exports.resetSession = function (req) {
     req.session.auth = null;
     req.session.intent = null;
     req.session.oneselfUsername = null;

@@ -244,7 +244,7 @@ $(document).ready(function () {
             };
             parentWindow.postMessage(msg, "*");
         } else {
-            $("#login").attr('href', '/signup?intent=chart.comment&redirectUrl=' + window.location.href);
+            $("#login").attr('href', '/signup?intent=chart.comment&redirectUrl=' + encodeURIComponent(window.location.href));
         }
     });
 

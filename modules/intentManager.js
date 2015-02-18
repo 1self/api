@@ -26,7 +26,10 @@ IntentManager.prototype.process = function (intent, req, res) {
             res.redirect("/dashboard");
         } else if (intentName === "chart.comment") {
             res.redirect(intentData.url);
-        } else {
+        } else if (intentName === "session.redirect") {
+            res.redirect(intentData.url);
+        }
+        else {
             redirect("/dashboard");
         }
     }

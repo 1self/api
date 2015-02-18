@@ -46,6 +46,7 @@ module.exports = function (app) {
     };
 
     app.get("/signup", function (req, res) {
+
         sessionManager.resetSession(req);
 
         if ("sandbox" == process.env.NODE_ENV) {
@@ -82,7 +83,6 @@ module.exports = function (app) {
             else  {
                 res.render('signup');
             }
-
         } else {
             res.render('signup');
         };
