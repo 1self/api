@@ -1184,7 +1184,7 @@ module.exports = function (app) {
             //        var shareToken = req.query.shareToken;
             var renderChart = function (graphOwnerAvatarUrl) {
                 var graphInfo = getGraphInfo(req.param("objectTags"), req.param("actionTags"));
-                var isUserLoggedIn = (req.session.username !== undefined);
+                var isUserLoggedIn = !(_.isEmpty(req.session.username));
                 res.render('chart', {
                     isUserLoggedIn: isUserLoggedIn,
                     oneselfAppUrl: process.env.CONTEXT_URI,
