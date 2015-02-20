@@ -65,7 +65,22 @@ var generateStream = function (appId, callbackUrl) {
     });
     return deferred.promise;
 };
-
+Util.prototype.generateRegistrationToken = function () {
+    var deferred = q.defer();
+    crypto.randomBytes(16, function (ex, buf) {
+        if (ex) {
+            deferred.reject(ex);
+        }
+        var registrationToken = [];
+        for (var i = 0; i < buf.length; i++) {
+            var charCode = String.fromCharCode((buf[i] % 26) + 65);
+            registrationToken.push(charCode);
+        }
+        console.log("Registration Token: ", registrationToken.join(''));
+        deferred.resolve(registrationToken.join(''));
+    });
+    return deferred.promise;
+};
 Util.prototype.createV1Stream = function (appId, callbackUrl) {
     return generateStream(appId, callbackUrl)
         .then(function (stream) {

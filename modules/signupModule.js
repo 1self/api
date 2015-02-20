@@ -7,7 +7,7 @@ var githubService = require("../services/githubService.js");
 var CreditUserSignup = require('./creditUserSignup.js');
 var MAILCHIMP_API_KEY = process.env.MAILCHIMP_API_KEY;
 var MAILCHIMP_LIST_ID = process.env.MAILCHIMP_LIST_ID;
-
+var util = require('../util.js');
 var _ = require('underscore');
 
 var SignupModule = function () {
@@ -84,7 +84,9 @@ SignupModule.prototype.signup = function (req, res) {
             var deferred = q.defer();
             var MailChimpAPI = require('mailchimp').MailChimpAPI;
             var mailChimpAPIKey = MAILCHIMP_API_KEY;
-            var primaryEmailRec = _.filter(user.githubUser.emails, function(rec){ return rec.primary;})
+            var primaryEmailRec = _.filter(user.githubUser.emails, function (rec) {
+                return rec.primary;
+            })
             try {
                 var api = new MailChimpAPI(mailChimpAPIKey, {version: '2.0'});
                 var data = {
@@ -93,7 +95,7 @@ SignupModule.prototype.signup = function (req, res) {
                     "double_optin": false
                 };
                 api.lists_subscribe(data, function (err, result) {
-                    if(err){
+                    if (err) {
                         console.log("Error is", err);
                     }
                     deferred.resolve(user);
@@ -135,6 +137,13 @@ SignupModule.prototype.signup = function (req, res) {
 
             return deferred.promise;
         };
+        var generateRegistrationToken = function (userEntry) {
+            return util.generateRegistrationToken()
+                .then(function (registrationToken) {
+                    userEntry.registrationToken = registrationToken;
+                    return userEntry;
+                });
+        };
 
         var byGitHubUsername = {
             "githubUser.username": githubUser.username
@@ -144,12 +153,13 @@ SignupModule.prototype.signup = function (req, res) {
             .then(checkIfNewUser)
             .then(encodeUsername)
             .then(createUser)
+            .then(generateRegistrationToken)
             .then(insertUser)
             .then(subscribeToMailChimp)
             .then(creditUserSignup)
             .then(signupComplete)
             .catch(handleError);
-    }
+    };
 
     doSignup();
 
