@@ -165,77 +165,10 @@ var addFilter = function(svg){
             .attr("in", "SourceGraphic");
 }
 
-var attachClickHighlight = function(chart, data){
-    chart.on("click", function(d) {
-        console.log('clicked');
-                var bars = svg.selectAll('.bar');
-                bars.style("stroke", function(data) {
-
-                        if (d === data) {
-                            return null;
-                        } else {
-                            return "rgba(255,255,255,0.7)";
-                        }
-                    })
-                    .style("filter", function(data) {
-                        if (d === data) {
-                            return "url(#drop-shadow)";
-                        }
-                    })
-                    .style("stroke-width", function(data) {
-                        if (d === data) {
-                            return "3px";
-                        } else {
-                            return "1px";
-                        }
-                    })
-                    .style("fill", function(data) {
-                        if (d === data) {
-                            return "url(#gradient_highlight)";
-                        } else {
-                            return "url(#gradient)"
-                        }
-                    })
-                    .style("background-color", function(data) {
-                        if (d === data) {
-                            return "rgba(0, 0, 0, 0.22)";
-                        }
-                    });
-                $(".addCommentButton").show();
-                $("#date").html(moment(d.date).format("DD/MM/YY dddd"));
-                $("#eventValue").html(getDataPointDescription(d.value));
-
-                setGraphUrl(d.date);
-                charts.selectedDate = moment(d.date).format("YYYY-MM-DD");
-                charts.showComments();
-
-                // in order to make the shadow work correctly the highlighted
-                // bar needs to be drawn last. This makes the <g> element that
-                // is created last in the list of elements which makes it on 
-                // top of everything else
-                for (var i = bars.data().length - 1; i >= 0; i--) {
-                    if (d === bars.data()[i]) {
-                        var bar = bars[0][i];
-                        $('#bars').append(bar);
-                    }
-                }
-
-                // When the selected bar is the first one, it draws over the y axis.
-                // Therefore, we must redraw the y axis.
-                d3.select('.y.axis').remove();
-                svg.append('g')
-                    .attr('class', 'y axis')
-                    .call(yAxis);
-
-                blur.attr("stdDeviation", 0);
-                blur.transition().attr("stdDeviation", 5);
-            })
-}
-
-var attachClickHighlightAnimated = function(chart, data){
+var attachClickHighlightAnimated = function(selection, data){
     console.log('attaching');
     console.log(chart);
-    chart.on("click", function(d) {
+    selection.on("click", function(d) {
         console.log('clicked');
                 var bars = svg.selectAll('.bar');
                 bars
@@ -339,6 +272,15 @@ var addXaxis = function(svg, xAxis, innerGraphHeight){
             .call(xAxis);
 }
 
+var calculateBarWidth = function(x){
+    var now = new Date(moment());
+    var oneDayAgo = new Date(moment().subtract('days', 1).format("MM/DD/YYYY"));
+    var from = x(oneDayAgo);
+    var to = x(now);
+    var result = to - from;
+    return result;
+}
+
 charts.plotBarChart = function(divId, events, fromTime, tillTime, units) {
     events = _.sortBy(events, function(e) {
         return e.date;
@@ -353,13 +295,15 @@ charts.plotBarChart = function(divId, events, fromTime, tillTime, units) {
         };
         var width = window.innerWidth;
         var height = width / 1.61;
-        var weekAgo = new Date(moment().subtract('days', 6).format("MM/DD/YYYY"));
+        var weekAgo = new Date(moment().subtract('days', 2).format("MM/DD/YYYY"));
         var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
-        var xWidth = width/7;
+
         var x = d3.time.scale()
             .domain([weekAgo, tomorrow])
             .rangeRound([0, width - margin.left - margin.right])
             .nice();
+
+        var xWidth = calculateBarWidth(x);
 
         var maxDataValue = d3.max(events, function(d) {
             return d.value;
@@ -402,7 +346,7 @@ charts.plotBarChart = function(divId, events, fromTime, tillTime, units) {
         setStartToCollapsed(bars, x, height, xWidth);
         bars = addAnimation(bars);
         setBarHeightUsingData(bars, y, innerGraphHeight);
-        attachClickHighlightAnimated(chart, events);
+        attachClickHighlightAnimated(bars, events);
         addYaxis(svg, yAxis);
         addXaxis(svg, xAxis, innerGraphHeight);
         createOverlayDropshadow(svg);
