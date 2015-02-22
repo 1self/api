@@ -12,34 +12,38 @@
 		<script src="../js/barChart.js"></script>
 		<script>
 		var events = [];
-		events.push({
-			date: new Date(moment().subtract("days", 0).format("MM/DD/YYYY")),
-			value: 42
-		});
-		events.push({
-			date: new Date(moment().subtract("days", 1).format("MM/DD/YYYY")),
-			value: 13
-		});
-		events.push({
-			date: new Date(moment().subtract("days", 2).format("MM/DD/YYYY")),
-			value: 76
-		});
-		events.push({
-			date: new Date(moment().subtract("days", 3).format("MM/DD/YYYY")),
-			value: 15
-		});
-		events.push({
-			date: new Date(moment().subtract("days", 4).format("MM/DD/YYYY")),
-			value: 67
-		});
-		events.push({
-			date: new Date(moment().subtract("days", 5).format("MM/DD/YYYY")),
-			value: 24
-		});
-		events.push({
-			date: new Date(moment().subtract("days", 6).format("MM/DD/YYYY")),
-			value: 52
-		});
+
+		for (var i = 0; i <= 50; i++) {
+			events.push({
+				date: new Date(moment().subtract("days", i).format("MM/DD/YYYY")),
+				value: Math.random()*100
+			});
+		};
+		
+		// events.push({
+		// 	date: new Date(moment().subtract("days", 1).format("MM/DD/YYYY")),
+		// 	value: 13
+		// });
+		// events.push({
+		// 	date: new Date(moment().subtract("days", 2).format("MM/DD/YYYY")),
+		// 	value: 76
+		// });
+		// events.push({
+		// 	date: new Date(moment().subtract("days", 3).format("MM/DD/YYYY")),
+		// 	value: 15
+		// });
+		// events.push({
+		// 	date: new Date(moment().subtract("days", 4).format("MM/DD/YYYY")),
+		// 	value: 67
+		// });
+		// events.push({
+		// 	date: new Date(moment().subtract("days", 5).format("MM/DD/YYYY")),
+		// 	value: 24
+		// });
+		// events.push({
+		// 	date: new Date(moment().subtract("days", 6).format("MM/DD/YYYY")),
+		// 	value: 52
+		// });
 		var now = new Date();
 		var operation = 'sum(prop)';
 

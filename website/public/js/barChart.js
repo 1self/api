@@ -97,7 +97,7 @@ var addGradients = function(svg){
             .attr("id", "gradient")
             .attr("x1", "0%")
             .attr("y1", "0%")
-            .attr("x2", "0%")
+            .attr("x2", "100%")
             .attr("y2", "100%")
             .attr("spreadMethod", "reflect");
 
@@ -165,77 +165,6 @@ var addFilter = function(svg){
             .attr("in", "SourceGraphic");
 }
 
-var attachClickHighlightAnimated = function(selection, data){
-    console.log('attaching');
-    console.log(chart);
-    selection.on("click", function(d) {
-        console.log('clicked');
-                var bars = svg.selectAll('.bar');
-                bars
-                    .transition()
-                    .style("stroke", function(data) {
-
-                        if (d === data) {
-                            return null;
-                        } else {
-                            return "rgba(255,255,255,0.7)";
-                        }
-                    })
-                    .style("filter", function(data) {
-                        if (d === data) {
-                            return "url(#drop-shadow)";
-                        }
-                    })
-                    .style("stroke-width", function(data) {
-                        if (d === data) {
-                            return "3px";
-                        } else {
-                            return "1px";
-                        }
-                    })
-                    .style("fill", function(data) {
-                        if (d === data) {
-                            return "url(#gradient_highlight)";
-                        } else {
-                            return "url(#gradient)"
-                        }
-                    })
-                    .style("background-color", function(data) {
-                        if (d === data) {
-                            return "rgba(0, 0, 0, 0.22)";
-                        }
-                    });
-                $(".addCommentButton").show();
-                $("#date").html(moment(d.date).format("DD/MM/YY dddd"));
-                $("#eventValue").html(getDataPointDescription(d.value));
-
-                setGraphUrl(d.date);
-                charts.selectedDate = moment(d.date).format("YYYY-MM-DD");
-                charts.showComments();
-
-                // in order to make the shadow work correctly the highlighted
-                // bar needs to be drawn last. This makes the <g> element that
-                // is created last in the list of elements which makes it on 
-                // top of everything else
-                for (var i = bars.data().length - 1; i >= 0; i--) {
-                    if (d === bars.data()[i]) {
-                        var bar = bars[0][i];
-                        $('#bars').append(bar);
-                    }
-                }
-
-                // When the selected bar is the first one, it draws over the y axis.
-                // Therefore, we must redraw the y axis.
-                d3.select('.y.axis').remove();
-                svg.append('g')
-                    .attr('class', 'y axis')
-                    .call(yAxis);
-
-                blur.attr("stdDeviation", 0);
-                blur.transition().attr("stdDeviation", 5);
-            })
-}
-
 var setStartToCollapsed = function(chart, xScale, height, xWidth){
     chart.attr('x', function(d) {
             return xScale(new Date(d.date));
@@ -246,7 +175,7 @@ var setStartToCollapsed = function(chart, xScale, height, xWidth){
 }
 
 var addAnimation = function(bars){
-    var result  = bars.transition()
+    var result  = bars.transition('grow-in')
             .delay(
                 function(d, i) {
                     return i * 130 + 30;
@@ -283,13 +212,14 @@ var calculateBarWidth = function(x){
     return result;
 }
 
-var renderSelected = function(selectedBar){
-    selectedBar.transition()
-                .style('filter', 'url(#drop-shadow)')
-                //.style("stroke", null)
-                .style('stroke-width', '30px')
+var selectedBar;
+var renderSelected = function(bar){
+    bar         .style('filter', 'url(#drop-shadow)')
+                .style("stroke", null)
+                .style('stroke-width', '3px')
                 .style('fill', 'url(#gradient_highlight)')
                 .style('background-color', 'rgba(0, 0, 0, 0.22)');
+    selectedBar = bar;
 }
 
 charts.plotBarChart = function(divId, events, fromTime, tillTime, units) {
@@ -306,13 +236,13 @@ charts.plotBarChart = function(divId, events, fromTime, tillTime, units) {
         };
         var width = window.innerWidth;
         var height = width / 1.61;
-        var weekAgo = new Date(moment().subtract('days', 2).format("MM/DD/YYYY"));
+        var weekAgo = new Date(moment().subtract('days', 22).format("MM/DD/YYYY"));
         var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
 
         var x = d3.time.scale()
             .domain([weekAgo, tomorrow])
-            .rangeRound([0, width - margin.left - margin.right])
-            .nice();
+            .rangeRound([0, width - margin.left - margin.right]);
+            
 
         var xWidth = calculateBarWidth(x);
 
@@ -348,56 +278,32 @@ charts.plotBarChart = function(divId, events, fromTime, tillTime, units) {
 
         var chart = svg.selectAll('.chart');
 
-        var selectedBar;
-
         var bars = chart.data(events)
             .enter()
             .append('rect')
             .attr('class', 'bar')
             .on("click", function(clickedBar) {
-                
                 var oldSelection = selectedBar;
-                selectedBar = d3.select(this);
-
                 if(oldSelection !== undefined){
                     oldSelection.transition()
-                    .style('filter', null)
-                    .style('stroke', 'rgba(255,255,255,0.7)')
-                    .style('stroke-width', '1px')
+                    .style('filter', 'none')
+                    .style('stroke', null)
+                    .style('stroke-width', '0px')
                     .style('fill', 'url(#gradient)');
                 }
 
-                selectedBar.transition()
-                .style('filter', 'url(#drop-shadow)')
-                .style("stroke", null)
-                .style('stroke-width', '3px')
-                .style('fill', 'url(#gradient_highlight)')
-                .style('background-color', 'rgba(0, 0, 0, 0.22)');
-
-                
-
-                
-
-                // When the selected bar is the first one, it draws over the y axis.
-                // Therefore, we must redraw the y axis.
-                d3.select('.y.axis').remove();
-                svg.append('g')
-                    .attr('class', 'y axis')
-                    .call(yAxis);
-
-                //blur.attr("stdDeviation", 0);
-                //blur.transition().attr("stdDeviation", 5);
+                selectedBar = d3.select(this);
+                renderSelected(selectedBar);
             });
 
-        bars.style("stroke", "rgba(255,255,255,0.7)")
-                .style("stroke-width", "1px")
-                .style("fill", "url(#gradient)");
+        bars.style("fill", "url(#gradient)");
         setStartToCollapsed(bars, x, height, xWidth);
         bars = addAnimation(bars);
         bars = setBarHeightUsingData(bars, y, innerGraphHeight);
-        var lastBar = bars.filter(':last-of-type');//.on('click')();
-            renderSelected(lastBar);
-        //attachClickHighlightAnimated(bars, events);
+        
+        var lastBar = d3.selectAll('.bar').filter(':last-of-type');
+        renderSelected(lastBar);
+        
         addYaxis(svg, yAxis);
         addXaxis(svg, xAxis, innerGraphHeight);
         createOverlayDropshadow(svg);
