@@ -257,12 +257,14 @@ var addAnimation = function(bars){
 }
 
 var setBarHeightUsingData = function(bars, yScale, innerGraphHeight){
-    bars.attr('height', function(dataPoint) {
+    var result = bars.attr('height', function(dataPoint) {
         return innerGraphHeight - yScale(dataPoint.value);
     })
     .attr('y', function(dataPoint) {
         return innerGraphHeight - (innerGraphHeight - yScale(dataPoint.value));
     });
+
+    return result;
 }
 
 var addXaxis = function(svg, xAxis, innerGraphHeight){
@@ -274,11 +276,20 @@ var addXaxis = function(svg, xAxis, innerGraphHeight){
 
 var calculateBarWidth = function(x){
     var now = new Date(moment());
-    var oneDayAgo = new Date(moment().subtract('days', 1).format("MM/DD/YYYY"));
+    var oneDayAgo = new Date(moment().subtract('days', 1));
     var from = x(oneDayAgo);
     var to = x(now);
     var result = to - from;
     return result;
+}
+
+var renderSelected = function(selectedBar){
+    selectedBar.transition()
+                .style('filter', 'url(#drop-shadow)')
+                //.style("stroke", null)
+                .style('stroke-width', '30px')
+                .style('fill', 'url(#gradient_highlight)')
+                .style('background-color', 'rgba(0, 0, 0, 0.22)');
 }
 
 charts.plotBarChart = function(divId, events, fromTime, tillTime, units) {
@@ -337,16 +348,56 @@ charts.plotBarChart = function(divId, events, fromTime, tillTime, units) {
 
         var chart = svg.selectAll('.chart');
 
+        var selectedBar;
+
         var bars = chart.data(events)
             .enter()
             .append('rect')
-            .attr('class', 'bar');
+            .attr('class', 'bar')
+            .on("click", function(clickedBar) {
+                
+                var oldSelection = selectedBar;
+                selectedBar = d3.select(this);
 
-        bars.style("stroke", "rgba(255,255,255,0.7)");
+                if(oldSelection !== undefined){
+                    oldSelection.transition()
+                    .style('filter', null)
+                    .style('stroke', 'rgba(255,255,255,0.7)')
+                    .style('stroke-width', '1px')
+                    .style('fill', 'url(#gradient)');
+                }
+
+                selectedBar.transition()
+                .style('filter', 'url(#drop-shadow)')
+                .style("stroke", null)
+                .style('stroke-width', '3px')
+                .style('fill', 'url(#gradient_highlight)')
+                .style('background-color', 'rgba(0, 0, 0, 0.22)');
+
+                
+
+                
+
+                // When the selected bar is the first one, it draws over the y axis.
+                // Therefore, we must redraw the y axis.
+                d3.select('.y.axis').remove();
+                svg.append('g')
+                    .attr('class', 'y axis')
+                    .call(yAxis);
+
+                //blur.attr("stdDeviation", 0);
+                //blur.transition().attr("stdDeviation", 5);
+            });
+
+        bars.style("stroke", "rgba(255,255,255,0.7)")
+                .style("stroke-width", "1px")
+                .style("fill", "url(#gradient)");
         setStartToCollapsed(bars, x, height, xWidth);
         bars = addAnimation(bars);
-        setBarHeightUsingData(bars, y, innerGraphHeight);
-        attachClickHighlightAnimated(bars, events);
+        bars = setBarHeightUsingData(bars, y, innerGraphHeight);
+        var lastBar = bars.filter(':last-of-type');//.on('click')();
+            renderSelected(lastBar);
+        //attachClickHighlightAnimated(bars, events);
         addYaxis(svg, yAxis);
         addXaxis(svg, xAxis, innerGraphHeight);
         createOverlayDropshadow(svg);
@@ -387,56 +438,6 @@ charts.plotBarChart = function(divId, events, fromTime, tillTime, units) {
                 return parseFloat(eventValue).toFixed(1) + "  " + value_unit;
             }
         };
-
-        var showDetailsForDate = function(date) {
-            var eventValue;
-            svg.selectAll('.bar')
-                .style("stroke", function(data) {
-                    if (moment(data.date).isSame(moment(date))) {
-                        return null;
-                    } else {
-                        return "rgba(255,255,255,0.7)";
-                    }
-                })
-                .style("filter", function(data) {
-                    if (moment(data.date).isSame(moment(date))) {
-                        return "url(#drop-shadow)";
-                    }
-                })
-                .style("stroke-width", function(data) {
-                    if (moment(data.date).isSame(moment(date))) {
-                        return "5px";
-                    } else {
-                        return "1px";
-                    }
-                }).style("fill", function(data) {
-                    if (moment(data.date).isSame(moment(date))) {
-                        return "url(#gradient_highlight)";
-                    } else {
-                        return "url(#gradient)"
-                    }
-                });
-            $(".addCommentButton").show();
-            $("#date").html(moment(date).format("DD/MM/YY dddd"));
-            $("#eventValue").html(getDataPointDescription(events[events.length - 1].value));
-
-        };
-
-        var setGraphUrl = function(date) {
-            var day = moment(date).format("DD");
-            var month = moment(date).format("MM");
-            var year = moment(date).format("YYYY");
-            charts.graphUrl = window.location.href.split(window.location.origin)[1].split("?")[0] + "/" + year + "/" + month + "/" + day;
-        }
-
-        var highlightLatestDataPointDate = function() {
-            var date = window.localStorage.selectedDate || getLatestDataPointDate();
-            setGraphUrl(date);
-            charts.selectedDate = moment(date).format("YYYY-MM-DD");
-            showDetailsForDate(date);
-        };
-
-        highlightLatestDataPointDate();
 
     }, 1000);
 };
