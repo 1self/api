@@ -212,6 +212,12 @@ var calculateBarWidth = function(x){
     return result;
 }
 
+d3.selection.prototype.moveToFront = function() {
+  return this.each(function(){
+    this.parentNode.appendChild(this);
+  });
+};
+
 var selectedBar;
 var renderSelected = function(bar){
     bar         .style('filter', 'url(#drop-shadow)')
@@ -219,7 +225,7 @@ var renderSelected = function(bar){
                 .style('stroke-width', '3px')
                 .style('fill', 'url(#gradient_highlight)')
                 .style('background-color', 'rgba(0, 0, 0, 0.22)');
-    selectedBar = bar;
+    bar.moveToFront();
 }
 
 charts.plotBarChart = function(divId, events, fromTime, tillTime, units) {
