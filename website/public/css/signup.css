@@ -8,16 +8,21 @@ body {
 
 .header-text {
     color: #E2E2E2;
+    font-family: 'raleway-light'
 }
 
 .signup-details {
     color: #979797;
+    font-family: 'raleway-light'
 }
+
+
 
 .signup-button {
     background: #1AC8A2;
     border: 1px solid #54FFFA;
     width: 100%;
+    font-family: 'raleway-light'
 }
 
 .error {
@@ -78,6 +83,7 @@ body {
 
 .btn:hover, .btn:focus, .signup-button {
     color: #FFF;
+    font-family: 'raleway-light'
 }
 
 .step-two-signup-button {
@@ -132,4 +138,8 @@ body {
     .jumbotron {
         padding-top: 100px;
     }
+}
+
+#signup_with_github{
+    font-family: 'raleway-light'
 }

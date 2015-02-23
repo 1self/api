@@ -116,6 +116,10 @@ module.exports = function (app) {
         res.render('signupError');
     });
 
+    app.get("/integrations", function (req, res) {
+        res.render('integrations');
+    });
+
     app.post("/captureUsername", function(req, res){
         req.session.oneselfUsername = req.body.username;
         res.redirect("/auth/github");
