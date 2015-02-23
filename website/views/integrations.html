@@ -5,16 +5,15 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>1self integrations</title>
-        <link rel="stylesheet" href="css/style.css">
+        <!--<link rel="stylesheet" href="css/style.css">-->
         <link rel="author" href="humans.txt">
     </head>
     <body>
         <h1>Welcome to the integration page</h1>
         <ul>
-        <li>twitter</li>
-        <li>last.fm</li>
-        <li>github</li>
-        <li>instagram</li>
+            {% for integration in integrations %}
+        <li><a href="/integrations/{{integration.integration_id}}">{{integration.title}}</a> </li>
+            {% endfor %}
         </ul>
     </body>
 </html>

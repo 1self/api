@@ -70,6 +70,7 @@ app.all('*', function (req, res, next) {
 });
 
 require('./quantifieddevRoutes')(app);
+require('./controllers/integrationsController')(app);
 
 
 var convertSecsToMinutes = function (seconds) {
