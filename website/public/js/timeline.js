@@ -30,6 +30,108 @@ var getEvents = function (skip, limit) {
     });
 };
 
+var groupEventsByDate = function (data) {
+    var groups = {};
+
+    data.forEach(function (event) {
+        try {
+            var date = event.payload.eventDateTime.split('T')[0];
+        } catch (e) {
+            console.log(JSON.stringify(event));
+        }
+        if (!groups[date]) {
+            groups[date] = [];
+        }
+        groups[date].unshift(event);
+    });
+
+    return groups;
+};
+
+var composeComponents = function(components) {
+    var composed = '';
+    components.forEach(function(component){
+        composed += component + '\n';
+    });
+    return composed;
+};
+
+var componentTitle = function(actionTag, from, to, count, logo) {
+    var component = '
+    <div class="accordian-title-container">
+        <img class="accordian-title-logo float-left" src="' + logo+ '">
+        <div class="accordian-heading float-left">
+            <div class="width-100 center-aligned">
+                <h3>'+ actionTag +'</h3>
+                <span>From '+ from +' to '+ to +'</span>
+             </div>
+        </div>
+        <span class="counter bold">'+ logo +'</span>
+    </div>';
+   return component;
+};
+
+var componentDetails = function(time, property, value) {
+    component = '
+    <div class="details">
+        <div class="clear-all">
+            <h4 class="list-title">Music Listen</h4>
+            <div class="time-stamp">'+ time +'</div>
+        </div>
+        <div class="clear-all">
+            <span>'+ property +' :</span>
+            <span>&ldquo;'+ value +'&rdquo;</span>  
+      </div>
+    </div>'
+    return component;
+};
+
+var componentDetailsList = function(detailComponents) {
+    var start = '<div class="clear-all list-container-class" id="list-container">';
+    var details = composeComponents(detailComponents);
+    var end = "</div>"
+    var component = start + details + end;
+    return component;
+};
+
+var componentGraph = function(graphUrl) {
+    var component = '
+    <div class="clear-all">
+      <div class="accordian-title-logo float-left height-ten-pixle hide-on-mobile"></div>
+      <div class="clear-all graph-container-class accordian-heading righ-aligned" id="graph-container" style="display:none">
+          
+          <iframe src="'+ graphUrl +'" class="graph-iframe">
+          </iframe>
+      </div>
+    </div>'
+    return component;
+};
+
+var componentContent = function(detailsListComponent, graphComponent) {
+    var start = '
+    <div>
+        <div class="accordian-title-logo float-left height-ten-pixle"></div>
+        <div class="accordian-heading float-left">
+            <span class="list-graph-toggle-container">
+                <a href="#" class="graph-toggle-link border-right list-link active-link">
+                    <img src="images/list-icon.png" class="graph-toggle-icon">
+                </a>   
+                <a href="#" class="graph-toggle-link graph-link"> 
+                    <img src="images/graph-icon.png" class="graph-toggle-icon">
+                </a> 
+            </span>
+        </div>'
+    var end = '</div>'
+    var component = composeComponents([start, detailsListComponent, graphComponent, end]);
+    return component;
+};
+
+var componentGroup = function(titleComponent, contentComponent) {
+    var component = composeComponents([titleComponent, contentComponent]);
+    return component;
+};
+
+
 var displayEventsOnTimeline = function (data) {
     if (0 === data.length) {
         return;
@@ -63,24 +165,6 @@ var displayEventsOnTimeline = function (data) {
 
     timeline_container.append(html);
     $('#more_events_button').show();
-};
-
-var groupEventsByDate = function (data) {
-    var groups = {};
-
-    data.forEach(function (event) {
-        try {
-            var date = event.payload.eventDateTime.split('T')[0];
-        } catch (e) {
-            console.log(JSON.stringify(event));
-        }
-        if (!groups[date]) {
-            groups[date] = [];
-        }
-        groups[date].unshift(event);
-    });
-
-    return groups;
 };
 
 var formatDate = function (date) {
