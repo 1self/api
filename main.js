@@ -830,7 +830,7 @@ app.get('/users_count', function (req, res) {
 
 app.get('/recent_signups', function (req, res) {
     mongoRespository.find('users', {
-        "githubUser.profileUrl": { $exists: true }
+        "githubUser.profileUrl": {$exists: true}
     }, {
         "sort": [
             ["_id", -1]
@@ -896,6 +896,25 @@ app.post('/v1/streams', function (req, res) {
         })
         .catch(function () {
             res.status(401).send("Unauthorized request. Invalid appId and appSecret");
+        });
+});
+
+
+app.get('/v1/validate/user', function (req, res) {
+    var token = req.headers.authorization;
+    var query = {
+        registrationToken: token
+    };
+    mongoRespository.find('users', query)
+        .then(function (user) {
+            if (_.isEmpty(user)) {
+                res.status(401).send("Token invalid!!!");
+            }
+            else {
+                res.status(200).send(true);
+            }
+        }, function (error) {
+            res.status(500).send("Error is: " + error);
         });
 });
 
