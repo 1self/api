@@ -26,6 +26,7 @@ exports.setSession = function (req, res, user) {
 
 
 exports.resetSession = function (req) {
+    req.session.encodedUsername = null;
     req.session.auth = null;
     req.session.intent = null;
     req.session.oneselfUsername = null;
