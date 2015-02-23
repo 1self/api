@@ -97,7 +97,7 @@ var addGradients = function(svg){
             .attr("id", "gradient")
             .attr("x1", "0%")
             .attr("y1", "0%")
-            .attr("x2", "100%")
+            .attr("x2", "80%")
             .attr("y2", "100%")
             .attr("spreadMethod", "reflect");
 
@@ -186,14 +186,12 @@ var addAnimation = function(bars){
 }
 
 var setBarHeightUsingData = function(bars, yScale, innerGraphHeight){
-    var result = bars.attr('height', function(dataPoint) {
+    bars.attr('height', function(dataPoint) {
         return innerGraphHeight - yScale(dataPoint.value);
     })
     .attr('y', function(dataPoint) {
         return innerGraphHeight - (innerGraphHeight - yScale(dataPoint.value));
     });
-
-    return result;
 }
 
 var addXaxis = function(svg, xAxis, innerGraphHeight){
@@ -220,12 +218,13 @@ d3.selection.prototype.moveToFront = function() {
 
 var selectedBar;
 var renderSelected = function(bar){
-    bar         .style('filter', 'url(#drop-shadow)')
-                .style("stroke", null)
+    bar.moveToFront();
+     bar         .transition('selection').style('filter', 'url(#drop-shadow)')
+                 .style("stroke", 'solid')
                 .style('stroke-width', '3px')
                 .style('fill', 'url(#gradient_highlight)')
                 .style('background-color', 'rgba(0, 0, 0, 0.22)');
-    bar.moveToFront();
+    selectedBar = bar;
 }
 
 charts.plotBarChart = function(divId, events, fromTime, tillTime, units) {
@@ -242,7 +241,7 @@ charts.plotBarChart = function(divId, events, fromTime, tillTime, units) {
         };
         var width = window.innerWidth;
         var height = width / 1.61;
-        var weekAgo = new Date(moment().subtract('days', 22).format("MM/DD/YYYY"));
+        var weekAgo = new Date(moment().subtract('days', 24).format("MM/DD/YYYY"));
         var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
 
         var x = d3.time.scale()
@@ -291,9 +290,10 @@ charts.plotBarChart = function(divId, events, fromTime, tillTime, units) {
             .on("click", function(clickedBar) {
                 var oldSelection = selectedBar;
                 if(oldSelection !== undefined){
+                    //oldSelection.style
                     oldSelection.transition()
                     .style('filter', 'none')
-                    .style('stroke', null)
+                    //.style('stroke', null)
                     .style('stroke-width', '0px')
                     .style('fill', 'url(#gradient)');
                 }
@@ -305,10 +305,13 @@ charts.plotBarChart = function(divId, events, fromTime, tillTime, units) {
         bars.style("fill", "url(#gradient)");
         setStartToCollapsed(bars, x, height, xWidth);
         bars = addAnimation(bars);
-        bars = setBarHeightUsingData(bars, y, innerGraphHeight);
+        setBarHeightUsingData(bars, y, innerGraphHeight);
         
-        var lastBar = d3.selectAll('.bar').filter(':last-of-type');
-        renderSelected(lastBar);
+        var lastBar = bars.filter(':last-of-type');
+        lastBar.each('end', function(d){
+            renderSelected(d3.select(this));
+        })
+        
         
         addYaxis(svg, yAxis);
         addXaxis(svg, xAxis, innerGraphHeight);
