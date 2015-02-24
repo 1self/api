@@ -2285,6 +2285,10 @@ aside#sidebar #menu > ul > li.selected#rivermenuitem,
     min-height: 2000px;
 }
 
+
+aside#sidebar #menu > ul > li.selected#integrations,
+
+
 .page-title h2,
 .page-title ul.breadcrumb li,
 #river .panel-title{

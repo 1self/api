@@ -55,10 +55,10 @@ module.exports = function (app) {
             var integrations = _.collect(integrations, function(int){
                 return {
                     title: int.title,
-                    integration_id: getIntegrationIdFromTitle(int.title)
+                    integration_id: getIntegrationIdFromTitle(int.title),
+                    icon_url: int.icon_url
                 }
             });
-            console.log("Integrations are here", JSON.stringify(integrations));
             res.render("integrations",
                 {
                     integrations: integrations
@@ -74,15 +74,15 @@ module.exports = function (app) {
         var integrationId = req.param("integration_id");
         console.log("Integrations Id is ", integrationId);
 
-        getIntegrationDetails(integrationId).then(function (integrationDetailObject) {
+        getIntegrationDetails(integrationId).then(function (int) {
             res.render('integrations_details', {
-                title: integrationDetailObject.title,
-                icon_url: integrationDetailObject.icon_url,
-                short_desc: integrationDetailObject.short_desc,
-                long_desc: integrationDetailObject.long_desc,
-                support_link: integrationDetailObject.support_link,
-                download_link: integrationDetailObject.download_link,
-                integration_url: integrationDetailObject.integration_url,
+                title: int.title,
+                icon_url: int.icon_url,
+                short_desc: int.short_desc,
+                long_desc: int.long_desc,
+                support_link: int.support_link,
+                download_link: int.download_link,
+                integration_url: int.integration_url,
                 username: req.session.username,
                 eun: req.session.encodedUsername
             });
