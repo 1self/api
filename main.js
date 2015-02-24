@@ -831,7 +831,7 @@ app.get('/users_count', function (req, res) {
 
 app.get('/recent_signups', function (req, res) {
     mongoRespository.find('users', {
-        "githubUser.profileUrl": { $exists: true }
+        "githubUser.profileUrl": {$exists: true}
     }, {
         "sort": [
             ["_id", -1]
@@ -952,6 +952,48 @@ app.get('/v1/users/:username/events', function (req, res) {
         });
 });
 
+var findUser = function (username, registrationToken) {
+    var deferred = q.defer();
+    var query = {
+        username: username,
+        registrationToken: registrationToken
+    };
+    mongoRespository.findOne("users", query)
+        .then(function (user) {
+            if (!_.isEmpty(user)) {
+                deferred.resolve(user);
+            }
+            deferred.reject();
+        });
+    return deferred.promise;
+};
+
+app.post('/v1/users/:username/streams', function (req, res) {
+    var appId = req.query.appId;
+    var username = req.params.username;
+    var registrationToken = req.headers.authorization;
+    var callbackUrl = req.body.callbackUrl;
+    if (!appId) {
+        res.status(401).send("appId is missing.");
+        return;
+    }
+    findUser(username, registrationToken)
+        .then(function (user) {
+            return util.createV1Stream(appId, callbackUrl)
+                .then(function (stream) {
+                    return util.linkStreamToUser(user, stream.streamid);
+                })
+                .then(function () {
+                    return util.linkIntegrationAppToUser(user, appId)
+                });
+        })
+        .then(function () {
+            res.status(200).send("ok");
+        })
+        .catch(function (err) {
+            res.status(400).send("invalid request");
+        });
+});
 
 app.get('/eventsCount', function (req, res) {
     platformService.getEventsCount()

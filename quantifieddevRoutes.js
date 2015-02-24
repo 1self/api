@@ -80,12 +80,12 @@ module.exports = function (app) {
             else if (req.session.intent.name == "login") {
                 res.redirect('/login');
             }
-            else  {
+            else {
                 res.render('signup');
             }
         } else {
             res.render('signup');
-        };
+        }
     });
 
     app.get("/login", function (req, res) {
@@ -94,7 +94,7 @@ module.exports = function (app) {
 
         // Make sure to delete any oneselfUsername in session as it's used only while signup
         delete req.session.oneselfUsername;
-        if (!(_.isEmpty(req.query.intent))){
+        if (!(_.isEmpty(req.query.intent))) {
             req.session.intent = {};
             req.session.intent.name = req.query.intent;
         }
@@ -103,7 +103,7 @@ module.exports = function (app) {
         });
     });
 
-    app.post('/login', function(req, res){
+    app.post('/login', function (req, res) {
         // Redirect to oauth provider from here.
         res.redirect('/auth/github');
     });
@@ -115,7 +115,6 @@ module.exports = function (app) {
     app.get("/signupError", function (req, res) {
         res.render('signupError');
     });
-
 
     app.post("/captureUsername", function(req, res){
         req.session.oneselfUsername = req.body.username;
@@ -136,12 +135,6 @@ module.exports = function (app) {
         res.render('embeddableGlobe');
     });
 
-    var isStreamAlreadyLinkedToUser = function (streamid, user) {
-        return _.where(user.streams, {
-                "streamid": streamid
-            }).length > 0;
-    };
-
     var getStreamsForUser = function (oneselfUsername) {
         var streamidUsernameMapping = {
             "username": oneselfUsername.toLowerCase()
@@ -160,37 +153,6 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    var insertStreamForUser = function (user, streamid) {
-        var deferred = Q.defer();
-        var updateObject = {
-            "$push": {
-                "streams": {
-                    "streamid": streamid
-                }
-            }
-        };
-        var query = {
-            "username": user.username.toLowerCase()
-        };
-        mongoRepository.update('users', query, updateObject)
-            .then(function (user) {
-                deferred.resolve(true);
-            }, function (err) {
-                deferred.reject(err);
-            });
-        return deferred.promise;
-    };
-
-    var linkStreamToUser = function (user, streamId) {
-        var deferred = Q.defer();
-        if (isStreamAlreadyLinkedToUser(streamId, user)) {
-            deferred.resolve(false);
-        } else {
-            return insertStreamForUser(user, streamId);
-        }
-        return deferred.promise;
-    };
-
     app.get("/dashboard", sessionManager.requiresSession, function (req, res) {
         var streamId = req.query.streamId ? req.query.streamId : "";
         var readToken = req.query.readToken ? req.query.readToken : "";
@@ -198,9 +160,10 @@ module.exports = function (app) {
             util.streamExists(streamId, readToken)
                 .then(function (exists) {
                     if (exists) {
-                        getStreamsForUser(req.session.username).then(function (user) {
-                            return linkStreamToUser(user, streamId);
-                        })
+                        getStreamsForUser(req.session.username)
+                            .then(function (user) {
+                                return util.linkStreamToUser(user, streamId);
+                            })
                             .then(function (isStreamLinked) {
                                 res.render('dashboard', {
                                     streamLinked: (isStreamLinked ? "yes" : ""),
@@ -220,20 +183,21 @@ module.exports = function (app) {
                 });
 
         } else {
-            getStreamsForUser(req.session.username).then(function (user) {
-                if (user.streams && req.query.link_data !== "true") {
-                    res.render('dashboard', {
-                        username: req.session.username,
-                        avatarUrl: req.session.avatarUrl
-                    });
-                } else {
-                    res.render('dashboard', {
-                        showOverlay: true,
-                        username: req.session.username,
-                        avatarUrl: req.session.avatarUrl
-                    });
-                }
-            });
+            getStreamsForUser(req.session.username)
+                .then(function (user) {
+                    if (user.streams && req.query.link_data !== "true") {
+                        res.render('dashboard', {
+                            username: req.session.username,
+                            avatarUrl: req.session.avatarUrl
+                        });
+                    } else {
+                        res.render('dashboard', {
+                            showOverlay: true,
+                            username: req.session.username,
+                            avatarUrl: req.session.avatarUrl
+                        });
+                    }
+                });
         }
     });
 
@@ -1208,7 +1172,7 @@ module.exports = function (app) {
                     if (exists) {
                         getStreamsForUser(req.param('username'))
                             .then(function (user) {
-                                return linkStreamToUser(user, streamId);
+                                return util.linkStreamToUser(user, streamId);
                             })
                             .then(getGraphOwnerAvatarUrl)
                             .then(renderChart)
