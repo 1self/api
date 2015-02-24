@@ -882,6 +882,7 @@ app.post('/v1/streams', function (req, res) {
     console.log("auth is " + auth);
     if (auth === undefined) {
         res.send(401, "Unauthorized request. Please pass valid appId and appSecret");
+        return;
     }
     var appId = auth.split(":")[0];
     var appSecret = auth.split(":")[1];
@@ -969,15 +970,26 @@ var findUser = function (username, registrationToken) {
 };
 
 app.post('/v1/users/:username/streams', function (req, res) {
-    var appId = req.query.appId;
-    var username = req.params.username;
-    var registrationToken = req.headers.authorization;
+    var auth = req.headers.authorization;
     var callbackUrl = req.body.callbackUrl;
-    if (!appId) {
-        res.status(401).send("appId is missing.");
+    var contentType = req.headers['content-type'];
+    var registrationToken = req.headers['registration-token'];
+    var username = req.params.username;
+    if (auth === undefined) {
+        res.send(401, "Unauthorized request. Please pass valid appId and appSecret");
         return;
     }
-    findUser(username, registrationToken)
+    if (contentType !== "application/json") {
+        res.send(400, "Please use application/json as content-type");
+        return;
+    }
+    var appId = auth.split(":")[0];
+    var appSecret = auth.split(":")[1];
+
+    validateClient(appId, appSecret)
+        .then(function () {
+            return findUser(username, registrationToken);
+        })
         .then(function (user) {
             return util.createV1Stream(appId, callbackUrl)
                 .then(function (stream) {
