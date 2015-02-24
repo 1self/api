@@ -899,25 +899,6 @@ app.post('/v1/streams', function (req, res) {
         });
 });
 
-
-app.get('/v1/validate/user', function (req, res) {
-    var token = req.headers.authorization;
-    var query = {
-        registrationToken: token
-    };
-    mongoRespository.find('users', query)
-        .then(function (user) {
-            if (_.isEmpty(user)) {
-                res.status(401).send("Token invalid!!!");
-            }
-            else {
-                res.status(200).send(true);
-            }
-        }, function (error) {
-            res.status(500).send("Error is: " + error);
-        });
-});
-
 var getEventsForStreams = function (streams, skipCount, limitCount) {
     var deferred = q.defer();
     var streamids = _.map(streams, function (stream) {
@@ -970,11 +951,11 @@ app.get('/v1/users/:username/events', function (req, res) {
         });
 });
 
-var findUser = function (username, encodedUsername) {
+var findUser = function (username, registrationToken) {
     var deferred = q.defer();
     var query = {
         username: username,
-        encodedUsername: encodedUsername
+        registrationToken: registrationToken
     };
     mongoRespository.findOne("users", query)
         .then(function (user) {
@@ -989,13 +970,13 @@ var findUser = function (username, encodedUsername) {
 app.post('/v1/users/:username/streams', function (req, res) {
     var appId = req.query.appId;
     var username = req.params.username;
-    var encodedUsername = req.headers.authorization;
+    var registrationToken = req.headers.authorization;
     var callbackUrl = req.body.callbackUrl;
     if (!appId) {
         res.status(401).send("appId is missing.");
         return;
     }
-    findUser(username, encodedUsername)
+    findUser(username, registrationToken)
         .then(function (user) {
             return util.createV1Stream(appId, callbackUrl)
                 .then(function (stream) {

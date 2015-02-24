@@ -86,7 +86,6 @@ module.exports = function (app) {
         } else {
             res.render('signup');
         }
-        ;
     });
 
     app.get("/login", function (req, res) {
