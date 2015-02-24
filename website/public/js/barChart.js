@@ -1,5 +1,7 @@
 window.charts = window.charts || {};
 
+var baseColor = '#2089AB';
+
 var addUnits = function(svg, units, graphHeight) {
     if (units !== undefined) {
         svg.append("text")
@@ -217,14 +219,35 @@ d3.selection.prototype.moveToFront = function() {
 };
 
 var selectedBar;
+var revertSelected = function(){
+};
+
 var renderSelected = function(bar){
+    var highlightColour = d3.rgb(baseColor).brighter(2);
+    var yPos = bar.attr('y');
+    var width = parseInt(bar.attr('width'));
+
     bar.moveToFront();
-     bar         .transition('selection').style('filter', 'url(#drop-shadow)')
-                 .style("stroke", 'solid')
-                .style('stroke-width', '3px')
-                .style('fill', 'url(#gradient_highlight)')
-                .style('background-color', 'rgba(0, 0, 0, 0.22)');
+    bar.style('fill', baseColor)
+       .transition('selection')
+       .attr('y',  yPos - 10)
+       .attr('width', width + 4)
+       .style('filter', 'url(#drop-shadow)')
+       .style("stroke", 'solid')
+       .style('stroke-width', '3px')
+       .style('fill', highlightColour)
+       .style('background-color', 'rgba(0, 0, 0, 0.22)');
     selectedBar = bar;
+
+    revertSelected = function() {
+        bar.transition()
+        .attr('y', yPos)
+        .attr('width', width)
+        .style('filter', 'none')
+        //.style('stroke', null)
+        .style('stroke-width', '0px')
+        .style('fill', 'url(#gradient)');
+    }
 }
 
 charts.plotBarChart = function(divId, events, fromTime, tillTime, units) {
@@ -288,16 +311,7 @@ charts.plotBarChart = function(divId, events, fromTime, tillTime, units) {
             .append('rect')
             .attr('class', 'bar')
             .on("click", function(clickedBar) {
-                var oldSelection = selectedBar;
-                if(oldSelection !== undefined){
-                    //oldSelection.style
-                    oldSelection.transition()
-                    .style('filter', 'none')
-                    //.style('stroke', null)
-                    .style('stroke-width', '0px')
-                    .style('fill', 'url(#gradient)');
-                }
-
+                revertSelected();
                 selectedBar = d3.select(this);
                 renderSelected(selectedBar);
             });
