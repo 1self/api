@@ -48,6 +48,33 @@ var groupEventsByDate = function (data) {
     return groups;
 };
 
+var groupSuccessiveEventsByActionTags = function(events) {
+    groups = [];
+
+    state = arr[0].payload.actionTags;
+    group = [];
+    events.forEach(function(event){
+        if(_.isEqual(event.payload.actionTags, state)) {
+            group.push(event)
+        } else {
+            groups.push(group);
+            state = event.payload.actionTags;
+            group = [event];
+        }
+    });
+    groups.push(group);
+    return groups;
+}
+
+var joinTags = function(tags) {
+    var toTitleCase = function(str) {
+        return str.replace(/\w\S*/g, function(txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
+    };
+    tags.map(function(tag){return toTitleCase(tag)}).join(", ");
+};
+
 var composeComponents = function(components) {
     var composed = '';
     components.forEach(function(component){
@@ -131,13 +158,18 @@ var componentGroup = function(titleComponent, contentComponent) {
     return component;
 };
 
+var timelineComponent = function(componentGroups) {
+    var component = composeComponents(componentGroups);
+    return component;
+}
 
-var displayEventsOnTimeline = function (data) {
-    if (0 === data.length) {
+var displayEventsOnTimeline = function (events) {
+    if (0 === events.length) {
         return;
     }
 
-    var dateGroupedEvents = groupEventsByDate(data);
+    var dateGroupedEvents = groupEventsByDate(events);
+
     var timeline_container = $('#timeline');
     var html = "";
 
@@ -149,9 +181,9 @@ var displayEventsOnTimeline = function (data) {
             '<div class="panel-body">' +
             '<ul class="list-group">';
 
-        var listOfEvents = dateGroupedEvents[date];
+        var eventsForDate = dateGroupedEvents[date];
 
-        listOfEvents.forEach(function (current_event) {
+        eventsForDate.forEach(function (current_event) {
             var os_event = new OsEvent(current_event);
             html += '<li onclick="openInModal(\'' + os_event.url + '\');" class="list-group-item"><span class="event_title">' + os_event.name + '</span>';
             html += '<div class="event_property">' + os_event.displayValue + '</div>';
