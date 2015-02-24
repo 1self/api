@@ -985,6 +985,7 @@ app.post('/v1/users/:username/streams', function (req, res) {
     }
     var appId = auth.split(":")[0];
     var appSecret = auth.split(":")[1];
+    var streamData;
 
     validateClient(appId, appSecret)
         .then(function () {
@@ -993,14 +994,17 @@ app.post('/v1/users/:username/streams', function (req, res) {
         .then(function (user) {
             return util.createV1Stream(appId, callbackUrl)
                 .then(function (stream) {
+                    streamData = stream;
                     return util.linkStreamToUser(user, stream.streamid);
                 })
                 .then(function () {
                     return util.linkIntegrationAppToUser(user, appId)
+                })
+                .then(function () {
+                    delete streamData._id;
+                    delete streamData.appId;
+                    res.status(200).send(streamData);
                 });
-        })
-        .then(function () {
-            res.status(200).send("ok");
         })
         .catch(function (err) {
             res.status(400).send("invalid request");
