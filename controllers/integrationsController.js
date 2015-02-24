@@ -7,8 +7,11 @@ module.exports = function (app) {
     var getIntegrationDetails = function (integrationId) {
         var deferred = Q.defer();
 
+        var query = integrationId.toLowerCase().replace("-", " ");
+        var regex = new RegExp(query,"i");
+
         var byIntegrationId = {
-            "title": integrationId.toLowerCase()
+            "title": regex
         };
 
         mongoRepository.findOne('integrations', byIntegrationId)
