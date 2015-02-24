@@ -51,7 +51,7 @@
         {% for integration in integrations %}
         <div class="social-img-container">
             <a href="/integrations/{{integration.integration_id}}" class="link">
-                <img src="{{integration.icon_url}}" class="social-img twitter" tabindex="0">
+                <img src="{{integration.icon_url}}" class="social-img" style="border: 4px solid {{integration.bg_color}}" tabindex="0">
                 <img src="/img/tick.svg" class="social-img tick">
             </a>
             <span class="social-group-title">{{integration.title}}</span>

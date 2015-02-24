@@ -14,7 +14,7 @@ module.exports = function (app) {
             "title": regex
         };
 
-        mongoRepository.findOne('integrations', byIntegrationId)
+        mongoRepository.findOne('registeredApps', byIntegrationId)
             .then(function (integrationDetailObject) {
                 if (!(_.isEmpty(integrationDetailObject))) {
                     deferred.resolve(integrationDetailObject);
@@ -34,7 +34,7 @@ module.exports = function (app) {
         var deferred = Q.defer();
         var query = {};
 
-        mongoRepository.find('integrations', query)
+        mongoRepository.find('registeredApps', query)
             .then(function (integrations) {
                 if (!(_.isEmpty(integrations))) {
                     deferred.resolve(integrations);
@@ -59,7 +59,9 @@ module.exports = function (app) {
                 return {
                     title: int.title,
                     integration_id: getIntegrationIdFromTitle(int.title),
-                    icon_url: int.icon_url
+                    icon_url: int.icon_url,
+                    bg_color: int.bg_color,
+                    fg_color: int.fg_color
                 }
             });
             res.render("integrations",
