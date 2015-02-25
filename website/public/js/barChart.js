@@ -144,8 +144,15 @@ charts.plotBarChart = function(divId, events, fromTime, tillTime, units) {
         };
         var width = window.innerWidth;
         var height = width / 1.61;
-        var weekAgo = new Date(moment().subtract('days', 6).format("MM/DD/YYYY"));
-        var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
+        
+        if(toDate === undefined){
+            var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
+            var weekAgo = new Date(moment().subtract('days', 6).format("MM/DD/YYYY"));
+        } else{
+            var tomorrow = new Date(moment(toDate).format("MM/DD/YYYY"));
+            var weekAgo = new Date(moment(toDate).subtract('days', 7).format("MM/DD/YYYY"));
+        }
+        
         var xWidth = width / 7;
         var x = d3.time.scale()
             .domain([weekAgo, tomorrow])

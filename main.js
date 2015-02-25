@@ -1397,10 +1397,11 @@ var getQueryForVisualizationAPI = function (streamIds, params, fromDate, toDate)
 app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/type/json", validateRequest.validateStreamIdAndReadToken,
     function (req, res) {
         console.log("validating");
-        var lastWeek = moment.utc().startOf('day').subtract('days', 6).toISOString();
         var today = moment.utc().endOf('day').toISOString();
-        var fromDate = req.query.from || lastWeek;
         var toDate = req.query.to || today;
+        
+        var weekBeforeToDate = moment(toDate).subtract('days', 7).toISOString();
+        var fromDate = req.query.from || weekBeforeToDate;
 
         var query = getQueryForVisualizationAPI([req.params.streamId], req.params, fromDate, toDate);
         platformService.aggregate(query)
