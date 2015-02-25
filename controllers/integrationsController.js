@@ -6,14 +6,9 @@ module.exports = function (app) {
 
     var getIntegrationDetails = function (integrationId) {
         var deferred = Q.defer();
-
-        var query = integrationId.toLowerCase().replace("-", " ");
-        var regex = new RegExp(query,"i");
-
         var byIntegrationId = {
-            "title": regex
+            "url_name": integrationId
         };
-
         mongoRepository.findOne('registeredApps', byIntegrationId)
             .then(function (integrationDetailObject) {
                 if (!(_.isEmpty(integrationDetailObject))) {
@@ -26,14 +21,14 @@ module.exports = function (app) {
                 console.log("Error is", err);
                 deferred.reject(err);
             });
-
         return deferred.promise;
     };
 
-    var getIntegrations = function () {
+    var getActiveIntegrations = function () {
         var deferred = Q.defer();
-        var query = {};
-
+        var query = {
+            approved: true
+        };
         mongoRepository.find('registeredApps', query)
             .then(function (integrations) {
                 if (!(_.isEmpty(integrations))) {
@@ -46,19 +41,12 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-
-    var getIntegrationIdFromTitle = function(title){
-       var result =  title.toLowerCase().split(/\s+/g).join("-")
-        return result;
-    };
-
     app.get("/integrations", function (req, res) {
-        console.log("HIT1")
-        getIntegrations().then(function(integrations){
-            var integrations = _.collect(integrations, function(int){
+        getActiveIntegrations().then(function (integrations) {
+            var integrations = _.collect(integrations, function (int) {
                 return {
                     title: int.title,
-                    integration_id: getIntegrationIdFromTitle(int.title),
+                    integration_id: int.url_name,
                     icon_url: int.icon_url,
                     bg_color: int.bg_color,
                     fg_color: int.fg_color
@@ -69,7 +57,7 @@ module.exports = function (app) {
                     integrations: integrations
                 }
             );
-        }).catch(function(err){
+        }).catch(function (err) {
             console.log("Error is", err);
             res.send("Integrations not found.");
         });
