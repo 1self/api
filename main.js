@@ -17,6 +17,7 @@ var validateRequest = require("./validateRequest");
 var validator = require('validator');
 var mongoRespository = require('./mongoRepository.js');
 var platformService = require('./platformService.js');
+var CONTEXT_URI = process.env.CONTEXT_URI;
 
 var app = express();
 
@@ -969,7 +970,7 @@ app.get('/v1/users/:username/events', function (req, res) {
                         if (registeredApp) {
                             return {streamid: streamId, iconUrl: registeredApp.iconUrl};
                         } else {
-                            return {streamid: streamId, iconUrl: "http://localhost:5000/img/lastfmicon.svg"};
+                            return {streamid: streamId, iconUrl: CONTEXT_URI + "/img/noimage.png"};
                         }
                     })
             };
