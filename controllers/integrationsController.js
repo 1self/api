@@ -8,7 +8,7 @@ module.exports = function (app) {
     var getIntegrationDetails = function (integrationId) {
         var deferred = Q.defer();
         var byIntegrationId = {
-            "url_name": integrationId
+            "urlName": integrationId
         };
         mongoRepository.findOne('registeredApps', byIntegrationId)
             .then(function (integrationDetailObject) {
@@ -47,10 +47,10 @@ module.exports = function (app) {
             var integrations = _.collect(integrations, function (int) {
                 return {
                     title: int.title,
-                    integration_id: int.url_name,
-                    icon_url: int.icon_url,
-                    bg_color: int.bg_color,
-                    fg_color: int.fg_color
+                    integration_id: int.urlName,
+                    iconUrl: int.iconUrl,
+                    bgColor: int.bgColor,
+                    fgColor: int.fgColor
                 }
             });
             res.render("integrations",
@@ -73,12 +73,12 @@ module.exports = function (app) {
         getIntegrationDetails(integrationId).then(function (int) {
             res.render('integrations_details', {
                 title: int.title,
-                icon_url: int.icon_url,
-                short_desc: int.short_desc,
-                long_desc: int.long_desc,
-                support_link: int.support_link,
-                download_link: int.download_link,
-                integration_url: int.integration_url,
+                iconUrl: int.iconUrl,
+                shortDesc: int.shortDesc,
+                longDesc: int.longDesc,
+                supportLink: int.supportLink,
+                downloadLink: int.downloadLink,
+                integrationUrl: int.integrationUrl,
                 username: req.session.username,
                 registrationToken: req.session.registrationToken
             });
