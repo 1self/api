@@ -63,7 +63,7 @@ module.exports = function (app) {
                 return _.collect(integrations, function (int) {
                     return {
                         title: int.title,
-                        integration_id: int.urlName,
+                        integrationId: int.urlName,
                         iconUrl: int.iconUrl,
                         bgColor: int.bgColor,
                         fgColor: int.fgColor,
@@ -93,8 +93,8 @@ module.exports = function (app) {
             });
     });
 
-    app.get("/integrations/:integration_id", function (req, res) {
-        var integrationId = req.param("integration_id");
+    app.get("/integrations/:integrationId", function (req, res) {
+        var integrationId = req.param("integrationId");
         console.log("Integrations Id is ", integrationId);
 
         getIntegrationDetails(integrationId).then(function (int) {
