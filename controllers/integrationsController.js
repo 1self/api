@@ -1,6 +1,7 @@
 var mongoRepository = require('../mongoRepository.js');
 var Q = require('q');
 var _ = require("underscore");
+var sessionManager = require("./../sessionManagement");
 
 module.exports = function (app) {
 
@@ -41,7 +42,7 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    app.get("/integrations", function (req, res) {
+    app.get("/integrations", sessionManager.requiresSession, function (req, res) {
         getActiveIntegrations().then(function (integrations) {
             var integrations = _.collect(integrations, function (int) {
                 return {
@@ -54,7 +55,9 @@ module.exports = function (app) {
             });
             res.render("integrations",
                 {
-                    integrations: integrations
+                    integrations: integrations,
+                    avatarUrl: req.session.avatarUrl,
+                    username: req.session.username
                 }
             );
         }).catch(function (err) {
@@ -77,7 +80,7 @@ module.exports = function (app) {
                 download_link: int.download_link,
                 integration_url: int.integration_url,
                 username: req.session.username,
-                eun: req.session.encodedUsername
+                registrationToken: req.session.registrationToken
             });
         }).catch(function (err) {
             console.log("Error occurred", err);
