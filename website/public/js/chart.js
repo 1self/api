@@ -3,9 +3,27 @@ window.charts = window.charts || {};
 charts.graphUrl; // /v1/users/... without query params
 charts.dataPoints = [];
 
-var getEventsFor = function (type, typeId, objectTags, actionTags, operation, period, shareToken, readToken) {
+var getEventsFor = function (type
+                            , typeId
+                            , objectTags
+                            , actionTags
+                            , operation
+                            , period
+                            , shareToken
+                            , readToken
+                            , fromDate
+                            , toDate) {
+    var url = "/v1/" 
+            + type + "/" + typeId 
+            + "/events/" + objectTags
+            + "/" + actionTags
+            + "/" + operation 
+            + "/" + period + "/" + "type/json"
+            + "?" 
+            + (fromDate ? "from=" + fromDate + "&" : "")
+            + (toDate ? "to=" + toDate + "&" : "");
     return $.ajax({
-        url: "/v1/" + type + "/" + typeId + "/events/" + objectTags + "/" + actionTags + "/" + operation + "/" + period + "/" + "type/json",
+        url: url,
         data: {
             shareToken: shareToken,
             readToken: readToken
@@ -159,11 +177,11 @@ var showChartTitle = function () {
         $("#avatar").html("<img src='" + avatarUrl + "' />").addClass('avatar');
     }
     if (isUserLoggedIn || (!isUserLoggedIn && !(_.isEmpty(shareToken)))) {
-        $.when(getEventsFor("users", graphOwner, objectTags, actionTags, operation, period, shareToken, readToken))
+        $.when(getEventsFor("users", graphOwner, objectTags, actionTags, operation, period, shareToken, readToken, fromDate, toDate))
             .done(plotChart)
             .fail();
     } else {
-        $.when(getEventsFor("streams", streamId, objectTags, actionTags, operation, period, shareToken, readToken))
+        $.when(getEventsFor("streams", streamId, objectTags, actionTags, operation, period, shareToken, readToken, fromDate, toDate))
             .done(plotChart)
             .fail();
     }

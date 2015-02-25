@@ -1059,7 +1059,10 @@ module.exports = function (app) {
             var redirectUrl = "/v1/users/" + req.session.username + "/events/" +
                 req.param("objectTags") + "/" + req.param("actionTags") + "/" +
                 req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType") + "?streamId=" + req.param("streamId")
-                + "&readToken=" + req.query.readToken + bgColorQueryParam;
+                + "&readToken=" + req.query.readToken 
+                + bgColorQueryParam
+                + req.query.toDate ? '&toDate=' + req.query.toDate : '';
+                + req.query.fromDate ? '&toDate=' + req.query.fromDate : '';
             res.redirect(redirectUrl);
         } else {
             var queryString;
@@ -1082,7 +1085,9 @@ module.exports = function (app) {
                 actionTags: req.param("actionTags"),
                 operation: req.param("operation"),
                 period: req.param("period"),
-                renderType: req.param("renderType")
+                renderType: req.param("renderType"),
+                toDate: req.query.toDate,
+                fromDate: req.query.fromDate
             });
         }
     });
