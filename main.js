@@ -916,6 +916,9 @@ var getEventsForStreams = function (streams, skipCount, limitCount) {
     var orderSpec = {
         "payload.eventDateTime": -1
     };
+    var projectionSpec = {
+        "payload": 1
+    };
     var options = {
         "skip": skipCount,
         "limit": limitCount
@@ -923,6 +926,7 @@ var getEventsForStreams = function (streams, skipCount, limitCount) {
     var query = {
         'filterSpec': JSON.stringify(filterSpec),
         'orderSpec': JSON.stringify(orderSpec),
+        'projectionSpec': JSON.stringify(projectionSpec),
         'options': JSON.stringify(options)
     };
     platformService.filter(query)
@@ -934,6 +938,14 @@ var getEventsForStreams = function (streams, skipCount, limitCount) {
     return deferred.promise;
 };
 
+var findUniqueStreamIdsFromEvents = function (events) {
+    var streamIds = events.map(function (e) {
+        return e.payload.streamid;
+    });
+    return _.unique(streamIds);
+};
+
+// timeline api
 app.get('/v1/users/:username/events', function (req, res) {
     var skipCount = parseInt(req.query.skip) || 0;
     var limitCount = parseInt(req.query.limit) || 50; // by default show only 50 events per page
@@ -946,8 +958,33 @@ app.get('/v1/users/:username/events', function (req, res) {
         .then(function (streams) {
             return getEventsForStreams(streams, skipCount, limitCount);
         })
-        .then(function (response) {
-            res.send(response);
+        .then(function (events) {
+            var streamIds = findUniqueStreamIdsFromEvents(events);
+            var fetchIconUrlFromApp = function (streamId) {
+                return mongoRespository.findOne('stream', {streamid: streamId}, {appId: 1})
+                    .then(function (stream) {
+                        return mongoRespository.findOne('registeredApps', {appId: stream.appId}, {iconUrl: 1})
+                    })
+                    .then(function (registeredApp) {
+                        if (registeredApp) {
+                            return {streamid: streamId, iconUrl: registeredApp.iconUrl};
+                        } else {
+                            return {streamid: streamId, iconUrl: "http://localhost:5000/img/lastfmicon.svg"};
+                        }
+                    })
+            };
+            var iconPromises = streamIds.map(fetchIconUrlFromApp);
+
+            return q.all(iconPromises)
+                .then(function (streamIdIconMapping) {
+                    return events.map(function (e) {
+                        var iconUrl = _.findWhere(streamIdIconMapping, {streamid: e.payload.streamid}).iconUrl;
+                        return {payload: e.payload, iconUrl: iconUrl};
+                    });
+                });
+        })
+        .then(function (events) {
+            res.send(events);
         }).catch(function (error) {
             res.status(404).send("No stream associated with user.");
         });
