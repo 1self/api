@@ -25,6 +25,21 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
+    var getAlreadyIntegratedIntegrationsForUser = function (username) {
+        var deferred = Q.defer();
+        var byUsername = {
+            "username": username
+        };
+        mongoRepository.findOne('users', byUsername)
+            .then(function (user) {
+                deferred.resolve(user.integrations);
+            }, function (err) {
+                console.log("Error is", err);
+                deferred.reject(err);
+            });
+        return deferred.promise;
+    };
+
     var getActiveIntegrations = function () {
         var deferred = Q.defer();
         var query = {
@@ -43,27 +58,39 @@ module.exports = function (app) {
     };
 
     app.get("/integrations", sessionManager.requiresSession, function (req, res) {
-        getActiveIntegrations().then(function (integrations) {
-            var integrations = _.collect(integrations, function (int) {
-                return {
-                    title: int.title,
-                    integration_id: int.urlName,
-                    iconUrl: int.iconUrl,
-                    bgColor: int.bgColor,
-                    fgColor: int.fgColor
-                }
+        getActiveIntegrations()
+            .then(function (integrations) {
+                return _.collect(integrations, function (int) {
+                    return {
+                        title: int.title,
+                        integration_id: int.urlName,
+                        iconUrl: int.iconUrl,
+                        bgColor: int.bgColor,
+                        fgColor: int.fgColor,
+                        appId: int.appId
+                    }
+                })
+            }).then(function (integrations) {
+                var username = req.session.username;
+                return getAlreadyIntegratedIntegrationsForUser(username)
+                    .then(function (integrationsOfUser) {
+                        return _.forEach(integrations, function (integration) {
+                            integration.alreadyIntegrated = _.contains(integrationsOfUser, integration.appId);
+                        })
+                    });
+            }).then(function (integrations) {
+                console.log("Integrations: ",integrations);
+                res.render("integrations",
+                    {
+                        integrations: integrations,
+                        avatarUrl: req.session.avatarUrl,
+                        username: req.session.username
+                    }
+                );
+            }).catch(function (err) {
+                console.log("Error is", err);
+                res.send("Integrations not found.");
             });
-            res.render("integrations",
-                {
-                    integrations: integrations,
-                    avatarUrl: req.session.avatarUrl,
-                    username: req.session.username
-                }
-            );
-        }).catch(function (err) {
-            console.log("Error is", err);
-            res.send("Integrations not found.");
-        });
     });
 
     app.get("/integrations/:integration_id", function (req, res) {
@@ -88,4 +115,5 @@ module.exports = function (app) {
         });
     });
 
-};
+}
+;

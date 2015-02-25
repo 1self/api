@@ -154,13 +154,21 @@ body{
 .box-shadow-none{
     box-shadow: none;
 }
-.tick {
+.tick-hide {
     opacity: 0.95;
     box-shadow: none;
     position: absolute;
     top: 0;
     border: 4px solid rgba(0,174,135,0.9);
     display: none;
+}
+.tick-show {
+    opacity: 0.95;
+    box-shadow: none;
+    position: absolute;
+    top: 0;
+    border: 4px solid rgba(0,174,135,0.9);
+    display: block;
 }
 .social-img:focus{
     box-shadow: none;

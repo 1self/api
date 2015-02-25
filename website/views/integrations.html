@@ -52,7 +52,7 @@
         <div class="social-img-container">
             <a href="/integrations/{{integration.integration_id}}" class="link">
                 <img src="{{integration.iconUrl}}" class="social-img" style="border: 4px solid {{integration.bgColor}}" tabindex="0">
-                <img src="/img/tick.svg" class="social-img tick">
+                <img src="/img/tick.svg" {% if integration.alreadyIntegrated  %} class="social-img tick-show"{% endif %}{% if !integration.alreadyIntegrated %} class="social-img tick-hide"{% endif %}>
             </a>
             <span class="social-group-title">{{integration.title}}</span>
         </div>
@@ -61,7 +61,7 @@
         <div class="social-img-container">
             <a href="#" class="link">
                 <img src="/img/another.svg" class="social-img another" tabindex="0">
-                <img src="/img/tick.svg" class="social-img tick">
+                <img src="/img/tick.svg" class="social-img tick-hide">
             </a>
             <span class="social-group-title">another</span>
         </div>
