@@ -1534,9 +1534,9 @@ var updateChartComment = function (chartComment) {
     return deferred.promise;
 };
 
-var getCommentsForChart = function (graph) {
-    var oneWeekAgo = moment.utc(moment().format("YYYY-MM-DD")).subtract(1, "week")._d;
-    graph.dataPointDate = {"$gt": oneWeekAgo};
+var getCommentsForChart = function (graph, dateRange) {
+    
+    graph.dataPointDate = {"$gt": new Date(dateRange.from), "$lt": new Date(dateRange.to)};
     var deferred = q.defer();
 
     var transform = function (documents) {
@@ -1565,16 +1565,22 @@ var getCommentsForChart = function (graph) {
 };
 
 // Get comments for the graph url
-app.get("/v1/comments", function (req, res) {
+app.get("/v1/comments"
+    , validateRequest.validateDateRange
+    , function (req, res) {
     var graph = {
         username: req.query.username,
         objectTags: req.query.objectTags,
         actionTags: req.query.actionTags,
         operation: req.query.operation,
         period: req.query.period,
-        renderType: req.query.renderType
+        renderType: req.query.renderType,
     };
-    getCommentsForChart(graph).then(function (comments) {
+    var dateRange = {
+        from: req.query.from,
+        to: req.query.to
+    }
+    getCommentsForChart(graph, dateRange).then(function (comments) {
         res.send(comments);
     });
 });

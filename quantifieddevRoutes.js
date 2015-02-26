@@ -776,31 +776,36 @@ module.exports = function (app) {
     app.get('/v1/graph/share', function (req, res) {
         var graphUrl = req.query.graphUrl;
         var bgColor = req.query.bgColor;
+        var fromDate = req.query.from;
+        var toDate = req.query.to;
 
         var genShareUrl = function (graphShareObject) {
-            return graphShareObject.graphUrl + "?shareToken=" + graphShareObject.shareToken + "&bgColor=" + graphShareObject.bgColor;
+            var result = graphShareObject.graphUrl + "?";
+            var params = [
+                "shareToken=" + graphShareObject.shareToken,
+                "bgColor=" + graphShareObject.bgColor,
+                "from=" + graphShareObject.fromDate,
+                "to=" + graphShareObject.toDate
+            ]
+
+            result += params.join("&");
+            return result;
         };
 
-        getAlreadySharedGraphObject(graphUrl)
-            .then(function (graphShareObject) {
-                if (graphShareObject) {
-                    var graphShareUrl = genShareUrl(graphShareObject);
-                    res.send({graphShareUrl: graphShareUrl});
-                } else {
-                    generateToken()
-                        .then(function (token) {
-                            var graphShareObject = {
-                                shareToken: token,
-                                graphUrl: graphUrl,
-                                bgColor: bgColor
-                            };
-                            return insertGraphShareEntryInDb(graphShareObject)
-                                .then(function () {
-                                    var graphShareUrl = genShareUrl(graphShareObject);
-                                    res.send({graphShareUrl: graphShareUrl});
-                                });
-                        });
-                }
+        generateToken()
+            .then(function (token) {
+                var graphShareObject = {
+                    shareToken: token,
+                    graphUrl: graphUrl,
+                    bgColor: bgColor,
+                    fromDate: fromDate,
+                    toDate: toDate
+                };
+                return insertGraphShareEntryInDb(graphShareObject)
+                    .then(function () {
+                        var graphShareUrl = genShareUrl(graphShareObject);
+                        res.send({graphShareUrl: graphShareUrl});
+                    });
             });
     });
 
@@ -982,23 +987,23 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    var getAlreadySharedGraphObject = function (graphUrl) {
-        var deferred = Q.defer();
-        var query = {
-            "graphUrl": graphUrl
-        };
-        mongoRepository.findOne('graphShares', query)
-            .then(function (graphShareObject) {
-                if (graphShareObject) {
-                    deferred.resolve(graphShareObject);
-                } else {
-                    deferred.resolve(null);
-                }
-            }, function (err) {
-                deferred.reject(err);
-            });
-        return deferred.promise;
-    };
+    // var getAlreadySharedGraphObject = function (graphUrl) {
+    //     var deferred = Q.defer();
+    //     var query = {
+    //         "graphUrl": graphUrl
+    //     };
+    //     mongoRepository.findOne('graphShares', query)
+    //         .then(function (graphShareObject) {
+    //             if (graphShareObject) {
+    //                 deferred.resolve(graphShareObject);
+    //             } else {
+    //                 deferred.resolve(null);
+    //             }
+    //         }, function (err) {
+    //             deferred.reject(err);
+    //         });
+    //     return deferred.promise;
+    // };
 
     var insertGraphShareEntryInDb = function (graphShareObject) {
         var deferred = Q.defer();
@@ -1143,8 +1148,9 @@ module.exports = function (app) {
     };
 
     //v1/users/{{edsykes}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
-    app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/:renderType",
-        validateShareToken, function (req, res) {
+    app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/:renderType"
+        , validateShareToken
+        , function (req, res) {
             var dateRange = getDateRange(req);
 
             var getGraphOwnerAvatarUrl = function () {

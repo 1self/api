@@ -136,7 +136,9 @@ var handleShareGraph = function () {
             url: "/v1/graph/share",
             data: {
                 graphUrl: window.location.pathname,
-                bgColor: getBackgroundColor()
+                bgColor: getBackgroundColor(),
+                from: fromDate,
+                to: toDate
             },
             success: function (data) {
                 $("#shareModal").modal({show: true});
@@ -268,8 +270,14 @@ $(document).ready(function () {
 
     setBackgroundColor();
     showChartTitle();
+
+    var url = "/v1/comments";
+    var params = ["from=" + fromDate
+                , "to=" + toDate];
+    url += "?" + params.join("&");
+
     $.ajax({
-        url: "/v1/comments",
+        url: url,
         method: "GET",
         data: {
             username: graphOwner,
