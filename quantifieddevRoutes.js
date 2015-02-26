@@ -192,7 +192,6 @@ module.exports = function (app) {
                         });
                     } else {
                         res.render('dashboard', {
-                            showOverlay: true,
                             username: req.session.username,
                             avatarUrl: req.session.avatarUrl
                         });
