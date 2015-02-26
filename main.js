@@ -811,7 +811,7 @@ var correlateGithubPushesAndIDEActivity = function (streams, firstEvent, secondE
 };
 
 app.get('/', function (request, response) {
-    response.redirect('/dashboard');
+    response.redirect('/timeline');
 });
 
 app.get('/health', function (request, response) {
