@@ -115,6 +115,7 @@ module.exports = function (app) {
                 iconUrl: int.iconUrl,
                 shortDesc: int.shortDesc,
                 longDesc: int.longDesc,
+                creatorName:int.creatorName,
                 supportLink: int.supportLink,
                 downloadLink: int.downloadLink,
                 integrationUrl: int.integrationUrl,
