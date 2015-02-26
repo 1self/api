@@ -1487,7 +1487,7 @@ app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/t
             var streamIds = _.map(streams, function (stream) {
                 return stream.streamid;
             });
-            return getQueryForVisualizationAPI(streamIds, req.params, fromDate, toDate);
+            return getQueryForVisualizationAPI(streamIds, req.params, req.query.from, req.query.to);
         })
         .then(platformService.aggregate)
         .then(function (response) {

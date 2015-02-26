@@ -1183,8 +1183,8 @@ module.exports = function (app) {
                     period: req.param("period"),
                     shareToken: req.query.shareToken,
                     renderType: req.param("renderType"),
-                    fromDate: dateRange.fromDate,
-                    toDate: dateRange.toDate
+                    fromDate: dateRange.from,
+                    toDate: dateRange.to
                 });
             };
 
