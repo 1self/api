@@ -1049,8 +1049,21 @@ module.exports = function (app) {
         };
     };
 
+    var getDateRange = function(req){
+        var today = moment.utc().endOf('day').toISOString();
+        var toDate = req.query.to || today;
+        var weekBeforeToDate = moment(toDate).subtract('days', 7).toISOString();
+        var fromDate = req.query.from || weekBeforeToDate;
+
+        return {
+            'to': toDate,
+            'from': fromDate
+        }
+    }
     //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
     app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/:renderType", validateRequest.validateStreamIdAndReadToken, function (req, res) {
+        var dateRange = getDateRange(req);
+
         if (req.session.username) {
             var bgColorQueryParam = "";
             if (req.param('bgColor')) {
@@ -1061,8 +1074,8 @@ module.exports = function (app) {
                 req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType") + "?streamId=" + req.param("streamId")
                 + "&readToken=" + req.query.readToken 
                 + bgColorQueryParam
-                + req.query.toDate ? '&toDate=' + req.query.toDate : '';
-                + req.query.fromDate ? '&toDate=' + req.query.fromDate : '';
+                + '&to=' + dateRange.to;
+                + '&from=' + dateRange.from;
             res.redirect(redirectUrl);
         } else {
             var queryString;
@@ -1086,8 +1099,8 @@ module.exports = function (app) {
                 operation: req.param("operation"),
                 period: req.param("period"),
                 renderType: req.param("renderType"),
-                toDate: req.query.toDate,
-                fromDate: req.query.fromDate
+                fromDate: dateRange.from,
+                toDate: dateRange.to
             });
         }
     });
@@ -1132,6 +1145,7 @@ module.exports = function (app) {
     //v1/users/{{edsykes}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
     app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/:renderType",
         validateShareToken, function (req, res) {
+            var dateRange = getDateRange(req);
 
             var getGraphOwnerAvatarUrl = function () {
                 var deferred = Q.defer();
@@ -1168,7 +1182,9 @@ module.exports = function (app) {
                     operation: req.param("operation"),
                     period: req.param("period"),
                     shareToken: req.query.shareToken,
-                    renderType: req.param("renderType")
+                    renderType: req.param("renderType"),
+                    fromDate: dateRange.fromDate,
+                    toDate: dateRange.toDate
                 });
             };
 

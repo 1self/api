@@ -40,7 +40,7 @@ var plotChart = function (events) {
         if (events === null || events.length == 0) {
             $(".no-data").show();
         } else {
-            charts.plotBarChart("#chart", events, null, null);
+            charts.plotBarChart("#chart", events, fromDate, toDate);
             $('.detailsSection').show();
             $('.share-button-container').show();
         }

@@ -1432,16 +1432,13 @@ var getQueryForVisualizationAPI = function (streamIds, params, fromDate, toDate)
 };
 
 //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}({{:property}})/daily/{{barchart/json}}
-app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/type/json", validateRequest.validateStreamIdAndReadToken,
-    function (req, res) {
+app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/type/json"
+    , validateRequest.validateDateRange
+    , validateRequest.validateStreamIdAndReadToken
+    , function (req, res) {
         console.log("validating");
-        var today = moment.utc().endOf('day').toISOString();
-        var toDate = req.query.to || today;
         
-        var weekBeforeToDate = moment(toDate).subtract('days', 7).toISOString();
-        var fromDate = req.query.from || weekBeforeToDate;
-
-        var query = getQueryForVisualizationAPI([req.params.streamId], req.params, fromDate, toDate);
+        var query = getQueryForVisualizationAPI([req.params.streamId], req.params, req.query.from, req.query.to);
         platformService.aggregate(query)
             .then(function (response) {
                 console.log("trying to transform events");
@@ -1481,11 +1478,10 @@ var authorizeUser = function (req, res, next) {
     }
 };
 
-app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/type/json", authorizeUser, function (req, res) {
-    var lastWeek = moment.utc().startOf('day').subtract('days', 6).toISOString();
-    var today = moment.utc().endOf('day').toISOString();
-    var fromDate = req.query.from || lastWeek;
-    var toDate = req.query.to || today;
+app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/type/json"
+, authorizeUser
+, validateRequest.validateDateRange
+, function (req, res) {
     getStreamIdForUsername(req.headers.authorization, req.forUsername)
         .then(function (streams) {
             var streamIds = _.map(streams, function (stream) {
