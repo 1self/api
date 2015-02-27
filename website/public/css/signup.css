@@ -128,6 +128,10 @@ body {
     background: #19bc98;
 }
 
+.btn, .form-control {
+    border-radius: 100px;
+}
+
 @media (min-width: 600px) {
     .container {
         width: 400px;

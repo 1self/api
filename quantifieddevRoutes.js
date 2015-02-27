@@ -47,7 +47,11 @@ module.exports = function (app) {
 
     app.get("/signup", function (req, res) {
 
-        sessionManager.resetSession(req);
+        //sessionManager.resetSession(req);
+        if(req.session.username) {
+            res.redirect("/timeline");
+            return;
+        }
 
         if ("sandbox" == process.env.NODE_ENV) {
             res.status(404).send("*** This environment does not support this feature ***");
@@ -89,6 +93,10 @@ module.exports = function (app) {
     });
 
     app.get("/login", function (req, res) {
+        if(req.session.username) {
+            res.redirect("/timeline");
+            return;
+        }
         req.session.auth = 'github.login';
         var authExists = req.query.authExists;
 
@@ -192,7 +200,6 @@ module.exports = function (app) {
                         });
                     } else {
                         res.render('dashboard', {
-                            showOverlay: true,
                             username: req.session.username,
                             avatarUrl: req.session.avatarUrl
                         });
@@ -776,31 +783,36 @@ module.exports = function (app) {
     app.get('/v1/graph/share', function (req, res) {
         var graphUrl = req.query.graphUrl;
         var bgColor = req.query.bgColor;
+        var fromDate = req.query.from;
+        var toDate = req.query.to;
 
         var genShareUrl = function (graphShareObject) {
-            return graphShareObject.graphUrl + "?shareToken=" + graphShareObject.shareToken + "&bgColor=" + graphShareObject.bgColor;
+            var result = graphShareObject.graphUrl + "?";
+            var params = [
+                "shareToken=" + graphShareObject.shareToken,
+                "bgColor=" + graphShareObject.bgColor,
+                "from=" + graphShareObject.fromDate,
+                "to=" + graphShareObject.toDate
+            ]
+
+            result += params.join("&");
+            return result;
         };
 
-        getAlreadySharedGraphObject(graphUrl)
-            .then(function (graphShareObject) {
-                if (graphShareObject) {
-                    var graphShareUrl = genShareUrl(graphShareObject);
-                    res.send({graphShareUrl: graphShareUrl});
-                } else {
-                    generateToken()
-                        .then(function (token) {
-                            var graphShareObject = {
-                                shareToken: token,
-                                graphUrl: graphUrl,
-                                bgColor: bgColor
-                            };
-                            return insertGraphShareEntryInDb(graphShareObject)
-                                .then(function () {
-                                    var graphShareUrl = genShareUrl(graphShareObject);
-                                    res.send({graphShareUrl: graphShareUrl});
-                                });
-                        });
-                }
+        generateToken()
+            .then(function (token) {
+                var graphShareObject = {
+                    shareToken: token,
+                    graphUrl: graphUrl,
+                    bgColor: bgColor,
+                    fromDate: fromDate,
+                    toDate: toDate
+                };
+                return insertGraphShareEntryInDb(graphShareObject)
+                    .then(function () {
+                        var graphShareUrl = genShareUrl(graphShareObject);
+                        res.send({graphShareUrl: graphShareUrl});
+                    });
             });
     });
 
@@ -982,23 +994,23 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    var getAlreadySharedGraphObject = function (graphUrl) {
-        var deferred = Q.defer();
-        var query = {
-            "graphUrl": graphUrl
-        };
-        mongoRepository.findOne('graphShares', query)
-            .then(function (graphShareObject) {
-                if (graphShareObject) {
-                    deferred.resolve(graphShareObject);
-                } else {
-                    deferred.resolve(null);
-                }
-            }, function (err) {
-                deferred.reject(err);
-            });
-        return deferred.promise;
-    };
+    // var getAlreadySharedGraphObject = function (graphUrl) {
+    //     var deferred = Q.defer();
+    //     var query = {
+    //         "graphUrl": graphUrl
+    //     };
+    //     mongoRepository.findOne('graphShares', query)
+    //         .then(function (graphShareObject) {
+    //             if (graphShareObject) {
+    //                 deferred.resolve(graphShareObject);
+    //             } else {
+    //                 deferred.resolve(null);
+    //             }
+    //         }, function (err) {
+    //             deferred.reject(err);
+    //         });
+    //     return deferred.promise;
+    // };
 
     var insertGraphShareEntryInDb = function (graphShareObject) {
         var deferred = Q.defer();
@@ -1049,8 +1061,21 @@ module.exports = function (app) {
         };
     };
 
+    var getDateRange = function(req){
+        var max = req.query.to || moment.utc().endOf('day').toISOString();;
+
+        var defaultMin = moment(max).startOf('day').subtract('days', 6).toISOString();
+        var min = req.query.from || defaultMin;
+
+        return {
+            'to': max,
+            'from': min
+        }
+    }
     //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
     app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/:renderType", validateRequest.validateStreamIdAndReadToken, function (req, res) {
+        var dateRange = getDateRange(req);
+
         if (req.session.username) {
             var bgColorQueryParam = "";
             if (req.param('bgColor')) {
@@ -1059,7 +1084,10 @@ module.exports = function (app) {
             var redirectUrl = "/v1/users/" + req.session.username + "/events/" +
                 req.param("objectTags") + "/" + req.param("actionTags") + "/" +
                 req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType") + "?streamId=" + req.param("streamId")
-                + "&readToken=" + req.query.readToken + bgColorQueryParam;
+                + "&readToken=" + req.query.readToken 
+                + bgColorQueryParam
+                + '&to=' + dateRange.to;
+                + '&from=' + dateRange.from;
             res.redirect(redirectUrl);
         } else {
             var queryString;
@@ -1082,7 +1110,9 @@ module.exports = function (app) {
                 actionTags: req.param("actionTags"),
                 operation: req.param("operation"),
                 period: req.param("period"),
-                renderType: req.param("renderType")
+                renderType: req.param("renderType"),
+                fromDate: dateRange.from,
+                toDate: dateRange.to
             });
         }
     });
@@ -1125,8 +1155,10 @@ module.exports = function (app) {
     };
 
     //v1/users/{{edsykes}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
-    app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/:renderType",
-        validateShareToken, function (req, res) {
+    app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/:renderType"
+        , validateShareToken
+        , function (req, res) {
+            var dateRange = getDateRange(req);
 
             var getGraphOwnerAvatarUrl = function () {
                 var deferred = Q.defer();
@@ -1163,7 +1195,9 @@ module.exports = function (app) {
                     operation: req.param("operation"),
                     period: req.param("period"),
                     shareToken: req.query.shareToken,
-                    renderType: req.param("renderType")
+                    renderType: req.param("renderType"),
+                    fromDate: dateRange.from,
+                    toDate: dateRange.to
                 });
             };
 

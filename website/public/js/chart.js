@@ -3,9 +3,27 @@ window.charts = window.charts || {};
 charts.graphUrl; // /v1/users/... without query params
 charts.dataPoints = [];
 
-var getEventsFor = function (type, typeId, objectTags, actionTags, operation, period, shareToken, readToken) {
+var getEventsFor = function (type
+                            , typeId
+                            , objectTags
+                            , actionTags
+                            , operation
+                            , period
+                            , shareToken
+                            , readToken
+                            , fromDate
+                            , toDate) {
+    var url = "/v1/" 
+            + type + "/" + typeId 
+            + "/events/" + objectTags
+            + "/" + actionTags
+            + "/" + operation 
+            + "/" + period + "/" + "type/json"
+            + "?" 
+            + (fromDate ? "from=" + fromDate + "&" : "")
+            + (toDate ? "to=" + toDate + "&" : "");
     return $.ajax({
-        url: "/v1/" + type + "/" + typeId + "/events/" + objectTags + "/" + actionTags + "/" + operation + "/" + period + "/" + "type/json",
+        url: url,
         data: {
             shareToken: shareToken,
             readToken: readToken
@@ -22,7 +40,7 @@ var plotChart = function (events) {
         if (events === null || events.length == 0) {
             $(".no-data").show();
         } else {
-            charts.plotBarChart("#chart", events, null, null);
+            charts.plotBarChart("#chart", events, fromDate, toDate);
             $('.detailsSection').show();
             $('.share-button-container').show();
         }
@@ -118,7 +136,9 @@ var handleShareGraph = function () {
             url: "/v1/graph/share",
             data: {
                 graphUrl: window.location.pathname,
-                bgColor: getBackgroundColor()
+                bgColor: getBackgroundColor(),
+                from: fromDate,
+                to: toDate
             },
             success: function (data) {
                 $("#shareModal").modal({show: true});
@@ -159,11 +179,11 @@ var showChartTitle = function () {
         $("#avatar").html("<img src='" + avatarUrl + "' />").addClass('avatar');
     }
     if (isUserLoggedIn || (!isUserLoggedIn && !(_.isEmpty(shareToken)))) {
-        $.when(getEventsFor("users", graphOwner, objectTags, actionTags, operation, period, shareToken, readToken))
+        $.when(getEventsFor("users", graphOwner, objectTags, actionTags, operation, period, shareToken, readToken, fromDate, toDate))
             .done(plotChart)
             .fail();
     } else {
-        $.when(getEventsFor("streams", streamId, objectTags, actionTags, operation, period, shareToken, readToken))
+        $.when(getEventsFor("streams", streamId, objectTags, actionTags, operation, period, shareToken, readToken, fromDate, toDate))
             .done(plotChart)
             .fail();
     }
@@ -217,7 +237,7 @@ charts.showComments = function () {
 
 var displayCommentsSummary = function () {
     for (var i = 6; i >= 0; i--) {
-        var currentDataPointDate = moment.utc().subtract(i, 'days').format("YYYY-MM-DD"); // "2014-11-14"
+        var currentDataPointDate = moment(toDate).subtract(1 + i, 'days').format("YYYY-MM-DD"); // "2014-11-14"
         var currentDataPoint = _.findWhere(charts.dataPoints, {"dataPointDate": currentDataPointDate});
         if (!_.isEmpty(currentDataPoint)) {
             var latest3Avatars = currentDataPoint.avatars.slice(0, 3);
@@ -250,8 +270,14 @@ $(document).ready(function () {
 
     setBackgroundColor();
     showChartTitle();
+
+    var url = "/v1/comments";
+    var params = ["from=" + fromDate
+                , "to=" + toDate];
+    url += "?" + params.join("&");
+
     $.ajax({
-        url: "/v1/comments",
+        url: url,
         method: "GET",
         data: {
             username: graphOwner,

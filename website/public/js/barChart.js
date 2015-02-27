@@ -130,7 +130,9 @@ var addNowLine = function(svg, x, graphHeight) {
         .text('now');
 };
 
-charts.plotBarChart = function(divId, events, fromTime, tillTime, units) {
+charts.plotBarChart = function(divId, events, fromDate, toDate) {
+    var units;
+
     events = _.sortBy(events, function(e) {
         return e.date;
     })
@@ -144,11 +146,14 @@ charts.plotBarChart = function(divId, events, fromTime, tillTime, units) {
         };
         var width = window.innerWidth;
         var height = width / 1.61;
-        var weekAgo = new Date(moment().subtract('days', 6).format("MM/DD/YYYY"));
-        var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
-        var xWidth = width / 7;
+        
+        var dataMax = new Date(moment(toDate));
+        var dataMin = new Date(moment(fromDate));   
+        var dataDiff = ((dataMax - dataMin) / 1000 / 60 / 60 / 24);
+        
+        var xWidth = width / dataDiff;
         var x = d3.time.scale()
-            .domain([weekAgo, tomorrow])
+            .domain([dataMin, dataMax])
             .rangeRound([0, width - margin.left - margin.right])
             .nice();
 

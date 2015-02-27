@@ -58,6 +58,7 @@ module.exports = function (app) {
     };
 
     app.get("/integrations", sessionManager.requiresSession, function (req, res) {
+        var totalIntegrationsIntegrated = 0;
         getActiveIntegrations()
             .then(function (integrations) {
                 return _.collect(integrations, function (int) {
@@ -76,24 +77,35 @@ module.exports = function (app) {
                     .then(function (integrationsOfUser) {
                         return _.forEach(integrations, function (integration) {
                             integration.alreadyIntegrated = _.contains(integrationsOfUser, integration.appId);
+                            if(integration.alreadyIntegrated){
+                                totalIntegrationsIntegrated++;
+                            }
                         })
                     });
             }).then(function (integrations) {
-                console.log("Integrations: ",integrations);
-                res.render("integrations",
-                    {
-                        integrations: integrations,
-                        avatarUrl: req.session.avatarUrl,
-                        username: req.session.username
-                    }
-                );
+                var infoForIntegrations = {
+                    integrations: integrations,
+                    totalIntegrationsIntegrated: totalIntegrationsIntegrated,
+                    avatarUrl: req.session.avatarUrl,
+                    username: req.session.username
+                };
+                if(totalIntegrationsIntegrated === 0) {
+                    res.render("integrations",infoForIntegrations);
+                }
+                else if(totalIntegrationsIntegrated > 0 && totalIntegrationsIntegrated < 3){
+                    res.render("integrationsWithDriveIntoLink",infoForIntegrations);
+                }
+                else {
+                    res.render("integrationWithDriveIntoBtn",infoForIntegrations);
+                }
+
             }).catch(function (err) {
                 console.log("Error is", err);
                 res.send("Integrations not found.");
             });
     });
 
-    app.get("/integrations/:integrationId", function (req, res) {
+    app.get("/integrations/:integrationId", sessionManager.requiresSession, function (req, res) {
         var integrationId = req.param("integrationId");
         console.log("Integrations Id is ", integrationId);
 
@@ -103,6 +115,7 @@ module.exports = function (app) {
                 iconUrl: int.iconUrl,
                 shortDesc: int.shortDesc,
                 longDesc: int.longDesc,
+                creatorName:int.creatorName,
                 supportLink: int.supportLink,
                 downloadLink: int.downloadLink,
                 integrationUrl: int.integrationUrl,

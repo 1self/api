@@ -811,7 +811,7 @@ var correlateGithubPushesAndIDEActivity = function (streams, firstEvent, secondE
 };
 
 app.get('/', function (request, response) {
-    response.redirect('/dashboard');
+    response.redirect('/timeline');
 });
 
 app.get('/health', function (request, response) {
@@ -1432,15 +1432,13 @@ var getQueryForVisualizationAPI = function (streamIds, params, fromDate, toDate)
 };
 
 //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}({{:property}})/daily/{{barchart/json}}
-app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/type/json", validateRequest.validateStreamIdAndReadToken,
-    function (req, res) {
+app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/type/json"
+    , validateRequest.validateDateRange
+    , validateRequest.validateStreamIdAndReadToken
+    , function (req, res) {
         console.log("validating");
-        var lastWeek = moment.utc().startOf('day').subtract('days', 6).toISOString();
-        var today = moment.utc().endOf('day').toISOString();
-        var fromDate = req.query.from || lastWeek;
-        var toDate = req.query.to || today;
-
-        var query = getQueryForVisualizationAPI([req.params.streamId], req.params, fromDate, toDate);
+        
+        var query = getQueryForVisualizationAPI([req.params.streamId], req.params, req.query.from, req.query.to);
         platformService.aggregate(query)
             .then(function (response) {
                 console.log("trying to transform events");
@@ -1480,17 +1478,16 @@ var authorizeUser = function (req, res, next) {
     }
 };
 
-app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/type/json", authorizeUser, function (req, res) {
-    var lastWeek = moment.utc().startOf('day').subtract('days', 6).toISOString();
-    var today = moment.utc().endOf('day').toISOString();
-    var fromDate = req.query.from || lastWeek;
-    var toDate = req.query.to || today;
+app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/type/json"
+, authorizeUser
+, validateRequest.validateDateRange
+, function (req, res) {
     getStreamIdForUsername(req.headers.authorization, req.forUsername)
         .then(function (streams) {
             var streamIds = _.map(streams, function (stream) {
                 return stream.streamid;
             });
-            return getQueryForVisualizationAPI(streamIds, req.params, fromDate, toDate);
+            return getQueryForVisualizationAPI(streamIds, req.params, req.query.from, req.query.to);
         })
         .then(platformService.aggregate)
         .then(function (response) {
@@ -1537,9 +1534,9 @@ var updateChartComment = function (chartComment) {
     return deferred.promise;
 };
 
-var getCommentsForChart = function (graph) {
-    var oneWeekAgo = moment.utc(moment().format("YYYY-MM-DD")).subtract(1, "week")._d;
-    graph.dataPointDate = {"$gt": oneWeekAgo};
+var getCommentsForChart = function (graph, dateRange) {
+    
+    graph.dataPointDate = {"$gte": new Date(dateRange.from), "$lt": new Date(dateRange.to)};
     var deferred = q.defer();
 
     var transform = function (documents) {
@@ -1568,16 +1565,22 @@ var getCommentsForChart = function (graph) {
 };
 
 // Get comments for the graph url
-app.get("/v1/comments", function (req, res) {
+app.get("/v1/comments"
+    , validateRequest.validateDateRange
+    , function (req, res) {
     var graph = {
         username: req.query.username,
         objectTags: req.query.objectTags,
         actionTags: req.query.actionTags,
         operation: req.query.operation,
         period: req.query.period,
-        renderType: req.query.renderType
+        renderType: req.query.renderType,
     };
-    getCommentsForChart(graph).then(function (comments) {
+    var dateRange = {
+        from: req.query.from,
+        to: req.query.to
+    }
+    getCommentsForChart(graph, dateRange).then(function (comments) {
         res.send(comments);
     });
 });

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <script src="/js/jquery.js"></script>
+    <script src="/js/jquery.cookie.js"></script>
+    <title>1self - Live smarter</title>
+    <link rel="stylesheet" type="text/css" href="/css/integrations.css">
+    <link rel="stylesheet" type="text/css" href="/css/integration-connect.css">
+</head>
+<body>
+
+	<div class="wrapper">
+		<div class="welcome-container">
+            <div class="logo integrationlogo left-aligned">
+                <img src={{avatarUrl}} class="integration-logo-img white-border-three-pixle">
+                <div class="left-dot dot"></div>
+                <div class="right-dot dot"></div>
+            </div>
+			<div class="welcome-message left-aligned">
+				<div class="welcome-message-wrapper">
+				<h1 class="orange-color welcome-heading">
+					Awesome 
+				</h1>
+				<p class="welcome-details">
+					{{totalIntegrationsIntegrated}} integration completed
+				</p>
+				</div>
+			</div>
+		</div>	
+		<div class="divider">
+			<div class="middle-dot-container">
+				<span class="middle-dot"></span>
+			</div>
+		</div>	
+			<p class="padding-one-percent paragraph-text">Good integrating! Your data is tracking in. Now start making sense of it all. Your streams of data all join together in your personal river. Head over there now.</p>
+			<button class="custom-button left-aligned" onclick="window.location.href='/timeline'">Drive into your river</button>
+			<div class="clear-both"></div>
+			<p class="padding-top-three-percent paragraph-text ">Or, continue uniting your data and start living a smarter life</p>
+        <div class="social-container">
+
+            {% for integration in integrations %}
+            <div class="social-img-container">
+                <a href="/integrations/{{integration.integrationId}}" class="link">
+                    <img src="{{integration.iconUrl}}" class="social-img" style="border: 4px solid {{integration.bgColor}}" tabindex="0">
+                    <img src="/img/tick.svg" {% if integration.alreadyIntegrated  %} class="social-img tick-show"{% endif %}{% if !integration.alreadyIntegrated %} class="social-img tick-hide"{% endif %}>
+                </a>
+                <span class="social-group-title">{{integration.title}}</span>
+            </div>
+            {% endfor %}
+
+        </div>
+	</div>
+</body>
+</html> 
