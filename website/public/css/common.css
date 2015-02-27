@@ -46,17 +46,15 @@ body{
 .accordian-title-container,.ui-accordion-content{
 	background: rgb(0,184,234);
 	color: #fff;
-	border-radius: 17px;
 	padding:6px 15px 6px;
-	border: 1px solid #FFF;
 }
  .ui-accordion-content{
 	padding-top: 0;
-	border-top-left-radius: 0;
-	border-top-right-radius: 0;
+	border-bottom-left-radius: 17px;
+	border-bottom-right-radius: 17px;
 	border-top: none;
 }
-.accordian-title-container{
+.accordian-title-container-active{
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 	border-bottom: none;
@@ -69,6 +67,10 @@ body{
 }
 .accordion-container{
 	font-family: raleway-regular;
+	border: 1px solid #fff;
+	border-radius: 17px;
+	margin-bottom: 15px;
+	background: rgb(0,184,234);
 }
 .accordian-title-logo{
 	width: 3.5%;
@@ -97,6 +99,7 @@ body{
 	vertical-align: middle;
 	width: 3.5%;
 	text-align: center;
+	margin-top: 4px;
 }
 .time-stamp,.counter{
 	float: right;
@@ -106,8 +109,8 @@ body{
 	text-align: right;
 }
 .accordian-title-container{
-	margin-top: 15px;
 	overflow: hidden;
+	border-radius: 17px;
 }
 .float-left{
 	float: left;
@@ -132,7 +135,7 @@ body{
 	width: 49%;
 	display: inline-block;
 	float: left;
-	padding: 4px 0 0;
+	padding: 4px 0 4px;
 	border-top-left-radius: 5px; 
  	border-bottom-left-radius: 5px; 
 }
@@ -187,7 +190,8 @@ body{
 	font-size: 1.4em;
 	text-align: center;
 	color: #fff;
-	margin: 20px 0 0 0;
+	margin: 20px 0 10px 0;
+	font-weight: bold;
 }
 
 .ui-accordion-content {
@@ -209,6 +213,10 @@ body{
 	margin-top: 0;
 	margin-bottom: 0;
 } 
+.accordian-title{
+		font-size: 1.3em;
+		font-weight: bold;
+}
 @media screen and (max-width: 960px) {
 	.accordian-title-logo,.counter{
 		width: 8%;

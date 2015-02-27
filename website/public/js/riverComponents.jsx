@@ -7,7 +7,7 @@
 
       var riverData = [
     {date: "Today", data: [
-      {title: "Browse", from: "9:00", to: "10:00", icon: "img/visit-counter-icon.png" ,chartUrl: "https://api.1self.co/v1/streams/ZLXETTQVBIZGMUMY/events/self/code/sum(duration)/daily/barchart?readToken=e573d3091aeece819e6e0d8904fbbcc5b257591b4d8a", events: [
+      {title: "Browse", from: "9:00", to: "10:00", icon: "img/visit-counter-icon.png" ,chartUrl: "https://api.1self.co/v1/streams/ZLXETTQVBIZGMUMY/events/self/code/sum(duration)/daily/barchart?readToken=e573d3091aeece819e6e0d8904fbbcc5b257591b4d8a?bgColor=00a2d4", events: [
         {title: "Music Listen", time: "09:10", properties: [
           {name: "Track Name", value: "Get Up Stand Up"},
           {name: "Artist", value: "Bob Marley"}
@@ -120,7 +120,7 @@
         <div onClick={this.handleClick} className="accordian-title-container"><img className="accordian-title-logo float-left" src={this.props.icon} />
           <div className="accordian-heading float-left">
             <div className="width-100 center-aligned">
-              <h3> {this.props.title}</h3>
+              <h3 className="accordian-title"> {this.props.title}</h3>
               <span>From {this.props.from} to {this.props.to}</span>
             </div>
           </div>
@@ -264,3 +264,5 @@
 var renderTimeline = function(events){
   React.render(<River events={events} />, document.getElementById('river'));
 };
+
+  React.render(<River events={riverData} />, document.getElementById('river'));

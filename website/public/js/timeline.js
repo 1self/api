@@ -2,10 +2,10 @@ var skip = 0;
 var limit = 50; // per page 50 records
 
 $(document).ready(function () {
-    getEvents(skip, limit);
+    //getEvents(skip, limit);
     $('#more_events_button').click(function () {
         skip += 50;
-        getEvents(skip, limit);
+        //getEvents(skip, limit);
     });
 });
 
