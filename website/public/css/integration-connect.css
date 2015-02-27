@@ -31,6 +31,10 @@
 .custom-paragraph-text{
     font-size: 1.2em;
     margin:20px 0;
+    display: inline-block;
+}
+.integration-wrapper .middle-dot{
+    display: inline;
 }
 .green-color{
     color: #0dac8b;
@@ -90,6 +94,9 @@
     }
     .integration-wrapper .divider{
         border: none;
+    }
+    .integration-wrapper .middle-dot{
+        display: none;
     }
     .connect-now-btn-container{
         margin:0 auto;
