@@ -77,7 +77,7 @@ module.exports = function (app) {
                     .then(function (integrationsOfUser) {
                         return _.forEach(integrations, function (integration) {
                             integration.alreadyIntegrated = _.contains(integrationsOfUser, integration.appId);
-                            if(integration.alreadyIntegrated){
+                            if (integration.alreadyIntegrated) {
                                 totalIntegrationsIntegrated++;
                             }
                         })
@@ -89,14 +89,14 @@ module.exports = function (app) {
                     avatarUrl: req.session.avatarUrl,
                     username: req.session.username
                 };
-                if(totalIntegrationsIntegrated === 0) {
-                    res.render("integrations",infoForIntegrations);
+                if (totalIntegrationsIntegrated === 0) {
+                    res.render("integrations", infoForIntegrations);
                 }
-                else if(totalIntegrationsIntegrated > 0 && totalIntegrationsIntegrated < 3){
-                    res.render("integrationsWithDriveIntoLink",infoForIntegrations);
+                else if (totalIntegrationsIntegrated > 0 && totalIntegrationsIntegrated < 3) {
+                    res.render("integrationsWithDriveIntoLink", infoForIntegrations);
                 }
                 else {
-                    res.render("integrationWithDriveIntoBtn",infoForIntegrations);
+                    res.render("integrationWithDriveIntoBtn", infoForIntegrations);
                 }
 
             }).catch(function (err) {
@@ -107,26 +107,32 @@ module.exports = function (app) {
 
     app.get("/integrations/:integrationId", sessionManager.requiresSession, function (req, res) {
         var integrationId = req.param("integrationId");
-        console.log("Integrations Id is ", integrationId);
-
-        getIntegrationDetails(integrationId).then(function (int) {
-            res.render('integrations_details', {
-                title: int.title,
-                iconUrl: int.iconUrl,
-                shortDesc: int.shortDesc,
-                longDesc: int.longDesc,
-                creatorName:int.creatorName,
-                supportLink: int.supportLink,
-                downloadLink: int.downloadLink,
-                integrationUrl: int.integrationUrl,
-                username: req.session.username,
-                registrationToken: req.session.registrationToken
+        getIntegrationDetails(integrationId)
+            .then(function (int) {
+                return getAlreadyIntegratedIntegrationsForUser(req.session.username)
+                    .then(function (integrationsOfUser) {
+                        int.alreadyIntegrated = _.contains(integrationsOfUser, int.appId);
+                        return int;
+                    })
+            })
+            .then(function (int) {
+                res.render('integrations_details', {
+                    title: int.title,
+                    iconUrl: int.iconUrl,
+                    shortDesc: int.shortDesc,
+                    longDesc: int.longDesc,
+                    creatorName: int.creatorName,
+                    supportLink: int.supportLink,
+                    downloadLink: int.downloadLink,
+                    integrationUrl: int.integrationUrl,
+                    alreadyIntegrated: int.alreadyIntegrated,
+                    username: req.session.username,
+                    registrationToken: req.session.registrationToken
+                });
+            })
+            .catch(function (err) {
+                console.log("Error occurred", err);
+                res.send(err);
             });
-        }).catch(function (err) {
-            console.log("Error occurred", err);
-            res.send(err);
-        });
     });
-
-}
-;
+};
