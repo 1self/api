@@ -1054,7 +1054,7 @@ module.exports = function (app) {
     };
 
     var getDateRange = function(req){
-        var today = moment.utc().endOf('day').toISOString();
+        var today = moment.utc().add('day', 1).startOf('day').toISOString();
         var toDate = req.query.to || today;
         var weekBeforeToDate = moment(toDate).subtract('days', 7).toISOString();
         var fromDate = req.query.from || weekBeforeToDate;

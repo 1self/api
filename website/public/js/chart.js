@@ -237,7 +237,7 @@ charts.showComments = function () {
 
 var displayCommentsSummary = function () {
     for (var i = 6; i >= 0; i--) {
-        var currentDataPointDate = moment.utc().subtract(i, 'days').format("YYYY-MM-DD"); // "2014-11-14"
+        var currentDataPointDate = moment(toDate).subtract(1 + i, 'days').format("YYYY-MM-DD"); // "2014-11-14"
         var currentDataPoint = _.findWhere(charts.dataPoints, {"dataPointDate": currentDataPointDate});
         if (!_.isEmpty(currentDataPoint)) {
             var latest3Avatars = currentDataPoint.avatars.slice(0, 3);

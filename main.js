@@ -1536,7 +1536,7 @@ var updateChartComment = function (chartComment) {
 
 var getCommentsForChart = function (graph, dateRange) {
     
-    graph.dataPointDate = {"$gt": new Date(dateRange.from), "$lt": new Date(dateRange.to)};
+    graph.dataPointDate = {"$gte": new Date(dateRange.from), "$lt": new Date(dateRange.to)};
     var deferred = q.defer();
 
     var transform = function (documents) {
