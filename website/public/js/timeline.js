@@ -1,17 +1,14 @@
 var skip = 0;
-const limit = 50; // per page 50 records
+var limit = 50; // per page 50 records
 
 $(document).ready(function () {
     getEvents(skip, limit);
     $('#more_events_button').click(function () {
-        $(this).hide();
         skip += 50;
         getEvents(skip, limit);
     });
-    $('#modal_close_button').click(function () {
-        $('#display_chart_modal').hide();
-    });
 });
+
 
 function setHeader(xhr) {
     xhr.setRequestHeader('Authorization', eun);
@@ -22,181 +19,12 @@ var getEvents = function (skip, limit) {
         url: "/v1/users/" + username + "/events?skip=" + skip + "&limit=" + limit,
         type: 'GET',
         dataType: 'json',
-        success: displayEventsOnTimeline,
+        success: renderTimeline,
         error: function () {
             console.error('Problem while fetching timeline events!');
         },
         beforeSend: setHeader
     });
-};
-
-var groupEventsByDate = function (data) {
-    var groups = {};
-
-    data.forEach(function (event) {
-        try {
-            var date = event.payload.eventDateTime.split('T')[0];
-        } catch (e) {
-            console.log(JSON.stringify(event));
-        }
-        if (!groups[date]) {
-            groups[date] = [];
-        }
-        groups[date].unshift(event);
-    });
-
-    return groups;
-};
-
-var groupSuccessiveEventsByActionTags = function(events) {
-    groups = [];
-
-    state = arr[0].payload.actionTags;
-    group = [];
-    events.forEach(function(event){
-        if(_.isEqual(event.payload.actionTags, state)) {
-            group.push(event)
-        } else {
-            groups.push(group);
-            state = event.payload.actionTags;
-            group = [event];
-        }
-    });
-    groups.push(group);
-    return groups;
-}
-
-var joinTags = function(tags) {
-    var toTitleCase = function(str) {
-        return str.replace(/\w\S*/g, function(txt) {
-            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-        });
-    };
-    tags.map(function(tag){return toTitleCase(tag)}).join(", ");
-};
-
-var composeComponents = function(components) {
-    var composed = '';
-    components.forEach(function(component){
-        composed += component + '\n';
-    });
-    return composed;
-};
-
-var componentTitle = function(actionTag, from, to, count, logo) {
-    var component = '
-    <div class="accordian-title-container">
-        <img class="accordian-title-logo float-left" src="' + logo+ '">
-        <div class="accordian-heading float-left">
-            <div class="width-100 center-aligned">
-                <h3>'+ actionTag +'</h3>
-                <span>From '+ from +' to '+ to +'</span>
-             </div>
-        </div>
-        <span class="counter bold">'+ logo +'</span>
-    </div>';
-   return component;
-};
-
-var componentDetails = function(time, property, value) {
-    component = '
-    <div class="details">
-        <div class="clear-all">
-            <h4 class="list-title">Music Listen</h4>
-            <div class="time-stamp">'+ time +'</div>
-        </div>
-        <div class="clear-all">
-            <span>'+ property +' :</span>
-            <span>&ldquo;'+ value +'&rdquo;</span>  
-      </div>
-    </div>'
-    return component;
-};
-
-var componentDetailsList = function(detailComponents) {
-    var start = '<div class="clear-all list-container-class" id="list-container">';
-    var details = composeComponents(detailComponents);
-    var end = "</div>"
-    var component = start + details + end;
-    return component;
-};
-
-var componentGraph = function(graphUrl) {
-    var component = '
-    <div class="clear-all">
-      <div class="accordian-title-logo float-left height-ten-pixle hide-on-mobile"></div>
-      <div class="clear-all graph-container-class accordian-heading righ-aligned" id="graph-container" style="display:none">
-          
-          <iframe src="'+ graphUrl +'" class="graph-iframe">
-          </iframe>
-      </div>
-    </div>'
-    return component;
-};
-
-var componentContent = function(detailsListComponent, graphComponent) {
-    var start = '
-    <div>
-        <div class="accordian-title-logo float-left height-ten-pixle"></div>
-        <div class="accordian-heading float-left">
-            <span class="list-graph-toggle-container">
-                <a href="#" class="graph-toggle-link border-right list-link active-link">
-                    <img src="images/list-icon.png" class="graph-toggle-icon">
-                </a>   
-                <a href="#" class="graph-toggle-link graph-link"> 
-                    <img src="images/graph-icon.png" class="graph-toggle-icon">
-                </a> 
-            </span>
-        </div>'
-    var end = '</div>'
-    var component = composeComponents([start, detailsListComponent, graphComponent, end]);
-    return component;
-};
-
-var componentGroup = function(titleComponent, contentComponent) {
-    var component = composeComponents([titleComponent, contentComponent]);
-    return component;
-};
-
-var timelineComponent = function(componentGroups) {
-    var component = composeComponents(componentGroups);
-    return component;
-}
-
-var displayEventsOnTimeline = function (events) {
-    if (0 === events.length) {
-        return;
-    }
-
-    var dateGroupedEvents = groupEventsByDate(events);
-
-    var timeline_container = $('#timeline');
-    var html = "";
-
-    for (var date in dateGroupedEvents) {
-        html += '<div class="panel panel-primary">' +
-            '<div class="panel-heading">' +
-            '<h3 class="panel-title">' + formatDate(date) + '</h3>' +
-            '</div>' +
-            '<div class="panel-body">' +
-            '<ul class="list-group">';
-
-        var eventsForDate = dateGroupedEvents[date];
-
-        eventsForDate.forEach(function (current_event) {
-            var os_event = new OsEvent(current_event);
-            html += '<li onclick="openInModal(\'' + os_event.url + '\');" class="list-group-item"><span class="event_title">' + os_event.name + '</span>';
-            html += '<div class="event_property">' + os_event.displayValue + '</div>';
-            html += '</li>';
-        });
-
-        html += '</ul>' +
-            '</div>' +
-            '</div>';
-    }
-
-    timeline_container.append(html);
-    $('#more_events_button').show();
 };
 
 var formatDate = function (date) {
@@ -211,10 +39,124 @@ var formatDate = function (date) {
     return moment(date).calendar();
 };
 
-var openInModal = function (url) {
-    $('#show_chart_iframe').attr('src', url);
+var formatTime = function(time) {
+    var datetime = moment.utc(time);
+    return datetime.hour() + "." + datetime.minute();
+};
 
-    $('#display_chart_modal')
-        .css('top', $(document).scrollTop() + 70 + "px")
-        .show();
+var groupEventsByDate = function(events) {
+    var dictGroup = function() {
+        var groups = {};
+        events.forEach(function(event) {
+            var date = event.payload.eventDateTime.split('T')[0];
+            if (!groups[date]) {
+                groups[date] = [];
+            }
+            groups[date].unshift(event);
+        });
+        return groups;
+    }
+    //String sorting dates - works with current format
+    var dateGroups = dictGroup();
+    var dates = Object.keys(dateGroups).sort().reverse();
+
+    return dates.map(function(date){
+        return {date: formatDate(date), data: dateGroups[date]};
+    });
+};
+
+var groupSuccessiveEventsByTags = function(events) {
+    groups = [];
+
+    var tags = function(event) {
+        return event.payload.actionTags.concat(event.payload.objectTags);
+    };
+
+    group = [];
+    state = tags(events[0]);
+    events.forEach(function(event){
+        if(_.isEqual(state, tags(event))) {
+            group.push(event)
+        } else {
+            groups.push(group);
+            state = tags(event);
+            group = [event];
+        }
+    });
+    groups.push(group);
+    return groups;
+};
+
+var joinTags = function(event) {
+    var compose = function(tags) {
+        var toTitleCase = function(str) {
+            return str.replace(/\w\S*/g, function(txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+        };
+        return tags.map(function(tag) {
+            return toTitleCase(tag)
+        }).join(" ");
+    };
+    return compose(event.payload.objectTags) + " " + compose(event.payload.actionTags);
+};
+
+
+var constructRiverData = function(events) {
+    var data = []
+    var dateGrouped = groupEventsByDate(events);
+
+    dateGrouped.forEach(function(groupedEvents){
+        var riverDateGrouped = {date: groupedEvents['date'], data: []};
+        var succesiveGrouped = groupSuccessiveEventsByTags(groupedEvents.data);
+
+        riverDateGrouped['data'] = succesiveGrouped.map(function(group){
+            var transformEvent = function(event) {
+                var riverEvent = new RiverEvent(event);
+                return {
+                    title: riverEvent.formatTitle(),
+                    time: riverEvent.formatTime(),
+                    properties: riverEvent.formatProperties()
+                };
+            };
+
+            groupTransformedEvents = group.map(function(event) {
+                return transformEvent(event);
+            });
+
+            riverDetailGrouped = {
+                title: joinTags(_.first(group)),
+                from: formatTime(_.first(group).payload.eventDateTime),
+                to: formatTime(_.last(group).payload.eventDateTime),
+                icon: _.first(group).iconUrl,
+                chartUrl: computeChartUrl(_.first(group)),
+                events: groupTransformedEvents
+            };
+            return riverDetailGrouped;
+        });
+        data.push(riverDateGrouped);
+    });
+    return data;
+};
+
+var computeChartUrl = function(event) {
+    //sum on first existing event FOR NOW
+    var first_value = values.split(":")[0],
+        operation;
+
+    if (non_numeric_metric) {
+        operation = "count";
+    }
+    //dirty hack for noiseapp/twitter (for now)
+    else if (event.payload.objectTags.indexOf("sound") !== -1) {
+        operation = "mean(dba)";
+    } else if (event.payload.objectTags.indexOf("tweets") !== -1) {
+        operation = "count";
+    } else {
+        operation = "sum(" + first_value + ")";
+    }
+
+    return "/v1/users/" + username + "/events/" + event.objectTags.join(',') +
+        "/" + event.actionTags.join(',') + "/" + operation +
+        "/daily/barchart?bgColor=00a2d4";
 };

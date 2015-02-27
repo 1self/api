@@ -5,11 +5,9 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="1self Dev Community View"/>
-    <meta name="keywords"
-          content="Admin, Dashboard, Bootstrap3, Sass, transform, CSS3, HTML5, Web design, UI Design, Responsive Dashboard, Responsive Admin, Admin Theme, Best Admin UI, Bootstrap Theme, Wrapbootstrap, Bootstrap"/>
-    <meta name="author" content="Bootstrap Gallery"/>
     <link rel="shortcut icon" href="/img/fav.ico" />
     <link href="/css/import.css" rel="stylesheet" media="screen" />
+    <link href="/css/timeline.css" rel="stylesheet" />
     <link href="/fonts/font-awesome.css" rel="stylesheet" />
     <!--[if IE 7]>
         <link rel="stylesheet" href="fonts/font-awesome.css" />
@@ -20,10 +18,17 @@
         <script src="js/respond.min.js"></script>
         <![endif]-->
 
-    <link href="/css/timeline.css" rel="stylesheet" media="screen"/>
+    <!-- <link href="/css/timeline.css" rel="stylesheet" media="screen"/> -->
+    <link rel="stylesheet" type="text/css" href="/css/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <script type="text/javascript" src="/js/react-with-addons.js"></script>
+    <script type="text/javascript" src="/js/JSXTransformer.js"></script>
+    <script type="text/javascript" src="/js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="/js/jquery-ui.min.js"></script>
     <script type="text/javascript">
       var eun = "{{encodedUsername}}",
       username = "{{username}}";
+      var avatarUrl = "{{avatarUrl}}";
     </script>
 
     <script>
@@ -68,6 +73,13 @@
             </a>
         </li>
 
+        <li class="highlight" id="integrations">
+            <a href='/integrations'>
+                <i class="glyphicons glyphicons-time" style="color:#fff"></i>
+                <span>Integrations</span>
+            </a>
+        </li>
+
         <!-- <li class="highlight" id='linkdatamenuitem'> -->
         <!--     <a href='javascript://'> -->
         <!--         <i class="glyphicon glyphicon-link" style="color:#e93d31"></i> -->
@@ -97,54 +109,28 @@
 </div>
 <!-- Menu End -->
 
-      </div>
-    </aside>
+  </div>
+  </aside>
+  <div class="dashboard-wrapper">
+  <div class="container" id="river">
 
-    <div class="dashboard-wrapper">
-      <div class="container" id="river">
+  </div>
+  </div>
 
-        <div class="row page-title">
-          <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-            <h2>Timeline</h2>
-            <ul class="breadcrumb">
-              <li>Home</li>
-              <li class="li-blue">Timeline</li>
-            </ul>
-          </div>
-        </div>
-
-        <div id="timeline"></div>
-
-        <div class="more_events_button_wrapper">
-          <button id="more_events_button" type="button" class="btn btn-default btn-lg rounded-button">More..</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal fade modal-overflow in" id="display_chart_modal" tabindex="-1" role="dialog" aria-hidden="false" style="display: none;margin-top: 0px;">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div id="modal_close_button">x</div>
-          <div class="modal-body">
-            <iframe id="show_chart_iframe"></iframe>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <script src="/js/jquery.js"></script>
     <script src="/js/sparkline.js"></script>
     <script src="/js/underscore-min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/daterange/moment-with-locales.min.js"></script>
     <script src="/js/bootstrap-modal.js"></script>
     <script src="/js/bootstrap-modalmanager.js"></script>
-    <script src="/js/jquery-ui-v1.10.3.js"></script>
     <script src="/js/daterange/daterangepicker.js"></script>
     <script src="/js/slidebars.js"></script>
     <script src="/js/custom.js"></script>
-    <script src="/js/OsEvent.js"></script>
-    <script type="text/javascript" src="/js/timeline.js"></script>
+    <script src="/js/RiverEvent.js"></script>
 
+    <!-- <script type="text/jsx" src="/js/riverComponents.jsx"></script> -->
+    <script type="text/javascript" src="/js/riverComponents.js"></script>
+    <script type="text/javascript" src="/js/timeline.js"></script>
+    
   </body>
 </html>
