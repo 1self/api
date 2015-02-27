@@ -105,7 +105,7 @@ module.exports = function (app) {
             });
     });
 
-    app.get("/integrations/:integrationId", function (req, res) {
+    app.get("/integrations/:integrationId", sessionManager.requiresSession, function (req, res) {
         var integrationId = req.param("integrationId");
         console.log("Integrations Id is ", integrationId);
 
