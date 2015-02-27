@@ -48,4 +48,4 @@ var hitStreamCallbacks = function(){
 };
 
 
-setInterval(hitStreamCallbacks, 10000);
+setInterval(hitStreamCallbacks, 3600000);
