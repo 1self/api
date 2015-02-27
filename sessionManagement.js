@@ -20,8 +20,8 @@ exports.setSession = function (req, res, user) {
     req.session.username = user.username;
     req.session.encodedUsername = user.encodedUsername;
     req.session.registrationToken = user.registrationToken;
-    req.session.githubUsername = user.githubUser.username;
-    req.session.avatarUrl = user.githubUser._json.avatar_url;
+    req.session.githubUsername = user.profile.username;
+    req.session.avatarUrl = user.profile.avatarUrl;
     res.cookie('_eun', req.session.encodedUsername);
 };
 

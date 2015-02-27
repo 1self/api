@@ -54,7 +54,7 @@ app.set('view engine', 'html');
  cache: false
  });*/
 
-require('./githubOAuth')(app);
+require('./oAuth')(app);
 
 app.all('*', function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');

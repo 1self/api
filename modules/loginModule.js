@@ -9,13 +9,11 @@ var sessionManager = require("../sessionManagement");
 var LoginModule = function () {
 };
 
-LoginModule.prototype.login = function (req, res) {
+LoginModule.prototype.login = function (user, req, res) {
     var deferred = q.defer();
 
-    var githubUser = req.user.profile;
-
-    var byGitHubUsername = {
-        "githubUser.username": githubUser.username
+    var byProfileId = {
+        "profile.id": user.id
     };
 
     //var redirect = function (user, url) {
@@ -23,22 +21,22 @@ LoginModule.prototype.login = function (req, res) {
     //    res.redirect(CONTEXT_URI + url + "?username=" + user.username);
     //};
 
-    var findUser = function (byGitHubUsername) {
+    var findUser = function (byProfileId) {
         var deferred = q.defer();
-        mongoRepository.findOne('users', byGitHubUsername)
+        mongoRepository.findOne('users', byProfileId)
             .then(function (user) {
                 deferred.resolve(user);
             });
         return deferred.promise;
-    }
+    };
 
     var doLogin = function () {
         var setSessionData = function (user) {
             var deferred = q.defer();
-            sessionManager.setSession(req, res, user)
+            sessionManager.setSession(req, res, user);
             deferred.resolve(user);
             return deferred.promise;
-        }
+        };
 
 
         //var loginComplete = function (user) {
@@ -58,14 +56,14 @@ LoginModule.prototype.login = function (req, res) {
         //    }
         //};
 
-        findUser(byGitHubUsername)
+        findUser(byProfileId)
             .then(setSessionData)
             .then(function () {
                 deferred.resolve();
             }).catch(function (error) {
                 console.log("Error occurred", error);
             })
-    }
+    };
 
     doLogin();
 

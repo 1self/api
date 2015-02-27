@@ -57,7 +57,7 @@ module.exports = function (app) {
             res.status(404).send("*** This environment does not support this feature ***");
             return;
         }
-        req.session.auth = 'github.signup';
+        req.session.auth = 'signup';
 
         // Always redirect to dashboard when user hits /signup
         if (req.query.redirectUrl) {
@@ -97,7 +97,7 @@ module.exports = function (app) {
             res.redirect("/timeline");
             return;
         }
-        req.session.auth = 'github.login';
+        req.session.auth = 'login';
         var authExists = req.query.authExists;
 
         // Make sure to delete any oneselfUsername in session as it's used only while signup
@@ -257,7 +257,7 @@ module.exports = function (app) {
             req.session.username = oneselfUsername;
             req.session.encodedUsername = encUserObj.encodedUsername;
             console.log("User profile available in claimUsername : ", req.user.profile);
-            req.session.githubAvatar = req.user.profile._json.avatar_url;
+            req.session.githubAvatar = req.user.profile.avatarUrl;
             if (req.session.redirectUrl) {
                 var redirectUrl = req.session.redirectUrl;
                 delete req.session.redirectUrl;
@@ -1168,7 +1168,7 @@ module.exports = function (app) {
                 };
                 mongoRepository.findOne('users', query)
                     .then(function (user) {
-                        deferred.resolve(user.githubUser["_json"].avatar_url);
+                        deferred.resolve(user.profile.avatarUrl);
                     }, function (err) {
                         deferred.reject(err);
                     });

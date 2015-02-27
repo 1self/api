@@ -13,57 +13,43 @@ var _ = require('underscore');
 var SignupModule = function () {
 };
 
-SignupModule.prototype.signup = function (req, res) {
+SignupModule.prototype.signup = function (user, req, res) {
     var deferredOuter = q.defer();
-    var githubUser = req.user.profile;
-
     //var redirect = function (user, url) {
     //    console.log("And CONTEXT URI IS ->", CONTEXT_URI);
     //    res.redirect(CONTEXT_URI + url + "?username=" + user.username);
     //};
 
-    var findUser = function (byGitHubUsername) {
-        console.log("1\n")
+    var findUser = function (byUsername) {
         var deferred = q.defer();
-        mongoRepository.findOne('users', byGitHubUsername)
+        mongoRepository.findOne('users', byUsername)
             .then(function (user) {
                 deferred.resolve(user);
             });
         return deferred.promise;
-    }
+    };
 
     var doSignup = function () {
-
         var oneselfUsername = req.session.oneselfUsername;
         var isNewUser = function (user) {
             return !user;
         };
-
         var handleError = function (error) {
-            console.log("6\n")
-            console.log(error);
             if (error === "user_exists") {
                 res.send(400, "User already exists for the passed auth details");
             } else {
                 res.send(400, "Invalid request");
             }
         };
-
         var encodeUsername = function (oneselfUsername) {
-            console.log("3\n")
             var deferred = q.defer();
             deferred.resolve(encoder.encodeUsername(oneselfUsername));
             return deferred.promise;
         };
-
         var signupComplete = function (userRecord) {
             deferredOuter.resolve(userRecord);
         };
-
-
         var checkIfNewUser = function (user) {
-            console.log("2\n")
-
             var deferred = q.defer();
             if (isNewUser(user)) {
                 deferred.resolve(oneselfUsername);
@@ -72,26 +58,26 @@ SignupModule.prototype.signup = function (req, res) {
             }
             return deferred.promise;
         };
-
         var insertUser = function (userRecord) {
             var deferred = q.defer();
             mongoRepository.insert('users', userRecord);
             deferred.resolve(userRecord);
             return deferred.promise;
         };
-
         var subscribeToMailChimp = function (user) {
             var deferred = q.defer();
+            var email;
             var MailChimpAPI = require('mailchimp').MailChimpAPI;
             var mailChimpAPIKey = MAILCHIMP_API_KEY;
-            var primaryEmailRec = _.filter(user.githubUser.emails, function (rec) {
+            var primaryEmailRec = _.filter(user.profile.emails, function (rec) {
                 return rec.primary;
-            })
+            });
+            email = _.isEmpty(primaryEmailRec)?user.profile.emails[0].value:primaryEmailRec[0].email;
             try {
                 var api = new MailChimpAPI(mailChimpAPIKey, {version: '2.0'});
                 var data = {
                     "id": MAILCHIMP_LIST_ID,
-                    "email": {email: primaryEmailRec[0].email},
+                    "email": {email: email},
                     "double_optin": false
                 };
                 api.lists_subscribe(data, function (err, result) {
@@ -106,7 +92,6 @@ SignupModule.prototype.signup = function (req, res) {
             }
             return deferred.promise;
         };
-
         var creditUserSignup = function (userRecord) {
             var deferred = q.defer();
             CreditUserSignup.creditUserSignUpToApp(userRecord.oneselfUsername, req.session.redirectUrl).then(function () {
@@ -114,28 +99,15 @@ SignupModule.prototype.signup = function (req, res) {
             });
             return deferred.promise;
         };
-
         var createUser = function (encUserObj) {
-            var deferred = q.defer();
-            console.log("4\n")
-            githubService.fetchGithubUserEmails(req.user.accessToken)
-                .then(function (userEmails) {
-                    for (var i in userEmails) {
-                        githubUser.emails.push(userEmails[i]);
-                    }
-                    var userEntry = {
-                        githubUser: githubUser,
-                        registeredOn: new Date(),
-                        username: oneselfUsername,
-                        encodedUsername: encUserObj.encodedUsername,
-                        salt: encUserObj.salt
-                    };
-                    deferred.resolve(userEntry);
-                }).catch(function (error) {
-                    deferred.reject(error);
-                })
-
-            return deferred.promise;
+            var userCreated = {
+                profile: user,
+                registeredOn: new Date(),
+                username: oneselfUsername,
+                encodedUsername: encUserObj.encodedUsername,
+                salt: encUserObj.salt
+            };
+            return userCreated;
         };
         var generateRegistrationToken = function (userEntry) {
             return util.generateRegistrationToken()
@@ -144,12 +116,10 @@ SignupModule.prototype.signup = function (req, res) {
                     return userEntry;
                 });
         };
-
-        var byGitHubUsername = {
-            "githubUser.username": githubUser.username
+        var byUsername = {
+            "profile.id": user.id
         };
-
-        findUser(byGitHubUsername)
+        findUser(byUsername)
             .then(checkIfNewUser)
             .then(encodeUsername)
             .then(createUser)
@@ -160,10 +130,8 @@ SignupModule.prototype.signup = function (req, res) {
             .then(signupComplete)
             .catch(handleError);
     };
-
     doSignup();
-
     return deferredOuter.promise;
-}
+};
 
 module.exports = new SignupModule();
