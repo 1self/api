@@ -1064,7 +1064,7 @@ module.exports = function (app) {
     var getDateRange = function(req){
         var max = req.query.to || moment.utc().endOf('day').toISOString();;
 
-        var defaultMin = moment(max).startOf('day').subtract('days', 6).utc().toISOString();
+        var defaultMin = moment.utc(max).startOf('day').subtract('days', 6).toISOString();
         var min = req.query.from || defaultMin;
 
         return {
