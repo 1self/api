@@ -28,9 +28,15 @@
     </div>
     <div class="clear-both"></div>
     <div class="divider">
+        {% if !alreadyIntegrated %}
         <div class="connect-now-btn-container">
-            <button class="custom-button connect-now-btn absolute connect" url={{integrationUrl}}  token={{registrationToken}} username={{username}}>Connect Now</button>
+            <a class="custom-button connect-now-btn absolute left-aligned small-btn connect" href="{{integrationUrl}}?username={{username}}&token={{registrationToken}}" >Connect Now</a>
         </div>
+        {% else %}
+        <div class="middle-dot-container">
+            <span class="middle-dot"></span>
+        </div>
+        {% endif %}
     </div>
     <P class="custom-paragraph-text">
         {{longDesc}}
@@ -39,7 +45,11 @@
     <P class="custom-paragraph-text blue-color">
         {{instructions}}
     </P>
-    <button class="custom-button connect-now-btn absolute left-aligned small-btn connect" url={{integrationUrl}} token={{registrationToken}} username={{username}}>Connect</button>
+    {% if !alreadyIntegrated %}
+    <a class="custom-button connect-now-btn absolute left-aligned small-btn connect" href="{{integrationUrl}}?username={{username}}&token={{registrationToken}}" >Connect</a>
+    {% endif %}
+    <a href="/integrations" class="custom-button connect-now-btn absolute left-aligned">Return to Integrations</a>
+
 </div>
 </body>
 </html>
