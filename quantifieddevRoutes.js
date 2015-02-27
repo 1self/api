@@ -1054,14 +1054,14 @@ module.exports = function (app) {
     };
 
     var getDateRange = function(req){
-        var today = moment.utc().add('day', 1).startOf('day').toISOString();
-        var toDate = req.query.to || today;
-        var weekBeforeToDate = moment(toDate).subtract('days', 7).toISOString();
-        var fromDate = req.query.from || weekBeforeToDate;
+        var max = req.query.to || moment().endOf('day').toISOString();;
+
+        var defaultMin = moment(max).startOf('day').subtract('days', 6).toISOString();
+        var min = req.query.from || defaultMin;
 
         return {
-            'to': toDate,
-            'from': fromDate
+            'to': max,
+            'from': min
         }
     }
     //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}

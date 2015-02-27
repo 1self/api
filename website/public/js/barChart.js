@@ -147,9 +147,9 @@ charts.plotBarChart = function(divId, events, fromDate, toDate) {
         var width = window.innerWidth;
         var height = width / 1.61;
         
-        var dataMax = new Date(moment(toDate).format("MM/DD/YYYY"));
-        var dataMin = new Date(moment(fromDate).format("MM/DD/YYYY"));   
-        var dataDiff = (dataMax - dataMin) / 1000 / 60 / 60 / 24;
+        var dataMax = new Date(moment(toDate));
+        var dataMin = new Date(moment(fromDate));   
+        var dataDiff = ((dataMax - dataMin) / 1000 / 60 / 60 / 24);
         
         var xWidth = width / dataDiff;
         var x = d3.time.scale()
