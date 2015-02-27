@@ -1,0 +1,104 @@
+.integrationlogo{
+    border-radius: 50%;
+    height: 16%;
+    padding: 1.5%;
+    border: 2px solid #fff;
+    width: 16%;
+}
+.integrationlogo,.integration-message{
+    box-sizing:border-box;
+}
+.integration-message{
+    width: 84%;
+    padding: 6px 6%;
+}
+.integration-logo-img{
+    width: 100%;
+    border-radius: 50%;
+    vertical-align: middle;
+}
+.integrationlogo .dot{
+    width: 8%;
+    height: 8%;
+
+}
+.integrationlogo .left-dot{
+    left: -7%;
+}
+.integrationlogo .right-dot{
+    right: -7%;
+}
+.custom-paragraph-text{
+    font-size: 1.2em;
+    margin:20px 0;
+}
+.green-color{
+    color: #0dac8b;
+}
+.bold{
+    font-weight: bold;
+}
+.connect-now-btn-container{
+    margin: -45px auto;
+}
+.connect-now-btn,.connect-now-btn-container{
+    width: 190px;
+    position: relative;
+}
+.connect-now-btn{
+    border-radius: 25px;
+    border: 3px solid #fff;
+}
+.integration-wrapper .divider{
+    margin: 7% 0;
+}
+.small-btn{
+    width: 150px;
+}
+.blue-color{
+    color: #80cff4;
+}
+
+@media screen and (max-width: 960px) {
+    body{
+        font-size: 15px;
+    }
+    .wrapper{
+        width: 85%;
+    }
+}
+@media screen and (max-width: 640px) {
+
+    .integration-wrapper{
+        width: 70%;
+    }
+    .integrationlogo{
+        width: 80%;
+        padding: 4.5%;
+    }
+    .integration-message{
+        width: 98%;
+    }
+    .integrationlogo .left-dot {
+        left: -6%;
+    }
+    .integrationlogo .right-dot {
+        right: -6%;
+    }
+    .integration-wrapper .divider{
+        border: none;
+    }
+    .connect-now-btn-container{
+        margin:0 auto;
+    }
+}
+@media screen and (max-width: 420px) {
+
+    .integration-wrapper{
+        width: 90%;
+    }
+    body{
+        font-size: 14px;
+    }
+
+}

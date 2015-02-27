@@ -1,13 +1,14 @@
 var mongoRepository = require('../mongoRepository.js');
 var Q = require('q');
 var _ = require("underscore");
+var sessionManager = require("./../sessionManagement");
 
 module.exports = function (app) {
 
     var getIntegrationDetails = function (integrationId) {
         var deferred = Q.defer();
         var byIntegrationId = {
-            "url_name": integrationId
+            "urlName": integrationId
         };
         mongoRepository.findOne('registeredApps', byIntegrationId)
             .then(function (integrationDetailObject) {
@@ -17,6 +18,21 @@ module.exports = function (app) {
                 else {
                     deferred.reject("Integration not found");
                 }
+            }, function (err) {
+                console.log("Error is", err);
+                deferred.reject(err);
+            });
+        return deferred.promise;
+    };
+
+    var getAlreadyIntegratedIntegrationsForUser = function (username) {
+        var deferred = Q.defer();
+        var byUsername = {
+            "username": username
+        };
+        mongoRepository.findOne('users', byUsername)
+            .then(function (user) {
+                deferred.resolve(user.integrations);
             }, function (err) {
                 console.log("Error is", err);
                 deferred.reject(err);
@@ -41,43 +57,70 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    app.get("/integrations", function (req, res) {
-        getActiveIntegrations().then(function (integrations) {
-            var integrations = _.collect(integrations, function (int) {
-                return {
-                    title: int.title,
-                    integration_id: int.url_name,
-                    icon_url: int.icon_url,
-                    bg_color: int.bg_color,
-                    fg_color: int.fg_color
+    app.get("/integrations", sessionManager.requiresSession, function (req, res) {
+        var totalIntegrationsIntegrated = 0;
+        getActiveIntegrations()
+            .then(function (integrations) {
+                return _.collect(integrations, function (int) {
+                    return {
+                        title: int.title,
+                        integrationId: int.urlName,
+                        iconUrl: int.iconUrl,
+                        bgColor: int.bgColor,
+                        fgColor: int.fgColor,
+                        appId: int.appId
+                    }
+                })
+            }).then(function (integrations) {
+                var username = req.session.username;
+                return getAlreadyIntegratedIntegrationsForUser(username)
+                    .then(function (integrationsOfUser) {
+                        return _.forEach(integrations, function (integration) {
+                            integration.alreadyIntegrated = _.contains(integrationsOfUser, integration.appId);
+                            if(integration.alreadyIntegrated){
+                                totalIntegrationsIntegrated++;
+                            }
+                        })
+                    });
+            }).then(function (integrations) {
+                var infoForIntegrations = {
+                    integrations: integrations,
+                    totalIntegrationsIntegrated: totalIntegrationsIntegrated,
+                    avatarUrl: req.session.avatarUrl,
+                    username: req.session.username
+                };
+                if(totalIntegrationsIntegrated === 0) {
+                    res.render("integrations",infoForIntegrations);
                 }
+                else if(totalIntegrationsIntegrated > 0 && totalIntegrationsIntegrated < 3){
+                    res.render("integrationsWithDriveIntoLink",infoForIntegrations);
+                }
+                else {
+                    res.render("integrationWithDriveIntoBtn",infoForIntegrations);
+                }
+
+            }).catch(function (err) {
+                console.log("Error is", err);
+                res.send("Integrations not found.");
             });
-            res.render("integrations",
-                {
-                    integrations: integrations
-                }
-            );
-        }).catch(function (err) {
-            console.log("Error is", err);
-            res.send("Integrations not found.");
-        });
     });
 
-    app.get("/integrations/:integration_id", function (req, res) {
-        var integrationId = req.param("integration_id");
+    app.get("/integrations/:integrationId", sessionManager.requiresSession, function (req, res) {
+        var integrationId = req.param("integrationId");
         console.log("Integrations Id is ", integrationId);
 
         getIntegrationDetails(integrationId).then(function (int) {
             res.render('integrations_details', {
                 title: int.title,
-                icon_url: int.icon_url,
-                short_desc: int.short_desc,
-                long_desc: int.long_desc,
-                support_link: int.support_link,
-                download_link: int.download_link,
-                integration_url: int.integration_url,
+                iconUrl: int.iconUrl,
+                shortDesc: int.shortDesc,
+                longDesc: int.longDesc,
+                creatorName:int.creatorName,
+                supportLink: int.supportLink,
+                downloadLink: int.downloadLink,
+                integrationUrl: int.integrationUrl,
                 username: req.session.username,
-                eun: req.session.encodedUsername
+                registrationToken: req.session.registrationToken
             });
         }).catch(function (err) {
             console.log("Error occurred", err);
@@ -85,4 +128,5 @@ module.exports = function (app) {
         });
     });
 
-};
+}
+;
