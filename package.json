@@ -15,6 +15,7 @@
     "octonode": "~0.6.4",
     "opbeat": "~0.3.1",
     "passport": "~0.2.0",
+    "passport-facebook": "^1.0.3",
     "passport-github": "~0.1.5",
     "q": "1.0.1",
     "redis": "^0.12.1",
