@@ -126,7 +126,14 @@ module.exports = function (app) {
 
     app.post("/captureUsername", function(req, res){
         req.session.oneselfUsername = req.body.username;
-        res.redirect("/auth/github");
+        if(req.body.service === "github"){
+            res.redirect("/auth/github");
+        }
+        else if(req.body.service === "facebook"){
+            res.redirect("/auth/facebook");            
+        }
+
+        else res.status(404).send("unknown auth service");
     });
 
     app.get("/signup_complete", function (req, res) {

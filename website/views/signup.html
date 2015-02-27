@@ -76,7 +76,7 @@
                 <span class="signup-details signup-stpe2-label">Pick a username, so that others can find you</span>
             </div>
         </div>
-        <form class="form-horizontal well signup-form" name="username-form" action="/captureUsername" method="post">
+        <form class="form-horizontal well signup-form" id="signupform" name="username-form" action="/captureUsername" method="post">
             <div class="row margin-top-five">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <input class="form-control" name="username" type="text" required value="{{ username}}">
@@ -86,10 +86,16 @@
 
                 </div>
             </div>
+            <input type="hidden" id="service" name="service">
+            <div class="row margin-top-five">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <button class="btn btn-lg signup-button"  type="submit" value="github" onclick="setService('github')" >Join using GitHub</button>
+                </div>
+            </div>
 
             <div class="row margin-top-five">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <button class="btn btn-lg signup-button" type="submit">Join using GitHub</button>
+                    <button class="btn btn-lg signup-button" type="submit" value="facebook" onclick="setService('facebook')">Join using Facebook</button>
                 </div>
             </div>
         </form>
@@ -105,11 +111,6 @@
             </div>
         </div>
 
-
-    </div>
-</div>
-
-
 <script>
 
     $(document).ready(function () {
@@ -117,11 +118,25 @@
             ga('send', 'event', 'signup', 'signup_with_github');
             login();
         })
+        $("#signup_with_facebook").click(function () {
+            ga('send', 'event', 'signup', 'signup_with_facebook');
+            login();
+        })
         $("#login_with_github").click(function () {
             ga('send', 'event', 'signup switch to login', 'login_with_github');
             window.location.href = "/login";
         })
     });
+
+    var service = '';
+
+    $( "#signupform" ).submit(function( event ) {
+        $('#service').val(service)
+    });
+
+    var setService = function(submitClicked){
+        service = submitClicked;
+    }
 
 </script>
 
