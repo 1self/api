@@ -49,6 +49,28 @@
           {name: "Artist", value: "Muse"}
         ]}
       ]}
+    ]},
+    {date: "Someday", data: [
+      {title: "Browse", from: "9:00", to: "10:00", icon: "img/visit-counter-icon.png", chartUrl: "https://api.1self.co/v1/streams/ZLXETTQVBIZGMUMY/events/self/code/sum(duration)/daily/barchart?readToken=e573d3091aeece819e6e0d8904fbbcc5b257591b4d8a", events: [
+        {title: "Music Listen", time: "09:10", properties: [
+          {name: "Track Name", value: "Stir It Up"},
+          {name: "Artist", value: "Bob Marley"}
+        ]},
+        {title: "Music Listen", time: "19:12", properties: [
+          {name: "Track Name", value: "I Miss You"},
+          {name: "Artist", value: "Icubus"}
+        ]}
+      ]},
+      {title: "Browse", from: "9:00", to: "10:00", icon: "img/lastfm.png", chartUrl: "", events: [
+        {title: "Music Listen", time: "09:10", properties: [
+          {name: "Track Name", value: "Adam's Song"},
+          {name: "Artist", value: "Blink-182"}
+        ]},
+        {title: "Music Listen", time: "19:12", properties: [
+          {name: "Track Name", value: "Uprising"},
+          {name: "Artist", value: "Muse"}
+        ]}
+      ]}
     ]}
   ];
 
@@ -60,6 +82,9 @@
       return ( 
         <div>
           {dateGroups}
+          <div className="more_events_button_wrapper">
+            <button className="btn btn-default btn-lg rounded-button">More</button>
+          </div>
         </div>
       );
     }
@@ -104,7 +129,6 @@
 
   var TagGroupTitle = React.createClass({
     handleClick: function(event) {
-      console.log("Clicked!");
       var node = $(this.getDOMNode());
       var wasVisible = $(node).next(".ui-accordion-content").is(':visible');
       $(".ui-accordion-content:visible").slideUp(500);
@@ -134,8 +158,14 @@
     getInitialState: function(){
       return {display: 'list'};
     },
-    handleClick: function(state) {    
-      this.setState({display: state});
+    handleClick: function(state) {
+      var notSelected;
+      if(state === 'list') {
+        notSelected = 'graph';
+      } else {
+        notSelected = 'list';
+      }
+      this.setState({display: state, select: this.refs[state].getDOMNode(), unselect: this.refs[notSelected].getDOMNode()});
     },
     render: function() {
 
@@ -144,17 +174,17 @@
             <div className="accordian-title-logo float-left height-ten-pixle"></div>
             <div className="accordian-heading float-left">
               <span className="list-graph-toggle-container">
-              <a href="#" onClick={this.handleClick.bind(this, 'list')} className="graph-toggle-link border-right list-link active-link">
+              <a ref="list" href="#" onClick={this.handleClick.bind(this, 'list')} className="graph-toggle-link border-right list-link active-link">
                 <img src="img/list-icon.png" className="graph-toggle-icon" />
               </a>
-              <a href="#" onClick={this.handleClick.bind(this, 'graph')} className="graph-toggle-link graph-link">
+              <a ref="graph" href="#" onClick={this.handleClick.bind(this, 'graph')} className="graph-toggle-link graph-link">
                 <img src="img/graph-icon.png" className="graph-toggle-icon" />
               </a>
               </span>
               
             </div>
             <ReactCSSTransitionGroup transitionName="fade">
-              {this.state.display == 'graph' ? <EventsGraph chartUrl={this.props.chartUrl} /> : <EventsList events={this.props.events} />}
+              {this.state.display == 'graph' ? <EventsGraph select={this.state.select} unselect={this.state.unselect} chartUrl={this.props.chartUrl} /> : <EventsList select={this.state.select} unselect={this.state.unselect} events={this.props.events} />}
             </ReactCSSTransitionGroup>
           </div>
         );
@@ -163,8 +193,8 @@
 
   var EventsList = React.createClass({
     componentDidMount: function(){
-            $(".list-link").addClass("active-link");
-            $(".graph-link").removeClass("active-link");
+            $($(this.props.select)).addClass("active-link");
+            $($(this.props.unselect)).removeClass("active-link");
      
       $(".graph-container-class").animate({
         width: "0px"
@@ -241,8 +271,8 @@
               "float": "none"
             });
           }
-            $(".graph-link").addClass("active-link");
-            $(".list-link").removeClass("active-link");
+            $($(this.props.select)).addClass("active-link");
+            $($(this.props.unselect)).removeClass("active-link");
      
     },
     render:function(){

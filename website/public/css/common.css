@@ -73,7 +73,7 @@ body{
 	background: rgb(0,184,234);
 }
 .accordian-title-logo{
-	width: 3.5%;
+	width: 4.5%;
 	height: auto;
 }
 .ui-accordion .ui-accordion-header .ui-accordion-header-icon{
@@ -82,7 +82,7 @@ body{
 .accordian-heading{
 	display: inline-block;
 	vertical-align: top;
-	width: 93%;
+	width: 91%;
 	text-align: center;
 	font-size: 16px;
 }
@@ -97,7 +97,7 @@ body{
 .counter{
 	font-size: 32px;
 	vertical-align: middle;
-	width: 3.5%;
+	width: 4.5%;
 	text-align: center;
 	margin-top: 4px;
 }
