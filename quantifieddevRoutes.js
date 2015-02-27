@@ -47,7 +47,11 @@ module.exports = function (app) {
 
     app.get("/signup", function (req, res) {
 
-        sessionManager.resetSession(req);
+        //sessionManager.resetSession(req);
+        if(req.session.username) {
+            res.redirect("/timeline");
+            return;
+        }
 
         if ("sandbox" == process.env.NODE_ENV) {
             res.status(404).send("*** This environment does not support this feature ***");
@@ -89,6 +93,10 @@ module.exports = function (app) {
     });
 
     app.get("/login", function (req, res) {
+        if(req.session.username) {
+            res.redirect("/timeline");
+            return;
+        }
         req.session.auth = 'github.login';
         var authExists = req.query.authExists;
 
