@@ -38,6 +38,9 @@
 .bold{
     font-weight: bold;
 }
+.connect {
+    margin-right: 20px;
+}
 .connect-now-btn-container{
     margin: -45px auto;
 }

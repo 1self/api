@@ -186,6 +186,8 @@ a{
     padding: 12px 2%;
     display: block;
     margin: 20px auto 10px;
+    font-weight: bold;
+    text-align: center;
 }
 .underline{
     text-decoration: underline;
