@@ -1,5 +1,5 @@
 body {
-    line-height: 18px;
+    line-height: 1.4em;
 }
 
 .white-background {
@@ -7,22 +7,25 @@ body {
 }
 
 .header-text {
-    color: #E2E2E2;
+    color: #e7e9ee;
     font-family: 'raleway-light'
+;
+    margin-bottom: 0.8em;
 }
 
 .signup-details {
-    color: #979797;
+    color: #a9b2bd;
     font-family: 'raleway-light'
 }
 
+.authservice-button {
+    border: 1px solid #00b8e7;
+    font-family: 'raleway-light';
+    color: rgba(255, 255, 255, 0.85);
+}
 
-
-.signup-button {
-    background: #1AC8A2;
-    border: 1px solid #54FFFA;
-    width: 100%;
-    font-family: 'raleway-light'
+.signup-button i{
+    font-size
 }
 
 .error {
@@ -42,7 +45,7 @@ body {
 .signup-form {
     border: none;
     padding: 0;
-    background: #515151;
+    background: #30363e;
     margin-bottom: 0;
 }
 
@@ -51,7 +54,7 @@ body {
     padding-top: 6px;
     width: 98%;
     margin: 0 auto;
-    background: #515151;
+    background: #30363e;
     border-radius: 5px;
 }
 
@@ -67,6 +70,8 @@ body {
 
 .custom-error {
     display: inline-block;
+    font-size: 1em;
+    font-family: 'raleway-light' 
 }
 
 .login-link-container, .signup-message {
@@ -74,7 +79,9 @@ body {
 }
 
 .login-link-container {
-    font-size: 18px;
+    font-size: 1.4em;
+    font-family: 'raleway-light';
+    color: #cdd1dc;
 }
 
 .signup-message {
@@ -103,6 +110,7 @@ body {
 
 .signup-stpe2-label {
     font-size: 17px;
+    margin-top:  2em;
 }
 
 .top-bar .logo, .logo {
@@ -146,4 +154,58 @@ body {
 
 #signup_with_github{
     font-family: 'raleway-light'
+}
+
+#usernamehelp{
+    margin-top: 1.3em;
+}
+
+.signup-details{
+    font-size: 1.2em;
+
+    margin-top: 1.7em;
+
+}
+
+#githubservice{
+    margin-top: auto;
+    margin-bottom: auto;
+    vertical-align: middle;
+}
+
+#facebookservice{
+    background-color: #384D8D;
+}
+
+#joindivider {
+    margin-top: 1.9em;
+}
+
+.githubbutton{
+    background: rgba(0,0,0,1);
+}
+
+.facebookbutton{
+    background: #384D8D
+}
+
+.authserviceicon{
+    float: left;
+}
+
+.authservicetext{
+    float: clear;
+    margin-left: 1.4em;
+    text-align: left;
+}
+
+.authinput{
+    width: 250px;
+}
+
+.smallprint{    
+    padding-top: 2em;
+}
+
+#login_with_github{
 }
