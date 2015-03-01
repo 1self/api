@@ -89,6 +89,7 @@ module.exports = function (app) {
     };
 
     var handleFacebookCallback = function (req, res) {
+        console.log("handling facebook callback");
         var facebookUser = req.user.profile;
         var accessToken = req.user.accessToken;
         req.session.facebookAccessToken = accessToken;
