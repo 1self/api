@@ -33,8 +33,8 @@ OAuthConfig.prototype.getGithubEmailAddresses = function (accessToken) {
 
 OAuthConfig.prototype.getFacebookOAuthConfig = function () {
     return {
-        clientId: "454452498039912",
-        clientSecret: "8d1ec3eb775bda7ca2f3157c5efbce75",
+        clientId: process.env.FACEBOOK_APP_ID,
+        clientSecret: process.env.FACEBOOK_APP_SECRET,
         callbackUrl: CONTEXT_URI + "/auth/facebook/callback"
     };
 };
