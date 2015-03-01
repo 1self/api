@@ -15,10 +15,10 @@ var validateRequest = require("./validateRequest");
 var moment = require("moment");
 var PasswordEncrypt = require('./lib/PasswordEncrypt');
 var platformUri = process.env.PLATFORM_BASE_URI;
-
 var sharedSecret = process.env.SHARED_SECRET;
 var validator = require('validator');
 var mongoRepository = require('./mongoRepository.js');
+var SignupModule = require('./modules/signupModule.js')
 
 var emailConfigOptions = {
     root: path.join(__dirname, "/website/public/email_templates")
@@ -57,7 +57,8 @@ module.exports = function (app) {
             res.status(404).send("*** This environment does not support this feature ***");
             return;
         }
-        req.session.auth = 'signup';
+
+        SignupModule.startSignup(req.session);
 
         // Always redirect to dashboard when user hits /signup
         if (req.query.redirectUrl) {
@@ -121,16 +122,28 @@ module.exports = function (app) {
     });
 
     app.get("/signupError", function (req, res) {
-        res.render('signupError');
+        res.render('signupError'
+            , {
+                  authService: SignupModule.getAuthService(req.session),
+                  authServiceUrl: SignupModule.getAuthServiceUrl(req.session)
+            });
+    });
+
+    app.get("/signupErrorUserExists", function (req, res) {
+        res.render('signupErrorUserExists'
+            , {
+                  authService: req.session.oneselfUsername,
+                  authServiceUrl: SignupModule.getAuthServiceUrl(req.session)
+            });
     });
 
     app.post("/captureUsername", function(req, res){
         req.session.oneselfUsername = req.body.username;
         if(req.body.service === "github"){
-            res.redirect("/auth/github");
+            res.redirect("/signup/github");
         }
         else if(req.body.service === "facebook"){
-            res.redirect("/auth/facebook");            
+            res.redirect("/signup/facebook");            
         }
 
         else res.status(404).send("unknown auth service");

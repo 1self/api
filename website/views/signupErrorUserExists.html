@@ -32,16 +32,9 @@
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="signup-details signuperror">
-                    <div class="error custom-error">We couldn't sign you up to 1self because the  {{authService}} account you are logged in with was already used to create a 1self user
+                    <div class="error custom-error">We couldn't sign you up to 1self because the username {{username}} already exists.
                     </div>
-                    <div>Did you mean to login?</div>
-                    <div>
-                        To login to 1self using your current {{authService}} account go to the <a href="/login">1self login page</a>
-                    </div>
-                    <div>
-                        To create a new 1self account, log out from <a target="_blank"
-                                                                      href="{{authServiceUrl}}">{{authService}}</a> and go back to the
-                        <a href="/signup">1self signup page</a>
+                    <div>Go back to the <a href="/signup">1self signup page</a> and choose another username
                     </div>
                 </span>
             </div>

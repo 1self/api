@@ -70,7 +70,6 @@ body {
 
 .custom-error {
     display: inline-block;
-    font-size: 1em;
     font-family: 'raleway-light' 
 }
 
@@ -208,4 +207,8 @@ body {
 }
 
 #login_with_github{
+}
+
+.signuperror div{
+    margin-bottom: 1.8em;
 }

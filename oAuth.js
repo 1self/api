@@ -155,17 +155,49 @@ module.exports = function (app) {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    app.get('/auth/facebook',
-        passport.authenticate('facebook', {scope: 'email'}),
-        function (req, res) {
-        });
+    var recordFacebookSignup = function(req, res, next){
+        SignupModule.signingUpWithFacebook(req.session);
+        next();
+    }
+
+    var recordFacebookLogin = function(req, res, next){
+        next();
+    }
+
+    app.get('/auth/facebook'
+        , recordFacebookLogin
+        , passport.authenticate('facebook', {scope: 'email'}));
+
+    app.get('/signup/facebook'
+        , recordFacebookSignup
+        , passport.authenticate('facebook', {scope: 'email'}));
+
     app.get('/auth/facebook/callback',
         passport.authenticate('facebook', {failureRedirect: CONTEXT_URI + '/signup'}),
         handleFacebookCallback);
 
-    app.get('/auth/github', passport.authenticate('github', {
+    var recordGithubLogin = function(req, res, next){
+        SignupModule.signingUpWithGithub(req.session);
+        next();
+    }
+
+    var recordGithubSignup = function(req, res, next){
+        SignupModule.signingUpWithGithub(req.session);
+        next();
+    }
+
+    app.get('/auth/github'
+        , recordGithubLogin
+        , passport.authenticate('github', {
         scope: 'user:email'
     }));
+
+    app.get('/signup/github'
+        , recordGithubSignup
+        , passport.authenticate('github', {
+        scope: 'user:email'
+    }));
+    
     app.get('/auth/github/1self_website', function (req, res, next) {
         req.session.redirectUrl = "/dashboard";
         passport.authenticate('github', {

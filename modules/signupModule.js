@@ -13,6 +13,55 @@ var _ = require('underscore');
 var SignupModule = function () {
 };
 
+SignupModule.prototype.startSignup = function(session){
+        session.service = undefined;
+        session.auth = 'signup';
+    }
+
+SignupModule.prototype.signingUpWithGithub = function(session) {
+        session.service = 'github';
+
+        // need to redo setting the auth type, since the user could
+        // go to the login page, then go back to the signup page. Going
+        // back to the signup page doesn't make a request to the server
+        // which means session.auth ends up not being set.
+        session.auth = 'signup';
+    }
+
+SignupModule.prototype.signingUpWithFacebook = function(session) {
+        session.service = 'facebook';
+
+        // need to redo setting the auth type, since the user could
+        // go to the login page, then go back to the signup page. Going
+        // back to the signup page doesn't make a request to the server
+        // which means session.auth ends up not being set.
+        session.auth = 'signup';
+    }
+
+SignupModule.prototype.getAuthService = function(session) {
+        var result = '';
+        if(session.service === 'github'){
+            result = 'Github';
+        }
+        else if(session.service === 'facebook'){
+            result =  'Facebook';
+        }
+
+        return result;
+    }
+
+SignupModule.prototype.getAuthServiceUrl = function(session) {
+        var result = '';
+        if(session.service === 'github'){
+            result = 'http://github.com';
+        }
+        else if(session.service === 'facebook'){
+            result = 'http://facebook.com';
+        }
+
+        return result;
+    }
+
 SignupModule.prototype.signup = function (user, req, res) {
     var deferredOuter = q.defer();
     //var redirect = function (user, url) {
@@ -20,14 +69,18 @@ SignupModule.prototype.signup = function (user, req, res) {
     //    res.redirect(CONTEXT_URI + url + "?username=" + user.username);
     //};
 
-    var findUser = function (byUsername) {
+    var findUser = function(data) {
         var deferred = q.defer();
-        mongoRepository.findOne('users', byUsername)
+        var by1selfUsername = {
+            "username": data.username
+        }
+        mongoRepository.findOne('users', by1selfUsername)
             .then(function (user) {
-                deferred.resolve(user);
+                data.user = user;
+                deferred.resolve(data);
             });
         return deferred.promise;
-    };
+    }
 
     var doSignup = function () {
         var oneselfUsername = req.session.oneselfUsername;
@@ -35,8 +88,8 @@ SignupModule.prototype.signup = function (user, req, res) {
             return !user;
         };
         var handleError = function (error) {
-            if (error === "user_exists") {
-                res.send(400, "User already exists for the passed auth details");
+            if(error === "user_exists"){
+                res.redirect("/signupErrorUserExists");
             } else {
                 res.send(400, "Invalid request");
             }
@@ -49,15 +102,17 @@ SignupModule.prototype.signup = function (user, req, res) {
         var signupComplete = function (userRecord) {
             deferredOuter.resolve(userRecord);
         };
-        var checkIfNewUser = function (user) {
+
+        var checkIfUsernameExists = function (data) {
             var deferred = q.defer();
-            if (isNewUser(user)) {
-                deferred.resolve(oneselfUsername);
-            } else {
+            if (data.user !== null) {
                 deferred.reject("user_exists");
+            } else {
+                deferred.resolve(data.username);
             }
             return deferred.promise;
         };
+
         var insertUser = function (userRecord) {
             var deferred = q.defer();
             mongoRepository.insert('users', userRecord);
@@ -117,10 +172,12 @@ SignupModule.prototype.signup = function (user, req, res) {
                 });
         };
         var byUsername = {
-            "profile.id": user.id
+            serviceProfileId : user.id,
+            username: req.session.oneselfUsername
         };
+        
         findUser(byUsername)
-            .then(checkIfNewUser)
+            .then(checkIfUsernameExists)
             .then(encodeUsername)
             .then(createUser)
             .then(generateRegistrationToken)
