@@ -161,10 +161,11 @@ module.exports = function (app) {
     }
 
     var recordFacebookLogin = function(req, res, next){
+        req.session.login = 'facebook';
         next();
     }
 
-    app.get('/auth/facebook'
+    app.get('/login/facebook'
         , recordFacebookLogin
         , passport.authenticate('facebook', {scope: 'email'}));
 
@@ -177,7 +178,7 @@ module.exports = function (app) {
         handleFacebookCallback);
 
     var recordGithubLogin = function(req, res, next){
-        SignupModule.signingUpWithGithub(req.session);
+        req.session.login = 'github';
         next();
     }
 
@@ -186,7 +187,7 @@ module.exports = function (app) {
         next();
     }
 
-    app.get('/auth/github'
+    app.get('/login/github'
         , recordGithubLogin
         , passport.authenticate('github', {
         scope: 'user:email'

@@ -68,14 +68,16 @@
 <div class="jumbotron white-background">
     <div class="container">
         <div class="row">
-            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                <h2 class="header-text">Login</h2>
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <h2 class="header-text">Login Problem!</h2>
             </div>
         </div>
-        <div class="row login-link-container">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <span class="signup-details">The account you used to login hasn't been used to join 1self.</span>
-                <a href="/signup" id="signup_with_github">Join 1self</a>
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 signuperror">
+                <div class="login-details">
+                    <div class="error">We couldn't find the {{service}} account you used to login.</div>
+                    <div>Did you mean to join? If so, go to the<a href="/signup" id="signup_with_github"> 1self signup page</a>
+                </div>
             </div>
         </div>
     </div>

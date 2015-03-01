@@ -78,9 +78,9 @@ body {
 }
 
 .login-link-container {
-    font-size: 1.4em;
     font-family: 'raleway-light';
     color: #cdd1dc;
+    font-size: 1.2em;
 }
 
 .signup-message {
@@ -161,9 +161,13 @@ body {
 
 .signup-details{
     font-size: 1.2em;
+    margin-top: 1.4em;
+}
 
-    margin-top: 1.7em;
-
+.login-details{
+    font-size: 1.2em;
+    color: #a9b2bd;
+    margin-top: 0.5em;
 }
 
 #githubservice{

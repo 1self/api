@@ -107,18 +107,30 @@ module.exports = function (app) {
             req.session.intent = {};
             req.session.intent.name = req.query.intent;
         }
+
+
         res.render('login', {
             authExists: authExists
         });
     });
 
     app.post('/login', function (req, res) {
-        // Redirect to oauth provider from here.
-        res.redirect('/auth/github');
+        
+        req.session.service = req.body.service;
+        
+        if(req.body.service === "github"){
+            res.redirect("/login/github");
+        }
+        else if(req.body.service === "facebook"){
+            res.redirect("/login/facebook");            
+        }
     });
 
     app.get("/unknownLogin", function (req, res) {
-        res.render('unknownLogin');
+        res.render('unknownLogin', {
+            service: req.session.service
+
+        });
     });
 
     app.get("/signupError", function (req, res) {

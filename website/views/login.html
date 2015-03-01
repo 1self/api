@@ -12,6 +12,7 @@
     <link href="/css/signup.css" rel="stylesheet">
     <link href="/css/animate.css" rel="stylesheet">
     <link href="/fonts/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/css/top-bar.css">
     <script src="js/jquery.js"></script>
     <script src="js/jquery-ui-v1.10.3.js"></script>
@@ -72,16 +73,28 @@
                 <h2 class="header-text">Login</h2>
             </div>
         </div>
-        <form class="form-horizontal well signup-form" name="username-form" action="/login" method="post">
+        <form class="form-horizontal well signup-form" id="loginform" name="username-form" action="/login" method="post" >
+            <input type="hidden" id="service" name="service">
+            <div class="row margin-top-five">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                    <button class="btn btn-lg signup-button authservice-button authinput githubbutton" type="submit" onclick="setService('github')">
+                    <div class="authserviceicon"><i class="fa fa-github-square"> </i></div>
+                    <div class="authservicetext">Login with GitHub</div></button>
+
+                </div>
+            </div>
             <div class="row margin-top-five">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <button class="btn btn-lg signup-button" type="submit">Login with GitHub</button>
+                    <button class="btn btn-lg signup-button authservice-button authinput facebookbutton" type="submit" onclick="setService('facebook')">
+                    <div class="authserviceicon"><i class="fa fa-facebook-square"></i></div>
+                    <div class="authservicetext">Login with Facebook</div></button>
                 </div>
             </div>
         </form>
+        <hr id="joindivider">
         <div class="row login-link-container">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <span class="signup-details">Don't have an account?</span>
+                <span>Don't have an account?</span>
                 <a id="signup_with_github">Join 1self</a>
             </div>
         </div>
@@ -101,6 +114,16 @@
             login();
         })
     });
+
+    var service = '';
+
+    $( "#loginform" ).submit(function( event ) {
+        $('#service').val(service)
+    });
+
+    var setService = function(submitClicked){
+        service = submitClicked;
+    }
 
 </script>
 
