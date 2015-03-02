@@ -13,7 +13,10 @@ var formatDate = function (date) {
 var formatTime = function(time) {
     var zeroPad = function(num, width) {
         var an = Math.abs(num);
-        var digitCount = 1 + Math.floor(Math.log(an) / Math.LN10);
+        var digitCount = 1;
+        if(an !== 0){
+            1 + Math.floor(Math.log(an) / Math.LN10);
+        }
         if (digitCount >= width) {
             return num;
         }
