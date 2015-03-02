@@ -120,23 +120,29 @@ var constructRiverData = function(events) {
 };
 
 var computeChartUrl = function(event) {
-    // //sum on first existing event FOR NOW
-    // var first_value = values.split(":")[0],
-    //     operation;
-
-    // if (non_numeric_metric) {
-    //     operation = "count";
-    // }
-    // //dirty hack for noiseapp/twitter (for now)
-    // else if (event.payload.objectTags.indexOf("sound") !== -1) {
-    //     operation = "mean(dba)";
-    // } else if (event.payload.objectTags.indexOf("tweets") !== -1) {
-    //     operation = "count";
-    // } else {
-    //     operation = "sum(" + first_value + ")";
-    // }
+    var findFirstNumericProperty = function(){
+        var keys = Object.keys(event.payload.properties);
+        var prop;
+        keys.forEach(function(key){
+            if (typeof(event.payload.properties[key]) === "number") {
+                prop = key;
+                return;
+            }
+        });
+        return prop;
+    };
 
     var operation = "count";
+    var prop = findFirstNumericProperty();
+
+    //dirty hack for noiseapp/twitter (for now)
+    if (event.payload.objectTags.indexOf("sound") !== -1) {
+        operation = "mean(dba)";
+    } else if (event.payload.objectTags.indexOf("tweets") !== -1) {
+        operation = "count";
+    } else if (typeof(prop) !== "undefined") {
+        operation = "sum(" + prop + ")";
+    }
 
     return "/v1/users/" + username + "/events/" + event.payload.objectTags.join(',') +
         "/" + event.payload.actionTags.join(',') + "/" + operation +
