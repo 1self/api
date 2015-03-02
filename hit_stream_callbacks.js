@@ -6,7 +6,7 @@ var requestModule = require('request');
 var fs = require('fs');
 
 var log = function(message){
-    message = "\n" + message;
+    message = "\n" + new Date() + "   " + message;
     fs.appendFile('stream_callback_hit.log', message, function (err) {
 
     });
@@ -48,4 +48,4 @@ var hitStreamCallbacks = function(){
 };
 
 
-setInterval(hitStreamCallbacks, 3600000);
+setInterval(hitStreamCallbacks, 18000000);
