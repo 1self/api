@@ -1,92 +1,65 @@
-      /** @jsx React.DOM */
-      var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
+  /** @jsx React.DOM */
+  var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
-      var styleDisplayNone = {
-        display: "None"
-      }
-
-      var riverData = [
-    {date: "Today", data: [
-      {title: "Browse", from: "9:00", to: "10:00", icon: "img/visit-counter-icon.png" ,chartUrl: "https://api.1self.co/v1/streams/ZLXETTQVBIZGMUMY/events/self/code/sum(duration)/daily/barchart?readToken=e573d3091aeece819e6e0d8904fbbcc5b257591b4d8a?bgColor=00a2d4", events: [
-        {title: "Music Listen", time: "09:10", properties: [
-          {name: "Track Name", value: "Get Up Stand Up"},
-          {name: "Artist", value: "Bob Marley"}
-        ]},
-        {title: "Music Listen", time: "19:12", properties: [
-          {name: "Track Name", value: "Creep"},
-          {name: "Artist", value: "Radiohead"}
-        ]}
-      ]},
-      {title: "Browse", from: "9:00", to: "10:00", icon: "img/lastfm.png", chartUrl: "https://api.1self.co/v1/streams/ZLXETTQVBIZGMUMY/events/self/code/sum(duration)/daily/barchart?readToken=e573d3091aeece819e6e0d8904fbbcc5b257591b4d8a", events: [
-        {title: "Music Listen", time: "09:10", properties: [
-          {name: "Track Name", value: "Paranoid Android"},
-          {name: "Artist", value: "Radiohead"}
-        ]},
-        {title: "Music Listen", time: "19:12", properties: [
-          {name: "Track Name", value: "Belief"},
-          {name: "Artist", value: "John Mayer"}
-        ]}
-      ]}
-    ]},
-    {date: "Yesterday", data: [
-      {title: "Browse", from: "9:00", to: "10:00", icon: "img/visit-counter-icon.png", chartUrl: "https://api.1self.co/v1/streams/ZLXETTQVBIZGMUMY/events/self/code/sum(duration)/daily/barchart?readToken=e573d3091aeece819e6e0d8904fbbcc5b257591b4d8a", events: [
-        {title: "Music Listen", time: "09:10", properties: [
-          {name: "Track Name", value: "Stir It Up"},
-          {name: "Artist", value: "Bob Marley"}
-        ]},
-        {title: "Music Listen", time: "19:12", properties: [
-          {name: "Track Name", value: "I Miss You"},
-          {name: "Artist", value: "Icubus"}
-        ]}
-      ]},
-      {title: "Browse", from: "9:00", to: "10:00", icon: "img/lastfm.png", chartUrl: "", events: [
-        {title: "Music Listen", time: "09:10", properties: [
-          {name: "Track Name", value: "Adam's Song"},
-          {name: "Artist", value: "Blink-182"}
-        ]},
-        {title: "Music Listen", time: "19:12", properties: [
-          {name: "Track Name", value: "Uprising"},
-          {name: "Artist", value: "Muse"}
-        ]}
-      ]}
-    ]},
-    {date: "Someday", data: [
-      {title: "Browse", from: "9:00", to: "10:00", icon: "img/visit-counter-icon.png", chartUrl: "https://api.1self.co/v1/streams/ZLXETTQVBIZGMUMY/events/self/code/sum(duration)/daily/barchart?readToken=e573d3091aeece819e6e0d8904fbbcc5b257591b4d8a", events: [
-        {title: "Music Listen", time: "09:10", properties: [
-          {name: "Track Name", value: "Stir It Up"},
-          {name: "Artist", value: "Bob Marley"}
-        ]},
-        {title: "Music Listen", time: "19:12", properties: [
-          {name: "Track Name", value: "I Miss You"},
-          {name: "Artist", value: "Icubus"}
-        ]}
-      ]},
-      {title: "Browse", from: "9:00", to: "10:00", icon: "img/lastfm.png", chartUrl: "", events: [
-        {title: "Music Listen", time: "09:10", properties: [
-          {name: "Track Name", value: "Adam's Song"},
-          {name: "Artist", value: "Blink-182"}
-        ]},
-        {title: "Music Listen", time: "19:12", properties: [
-          {name: "Track Name", value: "Uprising"},
-          {name: "Artist", value: "Muse"}
-        ]}
-      ]}
-    ]}
-  ];
+  var styleDisplayNone = {
+    display: "None"
+  }
 
   var River = React.createClass({
+    getInitialState: function(){
+      return {events: [], skip: 0, limit: 50};      
+    },
+
+    fetchEventData: function() {
+      var skipped = this.state.skip + 50;
+      var url = this.props.source + "?skip=" + skipped + "&limit=" + this.state.limit;
+      var self = this;
+      $.ajax({
+        url: url,
+        type: 'GET',
+        dataType: 'json',
+        beforeSend: function(xhr){
+          xhr.setRequestHeader('Authorization', eun);
+        },
+        success: function(result) {
+          if (self.isMounted()) {
+            self.setState({
+              skip: skipped,
+              limit: 50,
+              events: self.state.events.concat(constructRiverData(result))
+            });
+          }
+        },
+        error: function() {
+          console.error('Problem while fetching timeline events!');
+        }
+      });
+    },
+
+    componentDidMount: function() {
+      this.fetchEventData();
+    },
+
     render: function() {
-      var dateGroups = this.props.events.map(function(dateGroup){
+      var dateGroups = this.state.events.map(function(dateGroup){
         return <DateGroup key={dateGroup.date} day={dateGroup.date} group={dateGroup.data} />;
       });
       return ( 
         <div>
           {dateGroups}
-          <div className="more_events_button_wrapper">
-            <button className="btn btn-default btn-lg rounded-button">More</button>
-          </div>
+          <MoreButton clickHandler={this.fetchEventData} />
         </div>
       );
+    }
+  });
+
+  var MoreButton = React.createClass({
+    render: function(){
+      return (
+        <div className="more_events_button_wrapper">
+          <button className="btn btn-default btn-lg rounded-button" onClick={this.props.clickHandler}>More</button>
+        </div>
+        );
     }
   });
 
@@ -139,6 +112,7 @@
         $(node).next(".ui-accordion-content").slideDown(500);
       }
     },
+
     render: function() {
       return (
         <div onClick={this.handleClick} className="accordian-title-container"><img className="accordian-title-logo float-left" src={this.props.icon} />
@@ -158,6 +132,7 @@
     getInitialState: function(){
       return {display: 'list'};
     },
+
     handleClick: function(state) {
       var notSelected;
       if(state === 'list') {
@@ -167,8 +142,8 @@
       }
       this.setState({display: state, select: this.refs[state].getDOMNode(), unselect: this.refs[notSelected].getDOMNode()});
     },
-    render: function() {
 
+    render: function() {
       return (
           <div className="ui-accordion-content">
             <div className="accordian-title-logo float-left height-ten-pixle"></div>
@@ -203,6 +178,7 @@
         width: "100%"
       }, 500);
     },
+
     render: function() {
       var key = 0;
       var events = this.props.events.map(function(event){
@@ -258,23 +234,23 @@
 
   var EventsGraph = React.createClass({
     componentDidMount: function(){
-          if ($(window).width() <= 460) {
-            $(".graph-container-class").animate({
-              width: "100%"
-            }, 500);
-          } else {
-            $(".graph-container-class").animate({
-              width: "91%"
-            }, 500);
-            // $(".graph-container-class").show();
-            $(".graph-container-class").css({
-              "float": "none"
-            });
-          }
-            $($(this.props.select)).addClass("active-link");
-            $($(this.props.unselect)).removeClass("active-link");
-     
+      if ($(window).width() <= 460) {
+        $(".graph-container-class").animate({
+          width: "100%"
+        }, 500);
+      } else {
+        $(".graph-container-class").animate({
+          width: "91%"
+        }, 500);
+        // $(".graph-container-class").show();
+        $(".graph-container-class").css({
+          "float": "none"
+        });
+      }
+      $($(this.props.select)).addClass("active-link");
+      $($(this.props.unselect)).removeClass("active-link");
     },
+
     render:function(){
       return (
             <div className="clear-all">
@@ -289,10 +265,4 @@
     }
   });
 
-//React.render(<River events={riverData} />, document.getElementById('river'));
-
-var renderTimeline = function(events){
-  React.render(<River events={events} />, document.getElementById('river'));
-};
-
-  React.render(<River events={riverData} />, document.getElementById('river'));
+React.render(<River source={"/v1/users/" + username + "/events"} />, document.getElementById('river'));

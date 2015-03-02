@@ -1,32 +1,3 @@
-var skip = 0;
-var limit = 50; // per page 50 records
-
-$(document).ready(function () {
-    //getEvents(skip, limit);
-    $('#more_events_button').click(function () {
-        skip += 50;
-        //getEvents(skip, limit);
-    });
-});
-
-
-function setHeader(xhr) {
-    xhr.setRequestHeader('Authorization', eun);
-}
-
-var getEvents = function (skip, limit) {
-    $.ajax({
-        url: "/v1/users/" + username + "/events?skip=" + skip + "&limit=" + limit,
-        type: 'GET',
-        dataType: 'json',
-        success: renderTimeline,
-        error: function () {
-            console.error('Problem while fetching timeline events!');
-        },
-        beforeSend: setHeader
-    });
-};
-
 var formatDate = function (date) {
     moment.locale('en', {
         calendar: {
@@ -40,8 +11,17 @@ var formatDate = function (date) {
 };
 
 var formatTime = function(time) {
+    var zeroPad = function(num, width) {
+        var an = Math.abs(num);
+        var digitCount = 1 + Math.floor(Math.log(an) / Math.LN10);
+        if (digitCount >= width) {
+            return num;
+        }
+        var zeroString = Math.pow(10, width - digitCount).toString().substr(1);
+        return num < 0 ? '-' + zeroString + an : zeroString + an;
+    }
     var datetime = moment.utc(time);
-    return datetime.hour() + "." + datetime.minute();
+    return zeroPad(datetime.hour(), 2) + "." + zeroPad(datetime.minute(), 2);
 };
 
 var groupEventsByDate = function(events) {
@@ -128,7 +108,7 @@ var constructRiverData = function(events) {
                 title: joinTags(_.first(group)),
                 from: formatTime(_.first(group).payload.eventDateTime),
                 to: formatTime(_.last(group).payload.eventDateTime),
-                icon: _.first(group).iconUrl,
+                icon: _.first(group).iconUrl || "/img/noimage.png",
                 chartUrl: computeChartUrl(_.first(group)),
                 events: groupTransformedEvents
             };
@@ -140,23 +120,25 @@ var constructRiverData = function(events) {
 };
 
 var computeChartUrl = function(event) {
-    //sum on first existing event FOR NOW
-    var first_value = values.split(":")[0],
-        operation;
+    // //sum on first existing event FOR NOW
+    // var first_value = values.split(":")[0],
+    //     operation;
 
-    if (non_numeric_metric) {
-        operation = "count";
-    }
-    //dirty hack for noiseapp/twitter (for now)
-    else if (event.payload.objectTags.indexOf("sound") !== -1) {
-        operation = "mean(dba)";
-    } else if (event.payload.objectTags.indexOf("tweets") !== -1) {
-        operation = "count";
-    } else {
-        operation = "sum(" + first_value + ")";
-    }
+    // if (non_numeric_metric) {
+    //     operation = "count";
+    // }
+    // //dirty hack for noiseapp/twitter (for now)
+    // else if (event.payload.objectTags.indexOf("sound") !== -1) {
+    //     operation = "mean(dba)";
+    // } else if (event.payload.objectTags.indexOf("tweets") !== -1) {
+    //     operation = "count";
+    // } else {
+    //     operation = "sum(" + first_value + ")";
+    // }
 
-    return "/v1/users/" + username + "/events/" + event.objectTags.join(',') +
-        "/" + event.actionTags.join(',') + "/" + operation +
+    var operation = "count";
+
+    return "/v1/users/" + username + "/events/" + event.payload.objectTags.join(',') +
+        "/" + event.payload.actionTags.join(',') + "/" + operation +
         "/daily/barchart?bgColor=00a2d4";
 };
