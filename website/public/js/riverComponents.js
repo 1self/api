@@ -7,7 +7,7 @@
 
   var River = React.createClass({displayName: "River",
     getInitialState: function(){
-      return {events: [], skip: 0, limit: 50};      
+      return {events: [], skip: 0, limit: 0};      
     },
 
     fetchEventData: function() {
