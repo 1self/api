@@ -15,7 +15,7 @@ var formatTime = function(time) {
         var an = Math.abs(num);
         var digitCount = 1;
         if(an !== 0){
-            1 + Math.floor(Math.log(an) / Math.LN10);
+            digitCount = 1 + Math.floor(Math.log(an) / Math.LN10);
         }
         if (digitCount >= width) {
             return num;
