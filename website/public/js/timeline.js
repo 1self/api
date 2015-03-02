@@ -135,7 +135,7 @@ var computeChartUrl = function(event) {
     var operation = "count";
     var prop = findFirstNumericProperty();
 
-    //dirty hack for noiseapp/twitter (for now)
+    //dirty hack for noiseapp/twitter or show first numeric property if any (for now)
     if (event.payload.objectTags.indexOf("sound") !== -1) {
         operation = "mean(dba)";
     } else if (event.payload.objectTags.indexOf("tweets") !== -1) {
