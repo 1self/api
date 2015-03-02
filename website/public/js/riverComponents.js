@@ -225,8 +225,8 @@
     render: function(){
       return (
         React.createElement("div", null, 
-          React.createElement("span", null, this.props.name, " :"), 
-          React.createElement("span", null, "“", this.props.value, "”")
+          React.createElement("span", null, this.props.name, ":"), 
+          React.createElement("span", null, " “", this.props.value, "”")
         )
         );
     }

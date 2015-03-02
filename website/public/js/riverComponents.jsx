@@ -225,8 +225,8 @@
     render: function(){
       return (
         <div>
-          <span>{this.props.name} :</span>
-          <span>&ldquo;{this.props.value}&rdquo;</span>
+          <span>{this.props.name}:</span>
+          <span> &ldquo;{this.props.value}&rdquo;</span>
         </div>
         );
     }
