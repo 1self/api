@@ -24,7 +24,8 @@ var formatTime = function(time) {
         return num < 0 ? '-' + zeroString + an : zeroString + an;
     }
     var datetime = moment.utc(time);
-    return zeroPad(datetime.hour(), 2) + "." + zeroPad(datetime.minute(), 2);
+    var localDateTime = datetime._d;
+    return zeroPad(localDateTime.getHours(), 2) + "." + zeroPad(localDateTime.getMinutes(), 2);
 };
 
 var groupEventsByDate = function(events) {
