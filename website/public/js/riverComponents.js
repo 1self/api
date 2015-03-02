@@ -11,8 +11,8 @@
     },
 
     fetchEventData: function() {
-      var skipped = this.state.skip + 50;
       var url = this.props.source + "?skip=" + skipped + "&limit=" + this.state.limit;
+      var skipped = this.state.skip + 50;
       var self = this;
       $.ajax({
         url: url,
