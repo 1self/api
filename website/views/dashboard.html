@@ -74,19 +74,19 @@
             </a>
         </li>
 
-        <!-- <li class="highlight" id="linkdatamenuitem"> -->
-        <!--     <a href='javascript://'> -->
-        <!--         <i class="glyphicon glyphicon-link" style="color:#e93d31"></i> -->
-        <!--         <span data-toggle="modal" data-target="#noDataSourceMessage">Link Data</span> -->
-        <!--     </a> -->
-        <!-- </li> -->
-
+        <li class="highlight" id="integrations">
+            <a href='/integrations'>
+                <i class="glyphicons glyphicons-time" style="color:#fff"></i>
+                <span>Integrations</span>
+            </a>
+        </li>
         <li class="highlight" id="blogmenuitem">
             <a href='http://blog.1self.co/' target="_blank">
                 <i class="glyphicon glyphicon-edit" style="color:#00ad87"></i>
                 <span>Blog</span>
             </a>
         </li>
+
         <li class="highlight" id="askusanythingmenuitem">
             <a href='http://1self.uservoice.com/' target="_blank">
                 <i class="glyphicon glyphicon-comment" style="color:#cf4b9a"></i>
@@ -108,8 +108,6 @@
 <!-- Left sidebar end -->
 <div class="dashboard-wrapper">
 <div class="container" id='dashboard'>
-<div id="showOverlayFlag" showOverlay="{{showOverlay}}"></div>
-<div>{% include "./templates/_link_datasource.html" %}</div>
 <div class="row page-title">
     <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
 
@@ -224,8 +222,6 @@
                 <div class="col-sm-4 col-xs-12 ex-sm-margin-top-five">
                     <button id="hourlyGithubPush-heat-map-help" class="pull-right help-btn pull-xs-left"
                             onclick=show("hourlyGithubPush-heat-map-parent")></button>
-                    <button id="github-push-events-sync"
-                            class="pull-right github-push-events-sync pull-xs-left"></button>
                 </div>
             </div>
             <div class="row">
@@ -238,15 +234,7 @@
         </div>
         <div class="panel-body">
             <div id="hourlyGithubPush-heat-map" class="hourlyHeatMapContainer">
-                <div class="githubPushEvents text-center grid">
-                    <div class="grid-row">
-                        <div class="grid-cell">
-                            <button id="connect_to_github_btn" style="display:none" type="button"
-                                    class="btn btn-success" data-original-title="">Connect to GitHub
-                            </button>
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </div>
     </div>
@@ -1200,22 +1188,9 @@
 <!-- Bootstrap Container End -->
 </div>
 
-<script>
-
-    $(document).ready(function () {
-        $("#github-push-events-sync").click(function () {
-            ga('send', 'event', 'github', 'github-push-events-sync');
-        })
-    });
-
-</script>
-
-
 <!-- Main Container End -->
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <script src="/js/bootstrap.min.js"></script>
-<script src="/js/bootstrap-modal.js"></script>
-<script src="/js/bootstrap-modalmanager.js"></script>
 <script src="/js/underscore-min.js"></script>
 <!-- jQuery UI JS -->
 <script src="/js/jquery-ui-v1.10.3.js"></script>

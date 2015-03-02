@@ -1,0 +1,247 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+fieldset,img {
+    border:0;
+}
+ol,ul {
+    list-style:none;
+}
+
+@font-face {
+    font-family: raleway-regular;
+    src: url(../fonts/Raleway-Regular.ttf);
+}
+@font-face {
+    font-family: raleway-light;
+    src: url(../fonts/Raleway-Light.ttf);
+}
+@font-face {
+    font-family: raleway-bold;
+    src: url(../fonts/Raleway-bold.ttf);
+}
+body{
+    width: 100%;
+    font-family: raleway-light;
+    background: #2f3940;
+    color: #cdd1dc;
+    font-size: 16px;
+}
+a{
+    text-decoration: none;
+}
+*:focus {
+    outline: 0;
+}
+.left-aligned{
+    float: left;
+}
+.wrapper{
+    width: 70%;
+    margin:0 auto;
+    padding: 2%;
+}
+.logo{
+    position: relative;
+    width: 15%;
+}
+.avatar{
+    border: 2px solid #fff;
+    width: 100%;
+    border-radius: 50%;
+}
+.welcome-message{
+    width: 84%;
+}
+.dot{
+    position: absolute;
+    width: 10%;
+    background: red;
+    height: 10%;
+    border: 3px solid #fff;
+    top: 45%;
+    border-radius: 50%;
+}
+.left-dot{
+    left: -6%;
+    background: #f2a427;
+}
+.right-dot,.middle-dot,.custom-button{
+    background: #00ae87;
+}
+.right-dot{
+    right: -8%;
+
+}
+.welcome-message-wrapper{
+    width: 80%;
+    margin:0 8%;
+}
+.orange-color,.paragraph-text{
+    color: #fbb911;
+}
+.welcome-message-wrapper{
+    font-size: 18px;
+}
+.welcome-heading{
+    font-size: 2em;
+    font-weight: normal;
+    padding: 0 0 3% 0;
+}
+.welcome-details{
+    font-size: 1.5em;
+}
+.welcome-container{
+    overflow: hidden;
+    padding: 1%;
+}
+.divider{
+    border: 2px solid #fff;
+    margin: 40px 0;
+    position: relative;
+}
+.middle-dot{
+    position: absolute;
+    width: 10%;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    padding-bottom: 10%;
+    margin-left: -5%;
+}
+.middle-dot-container{
+    width: 150px;
+    margin: 0 auto;
+    position: relative;
+    margin-top: -10px;
+    text-align: center;
+}
+.paragraph-text{
+    font-size: 1.2em;
+    text-align: left;
+}
+.padding-one-percent{
+    padding: 1% 0;
+}
+.social-img{
+    width: 80%;
+    margin: 0 15%;
+    border-radius: 50%;
+    box-shadow: 0 0 12px 1px rgba(204,204,204,0.5);
+}
+.social-img-container{
+    width:16.66%;
+    float: left;
+    margin: 3% 0;
+    position: relative;
+}
+.social-group-title {
+    text-align: center;
+    width: 100%;
+    display: inline-block;
+    margin: 0 10%;
+}
+.twitter{
+    border: 4px solid #2496cd;
+}
+.last-fm,.instagram{
+    border: 4px solid #ffffff;
+}
+.github{
+    border: 4px solid #050809;
+}
+.google-fit,.another{
+    border: 4px solid #f23c2d;
+}
+.box-shadow-none{
+    box-shadow: none;
+}
+.tick-hide {
+    opacity: 0.95;
+    box-shadow: none;
+    position: absolute;
+    top: 0;
+    border: 4px solid rgba(0,174,135,0.9);
+    display: none;
+}
+.tick-show {
+    opacity: 0.95;
+    box-shadow: none;
+    position: absolute;
+    top: 0;
+    border: 4px solid rgba(0,174,135,0.9);
+    display: block;
+}
+.tick-overlay-border{
+    border: 4px solid rgba(0,174,135,0.9);
+}
+.social-img:focus{
+    box-shadow: none;
+}
+.custom-button{
+    border-radius: 100px;
+    border: 3px solid #fff;
+    color: #fff;
+    font-size: 1.2em;
+    padding: 12px 2%;
+    display: block;
+    margin: 20px auto 10px;
+    font-weight: bold;
+    text-align: center;
+}
+.underline{
+    text-decoration: underline;
+}
+.footer-link{
+    font-size: 1.1em;
+    color: #a9b2bd;
+    font-weight: bold;
+    text-align: left;
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    margin: 40px 0;
+    text-align: left;
+}
+.clear-both{
+    clear: both;
+}
+.padding-top-three-percent{
+    padding: 3% 0 0 0;
+}
+@media screen and (max-width: 960px) {}
+@media screen and (max-width: 640px) {
+    .logo{
+        width: 80%;
+    }
+    .welcome-message,.welcome-message-wrapper{
+        width: 100%;
+    }
+    .social-img{
+        width: 90%;
+    }
+    .logo,.welcome-message{
+        float: none;
+        margin: 0 auto;
+    }
+    .welcome-message-wrapper{
+        text-align: center;
+        font-size: 12px;
+    }
+    .welcome-message-wrapper{
+        margin: 2% 0;
+    }
+    .social-img-container{
+        width: 40%;
+        margin: 2.5%;
+    }
+    .social-container{
+        margin: 30px 0;
+    }
+}
+@media screen and (max-width: 319px) {
+    body{
+        width: 320px;
+    }
+
+}

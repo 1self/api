@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <title>{{title}}</title>
+    <link rel="stylesheet" type="text/css" href="/css/integrations.css">
+    <link rel="stylesheet" type="text/css" href="/css/integration-connect.css">
+    <script src="/js/jquery.js"></script>
+    <script src="/js/jquery.cookie.js"></script>
+    <script src="/js/integrations.js"></script>
+</head>
+<body>
+<div class="wrapper integration-wrapper">
+    <div class="logo integrationlogo left-aligned">
+        <img src={{iconUrl}} class="integration-logo-img">
+        <div class="left-dot dot"></div>
+        <div class="right-dot dot"></div>
+    </div>
+    <div class="integration-message left-aligned">
+        <h1 class="orange-color">{{title}}</h1>
+        <p class="custom-paragraph-text">
+            {{shortDesc}}
+        </p>
+        <p></p>
+        <span class="green-color custom-paragraph-text bold">by {{creatorName}}</span>
+    </div>
+    <div class="clear-both"></div>
+    <div class="divider">
+        {% if !alreadyIntegrated %}
+        <div class="connect-now-btn-container">
+            <a class="custom-button connect-now-btn absolute left-aligned small-btn connect" href="{{integrationUrl}}?username={{username}}&token={{registrationToken}}" >Connect Now</a>
+        </div>
+        {% else %}
+        <div class="middle-dot-container">
+            <span class="middle-dot"></span>
+        </div>
+        {% endif %}
+    </div>
+    <P class="custom-paragraph-text">
+        {{longDesc}}
+    </P>
+    <h2 class="orange-color">Instructions</h2>
+    <P class="custom-paragraph-text blue-color">
+        {{instructions}}
+    </P>
+    {% if !alreadyIntegrated %}
+    <a class="custom-button connect-now-btn absolute left-aligned small-btn connect" href="{{integrationUrl}}?username={{username}}&token={{registrationToken}}" >Connect</a>
+    {% endif %}
+    <a href="/integrations" class="custom-button connect-now-btn absolute left-aligned">Return to Integrations</a>
+
+</div>
+</body>
+</html>

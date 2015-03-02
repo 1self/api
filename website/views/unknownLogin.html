@@ -11,6 +11,7 @@
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/signup.css" rel="stylesheet">
     <link href="/css/animate.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/top-bar.css">
     <link href="/fonts/font-awesome.css" rel="stylesheet">
     <script src="js/jquery.js"></script>
     <script src="js/jquery-ui-v1.10.3.js"></script>
@@ -61,40 +62,27 @@
 
 </head>
 <body class="animated fadeInDown">
-<div class="top-bar" style="background: #373737">
+<div class="top-bar">
     <a href="http://www.1self.co" target="_blank" class="logo"><img src="/img/logo.png"/></a>
 </div>
 <div class="jumbotron white-background">
     <div class="container">
         <div class="row">
-            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                <h2 class="header-text">Login</h2>
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <h2 class="header-text">Login Problem!</h2>
             </div>
         </div>
-        <div class="row login-link-container">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <span class="signup-details">The account you used to login hasn't been used to join 1self.</span>
-                <a id="signup_with_github">Join 1self</a>
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 signuperror">
+                <div class="login-details">
+                    <div class="error">We couldn't find the {{service}} account you used to login.</div>
+                    <div>Did you mean to join? If so, go to the<a href="/signup" id="signup_with_github"> 1self signup page</a>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-
-<script>
-
-    $(document).ready(function () {
-        $("#signup_with_github").click(function () {
-            ga('send', 'event', 'login switch to signup', 'signup_with_github');
-            window.location.href = "/signup";
-        })
-        $("#login_with_github").click(function () {
-            ga('send', 'event', 'login', 'login_with_github');
-            login();
-        })
-    });
-
-</script>
 
 </body>
 </html>

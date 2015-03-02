@@ -3,17 +3,100 @@ var passport = require('passport');
 var oAuthConfig = require('./oAuthConfig.js');
 var githubStrategy = require('passport-github').Strategy;
 var facebookStrategy = require('passport-facebook').Strategy;
+var encoder = require("./encoder");
+var sessionManager = require("./sessionManagement");
+var _ = require("underscore");
+var q = require("q");
+
+var SignupModule = require("./modules/signupModule.js");
+var LoginModule = require("./modules/loginModule.js");
+var IntentManager = require('./modules/intentManager.js');
+var mongoRepository = require('./mongoRepository.js');
+var CONTEXT_URI = process.env.CONTEXT_URI;
 
 module.exports = function (app) {
+    var githubOAuth = oAuthConfig.getGithubOAuthConfig();
+    var facebookOAuth = oAuthConfig.getFacebookOAuthConfig();
+
+    var handleOAuthWithIntent = function (oAuthUser, req, res) {
+        var isEmpty = function (user) {
+            return !user;
+        };
+        var isNotEmpty = function (user) {
+            return !!user;
+        };
+        var setSessionData = function (user) {
+            var deferred = q.defer();
+            sessionManager.setSession(req, res, user);
+            deferred.resolve();
+            return deferred.promise;
+        };
+        var checkUserPresent = function (userQuery) {
+            var deferred = q.defer();
+            mongoRepository.findOne('users', userQuery)
+                .then(function (user) {
+                    deferred.resolve(user);
+                });
+            return deferred.promise;
+        };
+        var validateUserAction = function (user) {
+            var deferred = q.defer();
+            if ((req.session.auth === 'login') && isEmpty(user)) {
+                deferred.reject("invalid_username");
+            } else {
+                deferred.resolve(user);
+            }
+            return deferred.promise;
+        };
+        var checkSignupWithExistingAuth = function (user) {
+            var deferred = q.defer();
+            if (!(_.isEmpty(req.session.oneselfUsername)) && isNotEmpty(user)) {
+                deferred.reject("auth_exists_cant_signup");
+            } else {
+                deferred.resolve(user);
+            }
+            return deferred.promise;
+        };
+        var doAuth = function (user) {
+            var deferred = q.defer();
+
+            if (isEmpty(user)) {
+                SignupModule.signup(oAuthUser,req, res).then(function (userRecord) {
+                    deferred.resolve(userRecord);
+                });
+            }
+            else {
+                LoginModule.login(oAuthUser, req, res).then(function () {
+                    deferred.resolve(user);
+                });
+            }
+            return deferred.promise;
+        };
+        var userQuery = {
+            "profile.id": oAuthUser.id
+        };
+        checkUserPresent(userQuery)
+            .then(validateUserAction)
+            .then(checkSignupWithExistingAuth)
+            .then(doAuth)
+            .then(setSessionData)
+            .then(function () {
+                IntentManager.process(req.session.intent, req, res);
+            }).catch(function (errorCode) {
+                console.log("ERROR CODE IS,", errorCode);
+                IntentManager.handleError(errorCode, req, res);
+            });
+    };
+
     var handleFacebookCallback = function (req, res) {
+        console.log("handling facebook callback");
         var facebookUser = req.user.profile;
         var accessToken = req.user.accessToken;
         req.session.facebookAccessToken = accessToken;
-        oAuthConfig.facebookOAuth.getProfilePictureUrl(facebookUser.id, accessToken)
+        oAuthConfig.getFacebookProfilePictureUrl(facebookUser.id, accessToken)
             .then(function (profilePicUrl) {
                 facebookUser.avatarUrl = profilePicUrl;
-                //TODO: route to appropriate location
-
+                handleOAuthWithIntent(facebookUser, req, res);
             }, function (err) {
                 res.status(500).send("Could not fetch profile picture for user.");
             });
@@ -23,12 +106,14 @@ module.exports = function (app) {
         var githubUser = req.user.profile;
         var accessToken = req.user.accessToken;
         req.session.githubAccessToken = accessToken;
-        oAuthConfig.githubOAuth.getEmailAddresses(accessToken)
+        githubUser.avatarUrl = githubUser._json.avatar_url;
+
+        oAuthConfig.getGithubEmailAddresses(accessToken)
             .then(function (userEmails) {
                 for (var i in userEmails) {
                     githubUser.emails.push(userEmails[i]);
                 }
-                //TODO: route to appropriate location
+                handleOAuthWithIntent(githubUser, req, res);
             }, function (err) {
                 res.status(500).send("Could not fetch email addresses for user.");
             });
@@ -40,11 +125,10 @@ module.exports = function (app) {
     passport.deserializeUser(function (obj, done) {
         done(null, obj);
     });
-
     passport.use(new facebookStrategy({
-            clientID: oAuthConfig.facebookOAuth.clientID,
-            clientSecret: oAuthConfig.facebookOAuth.clientSecret,
-            callbackURL: oAuthConfig.facebookOAuth.callbackURL
+            clientID: facebookOAuth.clientId,
+            clientSecret: facebookOAuth.clientSecret,
+            callbackURL: facebookOAuth.callbackUrl
         },
         function (accessToken, refreshToken, profile, done) {
             var facebookProfile = {
@@ -56,9 +140,9 @@ module.exports = function (app) {
     ));
 
     passport.use(new githubStrategy({
-            clientID: oAuthConfig.githubOAuth.clientID,
-            clientSecret: oAuthConfig.githubOAuth.clientSecret,
-            callbackURL: oAuthConfig.githubOAuth.callbackURL
+            clientID: githubOAuth.clientId,
+            clientSecret: githubOAuth.clientSecret,
+            callbackURL: githubOAuth.callbackUrl
         },
         function (accessToken, refreshToken, profile, done) {
             var githubProfile = {
@@ -72,17 +156,50 @@ module.exports = function (app) {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    app.get('/auth/facebook',
-        passport.authenticate('facebook', {scope: 'email'}),
-        function (req, res) {
-        });
+    var recordFacebookSignup = function(req, res, next){
+        SignupModule.signingUpWithFacebook(req.session);
+        next();
+    }
+
+    var recordFacebookLogin = function(req, res, next){
+        req.session.login = 'facebook';
+        next();
+    }
+
+    app.get('/login/facebook'
+        , recordFacebookLogin
+        , passport.authenticate('facebook', {scope: 'email'}));
+
+    app.get('/signup/facebook'
+        , recordFacebookSignup
+        , passport.authenticate('facebook', {scope: 'email'}));
+
     app.get('/auth/facebook/callback',
-        passport.authenticate('facebook', { failureRedirect: CONTEXT_URI + '/signup'}),
+        passport.authenticate('facebook', {failureRedirect: CONTEXT_URI + '/signup'}),
         handleFacebookCallback);
 
-    app.get('/auth/github', passport.authenticate('github', {
+    var recordGithubLogin = function(req, res, next){
+        req.session.login = 'github';
+        next();
+    }
+
+    var recordGithubSignup = function(req, res, next){
+        SignupModule.signingUpWithGithub(req.session);
+        next();
+    }
+
+    app.get('/login/github'
+        , recordGithubLogin
+        , passport.authenticate('github', {
         scope: 'user:email'
     }));
+
+    app.get('/signup/github'
+        , recordGithubSignup
+        , passport.authenticate('github', {
+        scope: 'user:email'
+    }));
+    
     app.get('/auth/github/1self_website', function (req, res, next) {
         req.session.redirectUrl = "/dashboard";
         passport.authenticate('github', {

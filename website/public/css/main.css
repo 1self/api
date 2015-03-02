@@ -2047,14 +2047,6 @@ iframe.wysihtml5-sandbox:focus {
     vertical-align: middle;
 }
 
-.githubPushEvents.grid {
-    padding-left: 10%;
-}
-
-.githubPushEvents .grid-row {
-    height: 300px;
-}
-
 ul#mini-nav li.list-box i, .menuLink:hover, ul#mini-nav-right li.list-box a, ul#mini-nav-right li.list-box i, ul#mini-nav-right li.list-box a:hover {
     color: #dddddd !important;
 }
@@ -2285,10 +2277,12 @@ aside#sidebar #menu > ul > li.selected#rivermenuitem,
     min-height: 2000px;
 }
 
+
+aside#sidebar #menu > ul > li.selected#integrations,
+
+
 .page-title h2,
 .page-title ul.breadcrumb li,
 #river .panel-title{
     color: white;
-}
-
 }

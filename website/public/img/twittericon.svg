@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="110px" height="110px" viewBox="0 0 110 110" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.2.2 (9983) - http://www.bohemiancoding.com/sketch -->
+    <title>twittericon</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Mobile-Portrait-7" sketch:type="MSArtboardGroup" transform="translate(-101.000000, -444.000000)">
+            <g id="integrations" sketch:type="MSLayerGroup" transform="translate(101.000000, 443.000000)">
+                <g id="twtiter" transform="translate(0.000000, 1.000000)" sketch:type="MSShapeGroup">
+                    <g id="twittericon">
+                        <path d="M55,110 C85.3756612,110 110,85.3756612 110,55 C110,24.6243388 85.3756612,0 55,0 C24.6243388,0 0,24.6243388 0,55 C0,85.3756612 24.6243388,110 55,110 Z" id="Path-1" fill="#F7F7FA"></path>
+                        <path d="M55.4534777,44.996026 C51.8416402,34.7500725 62.4967957,18.8646786 79.086307,31.3808244 C84.4447266,31.3808244 88.987851,28.073737 88.987851,28.073737 L84.2516304,34.7500726 L91.4833512,33.6893711 C91.4833512,33.6893711 87.046832,37.5783899 84.2516304,40.7419785 C84.2516304,54.6051607 72.2481538,99.3120099 18.7873255,78.5926211 C32.7988684,79.2869706 40.5180231,72.1325266 40.5180231,72.1325266 C40.5180231,72.1325266 28.5487406,68.421393 28.0391812,62.6100193 L34.0023673,61.9328632 C34.0023673,61.9328632 21.9284911,57.7687497 21.9284911,47.4209584 L28.5487406,49.3750567 C28.5487406,49.3750567 19.3096239,41.9422103 24.108869,30.4318801 C24.108869,30.4318801 40.5180231,45.7393101 55.4534777,44.996026 Z" id="Path" fill="#4D97D4"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -2,6 +2,7 @@ var crypto = require('crypto');
 var mongoDbConnection = require('./lib/connection.js');
 var mongoRespository = require('./mongoRepository.js');
 var q = require('q');
+var _ = require("underscore")
 var moment = require("moment");
 
 var Util = function () {
@@ -65,7 +66,22 @@ var generateStream = function (appId, callbackUrl) {
     });
     return deferred.promise;
 };
-
+Util.prototype.generateRegistrationToken = function () {
+    var deferred = q.defer();
+    crypto.randomBytes(16, function (ex, buf) {
+        if (ex) {
+            deferred.reject(ex);
+        }
+        var registrationToken = [];
+        for (var i = 0; i < buf.length; i++) {
+            var charCode = String.fromCharCode((buf[i] % 26) + 65);
+            registrationToken.push(charCode);
+        }
+        console.log("Registration Token: ", registrationToken.join(''));
+        deferred.resolve(registrationToken.join(''));
+    });
+    return deferred.promise;
+};
 Util.prototype.createV1Stream = function (appId, callbackUrl) {
     return generateStream(appId, callbackUrl)
         .then(function (stream) {
@@ -104,5 +120,76 @@ Util.prototype.streamExists = function (streamId, readToken) {
         });
     return deferred.promise;
 };
+
+Util.prototype.linkStreamToUser = function (user, streamId) {
+    var deferred = q.defer();
+    if (isStreamAlreadyLinkedToUser(streamId, user)) {
+        deferred.resolve(false);
+    } else {
+        return insertStreamForUser(user, streamId);
+    }
+    return deferred.promise;
+};
+
+Util.prototype.linkIntegrationAppToUser = function (user, appId) {
+    var deferred = q.defer();
+    if (isIntegrationAppAlreadyLinkedToUser(user, appId)) {
+        deferred.resolve(false);
+    } else {
+        return insertIntegrationAppForUser(user, appId);
+    }
+    return deferred.promise;
+};
+
+var isStreamAlreadyLinkedToUser = function (streamid, user) {
+    return _.where(user.streams, {
+            "streamid": streamid
+        }).length > 0;
+};
+
+var isIntegrationAppAlreadyLinkedToUser = function (user, appId) {
+    return _.contains(user.integrations, appId);
+};
+
+var insertStreamForUser = function (user, streamid) {
+    var deferred = q.defer();
+    var updateObject = {
+        "$push": {
+            "streams": {
+                "streamid": streamid
+            }
+        }
+    };
+    var query = {
+        "username": user.username.toLowerCase()
+    };
+    mongoRespository.update('users', query, updateObject)
+        .then(function (user) {
+            deferred.resolve(true);
+        }, function (err) {
+            deferred.reject(err);
+        });
+    return deferred.promise;
+};
+
+var insertIntegrationAppForUser = function (user, appId) {
+    var deferred = q.defer();
+    var updateObject = {
+        "$push": {
+            "integrations": appId
+        }
+    };
+    var query = {
+        "username": user.username.toLowerCase()
+    };
+    mongoRespository.update('users', query, updateObject)
+        .then(function (user) {
+            deferred.resolve(true);
+        }, function (err) {
+            deferred.reject(err);
+        });
+    return deferred.promise;
+};
+
 
 module.exports = new Util();

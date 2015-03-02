@@ -4,7 +4,6 @@ var url = require('url');
 var swig = require('swig');
 var path = require('path');
 var _ = require("underscore");
-var opbeat = require('opbeat');
 var session = require("express-session");
 var q = require('q');
 var util = require('./util');
@@ -18,13 +17,7 @@ var validateRequest = require("./validateRequest");
 var validator = require('validator');
 var mongoRespository = require('./mongoRepository.js');
 var platformService = require('./platformService.js');
-
-var opbeatOptions = {
-    organization_id: process.env.OPBEAT_ORGANIZATION_ID,
-    app_id: process.env.OPBEAT_APP_ID,
-    secret_token: process.env.OPBEAT_SECRET_TOKEN
-};
-var client = opbeat.createClient(opbeatOptions);
+var CONTEXT_URI = process.env.CONTEXT_URI;
 
 var app = express();
 
@@ -61,7 +54,7 @@ app.set('view engine', 'html');
  cache: false
  });*/
 
-require('./githubOAuth')(app);
+require('./oAuth')(app);
 
 app.all('*', function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -78,9 +71,8 @@ app.all('*', function (req, res, next) {
 });
 
 require('./quantifieddevRoutes')(app);
+require('./controllers/integrationsController')(app);
 
-// Please keep it below inclusion of quantifieddevRoutes file.
-app.use(opbeat.middleware.express(client));
 
 var convertSecsToMinutes = function (seconds) {
     return Math.round(seconds / 60 * 100) / 100;
@@ -293,7 +285,7 @@ var groupByOnParametersForLastMonth = function (streamids, actionTag, objectTag)
                 "payload.eventDateTime": {
                     "$operator": {
                         ">": {
-                            "$date": moment(lastMonth).format()
+                            "$date": moment(lastMonth).toISOString()
                         }
                     }
                 },
@@ -521,7 +513,7 @@ var getGithubPushEventCountForCompare = function (params) {
         "payload.eventDateTime": {
             "$operator": {
                 ">": {
-                    "$date": moment(lastMonth).format()
+                    "$date": moment(lastMonth).toISOString()
                 }
             }
         },
@@ -536,7 +528,7 @@ var getGithubPushEventCountForCompare = function (params) {
         "payload.eventDateTime": {
             "$operator": {
                 ">": {
-                    "$date": moment(lastMonth).format()
+                    "$date": moment(lastMonth).toISOString()
                 }
             }
         },
@@ -626,7 +618,7 @@ var getIdeActivityDurationForCompare = function (params) {
                 "payload.eventDateTime": {
                     "$operator": {
                         ">": {
-                            "$date": moment(lastMonth).format()
+                            "$date": moment(lastMonth).toISOString()
                         }
                     }
                 },
@@ -653,7 +645,7 @@ var getIdeActivityDurationForCompare = function (params) {
                 "payload.eventDateTime": {
                     "$operator": {
                         ">": {
-                            "$date": moment(lastMonth).format()
+                            "$date": moment(lastMonth).toISOString()
                         }
                     }
                 },
@@ -819,7 +811,7 @@ var correlateGithubPushesAndIDEActivity = function (streams, firstEvent, secondE
 };
 
 app.get('/', function (request, response) {
-    response.redirect('/dashboard');
+    response.redirect('/timeline');
 });
 
 app.get('/health', function (request, response) {
@@ -840,7 +832,7 @@ app.get('/users_count', function (req, res) {
 
 app.get('/recent_signups', function (req, res) {
     mongoRespository.find('users', {
-        "githubUser.profileUrl": { $exists: true }
+        "githubUser.profileUrl": {$exists: true}
     }, {
         "sort": [
             ["_id", -1]
@@ -887,10 +879,11 @@ app.post('/stream', function (req, res) {
 app.post('/v1/streams', function (req, res) {
     var auth = req.headers.authorization;
     var callbackUrl = req.body.callbackUrl;
-    console.log(callbackUrl)
+    console.log(callbackUrl);
     console.log("auth is " + auth);
     if (auth === undefined) {
         res.send(401, "Unauthorized request. Please pass valid appId and appSecret");
+        return;
     }
     var appId = auth.split(":")[0];
     var appSecret = auth.split(":")[1];
@@ -924,6 +917,9 @@ var getEventsForStreams = function (streams, skipCount, limitCount) {
     var orderSpec = {
         "payload.eventDateTime": -1
     };
+    var projectionSpec = {
+        "payload": 1
+    };
     var options = {
         "skip": skipCount,
         "limit": limitCount
@@ -931,6 +927,7 @@ var getEventsForStreams = function (streams, skipCount, limitCount) {
     var query = {
         'filterSpec': JSON.stringify(filterSpec),
         'orderSpec': JSON.stringify(orderSpec),
+        'projectionSpec': JSON.stringify(projectionSpec),
         'options': JSON.stringify(options)
     };
     platformService.filter(query)
@@ -942,6 +939,14 @@ var getEventsForStreams = function (streams, skipCount, limitCount) {
     return deferred.promise;
 };
 
+var findUniqueStreamIdsFromEvents = function (events) {
+    var streamIds = events.map(function (e) {
+        return e.payload.streamid;
+    });
+    return _.unique(streamIds);
+};
+
+// timeline api
 app.get('/v1/users/:username/events', function (req, res) {
     var skipCount = parseInt(req.query.skip) || 0;
     var limitCount = parseInt(req.query.limit) || 50; // by default show only 50 events per page
@@ -954,13 +959,95 @@ app.get('/v1/users/:username/events', function (req, res) {
         .then(function (streams) {
             return getEventsForStreams(streams, skipCount, limitCount);
         })
-        .then(function (response) {
-            res.send(response);
+        .then(function (events) {
+            var streamIds = findUniqueStreamIdsFromEvents(events);
+            var fetchIconUrlFromApp = function (streamId) {
+                return mongoRespository.findOne('stream', {streamid: streamId}, {appId: 1})
+                    .then(function (stream) {
+                        return mongoRespository.findOne('registeredApps', {appId: stream.appId}, {iconUrl: 1})
+                    })
+                    .then(function (registeredApp) {
+                        if (registeredApp) {
+                            return {streamid: streamId, iconUrl: registeredApp.iconUrl};
+                        } else {
+                            return {streamid: streamId, iconUrl: CONTEXT_URI + "/img/noimage.png"};
+                        }
+                    })
+            };
+            var iconPromises = streamIds.map(fetchIconUrlFromApp);
+
+            return q.all(iconPromises)
+                .then(function (streamIdIconMapping) {
+                    return events.map(function (e) {
+                        var iconUrl = _.findWhere(streamIdIconMapping, {streamid: e.payload.streamid}).iconUrl;
+                        return {payload: e.payload, iconUrl: iconUrl};
+                    });
+                });
+        })
+        .then(function (events) {
+            res.send(events);
         }).catch(function (error) {
             res.status(404).send("No stream associated with user.");
         });
 });
 
+var findUser = function (username, registrationToken) {
+    var deferred = q.defer();
+    var query = {
+        username: username,
+        registrationToken: registrationToken
+    };
+    mongoRespository.findOne("users", query)
+        .then(function (user) {
+            if (!_.isEmpty(user)) {
+                deferred.resolve(user);
+            }
+            deferred.reject();
+        });
+    return deferred.promise;
+};
+
+app.post('/v1/users/:username/streams', function (req, res) {
+    var auth = req.headers.authorization;
+    var callbackUrl = req.body.callbackUrl;
+    var contentType = req.headers['content-type'];
+    var registrationToken = req.headers['registration-token'];
+    var username = req.params.username;
+    if (auth === undefined) {
+        res.send(401, "Unauthorized request. Please pass valid appId and appSecret");
+        return;
+    }
+    if (contentType !== "application/json") {
+        res.send(400, "Please use application/json as content-type");
+        return;
+    }
+    var appId = auth.split(":")[0];
+    var appSecret = auth.split(":")[1];
+    var streamData;
+
+    validateClient(appId, appSecret)
+        .then(function () {
+            return findUser(username, registrationToken);
+        })
+        .then(function (user) {
+            return util.createV1Stream(appId, callbackUrl)
+                .then(function (stream) {
+                    streamData = stream;
+                    return util.linkStreamToUser(user, stream.streamid);
+                })
+                .then(function () {
+                    return util.linkIntegrationAppToUser(user, appId)
+                })
+                .then(function () {
+                    delete streamData._id;
+                    delete streamData.appId;
+                    res.status(200).send(streamData);
+                });
+        })
+        .catch(function (err) {
+            res.status(400).send("invalid request");
+        });
+});
 
 app.get('/eventsCount', function (req, res) {
     platformService.getEventsCount()
@@ -978,19 +1065,19 @@ app.post('/v1/streams/:id/events', validateRequest.validate, postEvent);
 
 var formatEventDateTime = function (datetime) {
     if (typeof datetime !== 'undefined') {
-        return moment(datetime).format();
+        return moment(datetime).toISOString();
     } else {
-        return moment(new Date()).format();
+        return moment(new Date()).toISOString();
     }
 };
 
-var getLatestEventDate = function (streamId) {
+var getLatestSyncField = function (streamId) {
     var deferred = q.defer();
     var filterSpec = {
         'payload.streamid': streamId
     };
     var orderSpec = {
-        "payload.eventDateTime": -1
+        "payload.latestSyncField": -1
     };
     var options = {
         "limit": 1
@@ -1002,7 +1089,7 @@ var getLatestEventDate = function (streamId) {
     };
     platformService.filter(query)
         .then(function (result) {
-            deferred.resolve(result[0].payload.eventDateTime);
+            deferred.resolve(result[0].payload.latestSyncField);
         }, function (err) {
             deferred.reject(err);
         });
@@ -1024,9 +1111,9 @@ var saveBatchEvents = function (myEvents, stream) {
     platformService.saveBatchEvents(myEventsWithPayload)
         .then(function (result) {
             responseBody = result;
-            return getLatestEventDate(stream.streamid)
-                .then(function (latestEventDate) {
-                    return updateLatestEventSyncDate(stream.streamid, latestEventDate);
+            return getLatestSyncField(stream.streamid)
+                .then(function (latestSyncField) {
+                    return updateLatestSyncField(stream.streamid, latestSyncField);
                 });
         })
         .then(function () {
@@ -1037,11 +1124,11 @@ var saveBatchEvents = function (myEvents, stream) {
     return deferred.promise;
 };
 
-var updateLatestEventSyncDate = function (streamId, latestEventDate) {
+var updateLatestSyncField = function (streamId, latestSyncField) {
     var deferred = q.defer();
     var query = {"streamid": streamId};
     var updateObject = {
-        $set: {"latestEventSyncDate": latestEventDate}
+        $set: {"latestSyncField": latestSyncField}
     };
     mongoRespository.update('stream', query, updateObject)
         .then(function () {
@@ -1081,7 +1168,7 @@ app.get('/live/devbuild/:durationMins', function (req, res) {
     var filterSpec = {
         "payload.eventDateTime": {
             "$gte": {
-                "$date": moment(cutoff).format()
+                "$date": moment(cutoff).toISOString()
             }
         },
         "payload.actionTags": ["Build", "wtf"]
@@ -1345,15 +1432,13 @@ var getQueryForVisualizationAPI = function (streamIds, params, fromDate, toDate)
 };
 
 //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}({{:property}})/daily/{{barchart/json}}
-app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/type/json", validateRequest.validateStreamIdAndReadToken,
-    function (req, res) {
+app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/type/json"
+    , validateRequest.validateDateRange
+    , validateRequest.validateStreamIdAndReadToken
+    , function (req, res) {
         console.log("validating");
-        var lastWeek = moment.utc().startOf('day').subtract('days', 6).format();
-        var today = moment.utc().endOf('day').format();
-        var fromDate = req.query.from || lastWeek;
-        var toDate = req.query.to || today;
-
-        var query = getQueryForVisualizationAPI([req.params.streamId], req.params, fromDate, toDate);
+        
+        var query = getQueryForVisualizationAPI([req.params.streamId], req.params, req.query.from, req.query.to);
         platformService.aggregate(query)
             .then(function (response) {
                 console.log("trying to transform events");
@@ -1393,17 +1478,16 @@ var authorizeUser = function (req, res, next) {
     }
 };
 
-app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/type/json", authorizeUser, function (req, res) {
-    var lastWeek = moment.utc().startOf('day').subtract('days', 6).format();
-    var today = moment.utc().endOf('day').format();
-    var fromDate = req.query.from || lastWeek;
-    var toDate = req.query.to || today;
+app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/type/json"
+, authorizeUser
+, validateRequest.validateDateRange
+, function (req, res) {
     getStreamIdForUsername(req.headers.authorization, req.forUsername)
         .then(function (streams) {
             var streamIds = _.map(streams, function (stream) {
                 return stream.streamid;
             });
-            return getQueryForVisualizationAPI(streamIds, req.params, fromDate, toDate);
+            return getQueryForVisualizationAPI(streamIds, req.params, req.query.from, req.query.to);
         })
         .then(platformService.aggregate)
         .then(function (response) {
@@ -1450,9 +1534,9 @@ var updateChartComment = function (chartComment) {
     return deferred.promise;
 };
 
-var getCommentsForChart = function (graph) {
-    var oneWeekAgo = moment.utc(moment().format("YYYY-MM-DD")).subtract(1, "week")._d;
-    graph.dataPointDate = {"$gt": oneWeekAgo};
+var getCommentsForChart = function (graph, dateRange) {
+    
+    graph.dataPointDate = {"$gte": new Date(dateRange.from), "$lt": new Date(dateRange.to)};
     var deferred = q.defer();
 
     var transform = function (documents) {
@@ -1481,16 +1565,22 @@ var getCommentsForChart = function (graph) {
 };
 
 // Get comments for the graph url
-app.get("/v1/comments", function (req, res) {
+app.get("/v1/comments"
+    , validateRequest.validateDateRange
+    , function (req, res) {
     var graph = {
         username: req.query.username,
         objectTags: req.query.objectTags,
         actionTags: req.query.actionTags,
         operation: req.query.operation,
         period: req.query.period,
-        renderType: req.query.renderType
+        renderType: req.query.renderType,
     };
-    getCommentsForChart(graph).then(function (comments) {
+    var dateRange = {
+        from: req.query.from,
+        to: req.query.to
+    }
+    getCommentsForChart(graph, dateRange).then(function (comments) {
         res.send(comments);
     });
 });

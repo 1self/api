@@ -1,20 +1,65 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>1self integrations</title>
-        <link rel="stylesheet" href="css/style.css">
-        <link rel="author" href="humans.txt">
-    </head>
-    <body>
-        <h1>Welcome to the integration page</h1>
-        <ul>
-        <li>twitter</li>
-        <li>last.fm</li>
-        <li>github</li>
-        <li>instagram</li>
-        </ul>
-    </body>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <script src="/js/jquery.js"></script>
+    <script src="/js/jquery.cookie.js"></script>
+    <title>1self - Live smarter</title>
+    <link rel="stylesheet" type="text/css" href="/css/integrations.css">
+    <link rel="stylesheet" type="text/css" href="/css/integration-connect.css">
+</head>
+
+<!--<script type="text/javascript">-->
+    <!--$( document ).ready(function() {-->
+        <!--//Remove below comment to see tick image overlay-->
+        <!--$(".link").click(function(){-->
+            <!--var currentElement = this;-->
+            <!--$(this.children[1]).toggle();-->
+        <!--});-->
+
+    <!--});-->
+<!--</script>-->
+
+<body>
+<div class="wrapper">
+    <div class="welcome-container">
+        <div class="logo integrationlogo left-aligned">
+            <img src={{avatarUrl}} class="integration-logo-img white-border-three-pixle">
+            <div class="left-dot dot"></div>
+            <div class="right-dot dot"></div>
+        </div>
+        <div class="welcome-message left-aligned">
+            <div class="welcome-message-wrapper">
+                <h1 class="orange-color welcome-heading">
+                    Welcome, <span>{{username}}</span>
+                </h1>
+                <p class="welcome-details">
+                    Great news! You've qualified to get 1self free for 2 years.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="divider">
+        <div class="middle-dot-container">
+            <span class="middle-dot"></span>
+        </div>
+    </div>
+    <p class="padding-one-percent paragraph-text">Now, start uniting your data and start living a smarter life</p>
+    <div class="social-container">
+
+        {% for integration in integrations %}
+        <div class="social-img-container">
+            <a href="/integrations/{{integration.integrationId}}" class="link">
+                <img src="{{integration.iconUrl}}" class="social-img" style="border: 4px solid {{integration.bgColor}}" tabindex="0">
+                <img src="/img/tick.svg" {% if integration.alreadyIntegrated  %} class="social-img tick-show"{% endif %}{% if !integration.alreadyIntegrated %} class="social-img tick-hide"{% endif %}>
+            </a>
+            <span class="social-group-title">{{integration.title}}</span>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+</body>
 </html>
