@@ -7,7 +7,7 @@
 
   var River = React.createClass({
     getInitialState: function(){
-      return {events: [], skip: 0, limit: 0};      
+      return {events: [], skip: 0, limit: 50};      
     },
 
     fetchEventData: function() {
