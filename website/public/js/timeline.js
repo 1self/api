@@ -3,7 +3,7 @@ var formatDate = function (date) {
         calendar: {
             lastDay: '[Yesterday]',
             sameDay: '[Today]',
-            lastWeek: '[Last] dddd LL',
+            lastWeek: '[Last] dddd[,] LL',
             sameElse: 'ddd ll'
         }
     });
