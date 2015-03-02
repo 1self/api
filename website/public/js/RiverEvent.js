@@ -19,8 +19,21 @@
     };
 
     RiverEvent.prototype.formatTime = function() {
+        var zeroPad = function(num, width) {
+            var an = Math.abs(num);
+            var digitCount = 1;
+            if (an !== 0) {
+                digitCount = 1 + Math.floor(Math.log(an) / Math.LN10);
+            }
+            if (digitCount >= width) {
+                return num;
+            }
+            var zeroString = Math.pow(10, width - digitCount).toString().substr(1);
+            return num < 0 ? '-' + zeroString + an : zeroString + an;
+        }
         var datetime = moment.utc(this.event.payload.eventDateTime);
-        return datetime.hour() + "." + datetime.minute();
+        var localDateTime = datetime._d;
+        return zeroPad(localDateTime.getHours(), 2) + "." + zeroPad(localDateTime.getMinutes(), 2);
     };
 
     RiverEvent.prototype.formatProperties = function() {
