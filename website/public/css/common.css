@@ -167,8 +167,8 @@ body{
 	display: none;
 }
 .graph-container-class{
-	margin:10px auto;
-	width: 20%;
+	/*margin:10px auto;*/
+	width: 0;
 }
 .graph-container-class iframe{
 	border: none;
