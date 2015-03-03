@@ -12,7 +12,7 @@
 
     fetchEventData: function() {
       var url = this.props.source + "?skip=" + this.state.skip + "&limit=" + this.state.limit;
-      var skipped = this.state.skip + 50;
+      var limit = this.state.limit + 50;
       var self = this;
       $.ajax({
         url: url,
@@ -24,9 +24,9 @@
         success: function(result) {
           if (self.isMounted()) {
             self.setState({
-              skip: skipped,
-              limit: 50,
-              events: self.state.events.concat(constructRiverData(result))
+              skip: 0,
+              limit: limit,
+              events: constructRiverData(result)
             });
           }
         },
