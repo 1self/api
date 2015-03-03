@@ -60,14 +60,14 @@ var groupSuccessiveEventsByTags = function(events) {
     state = tags(events[0]);
     events.forEach(function(event){
         if(_.isEqual(state, tags(event))) {
-            group.push(event)
+            group.unshift(event)
         } else {
-            groups.push(group);
+            groups.unshift(group);
             state = tags(event);
             group = [event];
         }
     });
-    groups.push(group);
+    groups.unshift(group);
     return groups;
 };
 
