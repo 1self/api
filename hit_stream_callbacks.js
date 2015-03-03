@@ -72,9 +72,11 @@ var request = function (url, writeToken) {
     };
 
     requestModule(options, function (err, resp, body) {
-        log("Response for " + url + " is : " + resp.statusCode);
-        log("Error: " + err);
-        log("Body: " + body);
+        if(!err){
+            log("Response for " + url + " is : " + resp.statusCode);
+        }else{  
+            log("Error for  " + url + " is: " + err);
+        }
         deferred.resolve(resp);
     });
     return deferred.promise;
