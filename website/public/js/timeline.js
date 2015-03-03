@@ -1,104 +1,154 @@
-var skip = 0;
-const limit = 50; // per page 50 records
-
-$(document).ready(function () {
-    getEvents(skip, limit);
-    $('#more_events_button').click(function () {
-        $(this).hide();
-        skip += 50;
-        getEvents(skip, limit);
-    });
-    $('#modal_close_button').click(function () {
-        $('#display_chart_modal').hide();
-    });
-});
-
-function setHeader(xhr) {
-    xhr.setRequestHeader('Authorization', eun);
-}
-
-var getEvents = function (skip, limit) {
-    $.ajax({
-        url: "/v1/users/" + username + "/events?skip=" + skip + "&limit=" + limit,
-        type: 'GET',
-        dataType: 'json',
-        success: displayEventsOnTimeline,
-        error: function () {
-            console.error('Problem while fetching timeline events!');
-        },
-        beforeSend: setHeader
-    });
-};
-
-var displayEventsOnTimeline = function (data) {
-    if (0 === data.length) {
-        return;
-    }
-
-    var dateGroupedEvents = groupEventsByDate(data);
-    var timeline_container = $('#timeline');
-    var html = "";
-
-    for (var date in dateGroupedEvents) {
-        html += '<div class="panel panel-primary">' +
-            '<div class="panel-heading">' +
-            '<h3 class="panel-title">' + formatDate(date) + '</h3>' +
-            '</div>' +
-            '<div class="panel-body">' +
-            '<ul class="list-group">';
-
-        var listOfEvents = dateGroupedEvents[date];
-
-        listOfEvents.forEach(function (current_event) {
-            var os_event = new OsEvent(current_event);
-            html += '<li onclick="openInModal(\'' + os_event.url + '\');" class="list-group-item"><span class="event_title">' + os_event.name + '</span>';
-            html += '<div class="event_property">' + os_event.displayValue + '</div>';
-            html += '</li>';
-        });
-
-        html += '</ul>' +
-            '</div>' +
-            '</div>';
-    }
-
-    timeline_container.append(html);
-    $('#more_events_button').show();
-};
-
-var groupEventsByDate = function (data) {
-    var groups = {};
-
-    data.forEach(function (event) {
-        try {
-            var date = event.payload.eventDateTime.split('T')[0];
-        } catch (e) {
-            console.log(JSON.stringify(event));
-        }
-        if (!groups[date]) {
-            groups[date] = [];
-        }
-        groups[date].push(event);
-    });
-
-    return groups;
-};
-
 var formatDate = function (date) {
     moment.locale('en', {
         calendar: {
             lastDay: '[Yesterday]',
             sameDay: '[Today]',
-            lastWeek: '[Last] dddd LL',
+            lastWeek: '[Last] dddd[,] LL',
             sameElse: 'ddd ll'
         }
     });
     return moment(date).calendar();
 };
 
-var openInModal = function (url) {
-    $('#show_chart_iframe').attr('src', url);
+var formatTime = function(time) {
+    var zeroPad = function(num, width) {
+        var an = Math.abs(num);
+        var digitCount = 1;
+        if(an !== 0){
+            digitCount = 1 + Math.floor(Math.log(an) / Math.LN10);
+        }
+        if (digitCount >= width) {
+            return num;
+        }
+        var zeroString = Math.pow(10, width - digitCount).toString().substr(1);
+        return num < 0 ? '-' + zeroString + an : zeroString + an;
+    }
+    var datetime = moment.utc(time);
+    var localDateTime = datetime._d;
+    return zeroPad(localDateTime.getHours(), 2) + "." + zeroPad(localDateTime.getMinutes(), 2);
+};
 
-    $('#display_chart_modal')
-        .css('top', $(document).scrollTop() + 70 + "px")
-        .show();
+var groupEventsByDate = function(events) {
+    var dictGroup = function() {
+        var groups = {};
+        events.forEach(function(event) {
+            var date = event.payload.eventDateTime.split('T')[0];
+            if (!groups[date]) {
+                groups[date] = [];
+            }
+            groups[date].unshift(event);
+        });
+        return groups;
+    }
+    //String sorting dates - works with current format
+    var dateGroups = dictGroup();
+    var dates = Object.keys(dateGroups).sort().reverse();
+
+    return dates.map(function(date){
+        return {date: formatDate(date), data: dateGroups[date]};
+    });
+};
+
+var groupSuccessiveEventsByTags = function(events) {
+    groups = [];
+
+    var tags = function(event) {
+        return event.payload.actionTags.concat(event.payload.objectTags);
+    };
+
+    group = [];
+    state = tags(events[0]);
+    events.forEach(function(event){
+        if(_.isEqual(state, tags(event))) {
+            group.unshift(event)
+        } else {
+            groups.unshift(group);
+            state = tags(event);
+            group = [event];
+        }
+    });
+    groups.unshift(group);
+    return groups;
+};
+
+var joinTags = function(event) {
+    var compose = function(tags) {
+        var toTitleCase = function(str) {
+            return str.replace(/\w\S*/g, function(txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+        };
+        return tags.map(function(tag) {
+            return toTitleCase(tag)
+        }).join(" ");
+    };
+    return compose(event.payload.objectTags) + " " + compose(event.payload.actionTags);
+};
+
+
+var constructRiverData = function(events) {
+    var data = []
+    var dateGrouped = groupEventsByDate(events);
+
+    dateGrouped.forEach(function(groupedEvents){
+        var riverDateGrouped = {date: groupedEvents['date'], data: []};
+        var succesiveGrouped = groupSuccessiveEventsByTags(groupedEvents.data);
+
+        riverDateGrouped['data'] = succesiveGrouped.map(function(group){
+            var transformEvent = function(event) {
+                var riverEvent = new RiverEvent(event);
+                return {
+                    title: riverEvent.formatTitle(),
+                    time: riverEvent.formatTime(),
+                    properties: riverEvent.formatProperties()
+                };
+            };
+
+            groupTransformedEvents = group.map(function(event) {
+                return transformEvent(event);
+            });
+
+            riverDetailGrouped = {
+                title: joinTags(_.first(group)),
+                from: formatTime(_.last(group).payload.eventDateTime),
+                to: formatTime(_.first(group).payload.eventDateTime),
+                icon: _.first(group).iconUrl || "/img/noimage.png",
+                chartUrl: computeChartUrl(_.first(group)),
+                events: groupTransformedEvents
+            };
+            return riverDetailGrouped;
+        });
+        data.push(riverDateGrouped);
+    });
+    return data;
+};
+
+var computeChartUrl = function(event) {
+    var findFirstNumericProperty = function(){
+        var keys = Object.keys(event.payload.properties);
+        var prop;
+        keys.forEach(function(key){
+            if (typeof(event.payload.properties[key]) === "number") {
+                prop = key;
+                return;
+            }
+        });
+        return prop;
+    };
+
+    var operation = "count";
+    var prop = findFirstNumericProperty();
+
+    //dirty hack for noiseapp/twitter or show first numeric property if any (for now)
+    if (event.payload.objectTags.indexOf("sound") !== -1) {
+        operation = "mean(dba)";
+    } else if (event.payload.objectTags.indexOf("tweets") !== -1) {
+        operation = "count";
+    } else if (typeof(prop) !== "undefined") {
+        operation = "sum(" + prop + ")";
+    }
+
+    return "/v1/users/" + username + "/events/" + event.payload.objectTags.join(',') +
+        "/" + event.payload.actionTags.join(',') + "/" + operation +
+        "/daily/barchart?bgColor=00a2d4";
 };
