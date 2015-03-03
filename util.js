@@ -1,6 +1,6 @@
 var crypto = require('crypto');
 var mongoDbConnection = require('./lib/connection.js');
-var mongoRespository = require('./mongoRepository.js');
+var mongoRepository = require('./mongoRepository.js');
 var q = require('q');
 var _ = require("underscore")
 var moment = require("moment");
@@ -85,7 +85,7 @@ Util.prototype.generateRegistrationToken = function () {
 Util.prototype.createV1Stream = function (appId, callbackUrl) {
     return generateStream(appId, callbackUrl)
         .then(function (stream) {
-            return mongoRespository.insert('stream', stream);
+            return mongoRepository.insert('stream', stream);
         });
 };
 
@@ -99,7 +99,7 @@ Util.prototype.registerApp = function (appEmail) {
         appSecret: "app-secret-" + appSecret
     };
 
-    return mongoRespository.insert('registeredApps', appDetails);
+    return mongoRepository.insert('registeredApps', appDetails);
 };
 
 Util.prototype.streamExists = function (streamId, readToken) {
@@ -108,7 +108,7 @@ Util.prototype.streamExists = function (streamId, readToken) {
         //, readToken: readToken
     };
     var deferred = q.defer();
-    mongoRespository.findOne('stream', query)
+    mongoRepository.findOne('stream', query)
         .then(function (stream) {
             if (stream) {
                 deferred.resolve(true);
@@ -163,7 +163,7 @@ var insertStreamForUser = function (user, streamid) {
     var query = {
         "username": user.username.toLowerCase()
     };
-    mongoRespository.update('users', query, updateObject)
+    mongoRepository.update('users', query, updateObject)
         .then(function (user) {
             deferred.resolve(true);
         }, function (err) {
@@ -182,9 +182,41 @@ var insertIntegrationAppForUser = function (user, appId) {
     var query = {
         "username": user.username.toLowerCase()
     };
-    mongoRespository.update('users', query, updateObject)
+    mongoRepository.update('users', query, updateObject)
         .then(function (user) {
             deferred.resolve(true);
+        }, function (err) {
+            deferred.reject(err);
+        });
+    return deferred.promise;
+};
+
+Util.prototype.getStreamsForUser = function (oneselfUsername) {
+    var byOneselfUsername = {
+        "username": oneselfUsername.toLowerCase()
+    };
+    var projection = {
+        "streams": 1,
+        "username": 1
+    };
+    var deferred = q.defer();
+    mongoRepository.findOne('users', byOneselfUsername, projection)
+        .then(function (user) {
+            deferred.resolve(user);
+        }, function (err) {
+            deferred.reject(err);
+        });
+    return deferred.promise;
+};
+
+Util.prototype.findUser = function (oneselfUsername) {
+    var byOneselfUsername = {
+        "username": oneselfUsername.toLowerCase()
+    };
+    var deferred = q.defer();
+    mongoRepository.findOne('users', byOneselfUsername)
+        .then(function (user) {
+            deferred.resolve(user);
         }, function (err) {
             deferred.reject(err);
         });
