@@ -110,8 +110,8 @@ var constructRiverData = function(events) {
 
             riverDetailGrouped = {
                 title: joinTags(_.first(group)),
-                from: formatTime(_.first(group).payload.eventDateTime),
-                to: formatTime(_.last(group).payload.eventDateTime),
+                from: formatTime(_.last(group).payload.eventDateTime),
+                to: formatTime(_.first(group).payload.eventDateTime),
                 icon: _.first(group).iconUrl || "/img/noimage.png",
                 chartUrl: computeChartUrl(_.first(group)),
                 events: groupTransformedEvents

@@ -133,6 +133,12 @@
       return {display: 'list'};
     },
 
+    componentDidMount: function() {
+      $($(this.getDOMNode())).find(".list-container-class").animate({
+        width: "100%"
+      }, 500);
+    },
+
     handleClick: function(state) {
       var notSelected;
       if(state === 'list') {
@@ -140,7 +146,7 @@
       } else {
         notSelected = 'list';
       }
-      this.setState({display: state, select: this.refs[state].getDOMNode(), unselect: this.refs[notSelected].getDOMNode()});
+      this.setState({display: state, parent: this.getDOMNode() });
     },
 
     render: function() {
@@ -159,7 +165,7 @@
               
             </div>
             <ReactCSSTransitionGroup transitionName="fade">
-              {this.state.display == 'graph' ? <EventsGraph select={this.state.select} unselect={this.state.unselect} chartUrl={this.props.chartUrl} /> : <EventsList select={this.state.select} unselect={this.state.unselect} events={this.props.events} />}
+              {this.state.display == 'graph' ? <EventsGraph parent={this.state.parent} chartUrl={this.props.chartUrl} /> : <EventsList parent={this.state.parent} events={this.props.events} />}
             </ReactCSSTransitionGroup>
           </div>
         );
@@ -168,13 +174,16 @@
 
   var EventsList = React.createClass({
     componentDidMount: function(){
-            $($(this.props.select)).addClass("active-link");
-            $($(this.props.unselect)).removeClass("active-link");
+      var parentNode = $(this.props.parent);
+
+      $(parentNode).find('.list-link').addClass("active-link");
+      $(parentNode).find('.graph-link').removeClass("active-link");
      
-      $(".graph-container-class").animate({
+      $(parentNode).find(".graph-container-class").animate({
         width: "0px"
       }, 500);
-      $(".list-container-class").animate({
+
+      $(parentNode).find(".list-container-class").animate({
         width: "100%"
       }, 500);
     },
@@ -234,31 +243,37 @@
 
   var EventsGraph = React.createClass({
     componentDidMount: function(){
+      var parentNode = $(this.props.parent);
+      var graphNode = $(this.refs['graph-container'].getDOMNode());
+
+      $(parentNode).find(".list-container-class").animate({
+        width: "0px"
+      }, 500);
+
       if ($(window).width() <= 460) {
-        $(".graph-container-class").animate({
+        $(graphNode).animate({
           width: "100%"
         }, 500);
       } else {
-        $(".graph-container-class").animate({
+        $(graphNode).animate({
           width: "91%"
         }, 500);
         // $(".graph-container-class").show();
-        $(".graph-container-class").css({
+        $(graphNode).css({
           "float": "none"
         });
       }
-      $($(this.props.select)).addClass("active-link");
-      $($(this.props.unselect)).removeClass("active-link");
+      $(parentNode).find('.graph-link').addClass("active-link");
+      $(parentNode).find('.list-link').removeClass("active-link");
     },
 
     render:function(){
       return (
             <div className="clear-all">
               <div className="accordian-title-logo float-left height-ten-pixle hide-on-mobile"></div>
-              <div className="clear-all graph-container-class accordian-heading righ-aligned" id="graph-container" >
+              <div ref="graph-container" className="clear-all graph-container-class accordian-heading righ-aligned" id="graph-container" >
                 
-                <iframe src="" className="graph-iframe" src={this.props.chartUrl}>
-                </iframe>
+                <iframe src="" className="graph-iframe" src={this.props.chartUrl}></iframe>
               </div>
             </div>
         );
