@@ -1,12 +1,13 @@
 process.env.DBURI = "mongodb://127.0.0.1:27017/quantifieddev";
 
-var mongoDbConnection = require('./lib/connection.js');
-var mongoRespository = require('./mongoRepository.js');
+var mongoRepository = require('./mongoRepository.js');
+var Q = require('q');
 var requestModule = require('request');
 var fs = require('fs');
 
 var log = function(message){
-    message = "\n" + new Date() + "   " + message;
+    message = "\n" + new Date() + ": " + message;
+    console.log(message);
     fs.appendFile('stream_callback_hit.log', message, function (err) {
 
     });
@@ -14,37 +15,69 @@ var log = function(message){
 
 
 var hitStreamCallbacks = function(){
-    log("Starting sync at: " + new Date());
-    mongoDbConnection(function (qdDb) {
-        qdDb.collection('stream').find({}).each(function(err, doc){
-            if(null == doc || !doc.callbackUrl) {
-                log("Nothing to process for: " + JSON.stringify(doc));
-                return;
-            }
-            
-            var url = doc.callbackUrl,
-            headers = {"Authorization": doc.writeToken};
-
-            url = url.replace("{{latestSyncField}}", doc.latestSyncField);
-            url = url.replace("{{streamid}}", doc.streamid);
-       
-            log("Request URL: " + url);
-
-            var requestDetails = {
-                url: url,
-                method: 'GET',
-                headers: headers
-            };
-
-            requestModule(requestDetails, function (error, response, body) {
-                if (!error && response.statusCode == 200) {
-                    log("Processing successfull for Stream: " + doc.streamid);
-                } else {
-                    log("FAILED SYNC for Stream: " + url + "with error " + error + " &&&&&&&&&& response body: " + body);
-                }
-            });
+    log("Starting sync");
+    mongoRepository.find('stream', {})
+        .then(replaceTemplateVars)
+        .then(hitCallbackUrls)
+        .then(function() {
+            log("Sync Ended");
         });
+};
+
+var replaceTemplateVars = function (streams) {
+    var deferred = Q.defer();
+    var callbackUrls = [];
+    streams.forEach(function(stream){
+        if(null == stream || !stream.callbackUrl) return;
+        var requestData = {},
+        url = stream.callbackUrl;
+
+        url = url.replace("{{latestSyncField}}", stream.latestSyncField);
+        url = url.replace("{{streamid}}", stream.streamid);
+
+        requestData.callbackUrl = url;
+        requestData.writeToken = stream.writeToken;
+
+        callbackUrls.push(requestData);
     });
+
+    deferred.resolve(callbackUrls);
+    return deferred.promise;
+};
+
+var hitCallbackUrls = function (urls) {
+    log("Total urls to hit: " + urls.length);
+    var deferred = Q.defer();
+    var requests = [];
+    urls.forEach(function (url) {
+        requests.push(request(url.callbackUrl, url.writeToken));
+    });
+
+    Q.all(requests).then(function () {
+        deferred.resolve();
+    }).catch(function (err) {
+        log("Error occurred", err);
+    });
+    return deferred.promise;
+};
+
+var request = function (url, writeToken) {
+    var deferred = Q.defer();
+    var options = {
+        url: url,
+        headers: {
+            'Authorization': writeToken
+        },
+        method: 'GET'
+    };
+
+    requestModule(options, function (err, resp, body) {
+        log("Response for " + url + " is : " + resp.statusCode);
+        log("Error: " + err);
+        log("Body: " + body);
+        deferred.resolve(resp);
+    });
+    return deferred.promise;
 };
 
 hitStreamCallbacks();
