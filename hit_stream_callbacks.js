@@ -25,8 +25,8 @@ var hitStreamCallbacks = function(){
             var url = doc.callbackUrl,
             headers = {"Authorization": doc.writeToken};
 
-            url = url.replace("[[latestSyncField]]", doc.latestSyncField);
-            url = url.replace("[[streamid]]", doc.streamid);
+            url = url.replace("{{latestSyncField}}", doc.latestSyncField);
+            url = url.replace("{{streamid}}", doc.streamid);
        
             log("Request URL: " + url);
 
@@ -47,5 +47,5 @@ var hitStreamCallbacks = function(){
     });
 };
 
-
+hitStreamCallbacks();
 setInterval(hitStreamCallbacks, 18000000);
