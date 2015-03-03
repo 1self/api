@@ -32,7 +32,7 @@ var replaceTemplateVars = function (streams) {
         var requestData = {},
         url = stream.callbackUrl;
 
-        url = url.replace("{{latestSyncField}}", stream.latestSyncField);
+        url = url.replace("{{latestSyncField}}", encodeURIComponent(stream.latestSyncField));
         url = url.replace("{{streamid}}", stream.streamid);
 
         requestData.callbackUrl = url;
