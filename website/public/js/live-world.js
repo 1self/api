@@ -15,7 +15,6 @@ var liveworld = function() {
         }
     };
 
-    debugger;
     if (window.addEventListener) { // hack for IE to attach event handler
         addEventListener("message", handleIFrameReferrer, false);
     } else {
