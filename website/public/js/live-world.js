@@ -15,6 +15,7 @@ var liveworld = function() {
         }
     };
 
+    debugger;
     if (window.addEventListener) { // hack for IE to attach event handler
         addEventListener("message", handleIFrameReferrer, false);
     } else {
@@ -73,9 +74,10 @@ var liveworld = function() {
     };
 
     var url = function() {
-        return (location.hostname == "app-staging.1self.co") ?
-            "https://app-staging.1self.co/live/devbuild/" :
-            "https://app.1self.co/live/devbuild/";
+        return 'http://localhost:5000/live/devbuild/';
+        // return (location.hostname == "app-staging.1self.co") ?
+        //     "https://app-staging.1self.co/live/devbuild/" :
+        //     "https://app.1self.co/live/devbuild/";
     };
 
     var getLiveEventsUrl = function() {
@@ -101,8 +103,13 @@ var liveworld = function() {
         d3.json(liveDevBuildUrl, function(error, events) {
             var data = events;
             transformedEvents = [];
+            var createLocations = [];
             var buildLocations = [];
             var wtfLocations = [];
+
+            var isBuildLocationUnique = function(singleEvent) {
+                return singleEvent.type === "create" && !(_.findWhere(createLocations, singleEvent.location))
+            }
             var isBuildLocationUnique = function(singleEvent) {
                 return singleEvent.type === "Build" && !(_.findWhere(buildLocations, singleEvent.location))
             }
@@ -111,6 +118,10 @@ var liveworld = function() {
             }
             for (var i = events.length - 1; i >= 0; i--) {
                 var eventFromServer = events[i].payload;
+                if(eventFromServer.location === undefined){
+                    continue;
+                }
+
                 var singleEvent = {
                     id: i,
                     location: {
@@ -119,6 +130,11 @@ var liveworld = function() {
                     },
                     type: getEventType(eventFromServer), // "wtf" or "Build"
                     language: eventFromServer.properties.Language != undefined ? eventFromServer.properties.Language[0] : ""
+                
+                }
+                if (isBuildLocationUnique(singleEvent)) {
+                    transformedEvents.push(singleEvent);
+                    createLocations.push(singleEvent.location);
                 }
                 if (isBuildLocationUnique(singleEvent)) {
                     transformedEvents.push(singleEvent);
