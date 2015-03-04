@@ -175,23 +175,7 @@ module.exports = function (app) {
         res.render('embeddableGlobe');
     });
 
-    var getStreamsForUser = function (oneselfUsername) {
-        var streamidUsernameMapping = {
-            "username": oneselfUsername.toLowerCase()
-        };
-        var projection = {
-            "streams": 1,
-            "username": 1
-        };
-        var deferred = Q.defer();
-        mongoRepository.findOne('users', streamidUsernameMapping, projection)
-            .then(function (user) {
-                deferred.resolve(user);
-            }, function (err) {
-                deferred.reject(err);
-            });
-        return deferred.promise;
-    };
+
 
     app.get("/dashboard", sessionManager.requiresSession, function (req, res) {
         var streamId = req.query.streamId ? req.query.streamId : "";
@@ -200,7 +184,7 @@ module.exports = function (app) {
             util.streamExists(streamId, readToken)
                 .then(function (exists) {
                     if (exists) {
-                        getStreamsForUser(req.session.username)
+                        util.getStreamsForUser(req.session.username)
                             .then(function (user) {
                                 return util.linkStreamToUser(user, streamId);
                             })
@@ -223,7 +207,7 @@ module.exports = function (app) {
                 });
 
         } else {
-            getStreamsForUser(req.session.username)
+            util.getStreamsForUser(req.session.username)
                 .then(function (user) {
                     if (user.streams && req.query.link_data !== "true") {
                         res.render('dashboard', {
@@ -933,7 +917,7 @@ module.exports = function (app) {
             requestModule(options, handleResponse);
             return deferred.promise;
         };
-        getStreamsForUser(username)
+        util.getStreamsForUser(username)
             .then(getStreamsFromPlatform)
             .then(getStreamsForStreamIds)
             .then(replaceTemplateVars)
@@ -1236,7 +1220,7 @@ module.exports = function (app) {
             util.streamExists(streamId, readToken)
                 .then(function (exists) {
                     if (exists) {
-                        getStreamsForUser(req.param('username'))
+                        util.getStreamsForUser(req.param('username'))
                             .then(function (user) {
                                 return util.linkStreamToUser(user, streamId);
                             })
