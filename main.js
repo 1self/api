@@ -1171,7 +1171,7 @@ app.get('/live/devbuild/:durationMins', function (req, res) {
                 "$date": moment(cutoff).toISOString()
             }
         },
-        "payload.actionTags": ["Build", "wtf"]
+        "payload.actionTags": ["Build", "wtf", "create"]
     };
     if (selectedEventType) {
         filterSpec["payload.actionTags"] = selectedEventType;
