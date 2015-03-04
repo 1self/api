@@ -4,3 +4,4 @@
 *.iml
 TAGS
 node_modules
+.env
