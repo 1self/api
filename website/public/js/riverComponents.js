@@ -12,7 +12,6 @@
 
     fetchEventData: function() {
       var url = this.props.source + "?skip=" + this.state.skip + "&limit=" + this.state.limit;
-      var limit = this.state.limit + 50;
       var self = this;
       $.ajax({
         url: url,
@@ -24,9 +23,9 @@
         success: function(result) {
           if (self.isMounted()) {
             self.setState({
-              skip: 0,
-              limit: limit,
-              events: constructRiverData(result)
+              skip: self.state.skip + 50,
+              limit: 50,
+              events: self.state.events.concat(result)
             });
           }
         },
@@ -41,7 +40,8 @@
     },
 
     render: function() {
-      var dateGroups = this.state.events.map(function(dateGroup){
+      var riverEvents = constructRiverData(this.state.events);
+      var dateGroups = riverEvents.map(function(dateGroup){
         return React.createElement(DateGroup, {key: dateGroup.date, day: dateGroup.date, group: dateGroup.data});
       });
       return ( 
