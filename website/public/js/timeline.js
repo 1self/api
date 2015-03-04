@@ -120,7 +120,7 @@ var computeChartUrl = function(event) {
         "/" + event.payload.actionTags.join(',') + "/" + operation +
         "/daily/barchart?bgColor=00a2d4";
 
-    if(isWithinLastWeek(event.payload.eventDateTime)) {
+    if(!isWithinLastWeek(event.payload.eventDateTime)) {
         var current = moment(event.payload.eventDateTime);
         var from = moment(current).subtract(3, 'days').toISOString();
         var to = moment(current).add(3, 'days').toISOString();
