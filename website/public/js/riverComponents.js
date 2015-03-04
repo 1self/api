@@ -7,7 +7,7 @@
 
   var River = React.createClass({displayName: "River",
     getInitialState: function(){
-      return {events: [], skip: 0, limit: 50};      
+      return {events: [], skip: 0, limit: 50, showMore: true};      
     },
 
     fetchEventData: function() {
@@ -25,7 +25,8 @@
             self.setState({
               skip: self.state.skip + 50,
               limit: 50,
-              events: self.state.events.concat(result)
+              events: self.state.events.concat(result),
+              showMore: result.length === 50
             });
           }
         },
@@ -47,7 +48,7 @@
       return ( 
         React.createElement("div", null, 
           dateGroups, 
-          React.createElement(MoreButton, {clickHandler: this.fetchEventData})
+          this.state.showMore ? React.createElement(MoreButton, {clickHandler: this.fetchEventData}) : undefined
         )
       );
     }
