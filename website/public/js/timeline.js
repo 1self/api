@@ -85,6 +85,50 @@ var joinTags = function(event) {
     return compose(event.payload.objectTags) + " " + compose(event.payload.actionTags);
 };
 
+var computeChartUrl = function(event) {
+    var findFirstNumericProperty = function(){
+        var keys = Object.keys(event.payload.properties);
+        var prop;
+        keys.forEach(function(key){
+            if (typeof(event.payload.properties[key]) === "number") {
+                prop = key;
+                return;
+            }
+        });
+        return prop;
+    };
+
+    var isWithinLastWeek = function(date) {
+        var now = moment();
+        var current = moment(date);
+        return now.diff(current, 'days') < 7;
+    }
+
+    var operation = "count";
+    var prop = findFirstNumericProperty();
+
+    //dirty hack for noiseapp/twitter or show first numeric property if any (for now)
+    if (event.payload.objectTags.indexOf("sound") !== -1) {
+        operation = "mean(dba)";
+    } else if (event.payload.objectTags.indexOf("tweets") !== -1) {
+        operation = "count";
+    } else if (typeof(prop) !== "undefined") {
+        operation = "sum(" + prop + ")";
+    }
+
+    var url = "/v1/users/" + username + "/events/" + event.payload.objectTags.join(',') +
+        "/" + event.payload.actionTags.join(',') + "/" + operation +
+        "/daily/barchart?bgColor=00a2d4";
+
+    if(!isWithinLastWeek(event.payload.eventDateTime)) {
+        var current = moment(event.payload.eventDateTime);
+        var from = moment(current).subtract(3, 'days').toISOString();
+        var to = moment(current).add(3, 'days').toISOString();
+        url += "&from=" + from + "&to=" + to;
+    }
+
+    return url;
+};
 
 var constructRiverData = function(events) {
     var data = []
@@ -121,34 +165,4 @@ var constructRiverData = function(events) {
         data.push(riverDateGrouped);
     });
     return data;
-};
-
-var computeChartUrl = function(event) {
-    var findFirstNumericProperty = function(){
-        var keys = Object.keys(event.payload.properties);
-        var prop;
-        keys.forEach(function(key){
-            if (typeof(event.payload.properties[key]) === "number") {
-                prop = key;
-                return;
-            }
-        });
-        return prop;
-    };
-
-    var operation = "count";
-    var prop = findFirstNumericProperty();
-
-    //dirty hack for noiseapp/twitter or show first numeric property if any (for now)
-    if (event.payload.objectTags.indexOf("sound") !== -1) {
-        operation = "mean(dba)";
-    } else if (event.payload.objectTags.indexOf("tweets") !== -1) {
-        operation = "count";
-    } else if (typeof(prop) !== "undefined") {
-        operation = "sum(" + prop + ")";
-    }
-
-    return "/v1/users/" + username + "/events/" + event.payload.objectTags.join(',') +
-        "/" + event.payload.actionTags.join(',') + "/" + operation +
-        "/daily/barchart?bgColor=00a2d4";
 };

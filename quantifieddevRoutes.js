@@ -192,6 +192,7 @@ module.exports = function(app) {
                     if (exists) {
                         getStreamsForUser(req.session.username)
                             .then(function(user) {
+
                                 return util.linkStreamToUser(user, streamId);
                             })
                             .then(function(isStreamLinked) {
@@ -928,7 +929,7 @@ module.exports = function(app) {
             requestModule(options, handleResponse);
             return deferred.promise;
         };
-        getStreamsForUser(username)
+        util.getStreamsForUser(username)
             .then(getStreamsFromPlatform)
             .then(getStreamsForStreamIds)
             .then(replaceTemplateVars)
@@ -1191,6 +1192,7 @@ module.exports = function(app) {
             var query = {
                 username: username
             };
+
             mongoRepository.findOne('users', query)
                 .then(function(user) {
                     deferred.resolve(user.profile.avatarUrl);

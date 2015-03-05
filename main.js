@@ -1049,6 +1049,28 @@ app.post('/v1/users/:username/streams', function (req, res) {
         });
 });
 
+// TODO: remove this once all existing github integration users are migrated
+app.post('/v1/users/:username/link', function (req, res) {
+    var streamId = req.body.streamId;
+    var appId = req.body.appId;
+    var username = req.params.username;
+    if (streamId && appId) {
+        util.findUser(username)
+            .then(function (user) {
+                return q.all([util.linkStreamToUser(user, streamId), util.linkIntegrationAppToUser(user, appId)]);
+            })
+            .then(function () {
+                res.status(200).send("ok");
+            })
+            .catch(function (err) {
+                console.log("Error: ",err);
+                res.status(500).send(err);
+            })
+    } else {
+        res.status(400).send("invalid streamId and appId");
+    }
+});
+
 app.get('/eventsCount', function (req, res) {
     platformService.getEventsCount()
         .then(function (response) {
@@ -1437,7 +1459,7 @@ app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period
     , validateRequest.validateStreamIdAndReadToken
     , function (req, res) {
         console.log("validating");
-        
+
         var query = getQueryForVisualizationAPI([req.params.streamId], req.params, req.query.from, req.query.to);
         platformService.aggregate(query)
             .then(function (response) {
@@ -1479,24 +1501,24 @@ var authorizeUser = function (req, res, next) {
 };
 
 app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/type/json"
-, authorizeUser
-, validateRequest.validateDateRange
-, function (req, res) {
-    getStreamIdForUsername(req.headers.authorization, req.forUsername)
-        .then(function (streams) {
-            var streamIds = _.map(streams, function (stream) {
-                return stream.streamid;
+    , authorizeUser
+    , validateRequest.validateDateRange
+    , function (req, res) {
+        getStreamIdForUsername(req.headers.authorization, req.forUsername)
+            .then(function (streams) {
+                var streamIds = _.map(streams, function (stream) {
+                    return stream.streamid;
+                });
+                return getQueryForVisualizationAPI(streamIds, req.params, req.query.from, req.query.to);
+            })
+            .then(platformService.aggregate)
+            .then(function (response) {
+                res.send(transformPlatformDataToQDEvents(response[0]));
+            }).catch(function (error) {
+                console.log("Error is", error);
+                res.status(404).send("Oops! Some error occurred.");
             });
-            return getQueryForVisualizationAPI(streamIds, req.params, req.query.from, req.query.to);
-        })
-        .then(platformService.aggregate)
-        .then(function (response) {
-            res.send(transformPlatformDataToQDEvents(response[0]));
-        }).catch(function (error) {
-            console.log("Error is", error);
-            res.status(404).send("Oops! Some error occurred.");
-        });
-});
+    });
 
 var findGraphUrl = function (graphUrl) {
     var deferred = q.defer();
@@ -1535,7 +1557,7 @@ var updateChartComment = function (chartComment) {
 };
 
 var getCommentsForChart = function (graph, dateRange) {
-    
+
     graph.dataPointDate = {"$gte": new Date(dateRange.from), "$lt": new Date(dateRange.to)};
     var deferred = q.defer();
 
@@ -1568,22 +1590,22 @@ var getCommentsForChart = function (graph, dateRange) {
 app.get("/v1/comments"
     , validateRequest.validateDateRange
     , function (req, res) {
-    var graph = {
-        username: req.query.username,
-        objectTags: req.query.objectTags,
-        actionTags: req.query.actionTags,
-        operation: req.query.operation,
-        period: req.query.period,
-        renderType: req.query.renderType,
-    };
-    var dateRange = {
-        from: req.query.from,
-        to: req.query.to
-    }
-    getCommentsForChart(graph, dateRange).then(function (comments) {
-        res.send(comments);
+        var graph = {
+            username: req.query.username,
+            objectTags: req.query.objectTags,
+            actionTags: req.query.actionTags,
+            operation: req.query.operation,
+            period: req.query.period,
+            renderType: req.query.renderType,
+        };
+        var dateRange = {
+            from: req.query.from,
+            to: req.query.to
+        }
+        getCommentsForChart(graph, dateRange).then(function (comments) {
+            res.send(comments);
+        });
     });
-});
 
 app.get("/v1/user/:username/exists", function (req, res) {
     var username = req.param("username");
