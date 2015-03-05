@@ -26,9 +26,9 @@ var emailConfigOptions = {
 
 var encryptedPassword = PasswordEncrypt.encryptPassword(sharedSecret);
 
-module.exports = function (app) {
+module.exports = function(app) {
 
-    var getFilterValuesForCountry = function (req) {
+    var getFilterValuesForCountry = function(req) {
         var lastWeek = 60 * 24 * 7; // 60 minutes * 24 hours * 7 days
         var selectedLanguage = req.query.language ? req.query.language : "all";
         var selectedEvent = req.query.event ? req.query.event : "all";
@@ -45,10 +45,10 @@ module.exports = function (app) {
         return filterValues;
     };
 
-    app.get("/signup", function (req, res) {
+    app.get("/signup", function(req, res) {
 
         //sessionManager.resetSession(req);
-        if(req.session.username) {
+        if (req.session.username) {
             res.redirect("/timeline");
             return;
         }
@@ -60,41 +60,38 @@ module.exports = function (app) {
 
         SignupModule.startSignup(req.session);
 
-        // Always redirect to dashboard when user hits /signup
         if (req.query.redirectUrl) {
             req.session.redirectUrl = req.query.redirectUrl;
-            console.log('redirect url captured: ' + req.session.redirectUrl);
         } else {
-            req.session.redirectUrl = "/dashboard";
+            req.session.redirectUrl = "/timeline";
         }
         if (!(_.isEmpty(req.param('streamId')))) {
             req.session.redirectUrl = "/dashboard" + "?streamId=" + req.param('streamId');
         }
 
-        // TODO encapsulate following logic into new intent manager
-        // Store the intent into session if intent is provided and redirect to /auth/github
+        // Store the intent into session if intent is provided and redirect to signup
         if (!(_.isEmpty(req.query.intent))) {
             req.session.intent = {};
             req.session.intent.name = req.query.intent;
-            req.session.intent.data = {url: req.query.redirectUrl};
-            req.session.oneselfUsername = req.query.oneselfUsername;
+            req.session.intent.data = {
+                url: req.query.redirectUrl
+            };
+        }
 
-            if (req.session.intent.name == "website_signup") {
-                res.redirect("/auth/github");
-            }
-            else if (req.session.intent.name == "login") {
-                res.redirect('/login');
-            }
-            else {
-                res.render('signup');
-            }
+        if (!(_.isEmpty(req.query.username))) {
+            req.session.oneselfUsername = req.query.username;
+        }
+
+        if (!(_.isEmpty(req.query.service)) && !(_.isEmpty(req.session.oneselfUsername))) {
+            var signupUrl = "/signup/" + req.query.service;
+            res.redirect(signupUrl);
         } else {
             res.render('signup');
         }
     });
 
-    app.get("/login", function (req, res) {
-        if(req.session.username) {
+    app.get("/login", function(req, res) {
+        if (req.session.username) {
             res.redirect("/timeline");
             return;
         }
@@ -114,68 +111,61 @@ module.exports = function (app) {
         });
     });
 
-    app.post('/login', function (req, res) {
-        
+    app.post('/login', function(req, res) {
+
         req.session.service = req.body.service;
-        
-        if(req.body.service === "github"){
+
+        if (req.body.service === "github") {
             res.redirect("/login/github");
-        }
-        else if(req.body.service === "facebook"){
-            res.redirect("/login/facebook");            
+        } else if (req.body.service === "facebook") {
+            res.redirect("/login/facebook");
         }
     });
 
-    app.get("/unknownLogin", function (req, res) {
+    app.get("/unknownLogin", function(req, res) {
         res.render('unknownLogin', {
             service: req.session.service
 
         });
     });
 
-    app.get("/signupError", function (req, res) {
-        res.render('signupError'
-            , {
-                  authService: SignupModule.getAuthService(req.session),
-                  authServiceUrl: SignupModule.getAuthServiceUrl(req.session)
-            });
+    app.get("/signupError", function(req, res) {
+        res.render('signupError', {
+            authService: SignupModule.getAuthService(req.session),
+            authServiceUrl: SignupModule.getAuthServiceUrl(req.session)
+        });
     });
 
-    app.get("/signupErrorUserExists", function (req, res) {
-        res.render('signupErrorUserExists'
-            , {
-                  authService: req.session.oneselfUsername,
-                  authServiceUrl: SignupModule.getAuthServiceUrl(req.session)
-            });
+    app.get("/signupErrorUserExists", function(req, res) {
+        res.render('signupErrorUserExists', {
+            authService: req.session.oneselfUsername,
+            authServiceUrl: SignupModule.getAuthServiceUrl(req.session)
+        });
     });
 
-    app.post("/captureUsername", function(req, res){
+    app.post("/captureUsername", function(req, res) {
         req.session.oneselfUsername = req.body.username;
-        if(req.body.service === "github"){
+        if (req.body.service === "github") {
             res.redirect("/signup/github");
-        }
-        else if(req.body.service === "facebook"){
-            res.redirect("/signup/facebook");            
-        }
-
-        else res.status(404).send("unknown auth service");
+        } else if (req.body.service === "facebook") {
+            res.redirect("/signup/facebook");
+        } else res.status(404).send("unknown auth service");
     });
 
-    app.get("/signup_complete", function (req, res) {
+    app.get("/signup_complete", function(req, res) {
         var intent = req.session.intent;
         if (intent === "website_signup") {
             res.redirect("http://www.1self.co/confirmation.html");
-        }
-        else {
+        } else {
             res.redirect("comment_url");
         }
     });
 
-    app.get("/community/globe", function (req, res) {
+    app.get("/community/globe", function(req, res) {
         res.render('embeddableGlobe');
     });
 
-    var getStreamsForUser = function (oneselfUsername) {
+    var getStreamsForUser = function(oneselfUsername) {
         var streamidUsernameMapping = {
             "username": oneselfUsername.toLowerCase()
         };
@@ -185,26 +175,26 @@ module.exports = function (app) {
         };
         var deferred = Q.defer();
         mongoRepository.findOne('users', streamidUsernameMapping, projection)
-            .then(function (user) {
+            .then(function(user) {
                 deferred.resolve(user);
-            }, function (err) {
+            }, function(err) {
                 deferred.reject(err);
             });
         return deferred.promise;
     };
 
-    app.get("/dashboard", sessionManager.requiresSession, function (req, res) {
+    app.get("/dashboard", sessionManager.requiresSession, function(req, res) {
         var streamId = req.query.streamId ? req.query.streamId : "";
         var readToken = req.query.readToken ? req.query.readToken : "";
         if (streamId && readToken) {
             util.streamExists(streamId, readToken)
-                .then(function (exists) {
+                .then(function(exists) {
                     if (exists) {
                         getStreamsForUser(req.session.username)
-                            .then(function (user) {
+                            .then(function(user) {
                                 return util.linkStreamToUser(user, streamId);
                             })
-                            .then(function (isStreamLinked) {
+                            .then(function(isStreamLinked) {
                                 res.render('dashboard', {
                                     streamLinked: (isStreamLinked ? "yes" : ""),
                                     username: req.session.username,
@@ -224,7 +214,7 @@ module.exports = function (app) {
 
         } else {
             getStreamsForUser(req.session.username)
-                .then(function (user) {
+                .then(function(user) {
                     if (user.streams && req.query.link_data !== "true") {
                         res.render('dashboard', {
                             username: req.session.username,
@@ -240,7 +230,7 @@ module.exports = function (app) {
         }
     });
 
-    app.get("/claimUsername", sessionManager.requiresSession, function (req, res) {
+    app.get("/claimUsername", sessionManager.requiresSession, function(req, res) {
         if (req.query.username && _.isEmpty(req.session.username)) {
             res.render('claimUsername', {
                 username: req.query.username
@@ -250,9 +240,9 @@ module.exports = function (app) {
         }
     });
 
-    app.post("/claimUsername", function (req, res) {
+    app.post("/claimUsername", function(req, res) {
         console.log("Req in claimUsername is : ", req.user);
-        var isUsernameValid = function (username) {
+        var isUsernameValid = function(username) {
             return username.match("^[a-z0-9_]*$");
         };
         var isExistingQDUser = !(_.isEmpty(req.session.username));
@@ -261,7 +251,7 @@ module.exports = function (app) {
         }
         var oneselfUsername = (req.body.username).toLowerCase();
 
-        var updateUserRecord = function (encUserObj) {
+        var updateUserRecord = function(encUserObj) {
             var deferred = Q.defer();
             var githubUsername = req.session.githubUsername;
 
@@ -277,15 +267,15 @@ module.exports = function (app) {
                 }
             };
             mongoRepository.update('users', byGithubUsername, updateObject)
-                .then(function () {
+                .then(function() {
                     deferred.resolve(encUserObj);
-                }, function (err) {
+                }, function(err) {
                     deferred.reject(err);
                 });
             return deferred.promise;
         };
 
-        var setSessionAndRedirectToDashboard = function (encUserObj) {
+        var setSessionAndRedirectToDashboard = function(encUserObj) {
             req.session.username = oneselfUsername;
             req.session.encodedUsername = encUserObj.encodedUsername;
             console.log("User profile available in claimUsername : ", req.user.profile);
@@ -306,7 +296,7 @@ module.exports = function (app) {
             }
         };
 
-        var isUsernameAvailable = function (oneselfUsername) {
+        var isUsernameAvailable = function(oneselfUsername) {
             var deferred = Q.defer();
             if (!isUsernameValid(oneselfUsername)) {
                 deferred.reject("Username invalid. Username can contain only letters, numbers and _")
@@ -315,20 +305,19 @@ module.exports = function (app) {
                 "username": oneselfUsername.toLowerCase()
             };
             mongoRepository.findOne('users', byOneselfUsername)
-                .then(function (user) {
+                .then(function(user) {
                     if (user) {
                         deferred.reject("Username already taken. Please choose another one.");
-                    }
-                    else {
+                    } else {
                         deferred.resolve();
                     }
-                }, function (err) {
+                }, function(err) {
                     deferred.reject(err);
                 });
             return deferred.promise;
         };
 
-        var redirectToClaimUsernameWithError = function (error) {
+        var redirectToClaimUsernameWithError = function(error) {
             res.render('claimUsername', {
                 username: req.body.username,
                 githubUsername: req.session.githubUsername,
@@ -337,31 +326,31 @@ module.exports = function (app) {
         };
 
         isUsernameAvailable(oneselfUsername)
-            .then(function () {
+            .then(function() {
                 return encoder.encodeUsername(oneselfUsername);
             }, redirectToClaimUsernameWithError)
             .then(updateUserRecord)
             .then(setSessionAndRedirectToDashboard)
-            .catch(function (err) {
+            .catch(function(err) {
                 console.error("error during claim username", err);
             });
     });
 
-    var getUserIdFromEun = function (eun) {
+    var getUserIdFromEun = function(eun) {
         var deferred = Q.defer();
         var user = {
             "encodedUsername": eun
         };
         mongoRepository.findOne('users', user)
-            .then(function (user) {
+            .then(function(user) {
                 deferred.resolve(user["_id"]);
-            }, function (err) {
+            }, function(err) {
                 deferred.reject(err);
             });
         return deferred.promise;
     };
 
-    var createFriendship = function (userId1, userId2) {
+    var createFriendship = function(userId1, userId2) {
         var deferred = Q.defer();
         var findUserByEun = {
             "_id": ObjectID(userId1)
@@ -376,129 +365,129 @@ module.exports = function (app) {
             upsert: true
         };
         mongoRepository.update('users', findUserByEun, updateObject, options)
-            .then(function () {
+            .then(function() {
                 deferred.resolve();
-            }, function (err) {
+            }, function(err) {
                 deferred.reject(err);
             });
 
         return deferred.promise;
     };
 
-    var getFriendUsername = function (userDbId) {
+    var getFriendUsername = function(userDbId) {
         var deferred = Q.defer();
         var query = {
             "_id": userDbId
         };
         mongoRepository.findOne('users', query)
-            .then(function (user) {
+            .then(function(user) {
                 deferred.resolve(user.username);
-            }, function (err) {
+            }, function(err) {
                 deferred.reject(err);
             });
         return deferred.promise;
     };
 
-    var fetchFriendList = function (username) {
+    var fetchFriendList = function(username) {
         var deferred = Q.defer();
         var query = {
             "username": username.toLowerCase()
         };
         mongoRepository.findOne('users', query)
-            .then(function (user) {
+            .then(function(user) {
                 if (_.isEmpty(user) || _.isEmpty(user.friends)) {
                     deferred.resolve(null);
                 } else {
                     var promiseArray = [];
-                    user.friends.forEach(function (friendId) {
+                    user.friends.forEach(function(friendId) {
                         promiseArray.push(getFriendUsername(friendId));
                     });
-                    Q.all(promiseArray).then(function (friendUsernames) {
-                        var sortedAlphabetically = _.sortBy(friendUsernames, function (name) {
+                    Q.all(promiseArray).then(function(friendUsernames) {
+                        var sortedAlphabetically = _.sortBy(friendUsernames, function(name) {
                             return name;
                         });
                         deferred.resolve(sortedAlphabetically);
                     });
                 }
-            }, function (err) {
+            }, function(err) {
                 deferred.reject(err);
             });
         return deferred.promise;
     };
 
-    var getFullNameByUsername = function (username) {
+    var getFullNameByUsername = function(username) {
         var deferred = Q.defer();
         var query = {
             "username": username.toLowerCase()
         };
         mongoRepository.findOne('users', query)
-            .then(function (user) {
+            .then(function(user) {
                 if (!(_.isEmpty(user.githubUser.displayName))) {
                     deferred.resolve(user.githubUser.displayName);
                 } else {
                     deferred.resolve(username);
                 }
-            }, function (err) {
+            }, function(err) {
                 deferred.reject(err);
             });
         return deferred.promise;
     };
 
-    var getFullNameByEun = function (eun) {
+    var getFullNameByEun = function(eun) {
         var deferred = Q.defer();
         var query = {
             "encodedUsername": eun
         };
         mongoRepository.findOne('users', query)
-            .then(function (user) {
+            .then(function(user) {
                 if (!(_.isEmpty(user.githubUser.displayName))) {
                     deferred.resolve(user.githubUser.displayName);
                 } else {
                     deferred.resolve(user.username);
                 }
-            }, function (err) {
+            }, function(err) {
                 deferred.reject(err);
             });
         return deferred.promise;
     };
 
-    var getUsernameByEun = function (eun) {
+    var getUsernameByEun = function(eun) {
         var deferred = Q.defer();
         var query = {
             "encodedUsername": eun
         };
         mongoRepository.findOne('users', query)
-            .then(function (user) {
+            .then(function(user) {
                 if (!(_.isEmpty(user))) {
                     deferred.resolve(user.username);
                 } else {
                     deferred.resolve(null);
                 }
-            }, function (err) {
+            }, function(err) {
                 deferred.reject(err);
             });
         return deferred.promise;
     };
 
-    var validateInviteToken = function (token) {
+    var validateInviteToken = function(token) {
         var deferred = Q.defer();
         var query = {
             "token": token
         };
         mongoRepository.findOne('emailMap', query)
-            .then(function (userInviteEntry) {
+            .then(function(userInviteEntry) {
                 if (_.isEmpty(userInviteEntry)) {
                     deferred.reject("token not found");
                 } else {
                     deferred.resolve(userInviteEntry);
                 }
-            }, function (err) {
+            }, function(err) {
                 deferred.reject(err);
             });
         return deferred.promise;
     };
 
-    var sendAcceptEmail = function (userInviteEntry, toUsername) {
+    var sendAcceptEmail = function(userInviteEntry, toUsername) {
         var deferred = Q.defer();
 
         var promiseArray = [];
@@ -507,13 +496,13 @@ module.exports = function (app) {
         promiseArray.push(getUsernameByEun(userInviteEntry.fromEun));
         promiseArray.push(toUsername);
 
-        Q.all(promiseArray).then(function (names) {
+        Q.all(promiseArray).then(function(names) {
             var fromUserFullName = names[0];
             var toUserFullName = names[1];
             var fromUsername = names[2];
             var toUsername = names[3];
 
-            emailTemplates(emailConfigOptions, function (err, emailRender) {
+            emailTemplates(emailConfigOptions, function(err, emailRender) {
                 if (err) {
                     console.log("email template render error ", err);
                     deferred.reject(err);
@@ -523,13 +512,13 @@ module.exports = function (app) {
                     toUserFullName: toUserFullName,
                     toUsername: toUsername
                 };
-                emailRender('acceptCompareRequest.eml.html', context, function (err, html, text) {
+                emailRender('acceptCompareRequest.eml.html', context, function(err, html, text) {
                     sendgrid.send({
                         to: userInviteEntry.fromEmailId,
                         from: QD_EMAIL,
                         subject: toUserFullName + " accepted, it’s time to compare!",
                         html: html
-                    }, function (err, json) {
+                    }, function(err, json) {
                         if (err) {
                             console.error("can't send accept comparison request email ", err);
                             deferred.reject(err);
@@ -543,13 +532,13 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    app.get("/compare", sessionManager.requiresSession, function (req, res) {
+    app.get("/compare", sessionManager.requiresSession, function(req, res) {
         var compareWith = req.query.compareWith;
 
         fetchFriendList(req.session.username)
-            .then(function (friends) {
+            .then(function(friends) {
                 getFullNameByUsername(req.session.username)
-                    .then(function (fullName) {
+                    .then(function(fullName) {
                         res.render('compare', {
                             username: req.session.username,
                             avatarUrl: req.session.avatarUrl,
@@ -557,34 +546,34 @@ module.exports = function (app) {
                             fullName: fullName,
                             compareWith: compareWith
                         });
-                    }).catch(function (err) {
+                    }).catch(function(err) {
                         console.log("Error is ", err);
                         res.redirect("/");
                     });
             });
     });
 
-    app.get("/community", function (req, res) {
+    app.get("/community", function(req, res) {
         res.render('community', getFilterValuesForCountry(req));
     });
 
-    app.get("/set_dashboard_redirect", function (req, res) {
+    app.get("/set_dashboard_redirect", function(req, res) {
         req.session.redirectUrl = "/dashboard";
         res.send(200, "ok");
     });
 
-    var generateToken = function () {
+    var generateToken = function() {
         var deferred = Q.defer();
-        require('crypto').randomBytes(32, function (ex, buf) {
+        require('crypto').randomBytes(32, function(ex, buf) {
             var token = buf.toString('hex');
             deferred.resolve(token);
         });
         return deferred.promise;
     };
 
-    var insertUserInvitesInDb = function (userInviteEntry) {
+    var insertUserInvitesInDb = function(userInviteEntry) {
 
-        var createEntry = function (token) {
+        var createEntry = function(token) {
             var deferred = Q.defer();
             userInviteEntry.token = token;
             var updateObject = {
@@ -594,9 +583,9 @@ module.exports = function (app) {
                 upsert: true
             };
             mongoRepository.update('emailMap', userInviteEntry, updateObject, options)
-                .then(function () {
+                .then(function() {
                     deferred.resolve(userInviteEntry);
-                }, function (err) {
+                }, function(err) {
                     deferred.reject(err);
                 });
             return deferred.promise;
@@ -605,17 +594,17 @@ module.exports = function (app) {
         return generateToken().then(createEntry);
     };
 
-    var filterPrimaryEmailId = function (githubEmails) {
+    var filterPrimaryEmailId = function(githubEmails) {
         emails = githubEmails.githubUser.emails;
         var primaryEmail;
-        var primaryEmailObject = _.find(emails, function (emailObj) {
+        var primaryEmailObject = _.find(emails, function(emailObj) {
             return emailObj.primary === true;
         });
 
         return primaryEmailObject.email;
     };
 
-    var getEmailIdsForUsername = function (username) {
+    var getEmailIdsForUsername = function(username) {
         var deferred = Q.defer();
         var query = {
             "username": username.toLowerCase()
@@ -624,43 +613,43 @@ module.exports = function (app) {
             "githubUser.emails": 1
         };
         mongoRepository.findOne('users', query, projection)
-            .then(function (emails) {
+            .then(function(emails) {
                 deferred.resolve(emails);
-            }, function (err) {
+            }, function(err) {
                 deferred.reject(err);
             });
         return deferred.promise;
     };
 
-    var getPrimaryEmailId = function (username) {
+    var getPrimaryEmailId = function(username) {
         var deferred = Q.defer();
         getEmailIdsForUsername(username)
-            .then(function (emails) {
+            .then(function(emails) {
                 var primaryEmail = filterPrimaryEmailId(emails);
                 deferred.resolve(primaryEmail);
             })
-            .catch(function (error) {
+            .catch(function(error) {
                 console.log("DB error in getting Email id ", error);
                 deferred.reject(error);
             });
         return deferred.promise;
     };
 
-    var deleteUserInvitesEntry = function (userInviteEntry) {
+    var deleteUserInvitesEntry = function(userInviteEntry) {
         var deferred = Q.defer();
         var query = {
             "token": userInviteEntry.token
         };
         mongoRepository.remove('emailMap', query)
-            .then(function () {
+            .then(function() {
                 deferred.resolve(userInviteEntry);
-            }, function (err) {
+            }, function(err) {
                 deferred.reject(err);
             });
         return deferred.promise;
     };
 
-    var associateFriendship = function (userInviteEntry, toEun) {
+    var associateFriendship = function(userInviteEntry, toEun) {
         var deferred = Q.defer();
         var promiseArray = [];
         var fromEun = userInviteEntry.fromEun;
@@ -668,7 +657,7 @@ module.exports = function (app) {
         promiseArray.push(getUserIdFromEun(fromEun));
         promiseArray.push(getUserIdFromEun(toEun));
 
-        Q.all(promiseArray).then(function (userIds) {
+        Q.all(promiseArray).then(function(userIds) {
             var friendshipPromises = [];
             var fromUserId = userIds[0];
             var toUserId = userIds[1];
@@ -676,7 +665,7 @@ module.exports = function (app) {
             friendshipPromises.push(createFriendship(fromUserId, toUserId));
             friendshipPromises.push(createFriendship(toUserId, fromUserId));
 
-            Q.all(friendshipPromises).then(function () {
+            Q.all(friendshipPromises).then(function() {
                 deferred.resolve(userInviteEntry);
             });
         });
@@ -684,44 +673,44 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    app.get('/accept', sessionManager.requiresSession, function (req, res) {
+    app.get('/accept', sessionManager.requiresSession, function(req, res) {
         var token = req.query.token;
         var toEun = req.session.encodedUsername;
         var toUsername = req.session.username;
         validateInviteToken(token)
-            .then(function (userInviteEntry) {
+            .then(function(userInviteEntry) {
                 return associateFriendship(userInviteEntry, toEun);
             })
             .then(deleteUserInvitesEntry)
-            .then(function (userInviteEntry) {
+            .then(function(userInviteEntry) {
                 return sendAcceptEmail(userInviteEntry, toUsername);
             })
-            .then(function (fromUsername) {
+            .then(function(fromUsername) {
                 res.redirect(CONTEXT_URI + "/compare?compareWith=" + fromUsername);
             })
-            .catch(function (error) {
+            .catch(function(error) {
                 console.log("error in accepting friendship request ", error);
                 res.redirect(CONTEXT_URI + "/dashboard");
             });
     });
 
-    var sendRejectEmail = function (userInviteEntry) {
+    var sendRejectEmail = function(userInviteEntry) {
         var deferred = Q.defer();
 
-        var _sendEmail = function (fromUserFullName) {
-            emailTemplates(emailConfigOptions, function (err, emailRender) {
+        var _sendEmail = function(fromUserFullName) {
+            emailTemplates(emailConfigOptions, function(err, emailRender) {
                 var toEmailId = userInviteEntry.toEmailId;
                 var context = {
                     fromUserFullName: fromUserFullName,
                     toUserEmailId: toEmailId
                 };
-                emailRender('rejectCompareRequest.eml.html', context, function (err, html, text) {
+                emailRender('rejectCompareRequest.eml.html', context, function(err, html, text) {
                     sendgrid.send({
                         to: userInviteEntry.fromEmailId,
                         from: QD_EMAIL,
                         subject: toEmailId + " declined, try someone else",
                         html: html
-                    }, function (err, json) {
+                    }, function(err, json) {
                         if (err) {
                             console.error("can't send reject comparison request email ", err);
                             deferred.reject(err);
@@ -739,40 +728,40 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    app.get('/reject', function (req, res) {
+    app.get('/reject', function(req, res) {
         var token = req.query.token;
 
         validateInviteToken(token)
             .then(deleteUserInvitesEntry)
             .then(sendRejectEmail)
-            .then(function () {
+            .then(function() {
                 res.render('rejectMessage');
-            }).catch(function (err) {
+            }).catch(function(err) {
                 console.error("error while rejecting comparison request ", err);
                 res.send(400);
             });
     });
 
-    var sendInvitationEmail = function (userInviteEntry, fromUsername, fromUserFullName) {
+    var sendInvitationEmail = function(userInviteEntry, fromUsername, fromUserFullName) {
         var deferred = Q.defer();
 
         var acceptUrl = CONTEXT_URI + "/accept?token=" + userInviteEntry.token;
         var rejectUrl = CONTEXT_URI + "/reject?token=" + userInviteEntry.token;
 
-        emailTemplates(emailConfigOptions, function (err, emailRender) {
+        emailTemplates(emailConfigOptions, function(err, emailRender) {
             var context = {
                 acceptUrl: acceptUrl,
                 rejectUrl: rejectUrl,
                 fromUserFullName: fromUserFullName,
                 fromEmailId: userInviteEntry.fromEmailId
             };
-            emailRender('invite.eml.html', context, function (err, html, text) {
+            emailRender('invite.eml.html', context, function(err, html, text) {
                 sendgrid.send({
                     to: userInviteEntry.toEmailId,
                     from: QD_EMAIL,
                     subject: fromUserFullName + ' wants to share their data',
                     html: html
-                }, function (err, json) {
+                }, function(err, json) {
                     if (err) {
                         console.error(err);
                         deferred.reject(err);
@@ -786,7 +775,7 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    app.get('/request_to_compare_with_email', sessionManager.requiresSession, function (req, res) {
+    app.get('/request_to_compare_with_email', sessionManager.requiresSession, function(req, res) {
         var friendsEmail = req.query.friendsEmail;
         var fromUserFullName = req.query.myName;
 
@@ -797,28 +786,28 @@ module.exports = function (app) {
 
         var fromUsername = req.session.username;
         getPrimaryEmailId(fromUsername)
-            .then(function (fromPrimaryEmail) {
+            .then(function(fromPrimaryEmail) {
                 userInvitesEntry.fromEmailId = fromPrimaryEmail;
                 return insertUserInvitesInDb(userInvitesEntry);
             })
-            .then(function (userInviteEntry) {
+            .then(function(userInviteEntry) {
                 return sendInvitationEmail(userInviteEntry, fromUsername, fromUserFullName);
             })
-            .then(function () {
+            .then(function() {
                 res.send(200, "success");
             })
-            .catch(function (error) {
+            .catch(function(error) {
                 res.status(400).send("Email service unavailable");
             });
     });
 
-    app.get('/v1/graph/share', function (req, res) {
+    app.get('/v1/graph/share', function(req, res) {
         var graphUrl = req.query.graphUrl;
         var bgColor = req.query.bgColor;
         var fromDate = req.query.from;
         var toDate = req.query.to;
 
-        var genShareUrl = function (graphShareObject) {
+        var genShareUrl = function(graphShareObject) {
             var result = graphShareObject.graphUrl + "?";
             var params = [
                 "shareToken=" + graphShareObject.shareToken,
@@ -832,7 +821,7 @@ module.exports = function (app) {
         };
 
         generateToken()
-            .then(function (token) {
+            .then(function(token) {
                 var graphShareObject = {
                     shareToken: token,
                     graphUrl: graphUrl,
@@ -841,63 +830,69 @@ module.exports = function (app) {
                     toDate: toDate
                 };
                 return insertGraphShareEntryInDb(graphShareObject)
-                    .then(function () {
+                    .then(function() {
                         var graphShareUrl = genShareUrl(graphShareObject);
-                        res.send({graphShareUrl: graphShareUrl});
+                        res.send({
+                            graphShareUrl: graphShareUrl
+                        });
                     });
             });
     });
 
-    app.post('/v1/share_graph', sessionManager.requiresSession, function (req, res) {
+    app.post('/v1/share_graph', sessionManager.requiresSession, function(req, res) {
         var toEmailId = req.body.toEmailId;
         var graphShareUrl = req.body.graphShareUrl;
         var fromUsername = req.session.username;
 
         if (!validator.isEmail(toEmailId)) {
-            res.send(500, {"message": "EmailId not valid"});
+            res.send(500, {
+                "message": "EmailId not valid"
+            });
             return;
         }
 
-        var sendEmail = function (graphShareUrl) {
+        var sendEmail = function(graphShareUrl) {
             return getPrimaryEmailId(fromUsername)
-                .then(function (fromEmailId) {
+                .then(function(fromEmailId) {
                     return sendGraphShareEmail(graphShareUrl, fromEmailId, toEmailId)
-                        .then(function () {
-                            res.send(200, {"message": "Graph url shared successfully."});
+                        .then(function() {
+                            res.send(200, {
+                                "message": "Graph url shared successfully."
+                            });
                         });
                 });
         };
         sendEmail(graphShareUrl);
     });
 
-    app.post('/v1/app', function (req, res) {
+    app.post('/v1/app', function(req, res) {
         var appEmail = req.param('appEmail');
         if (appEmail === undefined) {
             res.status(401).send("Unauthorized request. Please pass valid app_email");
         }
         util.registerApp(appEmail)
-            .then(function (data) {
+            .then(function(data) {
                 return sendAppDetailsByEmail(data.appId, data.appSecret, data.appEmail)
-            }, function (err) {
+            }, function(err) {
                 res.status(500).send("Database error." + err)
             })
-            .then(function () {
+            .then(function() {
                 res.send("We have sent email containing your api key to '" + appEmail + "'. Thank You.");
             });
     });
 
-    app.get('/v1/sync/:username/:objectTags/:actionTags', function (req, res) {
+    app.get('/v1/sync/:username/:objectTags/:actionTags', function(req, res) {
         var username = req.param("username");
         var objectTags = req.param("objectTags");
         var actionTags = req.param("actionTags");
 
-        var transformToStreamIds = function (result) {
-            return _.map(result.streams, function (el) {
+        var transformToStreamIds = function(result) {
+            return _.map(result.streams, function(el) {
                 return el.streamid;
             });
         };
 
-        var getStreamsFromPlatform = function (streams) {
+        var getStreamsFromPlatform = function(streams) {
             var streamIds = transformToStreamIds(streams);
 
             var deferred = Q.defer();
@@ -921,7 +916,7 @@ module.exports = function (app) {
                 },
                 method: 'GET'
             };
-            var handleResponse = function (error, response, body) {
+            var handleResponse = function(error, response, body) {
                 if (!error && response.statusCode == 200) {
                     var result = JSON.parse(body);
                     console.log("streams from plaform : " + result.streams);
@@ -938,34 +933,39 @@ module.exports = function (app) {
             .then(getStreamsForStreamIds)
             .then(replaceTemplateVars)
             .then(hitCallbackUrls)
-            .then(function () {
+            .then(function() {
                 res.send("ok");
             });
     });
 
-    var replaceTemplateVars = function (streams) {
+    var replaceTemplateVars = function(streams) {
         var deferred = Q.defer();
-        var callbackUrls = _.chain(streams).filter(function (stream) {
+        var callbackUrls = _.chain(streams).filter(function(stream) {
             return stream.callbackUrl !== undefined;
-        }).map(function (stream) {
+        }).map(function(stream) {
             var callbackUrl = stream.callbackUrl.replace("{{streamId}}", stream.streamid)
                 .replace("{{latestEventSyncDate}}", stream.latestEventSyncDate.toISOString());
-            return {callbackUrl: callbackUrl, writeToken: stream.writeToken};
+            return {
+                callbackUrl: callbackUrl,
+                writeToken: stream.writeToken
+            };
         }).value();
         console.log("callback Urls : " + JSON.stringify(callbackUrls));
         deferred.resolve(callbackUrls);
         return deferred.promise;
     };
 
-    var getStreamsForStreamIds = function (streamIds) {
+    var getStreamsForStreamIds = function(streamIds) {
         console.log("streamIds : ", streamIds);
         var query = {
-            streamid: {$in: streamIds}
+            streamid: {
+                $in: streamIds
+            }
         };
         return mongoRepository.find('stream', query)
     };
 
-    var request = function (url, writeToken) {
+    var request = function(url, writeToken) {
         var deferred = Q.defer();
         var options = {
             url: url,
@@ -975,44 +975,44 @@ module.exports = function (app) {
             method: 'GET'
         };
 
-        requestModule(options, function (err, resp, body) {
+        requestModule(options, function(err, resp, body) {
             console.log("Response for request is ", body);
             deferred.resolve(resp);
         });
         return deferred.promise;
     };
 
-    var hitCallbackUrls = function (urls) {
+    var hitCallbackUrls = function(urls) {
         var deferred = Q.defer();
         var requests = [];
-        _.each(urls, function (url) {
+        _.each(urls, function(url) {
             console.log("final callback url ", url);
             requests.push(request(url.callbackUrl, url.writeToken));
         });
 
-        Q.all(requests).then(function () {
+        Q.all(requests).then(function() {
             deferred.resolve();
-        }).catch(function (err) {
+        }).catch(function(err) {
             console.log("Error occurred", err);
         });
         return deferred.promise;
     };
 
-    var sendAppDetailsByEmail = function (appId, appSecret, toEmailId) {
+    var sendAppDetailsByEmail = function(appId, appSecret, toEmailId) {
         var deferred = Q.defer();
 
-        emailTemplates(emailConfigOptions, function (err, emailRender) {
+        emailTemplates(emailConfigOptions, function(err, emailRender) {
             var context = {
                 appId: appId,
                 appSecret: appSecret
             };
-            emailRender('appDetails.eml.html', context, function (err, html, text) {
+            emailRender('appDetails.eml.html', context, function(err, html, text) {
                 sendgrid.send({
                     to: toEmailId,
                     from: ONESELF_EMAIL,
                     subject: '[1self] Developer Application Details',
                     html: html
-                }, function (err, json) {
+                }, function(err, json) {
                     if (err) {
                         console.error(err);
                         deferred.reject(err);
@@ -1044,34 +1044,34 @@ module.exports = function (app) {
     //     return deferred.promise;
     // };
 
-    var insertGraphShareEntryInDb = function (graphShareObject) {
+    var insertGraphShareEntryInDb = function(graphShareObject) {
         var deferred = Q.defer();
         mongoRepository.insert('graphShares', graphShareObject)
-            .then(function () {
+            .then(function() {
                 deferred.resolve(graphShareObject);
-            }, function (err) {
+            }, function(err) {
                 deferred.reject(err);
             });
         return deferred.promise;
     };
 
-    var sendGraphShareEmail = function (graphShareUrl, fromEmailId, toEmailId) {
+    var sendGraphShareEmail = function(graphShareUrl, fromEmailId, toEmailId) {
 
         var deferred = Q.defer();
         var graphUrl = graphShareUrl;
 
-        emailTemplates(emailConfigOptions, function (err, emailRender) {
+        emailTemplates(emailConfigOptions, function(err, emailRender) {
             var context = {
                 graphUrl: graphUrl,
                 fromEmailId: fromEmailId
             };
-            emailRender('graphShare.eml.html', context, function (err, html, text) {
+            emailRender('graphShare.eml.html', context, function(err, html, text) {
                 sendgrid.send({
                     to: toEmailId,
                     from: ONESELF_EMAIL,
                     subject: fromEmailId + ' wants to share 1self activity',
                     html: html
-                }, function (err, json) {
+                }, function(err, json) {
                     if (err) {
                         console.error(err);
                         deferred.reject(err);
@@ -1085,7 +1085,7 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    var getGraphInfo = function (objectTags, actionTags) {
+    var getGraphInfo = function(objectTags, actionTags) {
         var title = objectTags.replace(/,/g, ' ') + ' ' +
             actionTags.replace(/,/g, ' ');
         return {
@@ -1093,19 +1093,19 @@ module.exports = function (app) {
         };
     };
 
-    var getDateRange = function(req){
-        var max = req.query.to || moment.utc().endOf('day').toISOString();;
+    var getDateRange = function(req) {
+            var max = req.query.to || moment.utc().endOf('day').toISOString();;
 
-        var defaultMin = moment.utc(max).startOf('day').subtract('days', 6).toISOString();
-        var min = req.query.from || defaultMin;
+            var defaultMin = moment.utc(max).startOf('day').subtract('days', 6).toISOString();
+            var min = req.query.from || defaultMin;
 
-        return {
-            'to': max,
-            'from': min
+            return {
+                'to': max,
+                'from': min
+            }
         }
-    }
-    //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
-    app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/:renderType", validateRequest.validateStreamIdAndReadToken, function (req, res) {
+        //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
+    app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/:renderType", validateRequest.validateStreamIdAndReadToken, function(req, res) {
         var dateRange = getDateRange(req);
 
         if (req.session.username) {
@@ -1115,18 +1115,13 @@ module.exports = function (app) {
             }
             var redirectUrl = "/v1/users/" + req.session.username + "/events/" +
                 req.param("objectTags") + "/" + req.param("actionTags") + "/" +
-                req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType") + "?streamId=" + req.param("streamId")
-                + "&readToken=" + req.query.readToken 
-                + bgColorQueryParam
-                + '&to=' + dateRange.to;
-                + '&from=' + dateRange.from;
+                req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType") + "?streamId=" + req.param("streamId") + "&readToken=" + req.query.readToken + bgColorQueryParam + '&to=' + dateRange.to; + '&from=' + dateRange.from;
             res.redirect(redirectUrl);
         } else {
             var queryString;
             if (Object.keys(req.query).length > 0) {
                 queryString = "&streamId=" + req.param('streamId');
-            }
-            else {
+            } else {
                 queryString = "?streamId=" + req.param('streamId');
             }
             req.session.redirectUrl = req.originalUrl + queryString;
@@ -1149,7 +1144,7 @@ module.exports = function (app) {
         }
     });
 
-    var checkShareTokenAndGraphUrlExists = function (shareToken, graphUrl) {
+    var checkShareTokenAndGraphUrlExists = function(shareToken, graphUrl) {
         var deferred = Q.defer();
 
         var tokenGraphUrlQuery = {
@@ -1157,19 +1152,19 @@ module.exports = function (app) {
             "shareToken": shareToken
         };
         mongoRepository.findOne('graphShares', tokenGraphUrlQuery)
-            .then(function (entry) {
+            .then(function(entry) {
                 if (entry) {
                     deferred.resolve(true);
                 } else {
                     deferred.resolve(false);
                 }
-            }, function (err) {
+            }, function(err) {
                 deferred.reject(err);
             });
         return deferred.promise;
     };
 
-    var validateShareToken = function (req, res, next) {
+    var validateShareToken = function(req, res, next) {
         var shareToken = req.query.shareToken;
         var graphUrl = "/v1/users/" + req.param("username") + "/events/" +
             req.param("objectTags") + "/" + req.param("actionTags") + "/" +
@@ -1177,7 +1172,7 @@ module.exports = function (app) {
 
         console.log("Graph Url is", graphUrl);
 
-        checkShareTokenAndGraphUrlExists(shareToken, graphUrl).then(function (status) {
+        checkShareTokenAndGraphUrlExists(shareToken, graphUrl).then(function(status) {
             if (status) {
                 next();
             } else {
@@ -1187,73 +1182,131 @@ module.exports = function (app) {
     };
 
     //v1/users/{{edsykes}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
-    app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/:renderType"
-        , validateShareToken
-        , function (req, res) {
-            var dateRange = getDateRange(req);
+    app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/:renderType", validateShareToken, function(req, res) {
+        var dateRange = getDateRange(req);
 
-            var getGraphOwnerAvatarUrl = function () {
-                var deferred = Q.defer();
-                var username = req.param("username");
-                var query = {
-                    username: username
-                };
-                mongoRepository.findOne('users', query)
-                    .then(function (user) {
-                        deferred.resolve(user.profile.avatarUrl);
-                    }, function (err) {
-                        deferred.reject(err);
-                    });
-                return deferred.promise;
+        var getGraphOwnerAvatarUrl = function() {
+            var deferred = Q.defer();
+            var username = req.param("username");
+            var query = {
+                username: username
             };
-
-            req.session.redirectUrl = req.originalUrl;
-            var streamId = req.query.streamId;
-            var readToken = req.query.readToken;
-            //        var shareToken = req.query.shareToken;
-            var renderChart = function (graphOwnerAvatarUrl) {
-                var graphInfo = getGraphInfo(req.param("objectTags"), req.param("actionTags"));
-                var isUserLoggedIn = !(_.isEmpty(req.session.username));
-                res.render('chart', {
-                    isUserLoggedIn: isUserLoggedIn,
-                    oneselfAppUrl: process.env.CONTEXT_URI,
-                    title: graphInfo.title,
-                    graphOwner: req.param("username"),
-                    username: req.param("username"),
-                    graphOwnerAvatarUrl: graphOwnerAvatarUrl,
-                    avatarUrl: req.session.avatarUrl,
-                    objectTags: req.param("objectTags"),
-                    actionTags: req.param("actionTags"),
-                    operation: req.param("operation"),
-                    period: req.param("period"),
-                    shareToken: req.query.shareToken,
-                    renderType: req.param("renderType"),
-                    fromDate: dateRange.from,
-                    toDate: dateRange.to
+            mongoRepository.findOne('users', query)
+                .then(function(user) {
+                    deferred.resolve(user.profile.avatarUrl);
+                }, function(err) {
+                    deferred.reject(err);
                 });
-            };
+            return deferred.promise;
+        };
 
-            util.streamExists(streamId, readToken)
-                .then(function (exists) {
-                    if (exists) {
-                        getStreamsForUser(req.param('username'))
-                            .then(function (user) {
-                                return util.linkStreamToUser(user, streamId);
-                            })
-                            .then(getGraphOwnerAvatarUrl)
-                            .then(renderChart)
-                            .catch(function (error) {
-                                console.error("error during linking stream to user ", error);
-                                res.status(500).send("Internal server error.");
-                            });
-                    } else {
-                        getGraphOwnerAvatarUrl().then(renderChart);
-                    }
-                });
-        });
+        req.session.redirectUrl = req.originalUrl;
+        var streamId = req.query.streamId;
+        var readToken = req.query.readToken;
+        //        var shareToken = req.query.shareToken;
+        var renderChart = function(graphOwnerAvatarUrl) {
+            var graphInfo = getGraphInfo(req.param("objectTags"), req.param("actionTags"));
+            var isUserLoggedIn = !(_.isEmpty(req.session.username));
+            res.render('chart', {
+                isUserLoggedIn: isUserLoggedIn,
+                oneselfAppUrl: process.env.CONTEXT_URI,
+                title: graphInfo.title,
+                graphOwner: req.param("username"),
+                username: req.param("username"),
+                graphOwnerAvatarUrl: graphOwnerAvatarUrl,
+                avatarUrl: req.session.avatarUrl,
+                objectTags: req.param("objectTags"),
+                actionTags: req.param("actionTags"),
+                operation: req.param("operation"),
+                period: req.param("period"),
+                shareToken: req.query.shareToken,
+                renderType: req.param("renderType"),
+                fromDate: dateRange.from,
+                toDate: dateRange.to
+            });
+        };
 
+        util.streamExists(streamId, readToken)
+            .then(function(exists) {
+                if (exists) {
+                    getStreamsForUser(req.param('username'))
+                        .then(function(user) {
+                            return util.linkStreamToUser(user, streamId);
+                        })
+                        .then(getGraphOwnerAvatarUrl)
+                        .then(renderChart)
+                        .catch(function(error) {
+                            console.error("error during linking stream to user ", error);
+                            res.status(500).send("Internal server error.");
+                        });
+                } else {
+                    getGraphOwnerAvatarUrl().then(renderChart);
+                }
+            });
+    });
 
-    app.get("/timeline", sessionManager.requiresSession, function (req, res) {
+    var verifyAppCredentials = function(req, res, next) {
+        var auth = req.headers.authorization;
+        var auth = auth.split('Basic ');
+        var appId = '';
+        var appSecret = '';
+        if (auth[0] = 'Basic') {
+            authParts = auth[1].split(':');
+            appId = authParts[0];
+            appSecret = authParts[1];
+        } else {
+            authParts = auth[0].split(':');
+            appId = authParts[0];
+            appSecret = authParts[1];
+        }
+
+        var query = {
+            "appId": appId,
+            "appSecret": appSecret
+        };
+
+        mongoRepository.findOne('registeredApps', query)
+            .then(function(app) {
+                req.app = app;
+                next(req, res);
+            }, function(err) {
+                console.log(err)
+            });
+    };
+
+    var createAppToken = function(app, scope, token) {
+
+        var permission = {
+            token: token,
+            scope: scope
+        }
+
+        var key = "permissions." + token;
+        var updateObject = {
+            _id: app._id,
+            "$set": {
+                key: permission
+            }
+        };
+
+        mongoRepository.update('registeredApps', updateObject)
+            .then(function() {
+                res.status(200).send(permission);
+            }, function(err) {
+                res.status(500).send(err);
+            });
+
+        return deferred.promise;
+    };
+
+    app.post("/v1/apps/:appId/token", verifyAppCredentials, function(req, res) {
+        generateToken()
+            .then(function(token) {
+                createAppToken(req.app1self, req.body, token);
+            });
+    });
+
+    app.get("/timeline", sessionManager.requiresSession, function(req, res) {
         res.render('timeline', {
             encodedUsername: req.session.encodedUsername,
             username: req.session.username,
