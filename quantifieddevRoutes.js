@@ -1270,43 +1270,46 @@ module.exports = function(app) {
         mongoRepository.findOne('registeredApps', query)
             .then(function(app) {
                 req.app = app;
-                next(req, res);
+                next();
             }, function(err) {
                 console.log(err)
             });
     };
 
-    var createAppToken = function(app, scope, token) {
-
-        var permission = {
+    var createAppToken = function(req, res, next) {
+        generateToken()
+        .then(function(token){
+            var scope = req.body;
+            var permission = {
             token: token,
             scope: scope
-        }
-
-        var key = "permissions." + token;
-        var updateObject = {
-            _id: app._id,
-            "$set": {
-                key: permission
             }
-        };
 
-        mongoRepository.update('registeredApps', updateObject)
-            .then(function() {
-                res.status(200).send(permission);
-            }, function(err) {
-                res.status(500).send(err);
-            });
+            var app = req.app1self;
+            var key = "permissions." + token;
+            var updateObject = {
+                _id: app._id,
+                "$set": {
+                    key: permission
+                }
+            };
 
-        return deferred.promise;
+            mongoRepository.update('registeredApps', updateObject)
+                .then(function() {
+                    res.status(200).send(permission);
+                }, function(err) {
+                    res.status(500).send(err);
+                });
+
+            return deferred.promise;
+
+        });
+
     };
 
-    app.post("/v1/apps/:appId/token", verifyAppCredentials, function(req, res) {
-        generateToken()
-            .then(function(token) {
-                createAppToken(req.app1self, req.body, token);
-            });
-    });
+    app.post("/v1/apps/:appId/token"
+        , verifyAppCredentials
+        , createAppToken);
 
     app.get("/timeline", sessionManager.requiresSession, function(req, res) {
         res.render('timeline', {

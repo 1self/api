@@ -29,6 +29,9 @@ var qd = function () {
         noiseEvents: function () {
             result.plotNoiseEventsHistory();
         },
+        tweetEvents: function () {
+            result.plotTweetEventsHistory();
+        },
         hydrationEvents: function () {
             result.plotHydrationHistory();
         },
@@ -63,6 +66,12 @@ var qd = function () {
         result.noiseEvents = noiseEvents;
         result.plotGraphWith('noiseEvents', noiseEvents, "#noise-graph-parent")
     };
+
+    var plotTweetEvents = function (tweetEvents) {
+        result.tweetEvents = tweetEvents;
+        result.plotGraphWith('tweetEvents', tweetEvents, "#tweet-graph-parent")
+    };
+
     result.updateNoiseModel = function () {
         postV1Ajax("ambient,sound", "sample", "mean(dbspl)", "daily")
             .done(plotNoiseEvents)
@@ -70,6 +79,15 @@ var qd = function () {
                 console.error("Error is: " + error);
             });
     };
+
+    result.updateTweetModel = function () {
+        postV1Ajax("twitter,tweet", "publish", "count", "daily")
+            .done(plotTweetEvents)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
+    };
+
     result.updateWTFModel = function () {
         postV1Ajax("Computer,Software", "wtf", "count", "daily")
             .done(plotWtfEvents)

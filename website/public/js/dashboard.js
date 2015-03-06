@@ -1,12 +1,25 @@
-var dashboardGraphs = ['updateBuildModel', 'updateWTFModel', 'updateNoiseModel', 'updateHydrationModel', 'updateCaffeineModel', 'updateBuildDurationModel', 'updateHourlyBuildHeatMap', 'updateHourlyWtfHeatMap', 'updateHourlyHydrationHeatMap', 'updateHourlyCaffeineHeatMap', 'updateActiveEvents', 'updateHourlyGithubPushHeatMap', 'updateCorrelationData'];
-$(window).resize(function () {
+var dashboardGraphs = ['updateBuildModel'
+                        , 'updateWTFModel'
+                        , 'updateNoiseModel'
+                        , 'updateTweetModel'
+                        , 'updateHydrationModel'
+                        , 'updateCaffeineModel'
+                        , 'updateBuildDurationModel'
+                        , 'updateHourlyBuildHeatMap'
+                        , 'updateHourlyWtfHeatMap'
+                        , 'updateHourlyHydrationHeatMap'
+                        , 'updateHourlyCaffeineHeatMap'
+                        , 'updateActiveEvents'
+                        , 'updateHourlyGithubPushHeatMap'
+                        , 'updateCorrelationData'];
+$(window).resize(function() {
     window.qd.replotGraphs();
 });
-$(window).load(function () {
-        window.qd.plotGraphs(dashboardGraphs);
+$(window).load(function() {
+    window.qd.plotGraphs(dashboardGraphs);
 });
-$(document).ready(function () {
-    $(document).on('mouseup keyup', function (e) {
+$(document).ready(function() {
+    $(document).on('mouseup keyup', function(e) {
         var e = e || event,
             code = (e.keyCode ? e.keyCode : e.which),
             target = e.srcElement || e.target;
@@ -15,7 +28,7 @@ $(document).ready(function () {
         }
     });
 });
-var show = function (element) {
+var show = function(element) {
     var showElement = "#" + element + " " + ".helpContainer";
     $(showElement).slideToggle();
 };
