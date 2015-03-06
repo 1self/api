@@ -35,6 +35,9 @@ var qd = function () {
         songsByDayEvents: function () {
             result.plotSongsByDayEventsHistory();
         },
+        stepsEvents: function () {
+            result.plotStepsEventsHistory();
+        }, 
         hydrationEvents: function () {
             result.plotHydrationHistory();
         },
@@ -80,6 +83,11 @@ var qd = function () {
         result.plotGraphWith('songsByDayEvents', songsByDayEvents, "#songsbyday-graph-parent")
     };
 
+    var plotStepsEvents = function (stepsEvents) {
+        result.stepsEvents = stepsEvents;
+        result.plotGraphWith('stepsEvents', stepsEvents, "#steps-graph-parent")
+    };
+
     result.updateNoiseModel = function () {
         postV1Ajax("ambient,sound", "sample", "mean(dbspl)", "daily")
             .done(plotNoiseEvents)
@@ -99,6 +107,14 @@ var qd = function () {
     result.updateSongsByDayModel = function () {
         postV1Ajax("music", "listen", "count", "daily")
             .done(plotSongsByDayEvents)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
+    };
+
+    result.updateStepsModel = function () {
+        postV1Ajax("steps", "walked", "sum(numberOfSteps)", "daily")
+            .done(plotStepsEvents)
             .fail(function (error) {
                 console.error("Error is: " + error);
             });
