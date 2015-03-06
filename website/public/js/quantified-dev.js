@@ -88,6 +88,11 @@ var qd = function () {
         result.plotGraphWith('stepsEvents', stepsEvents, "#steps-graph-parent")
     };
 
+    var plotTracksEvents = function (tracksEvents) {
+        result.tracksEvents = tracksEvents;
+        result.plotGraphWith('tracksEvents', tracksEvents, "#tracks-graph-parent")
+    };
+
     result.updateNoiseModel = function () {
         postV1Ajax("ambient,sound", "sample", "mean(dbspl)", "daily")
             .done(plotNoiseEvents)
@@ -113,7 +118,7 @@ var qd = function () {
     };
 
     result.updateStepsModel = function () {
-        postV1Ajax("steps", "walked", "sum(numberOfSteps)", "daily")
+        postV1Ajax("steps", "walked", "count", "daily")
             .done(plotStepsEvents)
             .fail(function (error) {
                 console.error("Error is: " + error);
@@ -194,12 +199,23 @@ var qd = function () {
         result.plotHeatmapWith("#hourlySteps-heat-map-parent", '#hourlySteps-heat-map', hourlyStepsEvents);
     };
 
+    var plotHourlyTracksEvents = function (hourlyTracksEvents) {
+        result.hourlyTracksEvents = hourlyTracksEvents;
+        var eventCount = getEventCountForHourlyEvents(hourlyTracksEvents);
+        $('#totalTracksCount').html("Total No of Tracks Events : " + eventCount);
+        result.plotHeatmapWith("#hourlyTracks-heat-map-parent", '#hourlyTracks-heat-map', hourlyTracksEvents);
+    };
+
     result.updateHourlyBuildHeatMap = function () {
         postAjax("hourlyBuildCount", plotHourlyBuildEvents)
     };
 
     result.updateHourlyStepsHeatMap = function () {
         postAjax("hourlyStepsCount", plotHourlyStepsEvents)
+    };
+
+    result.updateHourlyTracksHeatMap = function () {
+        postAjax("hourlyTracksCount", plotHourlyTracksEvents)
     };
 
     var plotHourlyWtfEvents = function (hourlyWtfEvents) {
@@ -452,6 +468,7 @@ var qd = function () {
         plotBuildDurationEvents(result.buildDurationEvents);
         plotHourlyBuildEvents(result.hourlyBuildEvents);
         plotHourlyStepsEvents(result.hourlyStepsEvents);
+        plotHourlyTracksEvents(result.hourlyTracksEvents);
         plotHourlyWtfEvents(result.hourlyWtfEvents);
         plotHourlyHydrationEvents(result.hourlyHydrationEvents);
         plotHourlyCaffeineEvents(result.hourlyCaffeineEvents);

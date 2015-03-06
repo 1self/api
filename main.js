@@ -447,6 +447,18 @@ var generateHourlyStepsCountQuery = function (streams) {
     };
 };
 
+var generateHourlyTracksCountQuery = function (streams) {
+
+    var streamids = _.map(streams, function (stream) {
+        return stream.streamid;
+    });
+    var groupQuery = groupByForHourlyEvents(streamids, "listen", "music");
+    var hourlyTracksCount = countOnParameters(groupQuery, {}, "hourlyEventCount");
+    return {
+        spec: JSON.stringify(hourlyTracksCount)
+    };
+};
+
 var generateHourlyWtfCountQuery = function (streams) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
@@ -1277,6 +1289,23 @@ app.get('/quantifieddev/hourlyStepsCount', function (req, res) {
             return getStreamIdForUsername(encodedUsername, forUsername)
         })
         .then(generateHourlyStepsCountQuery)
+        .then(platformService.aggregate)
+        .then(function (response) {
+            var result = transformPlatformDataToQDEvents(response[0]);
+            res.send(result);
+        }).catch(function (error) {
+            res.status(404).send("stream not found");
+        });
+});
+
+app.get('/quantifieddev/hourlyTracksCount', function (req, res) {
+    var encodedUsername = req.headers.authorization;
+    var forUsername = req.query.forUsername;
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return getStreamIdForUsername(encodedUsername, forUsername)
+        })
+        .then(generateHourlyTracksCountQuery)
         .then(platformService.aggregate)
         .then(function (response) {
             var result = transformPlatformDataToQDEvents(response[0]);
