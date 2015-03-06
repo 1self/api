@@ -6,7 +6,7 @@ window.qd.plotStepsEventsHistory = function() {
             top: 20,
             right: 30,
             bottom: 30,
-            left: 30
+            left: 70
         };
         var width = $('#steps-graph').width();
         var height = width / 1.61;
@@ -119,6 +119,6 @@ window.qd.plotStepsEventsHistory = function() {
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text("Songs listened");
+            .text("Steps walked");
     }, 1000);
 };
