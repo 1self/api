@@ -187,9 +187,21 @@ var qd = function () {
         result.plotHeatmapWith("#hourlyBuild-heat-map-parent", '#hourlyBuild-heat-map', hourlyBuildEvents);
     };
 
+    var plotHourlyStepsEvents = function (hourlyStepsEvents) {
+        result.hourlyStepsEvents = hourlyStepsEvents;
+        var eventCount = getEventCountForHourlyEvents(hourlyStepsEvents);
+        $('#totalStepsCount').html("Total No of Steps Events : " + eventCount);
+        result.plotHeatmapWith("#hourlySteps-heat-map-parent", '#hourlySteps-heat-map', hourlyStepsEvents);
+    };
+
     result.updateHourlyBuildHeatMap = function () {
         postAjax("hourlyBuildCount", plotHourlyBuildEvents)
     };
+
+    result.updateHourlyStepsHeatMap = function () {
+        postAjax("hourlyStepsCount", plotHourlyStepsEvents)
+    };
+
     var plotHourlyWtfEvents = function (hourlyWtfEvents) {
         result.hourlyWtfEvents = hourlyWtfEvents;
         var eventCount = getEventCountForHourlyEvents(hourlyWtfEvents);
@@ -439,6 +451,7 @@ var qd = function () {
         plotCaffeineEvents(result.caffeineEvents);
         plotBuildDurationEvents(result.buildDurationEvents);
         plotHourlyBuildEvents(result.hourlyBuildEvents);
+        plotHourlyStepsEvents(result.hourlyStepsEvents);
         plotHourlyWtfEvents(result.hourlyWtfEvents);
         plotHourlyHydrationEvents(result.hourlyHydrationEvents);
         plotHourlyCaffeineEvents(result.hourlyCaffeineEvents);

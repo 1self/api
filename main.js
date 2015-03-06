@@ -340,6 +340,18 @@ var countOnParameters = function (groupQuery, filterSpec, resultField) {
     };
 };
 
+var sumOnParameters = function (groupQuery, filterSpec, resultField) {
+    return {
+        "$sum": {
+            "data": groupQuery,
+            "filterSpec": filterSpec,
+            "projectionSpec": {
+                "resultField": resultField
+            }
+        }
+    };
+};
+
 var transformPlatformDataToQDEvents = function (result) {
     return _.map(result, function (valueJson, date) {
         var keys = Object.keys(valueJson);
@@ -420,6 +432,18 @@ var generateHourlyBuildCountQuery = function (streams) {
     var hourlyBuildCount = countOnParameters(groupQuery, {}, "hourlyEventCount");
     return {
         spec: JSON.stringify(hourlyBuildCount)
+    };
+};
+
+var generateHourlyStepsCountQuery = function (streams) {
+
+    var streamids = _.map(streams, function (stream) {
+        return stream.streamid;
+    });
+    var groupQuery = groupByForHourlyEvents(streamids, "walked", "steps");
+    var hourlyStepsCount = countOnParameters(groupQuery, {}, "hourlyEventCount");
+    return {
+        spec: JSON.stringify(hourlyStepsCount)
     };
 };
 
@@ -1236,6 +1260,23 @@ app.get('/quantifieddev/hourlyBuildCount', function (req, res) {
             return getStreamIdForUsername(encodedUsername, forUsername)
         })
         .then(generateHourlyBuildCountQuery)
+        .then(platformService.aggregate)
+        .then(function (response) {
+            var result = transformPlatformDataToQDEvents(response[0]);
+            res.send(result);
+        }).catch(function (error) {
+            res.status(404).send("stream not found");
+        });
+});
+
+app.get('/quantifieddev/hourlyStepsCount', function (req, res) {
+    var encodedUsername = req.headers.authorization;
+    var forUsername = req.query.forUsername;
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return getStreamIdForUsername(encodedUsername, forUsername)
+        })
+        .then(generateHourlyStepsCountQuery)
         .then(platformService.aggregate)
         .then(function (response) {
             var result = transformPlatformDataToQDEvents(response[0]);
