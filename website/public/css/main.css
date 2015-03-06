@@ -2,7 +2,7 @@ body {
     margin: 0;
     line-height: 18px;
     color: #646e7a;
-    background: #515151;
+    background: #505A68;
 }
 
 @media (min-width: 768px) {
@@ -199,7 +199,7 @@ h4.stylish {
 }
 
 header {
-    background: #515151;
+    background: #505A68;
     height: 50px;
     vertical-align: middle;
     padding: 0;
@@ -714,7 +714,7 @@ aside#sidebar #menu ul ul {
 
 aside#sidebar #menu ul ul li {
     padding: 0;
-    border-bottom: 1px solid #515151;
+    border-bottom: 1px solid #505A68;
     border-top: none;
     background: #444444;
 }
@@ -1636,7 +1636,7 @@ aside#sidebar ul.recent-visits li:last-child {
 }
 
 .info-tiles.tiles-primary .tiles-body {
-    background: #515151;
+    background: #505A68;
 }
 
 .info-tiles.tiles-primary .tiles-footer {
