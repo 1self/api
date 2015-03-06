@@ -32,6 +32,9 @@ var qd = function () {
         tweetEvents: function () {
             result.plotTweetEventsHistory();
         },
+        songsByDayEvents: function () {
+            result.plotSongsByDayEventsHistory();
+        },
         hydrationEvents: function () {
             result.plotHydrationHistory();
         },
@@ -72,6 +75,11 @@ var qd = function () {
         result.plotGraphWith('tweetEvents', tweetEvents, "#tweet-graph-parent")
     };
 
+    var plotSongsByDayEvents = function (songsByDayEvents) {
+        result.songsByDayEvents = songsByDayEvents;
+        result.plotGraphWith('songsByDayEvents', songsByDayEvents, "#songsbyday-graph-parent")
+    };
+
     result.updateNoiseModel = function () {
         postV1Ajax("ambient,sound", "sample", "mean(dbspl)", "daily")
             .done(plotNoiseEvents)
@@ -83,6 +91,14 @@ var qd = function () {
     result.updateTweetModel = function () {
         postV1Ajax("twitter,tweet", "publish", "count", "daily")
             .done(plotTweetEvents)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
+    };
+
+    result.updateSongsByDayModel = function () {
+        postV1Ajax("music", "listen", "count", "daily")
+            .done(plotSongsByDayEvents)
             .fail(function (error) {
                 console.error("Error is: " + error);
             });
