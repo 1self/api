@@ -119,6 +119,6 @@ window.qd.plotTweetEventsHistory = function() {
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text("Noise Count");
+            .text("Tweet Count");
     }, 1000);
 };
