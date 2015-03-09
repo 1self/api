@@ -59,6 +59,11 @@ var qd = function () {
         }
     };
     result.plotHeatmapWith = function (graphParentTileId, graphTileId, graphData) {
+        if(graphData === undefined){
+            console.log('graph data for ' + graphTileId + ' is empty');
+            return;
+        }
+        
         if (graphData.length > 0) {
             $(graphParentTileId).show();
             result.plotHourlyEventMap(graphTileId, graphData);
