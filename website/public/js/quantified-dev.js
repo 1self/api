@@ -264,11 +264,22 @@ var qd = function () {
     };
     var plotCorrelationData = function (correlationData) {
         result.correlationData = correlationData;
-        result.plotScatterPlot('#correlate-events', correlationData);
+        result.plotScatterPlot('#correlate-events', correlationData, 'activeTimeInMinutes', 'githubPushEventCount', "IDE Activity In Minutes", "Push Count");
     };
+
+    var plotStepsVsTracksCorrelationData = function (correlationData) {
+        result.correlationData = correlationData;
+        result.plotScatterPlot('#correlate-steps-vs-tracks-events', correlationData, 'stepSum', 'musicListenCount', 'Steps', "Count of Tracks Listened");
+    };
+
     result.updateCorrelationData = function () {
         postAjax("correlate?firstEvent=Develop&secondEvent=Push", plotCorrelationData);
     };
+
+    result.updateStepsVsTracksCorrelationData = function () {
+        postAjax("correlate/steps/count", plotStepsVsTracksCorrelationData);
+    };
+
     result.plotGraphs = function (graphs) {
         graphs.forEach(function (graph) {
             result[graph]();
@@ -421,6 +432,7 @@ var qd = function () {
     var compareIdeActivityEventsSuccessCallback = function (ideActivityEventForCompare) {
         result.plotComparisonAgainstAvgOfRestOfTheWorld("#compare-ide-activity", ideActivityEventForCompare);
     };
+    
     result.updateIdeActivityEventForCompare = function () {
         postAjax("compare/ideActivity", compareIdeActivityEventsSuccessCallback);
     };
@@ -428,9 +440,11 @@ var qd = function () {
     var compareGithubEventsSuccessCallback = function (githubPushEventForCompare) {
         result.plotComparisonAgainstAvgOfRestOfTheWorld("#compare-github-events", githubPushEventForCompare);
     };
+    
     result.updateCompareGithubEvents = function () {
         postAjax("githubPushEventForCompare", compareGithubEventsSuccessCallback);
     };
+    
     var handlePlotComparisonGraphsSuccess = function (myBuildEvents, theirBuildEvents) {
         $("#compare-username-errors").text("");
         result.compareBuildHistories(myBuildEvents, theirBuildEvents)
@@ -474,6 +488,7 @@ var qd = function () {
         plotHourlyCaffeineEvents(result.hourlyCaffeineEvents);
         plotHourlyGithubPushEvents(result.hourlyGithubPushEvents);
         plotCorrelationData(result.correlationData);
+        plotStepsVsTracksCorrelationData(result.plotStepsVsTracksCorrelationData);
     };
 
     return result;

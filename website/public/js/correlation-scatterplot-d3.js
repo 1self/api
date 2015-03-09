@@ -1,4 +1,4 @@
-window.qd.plotScatterPlot = function(divId, correlateEvents) {
+window.qd.plotScatterPlot = function(divId, correlateEvents, firstField, secondField, xAxisLabel, yAxisLabel) {
 	setTimeout(function() {
 		var s = $(divId).empty();
 		s = d3.select(divId);
@@ -20,8 +20,8 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 		var _groupCorrelateEvents = function(events) {
 			return _.map(events, function(event) {
 				return {
-					x: event.activeTimeInMinutes,
-					y: event.githubPushEventCount,
+					x: event[firstField],
+					y: event[secondField],
 					date: event.date
 				};
 			});
@@ -114,7 +114,7 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 				.attr("x", width)
 				.attr("y", -6)
 				.style("text-anchor", "end")
-				.text("IDE Activity In Minutes");
+				.text(xAxisLabel);
 
 			// y-axis
 			svg.append("g")
@@ -126,7 +126,7 @@ window.qd.plotScatterPlot = function(divId, correlateEvents) {
 				.attr("y", 6)
 				.attr("dy", ".71em")
 				.style("text-anchor", "end")
-				.text("Push Count");
+				.text(yAxisLabel);
 		};
 		_plotGraph();
 	}, 1000);

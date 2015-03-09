@@ -15,7 +15,8 @@ var dashboardGraphs = ['updateBuildModel'
                         , 'updateHourlyCaffeineHeatMap'
                         , 'updateActiveEvents'
                         , 'updateHourlyGithubPushHeatMap'
-                        , 'updateCorrelationData'];
+                        , 'updateCorrelationData',
+                        , 'updateStepsVsTracksCorrelationData'];
 $(window).resize(function() {
     window.qd.replotGraphs();
 });
