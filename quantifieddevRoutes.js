@@ -1281,28 +1281,21 @@ module.exports = function(app) {
         .then(function(token){
             var scope = req.body;
             var permission = {
-            token: token,
-            scope: scope
+                token: token,
+                scope: scope,
+                appId: app.appId
             }
 
-            var app = req.app1self;
-            var key = "permissions." + token;
-            var updateObject = {
-                _id: app._id,
-                "$set": {
-                    key: permission
-                }
-            };
-
-            mongoRepository.update('registeredApps', updateObject)
+            mongoRepository.insert('apptoken', permission)
                 .then(function() {
-                    res.status(200).send(permission);
+                    var result = {
+                        token: token,
+                        scope: scope
+                    }
+                    res.status(200).send(result);
                 }, function(err) {
                     res.status(500).send(err);
                 });
-
-            return deferred.promise;
-
         });
 
     };
