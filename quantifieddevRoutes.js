@@ -1269,10 +1269,15 @@ module.exports = function(app) {
 
         mongoRepository.findOne('registeredApps', query)
             .then(function(app) {
-                req.app = app;
-                next();
+                if(app === null){
+                    res.status(401).send({});
+                }
+                else{
+                    req.app = app;
+                    next();
+                }
             }, function(err) {
-                console.log(err)
+                res.send(500);
             });
     };
 
