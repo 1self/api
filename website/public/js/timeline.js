@@ -110,7 +110,7 @@ var computeChartUrl = function(event) {
     //dirty hack for noiseapp/twitter or show first numeric property if any (for now)
     if (event.payload.objectTags.indexOf("sound") !== -1) {
         operation = "mean(dba)";
-    } else if (event.payload.objectTags.indexOf("tweets") !== -1) {
+    } else if (event.payload.objectTags.indexOf("tweets") !== -1 || event.payload.objectTags.indexOf("tweet") !== -1) {
         operation = "count";
     } else if (typeof(prop) !== "undefined") {
         operation = "sum(" + prop + ")";
