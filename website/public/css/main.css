@@ -1,8 +1,8 @@
 body {
     margin: 0;
     line-height: 18px;
-    color: #666666;
-    background: #515151;
+    color: #646e7a;
+    background: #505A68;
 }
 
 @media (min-width: 768px) {
@@ -199,7 +199,7 @@ h4.stylish {
 }
 
 header {
-    background: #515151;
+    background: #505A68;
     height: 50px;
     vertical-align: middle;
     padding: 0;
@@ -208,7 +208,7 @@ header {
 }
 
 .top-bar {
-    background: #373737;
+    background: #30363e;
     padding: 0;
     margin: 0;
     height: 60px;
@@ -440,7 +440,7 @@ ul#mini-nav li.list-box a {
 }
 
 ul#mini-nav li.list-box:hover {
-    background: #373737;
+    background: #30363e;
 }
 
 ul#mini-nav li.list-box:hover i {
@@ -692,7 +692,7 @@ aside#sidebar #menu > ul > li > a > span {
 
 aside#sidebar #menu > ul > li.highlight {
     border-bottom: none;
-    background-color: #373737;
+    background-color: #30363e;
 }
 
 aside#sidebar #menu > ul > li.highlight ul > li {
@@ -714,13 +714,13 @@ aside#sidebar #menu ul ul {
 
 aside#sidebar #menu ul ul li {
     padding: 0;
-    border-bottom: 1px solid #515151;
+    border-bottom: 1px solid #505A68;
     border-top: none;
     background: #444444;
 }
 
 aside#sidebar #menu ul ul li:hover {
-    background: #373737;
+    background: #30363e;
 }
 
 aside#sidebar #menu ul ul li:hover span {
@@ -786,7 +786,7 @@ aside#sidebar ul.notifications {
 }
 
 aside#sidebar ul.notifications li {
-    border-bottom: 1px dotted #373737;
+    border-bottom: 1px dotted #30363e;
     padding: 5px 10px;
 }
 
@@ -833,7 +833,7 @@ aside#sidebar ul.tasks {
 }
 
 aside#sidebar ul.tasks li {
-    border-bottom: 1px dotted #373737;
+    border-bottom: 1px dotted #30363e;
     padding: 5px 10px;
     font-size: 11px;
     color: #9d9d9d;
@@ -859,7 +859,7 @@ aside#sidebar ul.recent-visits {
 }
 
 aside#sidebar ul.recent-visits li {
-    border-bottom: 1px dotted #373737;
+    border-bottom: 1px dotted #30363e;
     padding: 5px 10px;
 }
 
@@ -1059,7 +1059,7 @@ aside#sidebar ul.recent-visits li:last-child {
 }
 
 .panel-default > .panel-sub-heading a {
-    color: #666666;
+    color: #646e7a;
 }
 
 .panel-default > .panel-sub-heading a:hover {
@@ -1072,7 +1072,7 @@ aside#sidebar ul.recent-visits li:last-child {
 }
 
 .panel-default > .panel-footer a {
-    color: #666666;
+    color: #646e7a;
 }
 
 .panel-default > .panel-footer a:hover {
@@ -1360,7 +1360,7 @@ aside#sidebar ul.recent-visits li:last-child {
     border-radius: 2px;
     background: #f2f2f2;
     padding: 15px;
-    color: #666666;
+    color: #646e7a;
 }
 
 .panel-white h4.heading {
@@ -1636,7 +1636,7 @@ aside#sidebar ul.recent-visits li:last-child {
 }
 
 .info-tiles.tiles-primary .tiles-body {
-    background: #515151;
+    background: #505A68;
 }
 
 .info-tiles.tiles-primary .tiles-footer {
@@ -1784,7 +1784,7 @@ aside#sidebar ul.recent-visits li:last-child {
 }
 
 .alert-white.alert-primary .icon, .alert-white.alert-primary .icon:after {
-    border-color: #373737;
+    border-color: #30363e;
     background: #444444;
 }
 
@@ -1818,17 +1818,17 @@ aside#sidebar ul.recent-visits li:last-child {
 .btn-primary {
     color: white;
     background-color: #444444;
-    border-color: #373737;
+    border-color: #30363e;
 }
 
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open .dropdown-toggle.btn-primary {
     color: white;
-    background-color: #373737;
+    background-color: #30363e;
     border-color: #2b2b2b;
 }
 
 .btn-primary.disabled, .btn-primary[disabled], fieldset[disabled] .btn-primary, .btn-primary.disabled:hover, .btn-primary[disabled]:hover, fieldset[disabled] .btn-primary:hover, .btn-primary.disabled:focus, .btn-primary[disabled]:focus, fieldset[disabled] .btn-primary:focus, .btn-primary.disabled:active, .btn-primary[disabled]:active, fieldset[disabled] .btn-primary:active, .btn-primary.disabled.active, .btn-primary[disabled].active, fieldset[disabled] .btn-primary.active {
-    background-color: #373737;
+    background-color: #30363e;
     border-color: #2b2b2b;
 }
 
@@ -1918,7 +1918,7 @@ aside#sidebar ul.recent-visits li:last-child {
 }
 
 .btn-link {
-    color: #373737;
+    color: #30363e;
     font-weight: normal;
     cursor: pointer;
     border-radius: 0;

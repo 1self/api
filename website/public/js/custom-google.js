@@ -47,7 +47,7 @@ function drawChart1() {
     colors: [$blue, $red, $teal, $green, $orange, $yellow],
     tooltip: {
       textStyle: {
-        color: '#666666',
+        color: '#646e7a',
         fontSize: 11
       },
       showColorCode: true
@@ -108,7 +108,7 @@ function drawChart2() {
     colors: [$blue, $red, $teal, $green, $orange, $yellow],
     tooltip: {
       textStyle: {
-        color: '#666666',
+        color: '#646e7a',
         fontSize: 11
       },
       showColorCode: true
@@ -168,7 +168,7 @@ function drawChart3() {
     colors: [$blue, $red, $teal, $green, $orange, $yellow],
     tooltip: {
       textStyle: {
-        color: '#666666',
+        color: '#646e7a',
         fontSize: 11
       },
       showColorCode: true
@@ -208,7 +208,7 @@ function drawChart4() {
     colors: [$blue, $red, $teal, $green, $orange, $yellow],
     tooltip: {
       textStyle: {
-        color: '#666666',
+        color: '#646e7a',
         fontSize: 11
       },
       showColorCode: true

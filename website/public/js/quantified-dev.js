@@ -29,6 +29,15 @@ var qd = function () {
         noiseEvents: function () {
             result.plotNoiseEventsHistory();
         },
+        tweetEvents: function () {
+            result.plotTweetEventsHistory();
+        },
+        songsByDayEvents: function () {
+            result.plotSongsByDayEventsHistory();
+        },
+        stepsEvents: function () {
+            result.plotStepsEventsHistory();
+        }, 
         hydrationEvents: function () {
             result.plotHydrationHistory();
         },
@@ -63,6 +72,27 @@ var qd = function () {
         result.noiseEvents = noiseEvents;
         result.plotGraphWith('noiseEvents', noiseEvents, "#noise-graph-parent")
     };
+
+    var plotTweetEvents = function (tweetEvents) {
+        result.tweetEvents = tweetEvents;
+        result.plotGraphWith('tweetEvents', tweetEvents, "#tweet-graph-parent")
+    };
+
+    var plotSongsByDayEvents = function (songsByDayEvents) {
+        result.songsByDayEvents = songsByDayEvents;
+        result.plotGraphWith('songsByDayEvents', songsByDayEvents, "#songsbyday-graph-parent")
+    };
+
+    var plotStepsEvents = function (stepsEvents) {
+        result.stepsEvents = stepsEvents;
+        result.plotGraphWith('stepsEvents', stepsEvents, "#steps-graph-parent")
+    };
+
+    var plotTracksEvents = function (tracksEvents) {
+        result.tracksEvents = tracksEvents;
+        result.plotGraphWith('tracksEvents', tracksEvents, "#tracks-graph-parent")
+    };
+
     result.updateNoiseModel = function () {
         postV1Ajax("ambient,sound", "sample", "mean(dbspl)", "daily")
             .done(plotNoiseEvents)
@@ -70,6 +100,31 @@ var qd = function () {
                 console.error("Error is: " + error);
             });
     };
+
+    result.updateTweetModel = function () {
+        postV1Ajax("twitter,tweet", "publish", "count", "daily")
+            .done(plotTweetEvents)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
+    };
+
+    result.updateSongsByDayModel = function () {
+        postV1Ajax("music", "listen", "count", "daily")
+            .done(plotSongsByDayEvents)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
+    };
+
+    result.updateStepsModel = function () {
+        postV1Ajax("steps", "walked", "count", "daily")
+            .done(plotStepsEvents)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
+    };
+
     result.updateWTFModel = function () {
         postV1Ajax("Computer,Software", "wtf", "count", "daily")
             .done(plotWtfEvents)
@@ -137,9 +192,32 @@ var qd = function () {
         result.plotHeatmapWith("#hourlyBuild-heat-map-parent", '#hourlyBuild-heat-map', hourlyBuildEvents);
     };
 
+    var plotHourlyStepsEvents = function (hourlyStepsEvents) {
+        result.hourlyStepsEvents = hourlyStepsEvents;
+        var eventCount = getEventCountForHourlyEvents(hourlyStepsEvents);
+        $('#totalStepsCount').html("Total No of Steps Events : " + eventCount);
+        result.plotHeatmapWith("#hourlySteps-heat-map-parent", '#hourlySteps-heat-map', hourlyStepsEvents);
+    };
+
+    var plotHourlyTracksEvents = function (hourlyTracksEvents) {
+        result.hourlyTracksEvents = hourlyTracksEvents;
+        var eventCount = getEventCountForHourlyEvents(hourlyTracksEvents);
+        $('#totalTracksCount').html("Total No of Tracks Events : " + eventCount);
+        result.plotHeatmapWith("#hourlyTracks-heat-map-parent", '#hourlyTracks-heat-map', hourlyTracksEvents);
+    };
+
     result.updateHourlyBuildHeatMap = function () {
         postAjax("hourlyBuildCount", plotHourlyBuildEvents)
     };
+
+    result.updateHourlyStepsHeatMap = function () {
+        postAjax("hourlyStepsCount", plotHourlyStepsEvents)
+    };
+
+    result.updateHourlyTracksHeatMap = function () {
+        postAjax("hourlyTracksCount", plotHourlyTracksEvents)
+    };
+
     var plotHourlyWtfEvents = function (hourlyWtfEvents) {
         result.hourlyWtfEvents = hourlyWtfEvents;
         var eventCount = getEventCountForHourlyEvents(hourlyWtfEvents);
@@ -389,6 +467,8 @@ var qd = function () {
         plotCaffeineEvents(result.caffeineEvents);
         plotBuildDurationEvents(result.buildDurationEvents);
         plotHourlyBuildEvents(result.hourlyBuildEvents);
+        plotHourlyStepsEvents(result.hourlyStepsEvents);
+        plotHourlyTracksEvents(result.hourlyTracksEvents);
         plotHourlyWtfEvents(result.hourlyWtfEvents);
         plotHourlyHydrationEvents(result.hourlyHydrationEvents);
         plotHourlyCaffeineEvents(result.hourlyCaffeineEvents);
