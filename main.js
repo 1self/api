@@ -845,6 +845,60 @@ var correlateStepsAndTracks = function (streams) {
     return deferred.promise;
 };
 
+var correlateIDEActivityAndTracks = function (streams) {
+    var streamids = _.map(streams, function (stream) {
+        return stream.streamid;
+    });
+    var deferred = q.defer();
+    var sumQuery = {
+        "$sum": {
+            "field": {
+                "name": "properties.duration"
+            },
+            "data": getQueryForStreamIdActionTagAndObjectTag(streamids, 'Develop', 'Software'),
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "activeTimeInSecs"
+            }
+        }
+    };
+    var countQuery = {
+        "$count": {
+            "data": getQueryForStreamIdActionTagAndObjectTag(streamids, 'listen', 'music'),
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "musicListenCount"
+            }
+        }
+    };
+    var query = {
+        spec: JSON.stringify([sumQuery, countQuery]),
+        merge: true
+    };
+    var processResult = function (result) {
+        if (_.isEmpty(result)) {
+            deferred.resolve([]);
+        } else {
+            for (var date in result) {
+                if (result[date].activeTimeInSecs === undefined) {
+                    result[date].activeTimeInSecs = 0;
+                }
+                if (result[date].musicListenCount === undefined) {
+                    result[date].musicListenCount = 0;
+                }
+                result[date].activeTimeInMinutes = convertSecsToMinutes(result[date].activeTimeInSecs);
+                result[date].date = date;
+            }
+            deferred.resolve(result);
+        }
+    };
+    platformService.aggregate(query)
+        .then(processResult, function (err) {
+            deferred.reject(err);
+        });
+    return deferred.promise;
+};
+
 var correlateGithubPushesAndIDEActivity = function (streams, firstEvent, secondEvent) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
@@ -1498,7 +1552,7 @@ app.get('/quantifieddev/correlate', function (req, res) {
         });
 });
 
-app.get('/quantifieddev/correlate/steps/count', function (req, res) {
+app.get('/quantifieddev/correlate/steps/trackcount', function (req, res) {
     var encodedUsername = req.headers.authorization;
     var forUsername = req.query.forUsername;
     validEncodedUsername(encodedUsername)
@@ -1507,6 +1561,23 @@ app.get('/quantifieddev/correlate/steps/count', function (req, res) {
         })
         .then(function (streams) {
             return correlateStepsAndTracks(streams);
+        })
+        .then(function (response) {
+            res.send(response);
+        }).catch(function (error) {
+            res.status(404).send("stream not found");
+        });
+});
+
+app.get('/quantifieddev/correlate/ideactivity/trackcount', function (req, res) {
+    var encodedUsername = req.headers.authorization;
+    var forUsername = req.query.forUsername;
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return getStreamIdForUsername(encodedUsername, forUsername);
+        })
+        .then(function (streams) {
+            return correlateIDEActivityAndTracks(streams);
         })
         .then(function (response) {
             res.send(response);

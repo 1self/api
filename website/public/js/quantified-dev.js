@@ -262,6 +262,7 @@ var qd = function () {
     result.updateHourlyGithubPushHeatMap = function () {
         postAjax("hourlyGithubPushEvents", plotHourlyGithubPushEvents, hourlyGithubErrorCallback);
     };
+    
     var plotCorrelationData = function (correlationData) {
         result.correlationData = correlationData;
         result.plotScatterPlot('#correlate-events', correlationData, 'activeTimeInMinutes', 'githubPushEventCount', "IDE Activity In Minutes", "Push Count");
@@ -272,12 +273,21 @@ var qd = function () {
         result.plotScatterPlot('#correlate-steps-vs-tracks-events', correlationData, 'stepSum', 'musicListenCount', 'Steps', "Count of Tracks Listened");
     };
 
+    var plotIDEActivityVsTracksCorrelationData = function (correlationData) {
+        result.correlationData = correlationData;
+        result.plotScatterPlot('#correlate-ideactivity-vs-tracks-events', correlationData, 'activeTimeInMinutes', 'musicListenCount', 'IDE Activity In Minutes', "Count of Tracks Listened");
+    };
+
     result.updateCorrelationData = function () {
         postAjax("correlate?firstEvent=Develop&secondEvent=Push", plotCorrelationData);
     };
 
     result.updateStepsVsTracksCorrelationData = function () {
-        postAjax("correlate/steps/count", plotStepsVsTracksCorrelationData);
+        postAjax("correlate/steps/trackcount", plotStepsVsTracksCorrelationData);
+    };
+
+    result.updateIDEActivityVsTracksCorrelationData = function () {
+        postAjax("correlate/ideactivity/trackcount", plotIDEActivityVsTracksCorrelationData);
     };
 
     result.plotGraphs = function (graphs) {
@@ -489,6 +499,7 @@ var qd = function () {
         plotHourlyGithubPushEvents(result.hourlyGithubPushEvents);
         plotCorrelationData(result.correlationData);
         plotStepsVsTracksCorrelationData(result.plotStepsVsTracksCorrelationData);
+        plotIDEActivityVsTracksCorrelationData(result.plotIDEActivityVsTracksCorrelationData);
     };
 
     return result;
