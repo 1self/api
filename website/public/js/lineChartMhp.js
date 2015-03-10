@@ -74,14 +74,20 @@ function InitChart() {
             .attr("height", height - 50);
 
         chart.append('svg:path')
-            .attr('d', lineFunc(events))
+            .attr('d', lineFunc(nullEvents))
             .attr("class", "line")
-            .attr("clip-path", "url(#rectClip)");
+            .attr("clip-path", "url(#rectClip)")
+            .transition()
+            .duration(2000)
+            .attr('d', lineFunc(events));
 
         chart.append('svg:path')
-            .attr('d', areaFunc(events))
+            .attr('d', areaFunc(nullEvents))
             .attr("class", "area")
-            .attr("clip-path", "url(#rectClip)");
+            .attr("clip-path", "url(#rectClip)")
+            .transition()
+            .duration(2000)
+            .attr('d', areaFunc(events));;
 
         chart.append('svg:g')
             .attr('class', 'x axis')
