@@ -1,3 +1,8 @@
+body {
+    width: 100vw;
+    height: 100vh;
+}
+
 .axis path, .axis line {
     fill: none;
     stroke: #777;
@@ -15,4 +20,4 @@
 
 .bar {
     fill: FireBrick;
-}    
+}
