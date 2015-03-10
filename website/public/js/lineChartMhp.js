@@ -33,7 +33,8 @@ function InitChart() {
             .range([height - margin.top, margin.bottom])
             .domain([0, d3.max(events, function(d) {
                 return d.value;
-            })]);
+            })])
+            .nice();
 
         xAxis = d3.svg.axis()
             .scale(xRange)
@@ -47,6 +48,41 @@ function InitChart() {
             .ticks(5)
             .tickSubdivide(true);
 
+        lineFunc = d3.svg.line()
+        .x(function(d) {
+            return xRange(d.date);
+        })
+        .y(function(d) {
+            return yRange(d.value);
+        })
+        .interpolate('linear');
+
+        areaFunc = d3.svg.area()
+            .x(function(d) { 
+                return xRange(d.date); 
+            })
+            .y0(height)
+            .y1(function(d) { 
+                return yRange(d.value); 
+            })
+            .interpolate('linear');
+
+        chart.append("clipPath")
+            .attr("id", "rectClip")
+            .append("rect")
+            .attr("width", width)
+            .attr("height", height - 50);
+
+        chart.append('svg:path')
+            .attr('d', lineFunc(events))
+            .attr("class", "line")
+            .attr("clip-path", "url(#rectClip)");
+
+        chart.append('svg:path')
+            .attr('d', areaFunc(events))
+            .attr("class", "area")
+            .attr("clip-path", "url(#rectClip)");
+
         chart.append('svg:g')
             .attr('class', 'x axis')
             .attr('transform', 'translate(0,' + (height - margin.bottom) + ')')
@@ -56,20 +92,5 @@ function InitChart() {
             .attr('class', 'y axis')
             .attr('transform', 'translate(' + (margin.left) + ',0)')
             .call(yAxis);
-
-    var lineFunc = d3.svg.line()
-        .x(function(d) {
-            return xRange(d.date);
-        })
-        .y(function(d) {
-            return yRange(d.value);
-        })
-        .interpolate('linear');
-
-    chart.append('svg:path')
-        .attr('d', lineFunc(events))
-        .attr('stroke', 'blue')
-        .attr('stroke-width', 2)
-        .attr('fill', 'none');
 
 }

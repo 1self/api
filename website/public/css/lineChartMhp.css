@@ -21,3 +21,14 @@ body {
 .bar {
     fill: FireBrick;
 }
+
+.line {
+    stroke: blue;
+    stroke-width: 2;
+    fill: none;
+}
+
+.area {
+    fill: #eee;
+    stroke-width: 0;
+}
