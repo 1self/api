@@ -11,6 +11,7 @@
         <script src="../packages/d3/d3.geo.projection.v0.min.js"></script>
         <script src="../js/lineChartMhp.js"></script>
         <script>
+
             var events = [];
             events.push({
                 date: new Date(moment().subtract("days", 0).format("MM/DD/YYYY")),
@@ -40,10 +41,14 @@
                 date: new Date(moment().subtract("days", 6).format("MM/DD/YYYY")),
                 value: 52
             });
+
+            $(function() {
+                InitChart();
+            });
         </script>
     </head>
-    
+
     <body>
-        <div id='chart'></div>
+        <svg id="chart" width="1000" height="500"></svg>
     </body>
 </html>
