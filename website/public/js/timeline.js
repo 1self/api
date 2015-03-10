@@ -102,7 +102,7 @@ var computeChartUrl = function(event) {
         var now = moment();
         var current = moment(date);
         return now.diff(current, 'days') < 7;
-    }
+    };
 
     var operation = "count";
     var prop = findFirstNumericProperty();
@@ -111,6 +111,8 @@ var computeChartUrl = function(event) {
     if (event.payload.objectTags.indexOf("sound") !== -1) {
         operation = "mean(dba)";
     } else if (event.payload.objectTags.indexOf("tweets") !== -1 || event.payload.objectTags.indexOf("tweet") !== -1) {
+        operation = "count";
+    } else if (event.payload.objectTags.indexOf("foursquare") !== -1) {
         operation = "count";
     } else if (typeof(prop) !== "undefined") {
         operation = "sum(" + prop + ")";
