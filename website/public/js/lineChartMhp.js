@@ -78,7 +78,7 @@ function InitChart() {
             .attr("class", "line")
             .attr("clip-path", "url(#rectClip)")
             .transition()
-            .duration(2000)
+                .duration(2000)
             .attr('d', lineFunc(events));
 
         chart.append('svg:path')
@@ -86,8 +86,8 @@ function InitChart() {
             .attr("class", "area")
             .attr("clip-path", "url(#rectClip)")
             .transition()
-            .duration(2000)
-            .attr('d', areaFunc(events));;
+                .duration(2000)
+            .attr('d', areaFunc(events));
 
         chart.append('svg:g')
             .attr('class', 'x axis')
@@ -98,5 +98,44 @@ function InitChart() {
             .attr('class', 'y axis')
             .attr('transform', 'translate(' + (margin.left) + ',0)')
             .call(yAxis);
+
+    var formatTime = d3.time.format("%e %B");
+
+    var div = d3.select("body").append("div")   
+        .attr("class", "tooltip")               
+        .style("opacity", 0);
+
+    chart.selectAll("dot")    
+        .data(events) 
+
+    .enter().append("circle")                               
+
+        .attr("cx", function(d) { 
+            return xRange(d.date); 
+        })       
+        .attr("cy", function(d) { 
+            return yRange(d.value); 
+        })
+
+        .on("mousedown", function(d) {      
+            div.transition()        
+                .duration(200)      
+                .style("opacity", 1);      
+            div .html(formatTime(d.date) + "<br/>"  + d.value)  
+                .style("left", (d3.event.pageX) + "px")     
+                .style("top", (d3.event.pageY) + "px");    
+            })    
+
+        .on("mouseup", function(d) {
+            div.transition()        
+                .duration(500)      
+                .style("opacity", 0);   
+        })
+
+        .attr("r", 0)
+        .transition()
+            .duration(1000)
+            .delay(2000)
+        .attr("r", 4);
 
 }
