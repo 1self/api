@@ -55,7 +55,7 @@ function InitChart() {
         .y(function(d) {
             return yRange(d.value);
         })
-        .interpolate('linear');
+        .interpolate('cardinal');
 
         areaFunc = d3.svg.area()
             .x(function(d) { 
@@ -65,7 +65,7 @@ function InitChart() {
             .y1(function(d) { 
                 return yRange(d.value); 
             })
-            .interpolate('linear');
+            .interpolate('cardinal');
 
         chart.append("clipPath")
             .attr("id", "rectClip")
