@@ -1,47 +1,55 @@
 body {
     width: 100vw;
     height: 100vh;
+    font-family: "Raleway-Thin", "helvetica neue", helvetica, arial;
+    background-color: rgb(36, 155, 186);
+    color: rgb(256, 256, 256);
 }
 
-.axis path, .axis line {
+.line,
+.axis path,
+.axis line {
     fill: none;
-    stroke: #777;
+    stroke: rgb(256, 256, 256);
+    stroke-width: 1px;
     shape-rendering: crispEdges;
-}
-        
-.axis text {
-    font-family: 'Arial';
-    font-size: 13px;
-}
-
-.tick {
-    stroke-dasharray: 1, 2;
-}
-
-.bar {
-    fill: FireBrick;
-}
-
-.line {
-    stroke: blue;
-    stroke-width: 2;
-    fill: none;
 }
 
 .area {
-    fill: #eee;
+    fill: rgb(256, 256, 256);
+    opacity: 0.5;
     stroke-width: 0;
 }
 
+circle {
+    fill: rgb(256, 256, 256);
+}
+       
+.axis text {
+    font-size: 12px;
+    text-transform: uppercase;
+    fill: rgb(256, 256, 256);
+}
+
+.x.axis text {
+    text-anchor: start !important;
+}
+
+.x.axis .tick:nth-child(7) text {
+    text-anchor: end !important;
+}
+
+
+.y.axis .tick:nth-child(1) text,
+.tick line {
+    display: none;
+}
+
 div.tooltip {   
-    position: absolute;           
-    text-align: center;           
-    width: 60px;                  
-    height: 28px;                 
-    padding: 2px;             
-    font: 12px sans-serif;        
-    background: lightsteelblue;   
-    border: 0px;      
-    border-radius: 8px;           
+    position: fixed;
+    top: 50px;
+    right: 150px;         
+    text-align: right;            
+    font-size: 24px;                     
     pointer-events: none;         
 }

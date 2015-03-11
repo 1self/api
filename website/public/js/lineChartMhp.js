@@ -1,3 +1,34 @@
+var nullEvents = [];
+
+nullEvents.push({
+    date: new Date(moment().subtract("days", 0).format("MM/DD/YYYY")),
+    value: 0
+});
+nullEvents.push({
+    date: new Date(moment().subtract("days", 1).format("MM/DD/YYYY")),
+    value: 0
+});
+nullEvents.push({
+    date: new Date(moment().subtract("days", 2).format("MM/DD/YYYY")),
+    value: 0
+});
+nullEvents.push({
+    date: new Date(moment().subtract("days", 3).format("MM/DD/YYYY")),
+    value: 0
+});
+nullEvents.push({
+    date: new Date(moment().subtract("days", 4).format("MM/DD/YYYY")),
+    value: 0
+});
+nullEvents.push({
+    date: new Date(moment().subtract("days", 5).format("MM/DD/YYYY")),
+    value: 0
+});
+nullEvents.push({
+    date: new Date(moment().subtract("days", 6).format("MM/DD/YYYY")),
+    value: 0
+});
+
 function InitChart() {
 
     var sizeGraph = function () {
@@ -38,13 +69,15 @@ function InitChart() {
 
         xAxis = d3.svg.axis()
             .scale(xRange)
-            .tickFormat(d3.time.format('%A'))
+            .orient('bottom')
+            .tickFormat(d3.time.format('%a'))
             .ticks(5)
-            .tickSubdivide(true);
+            .tickSubdivide(true)
+            .outerTickSize(0);
 
         yAxis = d3.svg.axis()
             .scale(yRange)
-            .orient('left')
+            .orient('right')
             .ticks(5)
             .tickSubdivide(true);
 
@@ -99,6 +132,9 @@ function InitChart() {
             .attr('transform', 'translate(' + (margin.left) + ',0)')
             .call(yAxis);
 
+        chart.append('text')
+            .attr('text-anchor', 'start');
+
     var formatTime = d3.time.format("%e %B");
 
     var div = d3.select("body").append("div")   
@@ -121,14 +157,13 @@ function InitChart() {
             div.transition()        
                 .duration(200)      
                 .style("opacity", 1);      
-            div .html(formatTime(d.date) + "<br/>"  + d.value)  
-                .style("left", (d3.event.pageX) + "px")     
-                .style("top", (d3.event.pageY) + "px");    
+            div .html(formatTime(d.date) + "<br/>"  + d.value);    
             })    
 
         .on("mouseup", function(d) {
-            div.transition()        
-                .duration(500)      
+            div.transition()
+                .delay(2000)      
+                .duration(2000)      
                 .style("opacity", 0);   
         })
 
