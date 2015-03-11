@@ -37,7 +37,7 @@ var qd = function () {
         },
         stepsEvents: function () {
             result.plotStepsEventsHistory();
-        }, 
+        },
         hydrationEvents: function () {
             result.plotHydrationHistory();
         },
@@ -262,20 +262,23 @@ var qd = function () {
     result.updateHourlyGithubPushHeatMap = function () {
         postAjax("hourlyGithubPushEvents", plotHourlyGithubPushEvents, hourlyGithubErrorCallback);
     };
-    
+
     var plotCorrelationData = function (correlationData) {
         result.correlationData = correlationData;
-        result.plotScatterPlot('#correlate-events', correlationData, 'activeTimeInMinutes', 'githubPushEventCount', "IDE Activity In Minutes", "Push Count");
+        var toolTipText = "Active programming duration of {{xValue}} mins with {{yValue}} github push(es)";
+        result.plotScatterPlot('#correlate-events', correlationData, 'activeTimeInMinutes', 'githubPushEventCount', "IDE Activity In Minutes", "Push Count", toolTipText);
     };
 
     var plotStepsVsTracksCorrelationData = function (correlationData) {
         result.correlationData = correlationData;
-        result.plotScatterPlot('#correlate-steps-vs-tracks-events', correlationData, 'stepSum', 'musicListenCount', 'Steps', "Count of Tracks Listened");
+        var toolTipText = "{{xValue}} steps walked with {{yValue}} tracks listened";
+        result.plotScatterPlot('#correlate-steps-vs-tracks-events', correlationData, 'stepSum', 'musicListenCount', 'Steps', "Count of Tracks Listened", toolTipText);
     };
 
     var plotIDEActivityVsTracksCorrelationData = function (correlationData) {
         result.correlationData = correlationData;
-        result.plotScatterPlot('#correlate-ideactivity-vs-tracks-events', correlationData, 'activeTimeInMinutes', 'musicListenCount', 'IDE Activity In Minutes', "Count of Tracks Listened");
+        var toolTipText = "Active programming duration of {{xValue}} mins with {{yValue}} tracks listened";
+        result.plotScatterPlot('#correlate-ideactivity-vs-tracks-events', correlationData, 'activeTimeInMinutes', 'musicListenCount', 'IDE Activity In Minutes', "Count of Tracks Listened", toolTipText);
     };
 
     result.updateCorrelationData = function () {
@@ -442,7 +445,7 @@ var qd = function () {
     var compareIdeActivityEventsSuccessCallback = function (ideActivityEventForCompare) {
         result.plotComparisonAgainstAvgOfRestOfTheWorld("#compare-ide-activity", ideActivityEventForCompare);
     };
-    
+
     result.updateIdeActivityEventForCompare = function () {
         postAjax("compare/ideActivity", compareIdeActivityEventsSuccessCallback);
     };
@@ -450,11 +453,11 @@ var qd = function () {
     var compareGithubEventsSuccessCallback = function (githubPushEventForCompare) {
         result.plotComparisonAgainstAvgOfRestOfTheWorld("#compare-github-events", githubPushEventForCompare);
     };
-    
+
     result.updateCompareGithubEvents = function () {
         postAjax("githubPushEventForCompare", compareGithubEventsSuccessCallback);
     };
-    
+
     var handlePlotComparisonGraphsSuccess = function (myBuildEvents, theirBuildEvents) {
         $("#compare-username-errors").text("");
         result.compareBuildHistories(myBuildEvents, theirBuildEvents)
