@@ -112,7 +112,7 @@ var computeChartUrl = function(event) {
         operation = "mean(dba)";
     } else if (event.payload.objectTags.indexOf("tweets") !== -1 || event.payload.objectTags.indexOf("tweet") !== -1) {
         operation = "count";
-    } else if (event.payload.objectTags.indexOf("followed-by") !== -1) {
+    } else if (event.payload.objectTags.indexOf("followers") !== -1) {
         operation = "max(count)";
     } else if (event.payload.objectTags.indexOf("foursquare") !== -1) {
         operation = "count";
