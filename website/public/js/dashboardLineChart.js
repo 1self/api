@@ -61,20 +61,6 @@ window.qd.plotDashboardLineChart = function (divId, events, color, yAxisLabel, t
                 return tipText(d);
             });
         svg.call(tip);
-        var eventDates = events.map(function (event) {
-            return event.date
-        });
-        var startDate = moment().subtract("month", 1).startOf('week').format("MM/DD/YYYY");
-        if (_.contains(eventDates, startDate)) {
-
-        } else {
-            var initialValue = events[0].value;
-            var initialDate = startDate;
-            events.push({
-                date: initialDate,
-                value: initialValue
-            });
-        }
         var line = d3.svg.line()
             .x(function (d) {
                 return x(new Date(d.date));
