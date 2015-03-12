@@ -168,6 +168,18 @@ var qd = function () {
                 console.error("Error is: " + error);
             });
     };
+    var plotTwitterFollowerCount = function (twitterFollowerCountEvents) {
+        result.twitterFollowerCountEvents = twitterFollowerCountEvents;
+        showParentDiv(twitterFollowerCountEvents, '#twitter-follower-count-graph-parent');
+        result.plotDashboardLineChart('#twitter-follower-count-graph',twitterFollowerCountEvents,"#00a2d4",'No of Twitter Followers');
+    };
+    result.updateTwitterFollowerCount = function () {
+        postV1Ajax("internet,social-network,twitter,social-graph,inbound,follower", "sample", "max(count)", "daily")
+            .done(plotTwitterFollowerCount)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
+    };
 
     var getEventCountForHourlyEvents = function (events) {
         return _.reduce(_.map(events, function (event) {
