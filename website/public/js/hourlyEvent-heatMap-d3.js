@@ -1,4 +1,4 @@
-window.qd.plotHourlyEventMap = function (divId, hourlyEvents) {
+window.qd.plotHourlyEventMap = function (divId, hourlyEvents, tooltipText) {
     setTimeout(function () {
         $(divId).html("");
         var baseColor = "#EEEEEE";
@@ -110,17 +110,19 @@ window.qd.plotHourlyEventMap = function (divId, hourlyEvents) {
                     .attr("height", gridTimeSize)
                     .style("fill", baseColor)
                     .on("click", function (d) {
+                        var toolTip = tooltipText.replace("{{value}}", d.value);
                         if ($(window).width() < 768) {
                             div.transition()
                                 .duration(200)
                                 .style("opacity", .9);
-                            div.html("<strong>" + d.value + (d.value === 1 ? " event" : " events") + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day + 1).format('ddd') + " at " + moment().hours(d.hour + 1).format('h a') + "</span>")
+                            div.html("<strong>" + toolTip + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day + 1).format('ddd') + " at " + moment().hours(d.hour + 1).format('h a') + "</span>")
                                 .style("left", (d3.event.pageX) + "px")
                                 .style("top", (d3.event.pageY) + "px");
                         }
 
                     })
                     .on("mouseover", function (d) {
+
                         if ($(window).width() > 767) {
                             tip.show(d)
                         }
@@ -159,7 +161,8 @@ window.qd.plotHourlyEventMap = function (divId, hourlyEvents) {
                     .attr('class', 'd3-tip')
                     .offset([-10, 0])
                     .html(function (d) {
-                        return "<strong>" + d.value + (d.value === 1 ? " event" : " events") + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day + 1).format('ddd') + " at " + moment().hours(d.hour + 1).format('h a') + "</span>";
+                        var toolTip = tooltipText.replace("{{value}}", d.value);
+                        return "<strong>" + toolTip + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day + 1).format('ddd') + " at " + moment().hours(d.hour + 1).format('h a') + "</span>";
                     });
                 svg.call(tip);
                 var dayLabels = createDayLabels(svg, "y", "x", 10, gridDaySize, "translate(" + gridDaySize / 1.5 + ",-6)");
@@ -177,7 +180,8 @@ window.qd.plotHourlyEventMap = function (divId, hourlyEvents) {
                     .attr('class', 'd3-tip')
                     .offset([-10, 0])
                     .html(function (d) {
-                        return "<strong>" + d.value + (d.value === 1 ? " event" : " events") + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day + 1).format('ddd') + " at " + moment().hours(d.hour + 1).format('h a') + "</span>";
+                        var toolTip = tooltipText.replace("{{value}}", d.value);
+                        return "<strong>" + toolTip + "</strong> <span style='color:lightgrey'> on " + moment().days(d.day + 1).format('ddd') + " at " + moment().hours(d.hour + 1).format('h a') + "</span>";
                     });
                 svg.call(tip);
                 var dayLabels = createDayLabels(svg, "x", "y", 0, gridSize, "translate(-6," + gridSize / 1.5 + ")");

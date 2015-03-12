@@ -340,9 +340,12 @@ var countOnParameters = function (groupQuery, filterSpec, resultField) {
     };
 };
 
-var sumOnParameters = function (groupQuery, filterSpec, resultField) {
+var sumOnParameters = function (sumField, groupQuery, filterSpec, resultField) {
     return {
         "$sum": {
+            "field": {
+                "name": sumField
+            },
             "data": groupQuery,
             "filterSpec": filterSpec,
             "projectionSpec": {
@@ -440,8 +443,9 @@ var generateHourlyStepsCountQuery = function (streams) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
+    var sumField = "properties.numberOfSteps";
     var groupQuery = groupByForHourlyEvents(streamids, "walked", "steps");
-    var hourlyStepsCount = countOnParameters(groupQuery, {}, "hourlyEventCount");
+    var hourlyStepsCount = sumOnParameters(sumField, groupQuery, {}, "hourlyEventCount");
     return {
         spec: JSON.stringify(hourlyStepsCount)
     };
@@ -1206,7 +1210,7 @@ app.post('/v1/users/:username/link', function (req, res) {
                 res.status(200).send("ok");
             })
             .catch(function (err) {
-                console.log("Error: ",err);
+                console.log("Error: ", err);
                 res.status(500).send(err);
             })
     } else {

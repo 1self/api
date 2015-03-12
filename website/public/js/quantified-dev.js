@@ -8,8 +8,9 @@ var qd = function () {
     };
     var plotBuildEvents = function (buildEvents) {
         result.buildEvents = buildEvents;
-        showParentDiv(buildEvents, "#build-history-parent");
-        result.plotBuildHistory();
+        if (showParentDiv(buildEvents, "#build-history-parent")) {
+            result.plotBuildHistory();
+        }
     };
     /*   var failureCallbackForComparison = function(divId, msg) {
      return function() {
@@ -24,45 +25,52 @@ var qd = function () {
     var showParentDiv = function (graphData, graphParentTileId) {
         if (graphData.length > 0) {
             $(graphParentTileId).show();
+            return true;
         }
+        return false;
     };
-    result.plotHeatmapWith = function (graphParentTileId, graphTileId, graphData) {
+    result.plotHeatmapWith = function (graphParentTileId, graphTileId, graphData, toolTipText) {
         if (graphData.length > 0) {
             $(graphParentTileId).show();
-            result.plotHourlyEventMap(graphTileId, graphData);
+            result.plotHourlyEventMap(graphTileId, graphData, toolTipText);
         }
     };
     var plotWtfEvents = function (wtfEvents) {
         result.wtfEvents = wtfEvents;
-        showParentDiv(wtfEvents, "#wtf-history-parent");
-        var toolTipText = "{{value}} wtf(s)";
-        result.plotDashboardBarChart('#wtf-history', wtfEvents, '#dd2649', 'WTF Count', toolTipText);
+        if (showParentDiv(wtfEvents, "#wtf-history-parent")) {
+            var toolTipText = "{{value}} wtf(s)";
+            result.plotDashboardBarChart('#wtf-history', wtfEvents, '#dd2649', 'WTF Count', toolTipText);
+        }
     };
     var plotNoiseEvents = function (noiseEvents) {
         result.noiseEvents = noiseEvents;
-        showParentDiv(noiseEvents, "#noise-graph-parent");
-        var toolTipText = "{{value}} dbspl";
-        result.plotDashboardBarChart('#noise-graph', noiseEvents, '#e93e5a', 'Noise Count', toolTipText);
+        if (showParentDiv(noiseEvents, "#noise-graph-parent")) {
+            var toolTipText = "{{value}} dbspl";
+            result.plotDashboardBarChart('#noise-graph', noiseEvents, '#e93e5a', 'Noise Count', toolTipText);
+        }
     };
     var plotTweetEvents = function (tweetEvents) {
         result.tweetEvents = tweetEvents;
-        showParentDiv(tweetEvents, "#tweet-graph-parent");
-        var toolTipText = "{{value}} tweets";
-        result.plotDashboardBarChart('#tweet-graph', tweetEvents, '#e93e5a', 'Tweet Count', toolTipText);
+        if (showParentDiv(tweetEvents, "#tweet-graph-parent")) {
+            var toolTipText = "{{value}} tweets";
+            result.plotDashboardBarChart('#tweet-graph', tweetEvents, '#e93e5a', 'Tweet Count', toolTipText);
+        }
     };
 
     var plotSongsByDayEvents = function (songsByDayEvents) {
         result.songsByDayEvents = songsByDayEvents;
-        showParentDiv(songsByDayEvents, "#songsbyday-graph-parent");
-        var toolTipText = "{{value}} songs listened";
-        result.plotDashboardBarChart('#songsbyday-graph', songsByDayEvents, '#e93e5a', 'Songs listened', toolTipText);
+        if (showParentDiv(songsByDayEvents, "#songsbyday-graph-parent")) {
+            var toolTipText = "{{value}} songs listened";
+            result.plotDashboardBarChart('#songsbyday-graph', songsByDayEvents, '#e93e5a', 'Songs listened', toolTipText);
+        }
     };
 
     var plotStepsEvents = function (stepsEvents) {
         result.stepsEvents = stepsEvents;
-        showParentDiv(stepsEvents, "#steps-graph-parent");
-        var toolTipText = "{{value}} steps";
-        result.plotDashboardBarChart('#steps-graph', stepsEvents, '#e93e5a', 'Steps walked', toolTipText);
+        if (showParentDiv(stepsEvents, "#steps-graph-parent")) {
+            var toolTipText = "{{value}} steps";
+            result.plotDashboardBarChart('#steps-graph', stepsEvents, '#e93e5a', 'Steps walked', toolTipText);
+        }
     };
 
     result.updateNoiseModel = function () {
@@ -106,9 +114,10 @@ var qd = function () {
     };
     var plotHydrationEvents = function (hydrationEvents) {
         result.hydrationEvents = hydrationEvents;
-        showParentDiv(hydrationEvents, "#hydration-history-parent");
-        var toolTipText = "{{value}} glass(es)";
-        result.plotDashboardBarChart('#hydration-history', hydrationEvents, '#00a2d4', 'Hydration Count', toolTipText);
+        if (showParentDiv(hydrationEvents, "#hydration-history-parent")) {
+            var toolTipText = "{{value}} glass(es)";
+            result.plotDashboardBarChart('#hydration-history', hydrationEvents, '#00a2d4', 'Hydration Count', toolTipText);
+        }
     };
     result.updateHydrationModel = function () {
         postV1Ajax("Drink,Water", "drink", "count", "daily")
@@ -119,9 +128,10 @@ var qd = function () {
     };
     var plotCaffeineEvents = function (caffeineEvents) {
         result.caffeineEvents = caffeineEvents;
-        showParentDiv(caffeineEvents, "#caffeine-history-parent");
-        var toolTipText = "{{value}} cup(s)";
-        result.plotDashboardBarChart('#caffeine-history', caffeineEvents, '#e93d31', 'Caffeine Count', toolTipText);
+        if (showParentDiv(caffeineEvents, "#caffeine-history-parent")) {
+            var toolTipText = "{{value}} cup(s)";
+            result.plotDashboardBarChart('#caffeine-history', caffeineEvents, '#e93d31', 'Caffeine Count', toolTipText);
+        }
     };
     result.updateCaffeineModel = function () {
         postV1Ajax("Drink,Coffee", "drink", "count", "daily")
@@ -132,15 +142,16 @@ var qd = function () {
     };
     var plotBuildDurationEvents = function (buildDurationEvents) {
         result.buildDurationEvents = buildDurationEvents;
-        showParentDiv(buildDurationEvents, "#buildDuration-history-parent");
-        var toolTipText = "{{value}} sec(s)";
-        var convertMillisToSeconds = function (data) {
-            return _.each(data, function (d) {
-                d.value = d.value / 1000;
-            });
-        };
-        var events = convertMillisToSeconds(buildDurationEvents);
-        result.plotDashboardBarChart('#buildDuration-history', events, '#e93e5a', 'Build Duration(seconds)', toolTipText);
+        if (showParentDiv(buildDurationEvents, "#buildDuration-history-parent")) {
+            var toolTipText = "{{value}} sec(s)";
+            var convertMillisToSeconds = function (data) {
+                return _.each(data, function (d) {
+                    d.value = d.value / 1000;
+                });
+            };
+            var events = convertMillisToSeconds(buildDurationEvents);
+            result.plotDashboardBarChart('#buildDuration-history', events, '#e93e5a', 'Build Duration(seconds)', toolTipText);
+        }
     };
     result.updateBuildDurationModel = function () {
         postV1Ajax("Computer,Software", "Build,Finish", "mean(BuildDuration)", "daily")
@@ -151,15 +162,16 @@ var qd = function () {
     };
     var plotActivity = function (activeEvents) {
         result.activeEvents = activeEvents;
-        showParentDiv(activeEvents, "#active-event-history-parent");
-        var toolTipText = "{{value}} min(s)";
-        var convertSecondsToMinutes = function (data) {
-            return data.map(function (d) {
-                return {date: d.date, value: (d.value / 60)};
-            });
-        };
-        var events = convertSecondsToMinutes(activeEvents);
-        result.plotDashboardBarChart('#active-event-history', events, '#e93e5a', 'Activity Duration(mins)', toolTipText);
+        if (showParentDiv(activeEvents, "#active-event-history-parent")) {
+            var toolTipText = "{{value}} min(s)";
+            var convertSecondsToMinutes = function (data) {
+                return data.map(function (d) {
+                    return {date: d.date, value: (d.value / 60)};
+                });
+            };
+            var events = convertSecondsToMinutes(activeEvents);
+            result.plotDashboardBarChart('#active-event-history', events, '#e93e5a', 'Activity Duration(mins)', toolTipText);
+        }
     };
     result.updateActiveEvents = function () {
         postV1Ajax("Computer,Software", "Develop", "sum(duration)", "daily")
@@ -170,8 +182,9 @@ var qd = function () {
     };
     var plotTwitterFollowerCount = function (twitterFollowerCountEvents) {
         result.twitterFollowerCountEvents = twitterFollowerCountEvents;
-        showParentDiv(twitterFollowerCountEvents, '#twitter-follower-count-graph-parent');
-        result.plotDashboardLineChart('#twitter-follower-count-graph', twitterFollowerCountEvents, "#00a2d4", 'No of Twitter Followers');
+        if (showParentDiv(twitterFollowerCountEvents, '#twitter-follower-count-graph-parent')) {
+            result.plotDashboardLineChart('#twitter-follower-count-graph', twitterFollowerCountEvents, "#00a2d4", 'No of Twitter Followers');
+        }
     };
     result.updateTwitterFollowerCount = function () {
         postV1Ajax("internet,social-network,twitter,social-graph,inbound,follower", "sample", "max(count)", "daily")
@@ -182,8 +195,9 @@ var qd = function () {
     };
     var plotTwitterFollowingCount = function (twitterFollowingCountEvents) {
         result.twitterFollowingCountEvents = twitterFollowingCountEvents;
-        showParentDiv(twitterFollowingCountEvents, '#twitter-following-count-graph-parent');
-        result.plotDashboardLineChart('#twitter-following-count-graph', twitterFollowingCountEvents, "#00a2d4", 'No of Twitter Followings');
+        if (showParentDiv(twitterFollowingCountEvents, '#twitter-following-count-graph-parent')) {
+            result.plotDashboardLineChart('#twitter-following-count-graph', twitterFollowingCountEvents, "#00a2d4", 'No of Twitter Followings');
+        }
     };
     result.updateTwitterFollowingCount = function () {
         postV1Ajax("internet,social-network,twitter,social-graph,outbound,following", "sample", "max(count)", "daily")
@@ -205,21 +219,24 @@ var qd = function () {
         result.hourlyBuildEvents = hourlyBuildEvents;
         var eventCount = getEventCountForHourlyEvents(hourlyBuildEvents);
         $('#totalBuildCount').html("Total No of Build Events : " + eventCount);
-        result.plotHeatmapWith("#hourlyBuild-heat-map-parent", '#hourlyBuild-heat-map', hourlyBuildEvents);
+        var toolTipText = "{{value}} builds";
+        result.plotHeatmapWith("#hourlyBuild-heat-map-parent", '#hourlyBuild-heat-map', hourlyBuildEvents, toolTipText);
     };
 
     var plotHourlyStepsEvents = function (hourlyStepsEvents) {
         result.hourlyStepsEvents = hourlyStepsEvents;
         var eventCount = getEventCountForHourlyEvents(hourlyStepsEvents);
         $('#totalStepsCount').html("Total No of Steps Events : " + eventCount);
-        result.plotHeatmapWith("#hourlySteps-heat-map-parent", '#hourlySteps-heat-map', hourlyStepsEvents);
+        var toolTipText = "{{value}} steps";
+        result.plotHeatmapWith("#hourlySteps-heat-map-parent", '#hourlySteps-heat-map', hourlyStepsEvents, toolTipText);
     };
 
     var plotHourlyTracksEvents = function (hourlyTracksEvents) {
         result.hourlyTracksEvents = hourlyTracksEvents;
         var eventCount = getEventCountForHourlyEvents(hourlyTracksEvents);
         $('#totalTracksCount').html("Total No of Tracks Events : " + eventCount);
-        result.plotHeatmapWith("#hourlyTracks-heat-map-parent", '#hourlyTracks-heat-map', hourlyTracksEvents);
+        var toolTipText = "{{value}} tracks";
+        result.plotHeatmapWith("#hourlyTracks-heat-map-parent", '#hourlyTracks-heat-map', hourlyTracksEvents, toolTipText);
     };
 
     result.updateHourlyBuildHeatMap = function () {
@@ -238,7 +255,8 @@ var qd = function () {
         result.hourlyWtfEvents = hourlyWtfEvents;
         var eventCount = getEventCountForHourlyEvents(hourlyWtfEvents);
         $('#totalWtfCount').html("Total No of WTF Events : " + eventCount);
-        result.plotHeatmapWith("#hourlyWtf-heat-map-parent", '#hourlyWtf-heat-map', hourlyWtfEvents);
+        var toolTipText = "{{value}} wtfs";
+        result.plotHeatmapWith("#hourlyWtf-heat-map-parent", '#hourlyWtf-heat-map', hourlyWtfEvents, toolTipText);
     };
     result.updateHourlyWtfHeatMap = function () {
         postAjax("hourlyWtfCount", plotHourlyWtfEvents)
@@ -247,7 +265,8 @@ var qd = function () {
         result.hourlyHydrationEvents = hourlyHydrationEvents;
         var eventCount = getEventCountForHourlyEvents(hourlyHydrationEvents);
         $('#totalHydrationCount').html("Total glasses of Water : " + eventCount);
-        result.plotHeatmapWith("#hourlyHydration-heat-map-parent", '#hourlyHydration-heat-map', hourlyHydrationEvents);
+        var toolTipText = "{{value}} glasses";
+        result.plotHeatmapWith("#hourlyHydration-heat-map-parent", '#hourlyHydration-heat-map', hourlyHydrationEvents, toolTipText);
     };
     result.updateHourlyHydrationHeatMap = function () {
         postAjax("hourlyHydrationCount", plotHourlyHydrationEvents)
@@ -256,7 +275,8 @@ var qd = function () {
         result.hourlyCaffeineEvents = hourlyCaffeineEvents;
         var eventCount = getEventCountForHourlyEvents(hourlyCaffeineEvents);
         $('#totalCaffeineCount').html("Total cups of Coffee : " + eventCount);
-        result.plotHeatmapWith('#hourlyCaffeine-heat-map-parent', '#hourlyCaffeine-heat-map', hourlyCaffeineEvents);
+        var toolTipText = "{{value}} cups";
+        result.plotHeatmapWith('#hourlyCaffeine-heat-map-parent', '#hourlyCaffeine-heat-map', hourlyCaffeineEvents, toolTipText);
     };
     result.updateHourlyCaffeineHeatMap = function () {
         postAjax("hourlyCaffeineCount", plotHourlyCaffeineEvents)
@@ -272,7 +292,8 @@ var qd = function () {
         if (eventCount === 0) {
             $("#connect_to_github_btn").show();
         } else {
-            result.plotHeatmapWith('#hourlyGithubPush-heat-map-parent', '#hourlyGithubPush-heat-map', hourlyGithubPushEvents);
+            var toolTipText = "{{value}} pushes";
+            result.plotHeatmapWith('#hourlyGithubPush-heat-map-parent', '#hourlyGithubPush-heat-map', hourlyGithubPushEvents, toolTipText);
         }
     };
     result.updateHourlyGithubPushHeatMap = function () {
