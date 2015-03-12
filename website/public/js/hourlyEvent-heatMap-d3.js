@@ -25,7 +25,7 @@ window.qd.plotHourlyEventMap = function (divId, hourlyEvents, tooltipText) {
             var hour = date[1];
             var index = (24 * (day-1)) + (hour - 1);
             index = index === -1 ? 167 : index;
-            segmentData[index] = e.hourlyEventCount;
+            segmentData[index] = e.value;
         });
 
         var daywiseHourlyBuildCountsSundayToMonday = _.toArray(_.groupBy(segmentData, function (element, index) {

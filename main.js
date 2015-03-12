@@ -73,6 +73,10 @@ app.all('*', function (req, res, next) {
 require('./quantifieddevRoutes')(app);
 require('./controllers/integrationsController')(app);
 
+var periodMap = {
+    daily: "MM/dd/yyyy",
+    hourOfDay: "e HH"
+};
 
 var convertSecsToMinutes = function (seconds) {
     return Math.round(seconds / 60 * 100) / 100;
@@ -1600,13 +1604,13 @@ app.get('/quantifieddev/extensions/message', function (req, res) {
 var getQueryForVisualizationAPI = function (streamIds, params, fromDate, toDate) {
     var actionTags = params.actionTags.split(',');
     var objectTags = params.objectTags.split(',');
-
+    var period = params.period;
     var groupQuery = {
         "$groupBy": {
             "fields": [
                 {
                     "name": "payload.eventDateTime",
-                    "format": "MM/dd/yyyy"
+                    "format": periodMap[period]
                 }
             ],
             "filterSpec": {
@@ -1664,7 +1668,7 @@ var getQueryForVisualizationAPI = function (streamIds, params, fromDate, toDate)
         "resultField": "value"
     };
 
-    console.log(JSON.stringify(query));
+    console.log("Daily query: "+JSON.stringify(query));
     return {spec: JSON.stringify(query)};
 };
 

@@ -240,15 +240,27 @@ var qd = function () {
     };
 
     result.updateHourlyBuildHeatMap = function () {
-        postAjax("hourlyBuildCount", plotHourlyBuildEvents)
+        postV1Ajax("Computer,Software", "Build,Finish", "count", "hourOfDay")
+            .done(plotHourlyBuildEvents)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
     };
 
     result.updateHourlyStepsHeatMap = function () {
-        postAjax("hourlyStepsCount", plotHourlyStepsEvents)
+        postV1Ajax("steps", "walked", "sum(numberOfSteps)", "hourOfDay")
+            .done(plotHourlyStepsEvents)
+            .fail(function (error) {
+                console.log("Error is: " + error);
+            })
     };
 
     result.updateHourlyTracksHeatMap = function () {
-        postAjax("hourlyTracksCount", plotHourlyTracksEvents)
+        postV1Ajax("music", "listen", "count", "hourOfDay")
+            .done(plotHourlyTracksEvents)
+            .fail(function (error) {
+                console.log("Error is: " + error);
+            });
     };
 
     var plotHourlyWtfEvents = function (hourlyWtfEvents) {
@@ -259,7 +271,11 @@ var qd = function () {
         result.plotHeatmapWith("#hourlyWtf-heat-map-parent", '#hourlyWtf-heat-map', hourlyWtfEvents, toolTipText);
     };
     result.updateHourlyWtfHeatMap = function () {
-        postAjax("hourlyWtfCount", plotHourlyWtfEvents)
+        postV1Ajax("Computer,Software", "wtf", "count", "hourOfDay")
+            .done(plotHourlyWtfEvents)
+            .fail(function (error) {
+                console.log("Error is: " + error);
+            });
     };
     var plotHourlyHydrationEvents = function (hourlyHydrationEvents) {
         result.hourlyHydrationEvents = hourlyHydrationEvents;
@@ -269,7 +285,11 @@ var qd = function () {
         result.plotHeatmapWith("#hourlyHydration-heat-map-parent", '#hourlyHydration-heat-map', hourlyHydrationEvents, toolTipText);
     };
     result.updateHourlyHydrationHeatMap = function () {
-        postAjax("hourlyHydrationCount", plotHourlyHydrationEvents)
+        postV1Ajax("Drink,Water", "drink", "count", "hourOfDay")
+            .done(plotHourlyHydrationEvents)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
     };
     var plotHourlyCaffeineEvents = function (hourlyCaffeineEvents) {
         result.hourlyCaffeineEvents = hourlyCaffeineEvents;
@@ -279,11 +299,11 @@ var qd = function () {
         result.plotHeatmapWith('#hourlyCaffeine-heat-map-parent', '#hourlyCaffeine-heat-map', hourlyCaffeineEvents, toolTipText);
     };
     result.updateHourlyCaffeineHeatMap = function () {
-        postAjax("hourlyCaffeineCount", plotHourlyCaffeineEvents)
-    };
-
-    var hourlyGithubErrorCallback = function () {
-        $("#connect_to_github_btn").show();
+        postV1Ajax("Drink,Coffee", "drink", "count", "hourOfDay")
+            .done(plotHourlyCaffeineEvents)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
     };
     var plotHourlyGithubPushEvents = function (hourlyGithubPushEvents) {
         result.hourlyGithubPushEvents = hourlyGithubPushEvents;
@@ -297,7 +317,11 @@ var qd = function () {
         }
     };
     result.updateHourlyGithubPushHeatMap = function () {
-        postAjax("hourlyGithubPushEvents", plotHourlyGithubPushEvents, hourlyGithubErrorCallback);
+        postV1Ajax("Computer,Software,Source Control", "Push", "count", "hourOfDay")
+            .done(plotHourlyGithubPushEvents)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
     };
 
     var plotIDEActivityVsGithubPushesCorrelationData = function (iDEActivityVsGithubPushesCorrelationData) {
