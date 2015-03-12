@@ -171,11 +171,23 @@ var qd = function () {
     var plotTwitterFollowerCount = function (twitterFollowerCountEvents) {
         result.twitterFollowerCountEvents = twitterFollowerCountEvents;
         showParentDiv(twitterFollowerCountEvents, '#twitter-follower-count-graph-parent');
-        result.plotDashboardLineChart('#twitter-follower-count-graph',twitterFollowerCountEvents,"#00a2d4",'No of Twitter Followers');
+        result.plotDashboardLineChart('#twitter-follower-count-graph', twitterFollowerCountEvents, "#00a2d4", 'No of Twitter Followers');
     };
     result.updateTwitterFollowerCount = function () {
         postV1Ajax("internet,social-network,twitter,social-graph,inbound,follower", "sample", "max(count)", "daily")
             .done(plotTwitterFollowerCount)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
+    };
+    var plotTwitterFollowingCount = function (twitterFollowingCountEvents) {
+        result.twitterFollowingCountEvents = twitterFollowingCountEvents;
+        showParentDiv(twitterFollowingCountEvents, '#twitter-following-count-graph-parent');
+        result.plotDashboardLineChart('#twitter-following-count-graph', twitterFollowingCountEvents, "#00a2d4", 'No of Twitter Followings');
+    };
+    result.updateTwitterFollowingCount = function () {
+        postV1Ajax("internet,social-network,twitter,social-graph,outbound,following", "sample", "max(count)", "daily")
+            .done(plotTwitterFollowingCount)
             .fail(function (error) {
                 console.error("Error is: " + error);
             });
