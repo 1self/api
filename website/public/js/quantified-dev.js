@@ -98,7 +98,7 @@ var qd = function () {
     };
 
     result.updateStepsModel = function () {
-        postV1Ajax("steps", "walked", "count", "daily")
+        postV1Ajax("steps", "walked", "sum(numberOfSteps)", "daily")
             .done(plotStepsEvents)
             .fail(function (error) {
                 console.error("Error is: " + error);
