@@ -209,7 +209,7 @@ var qd = function () {
 
     var getEventCountForHourlyEvents = function (events) {
         return _.reduce(_.map(events, function (event) {
-            return event.hourlyEventCount;
+            return event.value;
         }), function (totalEventCount, eventCount) {
             return totalEventCount + eventCount;
         }, 0);
