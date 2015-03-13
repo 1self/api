@@ -1444,7 +1444,6 @@ var getQueryForVisualizationAPI = function (streamIds, params, fromDate, toDate)
         "resultField": "value"
     };
 
-    console.log("Daily query: "+JSON.stringify(query));
     return {spec: JSON.stringify(query)};
 };
 
