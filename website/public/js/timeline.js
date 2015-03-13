@@ -116,6 +116,8 @@ var computeChartUrl = function(event) {
         operation = "max(count)";
     } else if (event.payload.objectTags.indexOf("foursquare") !== -1) {
         operation = "count";
+    } else if (event.payload.objectTags.indexOf("hackernews") !== -1) {
+        operation = "max(points)";
     } else if (typeof(prop) !== "undefined") {
         operation = "sum(" + prop + ")";
     }
