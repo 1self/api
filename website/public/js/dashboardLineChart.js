@@ -96,7 +96,7 @@ window.qd.plotDashboardLineChart = function (divId, events, color, yAxisLabel, t
             .attr("class", "line")
             .attr("d", line)
             .style("fill", "none")
-            .style("stroke", "#00a2d4")
+            .style("stroke", "#e93e5a")
             .style("stroke-width", 2);
         svg.selectAll("dot")
             .data(events)
@@ -109,7 +109,7 @@ window.qd.plotDashboardLineChart = function (divId, events, color, yAxisLabel, t
             .attr("cy", function (d) {
                 return y(d.value);
             })
-            .attr("fill", "#00a2d4")
+            .attr("fill", "#e93e5a")
             .on("click", function (d) {
                 if ($(window).width() < 768) {
                     tooltipDivForMobile.transition()
