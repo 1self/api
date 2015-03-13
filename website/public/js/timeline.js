@@ -102,7 +102,7 @@ var computeChartUrl = function(event) {
         var now = moment();
         var current = moment(date);
         return now.diff(current, 'days') < 7;
-    }
+    };
 
     var operation = "count";
     var prop = findFirstNumericProperty();
@@ -110,7 +110,11 @@ var computeChartUrl = function(event) {
     //dirty hack for noiseapp/twitter or show first numeric property if any (for now)
     if (event.payload.objectTags.indexOf("sound") !== -1) {
         operation = "mean(dba)";
-    } else if (event.payload.objectTags.indexOf("tweets") !== -1) {
+    } else if (event.payload.objectTags.indexOf("tweets") !== -1 || event.payload.objectTags.indexOf("tweet") !== -1) {
+        operation = "count";
+    } else if (event.payload.objectTags.indexOf("follower") !== -1 || event.payload.objectTags.indexOf("following") !== -1) {
+        operation = "max(count)";
+    } else if (event.payload.objectTags.indexOf("foursquare") !== -1) {
         operation = "count";
     } else if (typeof(prop) !== "undefined") {
         operation = "sum(" + prop + ")";

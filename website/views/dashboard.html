@@ -136,8 +136,8 @@
     {% endif %}
 </div>
 <!-- Page title end -->
-<div class="row graph-container-row">
-<div id="hourlyGithubPush-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:block;">
+    <div class="row graph-container-row">
+    <div id="hourlyGithubPush-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
     <div class="panel panel-secondary fixed-height panel-red-border">
         <div class="helpContainer">
             <div class="row"><a class="close pull-right" onclick=show("hourlyGithubPush-heat-map-parent")>×</a></div>
@@ -225,9 +225,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6 col-sm-6 col-xs-12 mobile-margin-bottom-five"><span id="last-updated-since"></span>
-                </div>
-                <div class="col-md-6 col-sm-6 col-xs-12"><span id="totalPushCount"
+                <div class="col-md-12 col-sm-12 col-xs-12"><span id="totalPushCount"
                                                                class="pull-right pull-xs-left"></span></div>
             </div>
 
@@ -239,7 +237,7 @@
         </div>
     </div>
 </div>
-<div id="active-event-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+    <div id="active-event-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
     <div class="panel panel-secondary fixed-height panel-red-border">
         <div class="helpContainer">
             <div class="row"><a class="close pull-right" onclick=show("active-event-history-parent")>×</a></div>
@@ -340,8 +338,7 @@
         </div>
     </div>
 </div>
-
-<div id="correlate-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+    <div id="correlate-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
     <div class="panel panel-secondary fixed-height panel-red-border">
         <div class="helpContainer">
             <div class="row"><a class="close pull-right" onclick=show("correlate-events-parent")>×</a></div>
@@ -435,12 +432,186 @@
         </div>
     </div>
 </div>
-<div id="correlate-steps-vs-tracks-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+    <div id="tweet-graph-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+        <div class="panel panel-secondary fixed-height panel-red-border">
+            <div class="helpContainer">
+                <div class="row"><a class="close pull-right" onclick="show('tweet-graph-parent')">×</a></div>
+                <div class="row">
+
+                </div>
+            </div>
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-sm-8 col-xs-12">
+                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Tweets Published</h3>
+                        <br>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body" style="padding-left:0px;">
+                <div id="tweet-graph" >
+                    <!--<div style="background: greenyellow;width:400px;height: 400px;"></div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="twitter-follower-count-graph-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+        <div class="panel panel-secondary fixed-height panel-red-border">
+            <div class="helpContainer">
+                <div class="row"><a class="close pull-right" onclick="show('twitter-follower-count-graph-parent')">×</a></div>
+                <div class="row">
+
+                </div>
+            </div>
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-sm-8 col-xs-12">
+                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Twitter Follower Count</h3>
+                        <br>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body" style="padding-left:0px;">
+                <div id="twitter-follower-count-graph" >
+                    <!--<div style="background: greenyellow;width:400px;height: 400px;"></div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="twitter-following-count-graph-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+        <div class="panel panel-secondary fixed-height panel-red-border">
+            <div class="helpContainer">
+                <div class="row"><a class="close pull-right" onclick="show('twitter-following-count-graph-parent')">×</a></div>
+                <div class="row">
+
+                </div>
+            </div>
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-sm-8 col-xs-12">
+                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Twitter Following Count</h3>
+                        <br>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body" style="padding-left:0px;">
+                <div id="twitter-following-count-graph" >
+                    <!--<div style="background: greenyellow;width:400px;height: 400px;"></div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="hourlyTracks-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+        <div class="panel panel-secondary fixed-height panel-red-border">
+            <div class="helpContainer">
+                <div class="row"><a class="close pull-right" onclick=show("tracks-heat-map-parent")>×</a></div>
+            </div>
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-sm-8 col-xs-12 ">
+                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Songs Listened</h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12"><span
+                            id="totalTracksCount" class="pull-right pull-xs-left"></span></div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div id="hourlyTracks-heat-map" class="hourlyHeatMapContainer"></div>
+            </div>
+        </div>
+    </div>
+    <div id="songsbyday-graph-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+        <div class="panel panel-secondary fixed-height panel-red-border">
+            <div class="helpContainer">
+                <div class="row"><a class="close pull-right" onclick="show('songsbyday-graph-parent')">×</a></div>
+                <div class="row">
+
+                </div>
+            </div>
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-sm-8 col-xs-12">
+                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Songs listened</h3>
+                        <br>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body" style="padding-left:0px;">
+                <div id="songsbyday-graph" >
+                    <!--<div style="background: greenyellow;width:400px;height: 400px;"></div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="hourlySteps-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+        <div class="panel panel-secondary fixed-height panel-red-border">
+            <div class="helpContainer">
+                <div class="row"><a class="close pull-right" onclick=show("steps-heat-map-parent")>×</a></div>
+            </div>
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-sm-8 col-xs-12 ">
+                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Steps</h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12"><span
+                            id="totalStepsCount" class="pull-right pull-xs-left"></span></div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div id="hourlySteps-heat-map" class="hourlyHeatMapContainer"></div>
+            </div>
+        </div>
+    </div>
+    <div id="steps-graph-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+        <div class="panel panel-secondary fixed-height panel-red-border">
+            <div class="helpContainer">
+                <div class="row"><a class="close pull-right" onclick="show('steps-graph-parent')">×</a></div>
+                <div class="row">
+
+                </div>
+            </div>
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-sm-8 col-xs-12">
+                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Steps walked</h3>
+                        <br>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body" style="padding-left:0px;">
+                <div id="steps-graph" >
+                    <!--<div style="background: greenyellow;width:400px;height: 400px;"></div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="correlate-ideactivity-vs-tracks-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+        <div class="panel panel-secondary fixed-height panel-red-border">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-sm-8 col-xs-12 ">
+                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Correlate IDE Activity vs Songs Listened</h3>
+                    </div>
+                    <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten ">
+                        <button class="pull-right  pull-xs-left help-btn" onclick=show("correlate-ideactivity-vs-tracks-events-parent")></button>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div id="correlate-ideactivity-vs-tracks-events"></div>
+            </div>
+        </div>
+    </div>
+    <div id="correlate-steps-vs-tracks-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
     <div class="panel panel-secondary fixed-height panel-red-border">
         <div class="panel-heading">
             <div class="row">
                 <div class="col-sm-8 col-xs-12 ">
-                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Correlate steps vs track plays</h3>
+                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Correlate Steps Walked vs Songs Listened</h3>
                 </div>
                 <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten ">
                     <button class="pull-right  pull-xs-left help-btn" onclick=show("correlate-steps-vs-tracks-events-parent")></button>
@@ -452,43 +623,49 @@
         </div>
     </div>
 </div>
-<div id="correlate-ideactivity-vs-tracks-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
-    <div class="panel panel-secondary fixed-height panel-red-border">
-        <div class="panel-heading">
-            <div class="row">
-                <div class="col-sm-8 col-xs-12 ">
-                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Correlate IDE Activity vs Track Plays</h3>
-                </div>
-                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten ">
-                    <button class="pull-right  pull-xs-left help-btn" onclick=show("correlate-ideactivity-vs-tracks-events-parent")></button>
-                </div>
-            </div>
-        </div>
-        <div class="panel-body">
-            <div id="correlate-ideactivity-vs-tracks-events"></div>
-        </div>
-    </div>
-</div>
-<div id="buildDuration-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-    <div class="panel panel-secondary fixed-height panel-red-border">
-        <div class="panel-heading">
+    <div id="noise-graph-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+        <div class="panel panel-secondary fixed-height panel-red-border">
+            <div class="helpContainer">
+                <div class="row"><a class="close pull-right" onclick="show('noise-graph-parent')">×</a></div>
+                <div class="row">
 
-            <div class="row">
-                <div class="col-sm-8 col-xs-12 ">
-                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Build Duration History</h3>
                 </div>
-                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten ">
-                    <a id="tweetMyBuildDuration" class="twitter-share-button pull-right pull-xs-left" target="_blank"
-                       onclick="qd.tweetBuildDurationSparkline()">Tweet</a>
+            </div>
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-sm-8 col-xs-12">
+                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Noise Events</h3>
+                        <br>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body" style="padding-left:0px;">
+                <div id="noise-graph" >
+                    <!--<div style="background: greenyellow;width:400px;height: 400px;"></div>-->
                 </div>
             </div>
         </div>
-        <div class="panel-body">
-            <div id="buildDuration-history"></div>
+    </div>
+    <div id="buildDuration-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+        <div class="panel panel-secondary fixed-height panel-red-border">
+            <div class="panel-heading">
+
+                <div class="row">
+                    <div class="col-sm-8 col-xs-12 ">
+                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Build Duration History</h3>
+                    </div>
+                    <div class="col-sm-4 col-xs-12 ex-sm-margin-top-ten ">
+                        <a id="tweetMyBuildDuration" class="twitter-share-button pull-right pull-xs-left" target="_blank"
+                           onclick="qd.tweetBuildDurationSparkline()">Tweet</a>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div id="buildDuration-history"></div>
+            </div>
         </div>
     </div>
-</div>
-<div id="hourlyBuild-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+    <div id="hourlyBuild-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
     <div class="panel panel-secondary fixed-height panel-red-border">
         <div class="helpContainer">
             <div class="row"><a class="close pull-right" onclick=show("hourlyBuild-heat-map-parent")>×</a></div>
@@ -584,7 +761,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-offset-6 col-lg-6 col-md-offset-6 col-md-12 col-sm-12 col-xs-12"><span
+                <div class="col-md-12 col-sm-12 col-xs-12"><span
                         id="totalBuildCount" class="pull-right pull-xs-left"></span></div>
             </div>
         </div>
@@ -593,49 +770,7 @@
         </div>
     </div>
 </div>
-<div id="hourlySteps-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-    <div class="panel panel-secondary fixed-height panel-red-border">
-        <div class="helpContainer">
-            <div class="row"><a class="close pull-right" onclick=show("steps-heat-map-parent")>×</a></div>
-        </div>
-        <div class="panel-heading">
-            <div class="row">
-                <div class="col-sm-8 col-xs-12 ">
-                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Steps</h3>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-offset-6 col-lg-6 col-md-offset-6 col-md-12 col-sm-12 col-xs-12"><span
-                        id="totalStepsCount" class="pull-right pull-xs-left"></span></div>
-            </div>
-        </div>
-        <div class="panel-body">
-            <div id="hourlySteps-heat-map" class="hourlyHeatMapContainer"></div>
-        </div>
-    </div>
-</div>
-<div id="hourlyTracks-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-    <div class="panel panel-secondary fixed-height panel-red-border">
-        <div class="helpContainer">
-            <div class="row"><a class="close pull-right" onclick=show("tracks-heat-map-parent")>×</a></div>
-        </div>
-        <div class="panel-heading">
-            <div class="row">
-                <div class="col-sm-8 col-xs-12 ">
-                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly Tracks</h3>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-offset-6 col-lg-6 col-md-offset-6 col-md-12 col-sm-12 col-xs-12"><span
-                        id="totalTracksCount" class="pull-right pull-xs-left"></span></div>
-            </div>
-        </div>
-        <div class="panel-body">
-            <div id="hourlyTracks-heat-map" class="hourlyHeatMapContainer"></div>
-        </div>
-    </div>
-</div>
-<div id="build-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+    <div id="build-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
     <div class="panel panel-secondary fixed-height panel-red-border">
         <div class="helpContainer">
             <div class="row"><a class="close pull-right" onclick=show("build-history-parent")>×</a></div>
@@ -737,7 +872,7 @@
         </div>
     </div>
 </div>
-<div id="hourlyWtf-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+    <div id="hourlyWtf-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
     <div class="panel panel-secondary fixed-height panel-red-border">
         <div class="helpContainer">
             <div class="row"><a class="close pull-right" onclick=show("hourlyWtf-heat-map-parent")>×</a></div>
@@ -833,7 +968,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-offset-6 col-lg-6 col-md-offset-6 col-md-12 col-sm-12 col-xs-12"><span
+                <div class="col-md-12 col-sm-12 col-xs-12"><span
                         id="totalWtfCount" class="pull-right pull-xs-left"></span></div>
             </div>
         </div>
@@ -842,7 +977,7 @@
         </div>
     </div>
 </div>
-<div id="wtf-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+    <div id="wtf-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
     <div class="panel panel-secondary fixed-height panel-red-border">
 
         <div class="panel-heading">
@@ -864,7 +999,7 @@
         </div>
     </div>
 </div>
-<div id="hourlyHydration-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+    <div id="hourlyHydration-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
     <div class="panel panel-secondary fixed-height panel-red-border">
         <div class="helpContainer">
             <div class="row"><a class="close pull-right" onclick=show("hourlyHydration-heat-map-parent")>×</a></div>
@@ -954,7 +1089,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-offset-6 col-lg-6 col-md-offset-6 col-md-12 col-sm-12 col-xs-12"><span
+                <div class="col-md-12 col-sm-12 col-xs-12"><span
                         id="totalHydrationCount" class="pull-right pull-xs-left"></span></div>
             </div>
         </div>
@@ -963,7 +1098,7 @@
         </div>
     </div>
 </div>
-<div id="hydration-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+    <div id="hydration-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
     <div class="panel panel-secondary fixed-height panel-red-border">
         <div class="helpContainer">
             <div class="row"><a class="close pull-right" onclick=show("hydration-history-parent")>×</a></div>
@@ -1053,7 +1188,7 @@
         </div>
     </div>
 </div>
-<div id="hourlyCaffeine-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+    <div id="hourlyCaffeine-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
     <div class="panel panel-secondary fixed-height panel-red-border">
         <div class="helpContainer">
             <div class="row"><a class="close pull-right" onclick=show("hourlyCaffeine-heat-map-parent")>×</a></div>
@@ -1134,7 +1269,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-offset-6 col-lg-6 col-md-offset-6 col-md-12 col-sm-12 col-xs-12"><span
+                <div class="col-md-12 col-sm-12 col-xs-12"><span
                         id="totalCaffeineCount" class="pull-right pull-xs-left"></span></div>
             </div>
         </div>
@@ -1143,7 +1278,7 @@
         </div>
     </div>
 </div>
-<div id="caffeine-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
+    <div id="caffeine-history-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
     <div class="panel panel-secondary fixed-height panel-red-border">
         <div class="helpContainer">
             <div class="row"><a class="close pull-right" onclick=show("caffeine-history-parent")>×</a></div>
@@ -1235,100 +1370,6 @@
         </div>
     </div>
 </div>
-<div id="noise-graph-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-    <div class="panel panel-secondary panel-red-border">
-        <div class="helpContainer">
-            <div class="row"><a class="close pull-right" onclick="show('noise-graph-parent')">×</a></div>
-            <div class="row">
-
-            </div>
-        </div>
-        <div class="panel-heading">
-            <div class="row">
-                <div class="col-sm-8 col-xs-12">
-                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Noise Events</h3>
-                    <br>
-                </div>
-            </div>
-        </div>
-        <div class="panel-body" style="padding-left:0px;">
-            <div id="noise-graph" >
-                <!--<div style="background: greenyellow;width:400px;height: 400px;"></div>-->
-            </div>
-        </div>
-    </div>
-</div>
-<div id="tweet-graph-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-    <div class="panel panel-secondary panel-red-border">
-        <div class="helpContainer">
-            <div class="row"><a class="close pull-right" onclick="show('tweet-graph-parent')">×</a></div>
-            <div class="row">
-
-            </div>
-        </div>
-        <div class="panel-heading">
-            <div class="row">
-                <div class="col-sm-8 col-xs-12">
-                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Tweets Published</h3>
-                    <br>
-                </div>
-            </div>
-        </div>
-        <div class="panel-body" style="padding-left:0px;">
-            <div id="tweet-graph" >
-                <!--<div style="background: greenyellow;width:400px;height: 400px;"></div>-->
-            </div>
-        </div>
-    </div>
-</div>
-<div id="songsbyday-graph-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-    <div class="panel panel-secondary panel-red-border">
-        <div class="helpContainer">
-            <div class="row"><a class="close pull-right" onclick="show('songsbyday-graph-parent')">×</a></div>
-            <div class="row">
-
-            </div>
-        </div>
-        <div class="panel-heading">
-            <div class="row">
-                <div class="col-sm-8 col-xs-12">
-                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Songs listened</h3>
-                    <br>
-                </div>
-            </div>
-        </div>
-        <div class="panel-body" style="padding-left:0px;">
-            <div id="songsbyday-graph" >
-                <!--<div style="background: greenyellow;width:400px;height: 400px;"></div>-->
-            </div>
-        </div>
-    </div>
-</div>
-<div id="steps-graph-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-    <div class="panel panel-secondary panel-red-border">
-        <div class="helpContainer">
-            <div class="row"><a class="close pull-right" onclick="show('steps-graph-parent')">×</a></div>
-            <div class="row">
-
-            </div>
-        </div>
-        <div class="panel-heading">
-            <div class="row">
-                <div class="col-sm-8 col-xs-12">
-                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Steps walked</h3>
-                    <br>
-                </div>
-            </div>
-        </div>
-        <div class="panel-body" style="padding-left:0px;">
-            <div id="steps-graph" >
-                <!--<div style="background: greenyellow;width:400px;height: 400px;"></div>-->
-            </div>
-        </div>
-    </div>
-</div>
-
-
 </div>
 </div>
 <!-- Bootstrap Container End -->
@@ -1366,15 +1407,8 @@
 <script src="/js/ajax_request.js"></script>
 <script src="/js/quantified-dev.js"></script>
 <script src="/js/build-history-d3.js"></script>
-<script src="/js/wtf-history-d3.js"></script>
-<script src="/js/noise-barchart-d3.js"></script>
-<script src="/js/tweet-barchart-d3.js"></script>
-<script src="/js/songsbyday-barchart-d3.js"></script>
-<script src="/js/steps-barchart-d3.js"></script>
-<script src="/js/hydration-history-d3.js"></script>
-<script src="/js/caffeine-history-d3.js"></script>
-<script src="/js/buildDuration-history-d3.js"></script>
-<script src="/js/active-events-d3.js"></script>
+<script src="/js/dashboardBarChart.js"></script>
+<script src="/js/dashboardLineChart.js"></script>
 <script src="/js/hourlyEvent-heatMap-d3.js"></script>
 <script src="/js/correlation-scatterplot-d3.js"></script>
 <script src="/js/dashboard.js"></script>

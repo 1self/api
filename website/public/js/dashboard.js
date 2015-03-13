@@ -15,9 +15,11 @@ var dashboardGraphs = ['updateBuildModel'
                         , 'updateHourlyCaffeineHeatMap'
                         , 'updateActiveEvents'
                         , 'updateHourlyGithubPushHeatMap'
-                        , 'updateCorrelationData',
-                        , 'updateStepsVsTracksCorrelationData',
-                        , 'updateIDEActivityVsTracksCorrelationData'];
+                        , 'updateCorrelationData'
+                        , 'updateStepsVsTracksCorrelationData'
+                        , 'updateIDEActivityVsTracksCorrelationData'
+                        , 'updateTwitterFollowerCount'
+                        , 'updateTwitterFollowingCount'];
 $(window).resize(function() {
     window.qd.replotGraphs();
 });
