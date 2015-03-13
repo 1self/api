@@ -8,7 +8,9 @@ var qd = function () {
     };
     var plotBuildEvents = function (buildEvents) {
         result.buildEvents = buildEvents;
-        result.plotGraphWith('buildEvents', buildEvents, "#build-history-parent");
+        if (showParentDiv(buildEvents, "#build-history-parent")) {
+            result.plotBuildHistory();
+        }
     };
     /*   var failureCallbackForComparison = function(divId, msg) {
      return function() {
@@ -19,50 +21,64 @@ var qd = function () {
     result.updateBuildModel = function () {
         postAjax("mydev", plotBuildEvents)
     };
-    var charts = {
-        buildEvents: function () {
-            result.plotBuildHistory();
-        },
-        wtfEvents: function () {
-            result.plotWTFHistory();
-        },
-        noiseEvents: function () {
-            result.plotNoiseEventsHistory();
-        },
-        hydrationEvents: function () {
-            result.plotHydrationHistory();
-        },
-        caffeineEvents: function () {
-            result.plotCaffeineHistory();
-        },
-        buildDurationEvents: function () {
-            result.plotBuildDurationHistory();
-        },
-        activeEvents: function () {
-            result.plotActiveEvents();
-        }
-    };
-    result.plotGraphWith = function (eventType, graphData, graphParentTileId) {
-        result[eventType] = graphData;
+
+    var showParentDiv = function (graphData, graphParentTileId) {
         if (graphData.length > 0) {
             $(graphParentTileId).show();
-            charts[eventType]();
+            return true;
         }
+        return false;
     };
-    result.plotHeatmapWith = function (graphParentTileId, graphTileId, graphData) {
+    
+    result.plotHeatmapWith = function (graphParentTileId, graphTileId, graphData, toolTipText) {
+        if(graphData === undefined){
+            console.log('graph data for ' + graphTileId + ' is empty');
+            return;
+        }
+
         if (graphData.length > 0) {
             $(graphParentTileId).show();
-            result.plotHourlyEventMap(graphTileId, graphData);
+            result.plotHourlyEventMap(graphTileId, graphData, toolTipText);
         }
     };
     var plotWtfEvents = function (wtfEvents) {
         result.wtfEvents = wtfEvents;
-        result.plotGraphWith('wtfEvents', wtfEvents, "#wtf-history-parent")
+        if (showParentDiv(wtfEvents, "#wtf-history-parent")) {
+            var toolTipText = "{{value}} wtf(s)";
+            result.plotDashboardBarChart('#wtf-history', wtfEvents, '#dd2649', 'WTF Count', toolTipText);
+        }
     };
     var plotNoiseEvents = function (noiseEvents) {
         result.noiseEvents = noiseEvents;
-        result.plotGraphWith('noiseEvents', noiseEvents, "#noise-graph-parent")
+        if (showParentDiv(noiseEvents, "#noise-graph-parent")) {
+            var toolTipText = "{{value}} dbspl";
+            result.plotDashboardBarChart('#noise-graph', noiseEvents, '#e93e5a', 'Noise Count', toolTipText);
+        }
     };
+    var plotTweetEvents = function (tweetEvents) {
+        result.tweetEvents = tweetEvents;
+        if (showParentDiv(tweetEvents, "#tweet-graph-parent")) {
+            var toolTipText = "{{value}} tweets";
+            result.plotDashboardBarChart('#tweet-graph', tweetEvents, '#e93e5a', 'Tweet Count', toolTipText);
+        }
+    };
+
+    var plotSongsByDayEvents = function (songsByDayEvents) {
+        result.songsByDayEvents = songsByDayEvents;
+        if (showParentDiv(songsByDayEvents, "#songsbyday-graph-parent")) {
+            var toolTipText = "{{value}} songs listened";
+            result.plotDashboardBarChart('#songsbyday-graph', songsByDayEvents, '#e93e5a', 'Songs listened', toolTipText);
+        }
+    };
+
+    var plotStepsEvents = function (stepsEvents) {
+        result.stepsEvents = stepsEvents;
+        if (showParentDiv(stepsEvents, "#steps-graph-parent")) {
+            var toolTipText = "{{value}} steps";
+            result.plotDashboardBarChart('#steps-graph', stepsEvents, '#e93e5a', 'Steps walked', toolTipText);
+        }
+    };
+
     result.updateNoiseModel = function () {
         postV1Ajax("ambient,sound", "sample", "mean(dbspl)", "daily")
             .done(plotNoiseEvents)
@@ -70,6 +86,31 @@ var qd = function () {
                 console.error("Error is: " + error);
             });
     };
+
+    result.updateTweetModel = function () {
+        postV1Ajax("twitter,tweet", "publish", "count", "daily")
+            .done(plotTweetEvents)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
+    };
+
+    result.updateSongsByDayModel = function () {
+        postV1Ajax("music", "listen", "count", "daily")
+            .done(plotSongsByDayEvents)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
+    };
+
+    result.updateStepsModel = function () {
+        postV1Ajax("steps", "walked", "sum(numberOfSteps)", "daily")
+            .done(plotStepsEvents)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
+    };
+
     result.updateWTFModel = function () {
         postV1Ajax("Computer,Software", "wtf", "count", "daily")
             .done(plotWtfEvents)
@@ -79,7 +120,10 @@ var qd = function () {
     };
     var plotHydrationEvents = function (hydrationEvents) {
         result.hydrationEvents = hydrationEvents;
-        result.plotGraphWith('hydrationEvents', hydrationEvents, "#hydration-history-parent");
+        if (showParentDiv(hydrationEvents, "#hydration-history-parent")) {
+            var toolTipText = "{{value}} glass(es)";
+            result.plotDashboardBarChart('#hydration-history', hydrationEvents, '#00a2d4', 'Hydration Count', toolTipText);
+        }
     };
     result.updateHydrationModel = function () {
         postV1Ajax("Drink,Water", "drink", "count", "daily")
@@ -90,7 +134,10 @@ var qd = function () {
     };
     var plotCaffeineEvents = function (caffeineEvents) {
         result.caffeineEvents = caffeineEvents;
-        result.plotGraphWith('caffeineEvents', caffeineEvents, "#caffeine-history-parent");
+        if (showParentDiv(caffeineEvents, "#caffeine-history-parent")) {
+            var toolTipText = "{{value}} cup(s)";
+            result.plotDashboardBarChart('#caffeine-history', caffeineEvents, '#e93d31', 'Caffeine Count', toolTipText);
+        }
     };
     result.updateCaffeineModel = function () {
         postV1Ajax("Drink,Coffee", "drink", "count", "daily")
@@ -101,7 +148,16 @@ var qd = function () {
     };
     var plotBuildDurationEvents = function (buildDurationEvents) {
         result.buildDurationEvents = buildDurationEvents;
-        result.plotGraphWith('buildDurationEvents', buildDurationEvents, "#buildDuration-history-parent");
+        if (showParentDiv(buildDurationEvents, "#buildDuration-history-parent")) {
+            var toolTipText = "{{value}} sec(s)";
+            var convertMillisToSeconds = function (data) {
+                return _.each(data, function (d) {
+                    d.value = d.value / 1000;
+                });
+            };
+            var events = convertMillisToSeconds(buildDurationEvents);
+            result.plotDashboardBarChart('#buildDuration-history', events, '#e93e5a', 'Build Duration(seconds)', toolTipText);
+        }
     };
     result.updateBuildDurationModel = function () {
         postV1Ajax("Computer,Software", "Build,Finish", "mean(BuildDuration)", "daily")
@@ -112,7 +168,16 @@ var qd = function () {
     };
     var plotActivity = function (activeEvents) {
         result.activeEvents = activeEvents;
-        result.plotGraphWith('activeEvents', activeEvents, "#active-event-history-parent");
+        if (showParentDiv(activeEvents, "#active-event-history-parent")) {
+            var toolTipText = "{{value}} min(s)";
+            var convertSecondsToMinutes = function (data) {
+                return data.map(function (d) {
+                    return {date: d.date, value: (d.value / 60)};
+                });
+            };
+            var events = convertSecondsToMinutes(activeEvents);
+            result.plotDashboardBarChart('#active-event-history', events, '#e93e5a', 'Activity Duration(mins)', toolTipText);
+        }
     };
     result.updateActiveEvents = function () {
         postV1Ajax("Computer,Software", "Develop", "sum(duration)", "daily")
@@ -121,10 +186,36 @@ var qd = function () {
                 console.error("Error is: " + error);
             });
     };
+    var plotTwitterFollowerCount = function (twitterFollowerCountEvents) {
+        result.twitterFollowerCountEvents = twitterFollowerCountEvents;
+        if (showParentDiv(twitterFollowerCountEvents, '#twitter-follower-count-graph-parent')) {
+            result.plotDashboardLineChart('#twitter-follower-count-graph', twitterFollowerCountEvents, "#00a2d4", 'No of Twitter Followers');
+        }
+    };
+    result.updateTwitterFollowerCount = function () {
+        postV1Ajax("internet,social-network,twitter,social-graph,inbound,follower", "sample", "max(count)", "daily")
+            .done(plotTwitterFollowerCount)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
+    };
+    var plotTwitterFollowingCount = function (twitterFollowingCountEvents) {
+        result.twitterFollowingCountEvents = twitterFollowingCountEvents;
+        if (showParentDiv(twitterFollowingCountEvents, '#twitter-following-count-graph-parent')) {
+            result.plotDashboardLineChart('#twitter-following-count-graph', twitterFollowingCountEvents, "#00a2d4", 'No of Twitter Followings');
+        }
+    };
+    result.updateTwitterFollowingCount = function () {
+        postV1Ajax("internet,social-network,twitter,social-graph,outbound,following", "sample", "max(count)", "daily")
+            .done(plotTwitterFollowingCount)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
+    };
 
     var getEventCountForHourlyEvents = function (events) {
         return _.reduce(_.map(events, function (event) {
-            return event.hourlyEventCount;
+            return event.value;
         }), function (totalEventCount, eventCount) {
             return totalEventCount + eventCount;
         }, 0);
@@ -133,64 +224,142 @@ var qd = function () {
     var plotHourlyBuildEvents = function (hourlyBuildEvents) {
         result.hourlyBuildEvents = hourlyBuildEvents;
         var eventCount = getEventCountForHourlyEvents(hourlyBuildEvents);
-        $('#totalBuildCount').html("Total No of Build Events : " + eventCount);
-        result.plotHeatmapWith("#hourlyBuild-heat-map-parent", '#hourlyBuild-heat-map', hourlyBuildEvents);
+        $('#totalBuildCount').html("Total No of Builds : " + eventCount);
+        var toolTipText = "{{value}} builds";
+        result.plotHeatmapWith("#hourlyBuild-heat-map-parent", '#hourlyBuild-heat-map', hourlyBuildEvents, toolTipText);
+    };
+
+    var plotHourlyStepsEvents = function (hourlyStepsEvents) {
+        result.hourlyStepsEvents = hourlyStepsEvents;
+        var eventCount = getEventCountForHourlyEvents(hourlyStepsEvents);
+        $('#totalStepsCount').html("Total No of Steps Walked : " + eventCount);
+        var toolTipText = "{{value}} steps";
+        result.plotHeatmapWith("#hourlySteps-heat-map-parent", '#hourlySteps-heat-map', hourlyStepsEvents, toolTipText);
+    };
+
+    var plotHourlyTracksEvents = function (hourlyTracksEvents) {
+        result.hourlyTracksEvents = hourlyTracksEvents;
+        var eventCount = getEventCountForHourlyEvents(hourlyTracksEvents);
+        $('#totalTracksCount').html("Total No of Songs Listened : " + eventCount);
+        var toolTipText = "{{value}} tracks";
+        result.plotHeatmapWith("#hourlyTracks-heat-map-parent", '#hourlyTracks-heat-map', hourlyTracksEvents, toolTipText);
     };
 
     result.updateHourlyBuildHeatMap = function () {
-        postAjax("hourlyBuildCount", plotHourlyBuildEvents)
+        postV1Ajax("Computer,Software", "Build,Finish", "count", "hourOfDay")
+            .done(plotHourlyBuildEvents)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
     };
+
+    result.updateHourlyStepsHeatMap = function () {
+        postV1Ajax("steps", "walked", "sum(numberOfSteps)", "hourOfDay")
+            .done(plotHourlyStepsEvents)
+            .fail(function (error) {
+                console.log("Error is: " + error);
+            })
+    };
+
+    result.updateHourlyTracksHeatMap = function () {
+        postV1Ajax("music", "listen", "count", "hourOfDay")
+            .done(plotHourlyTracksEvents)
+            .fail(function (error) {
+                console.log("Error is: " + error);
+            });
+    };
+
     var plotHourlyWtfEvents = function (hourlyWtfEvents) {
         result.hourlyWtfEvents = hourlyWtfEvents;
         var eventCount = getEventCountForHourlyEvents(hourlyWtfEvents);
-        $('#totalWtfCount').html("Total No of WTF Events : " + eventCount);
-        result.plotHeatmapWith("#hourlyWtf-heat-map-parent", '#hourlyWtf-heat-map', hourlyWtfEvents);
+        $('#totalWtfCount').html("Total No of WTFs : " + eventCount);
+        var toolTipText = "{{value}} wtfs";
+        result.plotHeatmapWith("#hourlyWtf-heat-map-parent", '#hourlyWtf-heat-map', hourlyWtfEvents, toolTipText);
     };
     result.updateHourlyWtfHeatMap = function () {
-        postAjax("hourlyWtfCount", plotHourlyWtfEvents)
+        postV1Ajax("Computer,Software", "wtf", "count", "hourOfDay")
+            .done(plotHourlyWtfEvents)
+            .fail(function (error) {
+                console.log("Error is: " + error);
+            });
     };
     var plotHourlyHydrationEvents = function (hourlyHydrationEvents) {
         result.hourlyHydrationEvents = hourlyHydrationEvents;
         var eventCount = getEventCountForHourlyEvents(hourlyHydrationEvents);
         $('#totalHydrationCount').html("Total glasses of Water : " + eventCount);
-        result.plotHeatmapWith("#hourlyHydration-heat-map-parent", '#hourlyHydration-heat-map', hourlyHydrationEvents);
+        var toolTipText = "{{value}} glasses";
+        result.plotHeatmapWith("#hourlyHydration-heat-map-parent", '#hourlyHydration-heat-map', hourlyHydrationEvents, toolTipText);
     };
     result.updateHourlyHydrationHeatMap = function () {
-        postAjax("hourlyHydrationCount", plotHourlyHydrationEvents)
+        postV1Ajax("Drink,Water", "drink", "count", "hourOfDay")
+            .done(plotHourlyHydrationEvents)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
     };
     var plotHourlyCaffeineEvents = function (hourlyCaffeineEvents) {
         result.hourlyCaffeineEvents = hourlyCaffeineEvents;
         var eventCount = getEventCountForHourlyEvents(hourlyCaffeineEvents);
         $('#totalCaffeineCount').html("Total cups of Coffee : " + eventCount);
-        result.plotHeatmapWith('#hourlyCaffeine-heat-map-parent', '#hourlyCaffeine-heat-map', hourlyCaffeineEvents);
+        var toolTipText = "{{value}} cups";
+        result.plotHeatmapWith('#hourlyCaffeine-heat-map-parent', '#hourlyCaffeine-heat-map', hourlyCaffeineEvents, toolTipText);
     };
     result.updateHourlyCaffeineHeatMap = function () {
-        postAjax("hourlyCaffeineCount", plotHourlyCaffeineEvents)
-    };
-
-    var hourlyGithubErrorCallback = function () {
-        $("#connect_to_github_btn").show();
+        postV1Ajax("Drink,Coffee", "drink", "count", "hourOfDay")
+            .done(plotHourlyCaffeineEvents)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
     };
     var plotHourlyGithubPushEvents = function (hourlyGithubPushEvents) {
         result.hourlyGithubPushEvents = hourlyGithubPushEvents;
         var eventCount = getEventCountForHourlyEvents(hourlyGithubPushEvents);
-        $('#totalPushCount').html("Total No of Push Events : " + eventCount);
+        $('#totalPushCount').html("Total No of Pushes : " + eventCount);
         if (eventCount === 0) {
             $("#connect_to_github_btn").show();
         } else {
-            result.plotHeatmapWith('#hourlyGithubPush-heat-map-parent', '#hourlyGithubPush-heat-map', hourlyGithubPushEvents);
+            var toolTipText = "{{value}} pushes";
+            result.plotHeatmapWith('#hourlyGithubPush-heat-map-parent', '#hourlyGithubPush-heat-map', hourlyGithubPushEvents, toolTipText);
         }
     };
     result.updateHourlyGithubPushHeatMap = function () {
-        postAjax("hourlyGithubPushEvents", plotHourlyGithubPushEvents, hourlyGithubErrorCallback);
+        postV1Ajax("Computer,Software,Source Control", "Push", "count", "hourOfDay")
+            .done(plotHourlyGithubPushEvents)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
     };
-    var plotCorrelationData = function (correlationData) {
-        result.correlationData = correlationData;
-        result.plotScatterPlot('#correlate-events', correlationData);
+
+    var plotIDEActivityVsGithubPushesCorrelationData = function (iDEActivityVsGithubPushesCorrelationData) {
+        result.iDEActivityVsGithubPushesCorrelationData = iDEActivityVsGithubPushesCorrelationData;
+        var toolTipText = "Active programming duration of {{xValue}} mins with {{yValue}} github push(es)";
+        result.plotScatterPlot('#correlate-events', iDEActivityVsGithubPushesCorrelationData, 'activeTimeInMinutes', 'githubPushEventCount', "IDE Activity In Minutes", "Push Count", toolTipText);
     };
+
+    var plotStepsVsTracksCorrelationData = function (stepsVsTracksCorrelationData) {
+        result.stepsVsTracksCorrelationData = stepsVsTracksCorrelationData;
+        var toolTipText = "{{xValue}} steps walked with {{yValue}} tracks listened";
+        result.plotScatterPlot('#correlate-steps-vs-tracks-events', stepsVsTracksCorrelationData, 'stepSum', 'musicListenCount', 'Steps', "Count of Tracks Listened", toolTipText);
+    };
+
+    var plotIDEActivityVsTracksCorrelationData = function (iDEActivityVsTracksCorrelationData) {
+        result.iDEActivityVsTracksCorrelationData = iDEActivityVsTracksCorrelationData;
+        var toolTipText = "Active programming duration of {{xValue}} mins with {{yValue}} tracks listened";
+        result.plotScatterPlot('#correlate-ideactivity-vs-tracks-events', iDEActivityVsTracksCorrelationData, 'activeTimeInMinutes', 'musicListenCount', 'IDE Activity In Minutes', "Count of Tracks Listened", toolTipText);
+    };
+
     result.updateCorrelationData = function () {
-        postAjax("correlate?firstEvent=Develop&secondEvent=Push", plotCorrelationData);
+        postAjax("correlate?firstEvent=Develop&secondEvent=Push", plotIDEActivityVsGithubPushesCorrelationData);
     };
+
+    result.updateStepsVsTracksCorrelationData = function () {
+        postAjax("correlate/steps/trackcount", plotStepsVsTracksCorrelationData);
+    };
+
+    result.updateIDEActivityVsTracksCorrelationData = function () {
+        postAjax("correlate/ideactivity/trackcount", plotIDEActivityVsTracksCorrelationData);
+    };
+
     result.plotGraphs = function (graphs) {
         graphs.forEach(function (graph) {
             result[graph]();
@@ -343,6 +512,7 @@ var qd = function () {
     var compareIdeActivityEventsSuccessCallback = function (ideActivityEventForCompare) {
         result.plotComparisonAgainstAvgOfRestOfTheWorld("#compare-ide-activity", ideActivityEventForCompare);
     };
+
     result.updateIdeActivityEventForCompare = function () {
         postAjax("compare/ideActivity", compareIdeActivityEventsSuccessCallback);
     };
@@ -350,9 +520,11 @@ var qd = function () {
     var compareGithubEventsSuccessCallback = function (githubPushEventForCompare) {
         result.plotComparisonAgainstAvgOfRestOfTheWorld("#compare-github-events", githubPushEventForCompare);
     };
+
     result.updateCompareGithubEvents = function () {
         postAjax("githubPushEventForCompare", compareGithubEventsSuccessCallback);
     };
+
     var handlePlotComparisonGraphsSuccess = function (myBuildEvents, theirBuildEvents) {
         $("#compare-username-errors").text("");
         result.compareBuildHistories(myBuildEvents, theirBuildEvents)
@@ -389,11 +561,15 @@ var qd = function () {
         plotCaffeineEvents(result.caffeineEvents);
         plotBuildDurationEvents(result.buildDurationEvents);
         plotHourlyBuildEvents(result.hourlyBuildEvents);
+        plotHourlyStepsEvents(result.hourlyStepsEvents);
+        plotHourlyTracksEvents(result.hourlyTracksEvents);
         plotHourlyWtfEvents(result.hourlyWtfEvents);
         plotHourlyHydrationEvents(result.hourlyHydrationEvents);
         plotHourlyCaffeineEvents(result.hourlyCaffeineEvents);
         plotHourlyGithubPushEvents(result.hourlyGithubPushEvents);
-        plotCorrelationData(result.correlationData);
+        plotIDEActivityVsGithubPushesCorrelationData(result.iDEActivityVsGithubPushesCorrelationData);
+        plotStepsVsTracksCorrelationData(result.stepsVsTracksCorrelationData);
+        plotIDEActivityVsTracksCorrelationData(result.iDEActivityVsTracksCorrelationData);
     };
 
     return result;

@@ -50,7 +50,7 @@ body {
 	min-height: 100%; /* Initially set here but accurate height is set by slidebars.js */
 	position: relative;
 	z-index: 1; /* Site sits above Slidebars */
-	background-color: #515151; /* Default background colour, overwrite this with your own css. */
+	background-color: #505A68; /* Default background colour, overwrite this with your own css. */
 }
 
 /* ---------------

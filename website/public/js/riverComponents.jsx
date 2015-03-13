@@ -7,12 +7,11 @@
 
   var River = React.createClass({
     getInitialState: function(){
-      return {events: [], skip: 0, limit: 50};      
+      return {events: [], skip: 0, limit: 50, showMore: true};      
     },
 
     fetchEventData: function() {
       var url = this.props.source + "?skip=" + this.state.skip + "&limit=" + this.state.limit;
-      var skipped = this.state.skip + 50;
       var self = this;
       $.ajax({
         url: url,
@@ -24,9 +23,10 @@
         success: function(result) {
           if (self.isMounted()) {
             self.setState({
-              skip: skipped,
+              skip: self.state.skip + 50,
               limit: 50,
-              events: self.state.events.concat(constructRiverData(result))
+              events: self.state.events.concat(result),
+              showMore: result.length === 50
             });
           }
         },
@@ -41,13 +41,14 @@
     },
 
     render: function() {
-      var dateGroups = this.state.events.map(function(dateGroup){
+      var riverEvents = constructRiverData(this.state.events);
+      var dateGroups = riverEvents.map(function(dateGroup){
         return <DateGroup key={dateGroup.date} day={dateGroup.date} group={dateGroup.data} />;
       });
       return ( 
         <div>
           {dateGroups}
-          <MoreButton clickHandler={this.fetchEventData} />
+          {this.state.showMore ? <MoreButton clickHandler={this.fetchEventData} /> : undefined}
         </div>
       );
     }

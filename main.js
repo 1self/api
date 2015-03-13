@@ -73,6 +73,10 @@ app.all('*', function (req, res, next) {
 require('./quantifieddevRoutes')(app);
 require('./controllers/integrationsController')(app);
 
+var periodMap = {
+    daily: "MM/dd/yyyy",
+    hourOfDay: "e HH"
+};
 
 var convertSecsToMinutes = function (seconds) {
     return Math.round(seconds / 60 * 100) / 100;
@@ -301,36 +305,24 @@ var groupByOnParametersForLastMonth = function (streamids, actionTag, objectTag)
     };
 };
 
-var groupByForHourlyEvents = function (streamids, actionTag, objectTag) {
+var countOnParameters = function (groupQuery, filterSpec, resultField) {
     return {
-        "$groupBy": {
-            "fields": [
-                {
-                    "name": "payload.eventDateTime",
-                    "format": "e HH"
-                }
-            ],
-            "filterSpec": {
-                "payload.streamid": {
-                    "$operator": {
-                        "in": streamids
-                    }
-                },
-                "payload.actionTags": actionTag,
-                "payload.objectTags": objectTag
-            },
+        "$count": {
+            "data": groupQuery,
+            "filterSpec": filterSpec,
             "projectionSpec": {
-                "payload.eventDateTime": "date",
-                "payload.properties": "properties"
-            },
-            "orderSpec": {}
+                "resultField": resultField
+            }
         }
     };
 };
 
-var countOnParameters = function (groupQuery, filterSpec, resultField) {
+var sumOnParameters = function (sumField, groupQuery, filterSpec, resultField) {
     return {
-        "$count": {
+        "$sum": {
+            "field": {
+                "name": sumField
+            },
             "data": groupQuery,
             "filterSpec": filterSpec,
             "projectionSpec": {
@@ -409,62 +401,6 @@ var generateWeek = function (defaultValues) {
         }
     }
     return result;
-};
-
-var generateHourlyBuildCountQuery = function (streams) {
-
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var groupQuery = groupByForHourlyEvents(streamids, "Finish");
-    var hourlyBuildCount = countOnParameters(groupQuery, {}, "hourlyEventCount");
-    return {
-        spec: JSON.stringify(hourlyBuildCount)
-    };
-};
-
-var generateHourlyWtfCountQuery = function (streams) {
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var groupQuery = groupByForHourlyEvents(streamids, "wtf");
-    var hourlyWtfCount = countOnParameters(groupQuery, {}, "hourlyEventCount");
-    return {
-        spec: JSON.stringify(hourlyWtfCount)
-    };
-};
-
-var generateHourlyHydrationCountQuery = function (streams) {
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var groupQuery = groupByForHourlyEvents(streamids, "drink", "Water");
-    var hourlyHydrationCount = countOnParameters(groupQuery, {}, "hourlyEventCount");
-    return {
-        spec: JSON.stringify(hourlyHydrationCount)
-    };
-};
-
-var generateHourlyCaffeineCountQuery = function (streams) {
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var groupQuery = groupByForHourlyEvents(streamids, "drink", "Coffee");
-    var hourlyCaffeineCount = countOnParameters(groupQuery, {}, "hourlyEventCount");
-    return {
-        spec: JSON.stringify(hourlyCaffeineCount)
-    };
-};
-
-var generateHourlyGithubPushEventsCountQuery = function (streams) {
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var groupQuery = groupByForHourlyEvents(streamids, "Push");
-    var hourlyGithubPushEventCount = countOnParameters(groupQuery, {}, "hourlyEventCount");
-    return {
-        spec: JSON.stringify(hourlyGithubPushEventCount)
-    };
 };
 
 var getTotalUsersOfQd = function (streams) {
@@ -756,6 +692,113 @@ var getDailyGithubPushEventsCount = function (streams) {
     return deferred.promise;
 };
 
+var correlateStepsAndTracks = function (streams) {
+    var streamids = _.map(streams, function (stream) {
+        return stream.streamid;
+    });
+    var deferred = q.defer();
+    var sumQuery = {
+        "$sum": {
+            "field": {
+                "name": "properties.numberOfSteps"
+            },
+            "data": getQueryForStreamIdActionTagAndObjectTag(streamids, 'walked', 'steps'),
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "stepSum"
+            }
+        }
+    };
+    var countQuery = {
+        "$count": {
+            "data": getQueryForStreamIdActionTagAndObjectTag(streamids, 'listen', 'music'),
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "musicListenCount"
+            }
+        }
+    };
+    var query = {
+        spec: JSON.stringify([sumQuery, countQuery]),
+        merge: true
+    };
+    var processResult = function (result) {
+        if (_.isEmpty(result)) {
+            deferred.resolve([]);
+        } else {
+            for (var date in result) {
+                if (result[date].stepSum === undefined) {
+                    result[date].stepSum = 0;
+                }
+                if (result[date].musicListenCount === undefined) {
+                    result[date].musicListenCount = 0;
+                }
+                result[date].date = date;
+            }
+            deferred.resolve(result);
+        }
+    };
+    platformService.aggregate(query)
+        .then(processResult, function (err) {
+            deferred.reject(err);
+        });
+    return deferred.promise;
+};
+
+var correlateIDEActivityAndTracks = function (streams) {
+    var streamids = _.map(streams, function (stream) {
+        return stream.streamid;
+    });
+    var deferred = q.defer();
+    var sumQuery = {
+        "$sum": {
+            "field": {
+                "name": "properties.duration"
+            },
+            "data": getQueryForStreamIdActionTagAndObjectTag(streamids, 'Develop', 'Software'),
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "activeTimeInSecs"
+            }
+        }
+    };
+    var countQuery = {
+        "$count": {
+            "data": getQueryForStreamIdActionTagAndObjectTag(streamids, 'listen', 'music'),
+            "filterSpec": {},
+            "projectionSpec": {
+                "resultField": "musicListenCount"
+            }
+        }
+    };
+    var query = {
+        spec: JSON.stringify([sumQuery, countQuery]),
+        merge: true
+    };
+    var processResult = function (result) {
+        if (_.isEmpty(result)) {
+            deferred.resolve([]);
+        } else {
+            for (var date in result) {
+                if (result[date].activeTimeInSecs === undefined) {
+                    result[date].activeTimeInSecs = 0;
+                }
+                if (result[date].musicListenCount === undefined) {
+                    result[date].musicListenCount = 0;
+                }
+                result[date].activeTimeInMinutes = convertSecsToMinutes(result[date].activeTimeInSecs);
+                result[date].date = date;
+            }
+            deferred.resolve(result);
+        }
+    };
+    platformService.aggregate(query)
+        .then(processResult, function (err) {
+            deferred.reject(err);
+        });
+    return deferred.promise;
+};
+
 var correlateGithubPushesAndIDEActivity = function (streams, firstEvent, secondEvent) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
@@ -832,7 +875,7 @@ app.get('/users_count', function (req, res) {
 
 app.get('/recent_signups', function (req, res) {
     mongoRespository.find('users', {
-        "githubUser.profileUrl": {$exists: true}
+        "profile.profileUrl": {$exists: true}
     }, {
         "sort": [
             ["_id", -1]
@@ -1049,6 +1092,28 @@ app.post('/v1/users/:username/streams', function (req, res) {
         });
 });
 
+// TODO: remove this once all existing github integration users are migrated
+app.post('/v1/users/:username/link', function (req, res) {
+    var streamId = req.body.streamId;
+    var appId = req.body.appId;
+    var username = req.params.username;
+    if (streamId && appId) {
+        util.findUser(username)
+            .then(function (user) {
+                return q.all([util.linkStreamToUser(user, streamId), util.linkIntegrationAppToUser(user, appId)]);
+            })
+            .then(function () {
+                res.status(200).send("ok");
+            })
+            .catch(function (err) {
+                console.log("Error: ", err);
+                res.status(500).send(err);
+            })
+    } else {
+        res.status(400).send("invalid streamId and appId");
+    }
+});
+
 app.get('/eventsCount', function (req, res) {
     platformService.getEventsCount()
         .then(function (response) {
@@ -1171,7 +1236,7 @@ app.get('/live/devbuild/:durationMins', function (req, res) {
                 "$date": moment(cutoff).toISOString()
             }
         },
-        "payload.actionTags": ["Build", "wtf"]
+        "payload.actionTags": ["Build", "wtf", "create"]
     };
     if (selectedEventType) {
         filterSpec["payload.actionTags"] = selectedEventType;
@@ -1206,70 +1271,6 @@ app.get('/quantifieddev/mydev', function (req, res) {
         });
 });
 
-app.get('/quantifieddev/hourlyBuildCount', function (req, res) {
-    var encodedUsername = req.headers.authorization;
-    var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername)
-        .then(function () {
-            return getStreamIdForUsername(encodedUsername, forUsername)
-        })
-        .then(generateHourlyBuildCountQuery)
-        .then(platformService.aggregate)
-        .then(function (response) {
-            var result = transformPlatformDataToQDEvents(response[0]);
-            res.send(result);
-        }).catch(function (error) {
-            res.status(404).send("stream not found");
-        });
-});
-
-app.get('/quantifieddev/hourlyWtfCount', function (req, res) {
-    var encodedUsername = req.headers.authorization;
-    var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername)
-        .then(function () {
-            return getStreamIdForUsername(encodedUsername, forUsername)
-        }).then(generateHourlyWtfCountQuery)
-        .then(platformService.aggregate)
-        .then(function (response) {
-            var result = transformPlatformDataToQDEvents(response[0]);
-            res.send(result);
-        }).catch(function (error) {
-            res.status(404).send("stream not found");
-        });
-});
-app.get('/quantifieddev/hourlyHydrationCount', function (req, res) {
-    var encodedUsername = req.headers.authorization;
-    var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername)
-        .then(function () {
-            return getStreamIdForUsername(encodedUsername, forUsername)
-        }).then(generateHourlyHydrationCountQuery)
-        .then(platformService.aggregate)
-        .then(function (response) {
-            var result = transformPlatformDataToQDEvents(response[0]);
-            res.send(result);
-        }).catch(function (error) {
-            res.status(404).send("stream not found");
-        });
-});
-
-app.get('/quantifieddev/hourlyCaffeineCount', function (req, res) {
-    var encodedUsername = req.headers.authorization;
-    var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername)
-        .then(function () {
-            return getStreamIdForUsername(encodedUsername, forUsername)
-        }).then(generateHourlyCaffeineCountQuery)
-        .then(platformService.aggregate)
-        .then(function (response) {
-            var result = transformPlatformDataToQDEvents(response[0]);
-            res.send(result);
-        }).catch(function (error) {
-            res.status(404).send("stream not found");
-        });
-});
-
 app.get('/quantifieddev/githubPushEventForCompare', function (req, res) {
     var encodedUsername = req.headers.authorization;
     validEncodedUsername(encodedUsername)
@@ -1297,24 +1298,6 @@ app.get('/quantifieddev/compare/ideActivity', function (req, res) {
             console.log("Ide Activity For compare: ", JSON.stringify(response));
             res.send(response);
         }).catch(function (error) {
-            res.status(404).send("stream not found");
-        });
-});
-
-app.get('/quantifieddev/hourlyGithubPushEvents', function (req, res) {
-    var encodedUsername = req.headers.authorization;
-    var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername)
-        .then(function () {
-            return getStreamIdForUsername(encodedUsername, forUsername)
-        })
-        .then(generateHourlyGithubPushEventsCountQuery)
-        .then(platformService.aggregate)
-        .then(function (response) {
-            var result = transformPlatformDataToQDEvents(response[0]);
-            res.send(result);
-        }).catch(function (error) {
-            console.log("Error is", error);
             res.status(404).send("stream not found");
         });
 });
@@ -1353,6 +1336,40 @@ app.get('/quantifieddev/correlate', function (req, res) {
         });
 });
 
+app.get('/quantifieddev/correlate/steps/trackcount', function (req, res) {
+    var encodedUsername = req.headers.authorization;
+    var forUsername = req.query.forUsername;
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return getStreamIdForUsername(encodedUsername, forUsername);
+        })
+        .then(function (streams) {
+            return correlateStepsAndTracks(streams);
+        })
+        .then(function (response) {
+            res.send(response);
+        }).catch(function (error) {
+            res.status(404).send("stream not found");
+        });
+});
+
+app.get('/quantifieddev/correlate/ideactivity/trackcount', function (req, res) {
+    var encodedUsername = req.headers.authorization;
+    var forUsername = req.query.forUsername;
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return getStreamIdForUsername(encodedUsername, forUsername);
+        })
+        .then(function (streams) {
+            return correlateIDEActivityAndTracks(streams);
+        })
+        .then(function (response) {
+            res.send(response);
+        }).catch(function (error) {
+            res.status(404).send("stream not found");
+        });
+});
+
 app.get('/quantifieddev/extensions/message', function (req, res) {
     var result = {
         text: "To get involved, receive updates or interact with the quantifieddev community, please go to quantifieddev.org."
@@ -1363,13 +1380,13 @@ app.get('/quantifieddev/extensions/message', function (req, res) {
 var getQueryForVisualizationAPI = function (streamIds, params, fromDate, toDate) {
     var actionTags = params.actionTags.split(',');
     var objectTags = params.objectTags.split(',');
-
+    var period = params.period;
     var groupQuery = {
         "$groupBy": {
             "fields": [
                 {
                     "name": "payload.eventDateTime",
-                    "format": "MM/dd/yyyy"
+                    "format": periodMap[period]
                 }
             ],
             "filterSpec": {
@@ -1427,7 +1444,6 @@ var getQueryForVisualizationAPI = function (streamIds, params, fromDate, toDate)
         "resultField": "value"
     };
 
-    console.log(JSON.stringify(query));
     return {spec: JSON.stringify(query)};
 };
 
@@ -1437,7 +1453,7 @@ app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period
     , validateRequest.validateStreamIdAndReadToken
     , function (req, res) {
         console.log("validating");
-        
+
         var query = getQueryForVisualizationAPI([req.params.streamId], req.params, req.query.from, req.query.to);
         platformService.aggregate(query)
             .then(function (response) {
@@ -1479,24 +1495,24 @@ var authorizeUser = function (req, res, next) {
 };
 
 app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/type/json"
-, authorizeUser
-, validateRequest.validateDateRange
-, function (req, res) {
-    getStreamIdForUsername(req.headers.authorization, req.forUsername)
-        .then(function (streams) {
-            var streamIds = _.map(streams, function (stream) {
-                return stream.streamid;
+    , authorizeUser
+    , validateRequest.validateDateRange
+    , function (req, res) {
+        getStreamIdForUsername(req.headers.authorization, req.forUsername)
+            .then(function (streams) {
+                var streamIds = _.map(streams, function (stream) {
+                    return stream.streamid;
+                });
+                return getQueryForVisualizationAPI(streamIds, req.params, req.query.from, req.query.to);
+            })
+            .then(platformService.aggregate)
+            .then(function (response) {
+                res.send(transformPlatformDataToQDEvents(response[0]));
+            }).catch(function (error) {
+                console.log("Error is", error);
+                res.status(404).send("Oops! Some error occurred.");
             });
-            return getQueryForVisualizationAPI(streamIds, req.params, req.query.from, req.query.to);
-        })
-        .then(platformService.aggregate)
-        .then(function (response) {
-            res.send(transformPlatformDataToQDEvents(response[0]));
-        }).catch(function (error) {
-            console.log("Error is", error);
-            res.status(404).send("Oops! Some error occurred.");
-        });
-});
+    });
 
 var findGraphUrl = function (graphUrl) {
     var deferred = q.defer();
@@ -1535,7 +1551,7 @@ var updateChartComment = function (chartComment) {
 };
 
 var getCommentsForChart = function (graph, dateRange) {
-    
+
     graph.dataPointDate = {"$gte": new Date(dateRange.from), "$lt": new Date(dateRange.to)};
     var deferred = q.defer();
 
@@ -1568,22 +1584,22 @@ var getCommentsForChart = function (graph, dateRange) {
 app.get("/v1/comments"
     , validateRequest.validateDateRange
     , function (req, res) {
-    var graph = {
-        username: req.query.username,
-        objectTags: req.query.objectTags,
-        actionTags: req.query.actionTags,
-        operation: req.query.operation,
-        period: req.query.period,
-        renderType: req.query.renderType,
-    };
-    var dateRange = {
-        from: req.query.from,
-        to: req.query.to
-    }
-    getCommentsForChart(graph, dateRange).then(function (comments) {
-        res.send(comments);
+        var graph = {
+            username: req.query.username,
+            objectTags: req.query.objectTags,
+            actionTags: req.query.actionTags,
+            operation: req.query.operation,
+            period: req.query.period,
+            renderType: req.query.renderType,
+        };
+        var dateRange = {
+            from: req.query.from,
+            to: req.query.to
+        }
+        getCommentsForChart(graph, dateRange).then(function (comments) {
+            res.send(comments);
+        });
     });
-});
 
 app.get("/v1/user/:username/exists", function (req, res) {
     var username = req.param("username");

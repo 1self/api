@@ -101,8 +101,13 @@ var liveworld = function() {
         d3.json(liveDevBuildUrl, function(error, events) {
             var data = events;
             transformedEvents = [];
+            var createLocations = [];
             var buildLocations = [];
             var wtfLocations = [];
+
+            var isBuildLocationUnique = function(singleEvent) {
+                return singleEvent.type === "create" && !(_.findWhere(createLocations, singleEvent.location))
+            }
             var isBuildLocationUnique = function(singleEvent) {
                 return singleEvent.type === "Build" && !(_.findWhere(buildLocations, singleEvent.location))
             }
@@ -111,6 +116,10 @@ var liveworld = function() {
             }
             for (var i = events.length - 1; i >= 0; i--) {
                 var eventFromServer = events[i].payload;
+                if(eventFromServer.location === undefined){
+                    continue;
+                }
+
                 var singleEvent = {
                     id: i,
                     location: {
@@ -119,6 +128,11 @@ var liveworld = function() {
                     },
                     type: getEventType(eventFromServer), // "wtf" or "Build"
                     language: eventFromServer.properties.Language != undefined ? eventFromServer.properties.Language[0] : ""
+                
+                }
+                if (isBuildLocationUnique(singleEvent)) {
+                    transformedEvents.push(singleEvent);
+                    createLocations.push(singleEvent.location);
                 }
                 if (isBuildLocationUnique(singleEvent)) {
                     transformedEvents.push(singleEvent);
