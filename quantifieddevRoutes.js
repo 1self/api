@@ -1288,7 +1288,7 @@ module.exports = function(app) {
             var permission = {
                 token: token,
                 scope: scope,
-                appId: app.appId
+                appId: req.app.appId
             }
 
             mongoRepository.insert('apptoken', permission)
@@ -1308,6 +1308,47 @@ module.exports = function(app) {
     app.post("/v1/apps/:appId/token"
         , verifyAppCredentials
         , createAppToken);
+
+    var verifyAppToken = function(req, res, next){
+        var auth = req.headers.authorization;
+        var auth = auth.split('Basic ');
+        var appToken = '';
+
+        if (auth[0] === '') {
+            appToken = auth[1]
+        } else {
+            appToken = auth[0];
+        }
+
+        var query = {
+            token: appToken
+        };
+
+        mongoRepository.findOne('apptoken', query)
+            .then(function(permission) {
+                if(permission === null){
+                    res.status(401).send({});
+                }
+                else{
+                    req.permission = permission;
+                    next();
+                }
+            }, function(err) {
+                res.send(500);
+            });
+    }
+
+    var returnGlobe = function(req, res){
+        if(req.permission === undefined || req.permission === null){
+            res.status(401).send();
+        }
+
+        res.send(200);
+    }
+
+    app.get("/v1/apps/:appId/events/:objectTags/:actionTags/location/.globe"
+        , verifyAppToken
+        , returnGlobe);
 
     app.get("/timeline", sessionManager.requiresSession, function(req, res) {
         res.render('timeline', {

@@ -975,7 +975,7 @@ app.get('/users_count', function (req, res) {
 
 app.get('/recent_signups', function (req, res) {
     mongoRespository.find('users', {
-        "githubUser.profileUrl": {$exists: true}
+        "profile.profileUrl": {$exists: true}
     }, {
         "sort": [
             ["_id", -1]
