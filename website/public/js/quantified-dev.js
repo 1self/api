@@ -118,34 +118,6 @@ var qd = function () {
                 console.error("Error is: " + error);
             });
     };
-    var plotHydrationEvents = function (hydrationEvents) {
-        result.hydrationEvents = hydrationEvents;
-        if (showParentDiv(hydrationEvents, "#hydration-history-parent")) {
-            var toolTipText = "{{value}} glass(es)";
-            result.plotDashboardBarChart('#hydration-history', hydrationEvents, '#00a2d4', 'Hydration Count', toolTipText);
-        }
-    };
-    result.updateHydrationModel = function () {
-        postV1Ajax("Drink,Water", "drink", "count", "daily")
-            .done(plotHydrationEvents)
-            .fail(function (error) {
-                console.error("Error is: " + error);
-            });
-    };
-    var plotCaffeineEvents = function (caffeineEvents) {
-        result.caffeineEvents = caffeineEvents;
-        if (showParentDiv(caffeineEvents, "#caffeine-history-parent")) {
-            var toolTipText = "{{value}} cup(s)";
-            result.plotDashboardBarChart('#caffeine-history', caffeineEvents, '#e93d31', 'Caffeine Count', toolTipText);
-        }
-    };
-    result.updateCaffeineModel = function () {
-        postV1Ajax("Drink,Coffee", "drink", "count", "daily")
-            .done(plotCaffeineEvents)
-            .fail(function (error) {
-                console.error("Error is: " + error);
-            });
-    };
     var plotBuildDurationEvents = function (buildDurationEvents) {
         result.buildDurationEvents = buildDurationEvents;
         if (showParentDiv(buildDurationEvents, "#buildDuration-history-parent")) {
@@ -283,34 +255,6 @@ var qd = function () {
                 console.log("Error is: " + error);
             });
     };
-    var plotHourlyHydrationEvents = function (hourlyHydrationEvents) {
-        result.hourlyHydrationEvents = hourlyHydrationEvents;
-        var eventCount = getEventCountForHourlyEvents(hourlyHydrationEvents);
-        $('#totalHydrationCount').html("Total glasses of Water : " + eventCount);
-        var toolTipText = "{{value}} glasses";
-        result.plotHeatmapWith("#hourlyHydration-heat-map-parent", '#hourlyHydration-heat-map', hourlyHydrationEvents, toolTipText);
-    };
-    result.updateHourlyHydrationHeatMap = function () {
-        postV1Ajax("Drink,Water", "drink", "count", "hourOfDay")
-            .done(plotHourlyHydrationEvents)
-            .fail(function (error) {
-                console.error("Error is: " + error);
-            });
-    };
-    var plotHourlyCaffeineEvents = function (hourlyCaffeineEvents) {
-        result.hourlyCaffeineEvents = hourlyCaffeineEvents;
-        var eventCount = getEventCountForHourlyEvents(hourlyCaffeineEvents);
-        $('#totalCaffeineCount').html("Total cups of Coffee : " + eventCount);
-        var toolTipText = "{{value}} cups";
-        result.plotHeatmapWith('#hourlyCaffeine-heat-map-parent', '#hourlyCaffeine-heat-map', hourlyCaffeineEvents, toolTipText);
-    };
-    result.updateHourlyCaffeineHeatMap = function () {
-        postV1Ajax("Drink,Coffee", "drink", "count", "hourOfDay")
-            .done(plotHourlyCaffeineEvents)
-            .fail(function (error) {
-                console.error("Error is: " + error);
-            });
-    };
     var plotHourlyGithubPushEvents = function (hourlyGithubPushEvents) {
         result.hourlyGithubPushEvents = hourlyGithubPushEvents;
         var eventCount = getEventCountForHourlyEvents(hourlyGithubPushEvents);
@@ -413,30 +357,6 @@ var qd = function () {
         var hashTags = ['wtf', 'coding'].join(',');
         $('#tweetMyWtfs').attr('href', "https://twitter.com/share?url=''&hashtags=" + hashTags + "&text=" + tweetText);
         ga('send', 'event', 'tweet_click', 'Hourly WTFs');
-    };
-
-    result.tweetHydrationSparkline = function () {
-        if (!result.hydrationEvents) {
-            return;
-        }
-        var tweetValues = generateTweetValues(result.hydrationEvents);
-        var sparkBar = window.oneSelf.toSparkBars(tweetValues);
-        var tweetText = sparkBar + " my hydration levels over the last 2 weeks. See yours at app.1self.co";
-        var hashTags = ['hydrate', 'coding'].join(',');
-        $('#tweetMyHydration').attr('href', "https://twitter.com/share?url=''&hashtags=" + hashTags + "&text=" + tweetText);
-        ga('send', 'event', 'tweet_click', 'Water Intake History');
-    };
-
-    result.tweetCaffeineSparkline = function () {
-        if (!result.caffeineEvents) {
-            return;
-        }
-        var tweetValues = generateTweetValues(result.caffeineEvents);
-        var sparkBar = window.oneSelf.toSparkBars(tweetValues);
-        var tweetText = sparkBar + " my caffeine levels over the last 2 weeks. See yours at app.1self.co";
-        var hashTags = ['coffee', 'coding'].join(',');
-        $('#tweetMyCaffeine').attr('href', "https://twitter.com/share?url=''&hashtags=" + hashTags + "&text=" + tweetText);
-        ga('send', 'event', 'tweet_click', 'Caffeine Intake History');
     };
 
     result.tweetBuildDurationSparkline = function () {
@@ -557,15 +477,11 @@ var qd = function () {
         plotBuildEvents(result.buildEvents);
         plotActivity(result.activeEvents);
         plotWtfEvents(result.wtfEvents);
-        plotHydrationEvents(result.hydrationEvents);
-        plotCaffeineEvents(result.caffeineEvents);
         plotBuildDurationEvents(result.buildDurationEvents);
         plotHourlyBuildEvents(result.hourlyBuildEvents);
         plotHourlyStepsEvents(result.hourlyStepsEvents);
         plotHourlyTracksEvents(result.hourlyTracksEvents);
         plotHourlyWtfEvents(result.hourlyWtfEvents);
-        plotHourlyHydrationEvents(result.hourlyHydrationEvents);
-        plotHourlyCaffeineEvents(result.hourlyCaffeineEvents);
         plotHourlyGithubPushEvents(result.hourlyGithubPushEvents);
         plotIDEActivityVsGithubPushesCorrelationData(result.iDEActivityVsGithubPushesCorrelationData);
         plotStepsVsTracksCorrelationData(result.stepsVsTracksCorrelationData);
