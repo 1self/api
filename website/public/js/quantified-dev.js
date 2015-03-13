@@ -218,7 +218,7 @@ var qd = function () {
     var plotHourlyBuildEvents = function (hourlyBuildEvents) {
         result.hourlyBuildEvents = hourlyBuildEvents;
         var eventCount = getEventCountForHourlyEvents(hourlyBuildEvents);
-        $('#totalBuildCount').html("Total No of Build Events : " + eventCount);
+        $('#totalBuildCount').html("Total No of Builds : " + eventCount);
         var toolTipText = "{{value}} builds";
         result.plotHeatmapWith("#hourlyBuild-heat-map-parent", '#hourlyBuild-heat-map', hourlyBuildEvents, toolTipText);
     };
@@ -226,7 +226,7 @@ var qd = function () {
     var plotHourlyStepsEvents = function (hourlyStepsEvents) {
         result.hourlyStepsEvents = hourlyStepsEvents;
         var eventCount = getEventCountForHourlyEvents(hourlyStepsEvents);
-        $('#totalStepsCount').html("Total No of Steps Events : " + eventCount);
+        $('#totalStepsCount').html("Total No of Steps Walked : " + eventCount);
         var toolTipText = "{{value}} steps";
         result.plotHeatmapWith("#hourlySteps-heat-map-parent", '#hourlySteps-heat-map', hourlyStepsEvents, toolTipText);
     };
@@ -234,7 +234,7 @@ var qd = function () {
     var plotHourlyTracksEvents = function (hourlyTracksEvents) {
         result.hourlyTracksEvents = hourlyTracksEvents;
         var eventCount = getEventCountForHourlyEvents(hourlyTracksEvents);
-        $('#totalTracksCount').html("Total No of Tracks Events : " + eventCount);
+        $('#totalTracksCount').html("Total No of Songs Listened : " + eventCount);
         var toolTipText = "{{value}} tracks";
         result.plotHeatmapWith("#hourlyTracks-heat-map-parent", '#hourlyTracks-heat-map', hourlyTracksEvents, toolTipText);
     };
@@ -266,7 +266,7 @@ var qd = function () {
     var plotHourlyWtfEvents = function (hourlyWtfEvents) {
         result.hourlyWtfEvents = hourlyWtfEvents;
         var eventCount = getEventCountForHourlyEvents(hourlyWtfEvents);
-        $('#totalWtfCount').html("Total No of WTF Events : " + eventCount);
+        $('#totalWtfCount').html("Total No of WTFs : " + eventCount);
         var toolTipText = "{{value}} wtfs";
         result.plotHeatmapWith("#hourlyWtf-heat-map-parent", '#hourlyWtf-heat-map', hourlyWtfEvents, toolTipText);
     };
@@ -308,7 +308,7 @@ var qd = function () {
     var plotHourlyGithubPushEvents = function (hourlyGithubPushEvents) {
         result.hourlyGithubPushEvents = hourlyGithubPushEvents;
         var eventCount = getEventCountForHourlyEvents(hourlyGithubPushEvents);
-        $('#totalPushCount').html("Total No of Push Events : " + eventCount);
+        $('#totalPushCount').html("Total No of Pushes : " + eventCount);
         if (eventCount === 0) {
             $("#connect_to_github_btn").show();
         } else {
