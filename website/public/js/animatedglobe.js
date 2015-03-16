@@ -106,7 +106,7 @@ var liveworld = function(dataUrl) {
                     type: "GeometryCollection",
                     geometries: circlePoints
                 });
-                context.fillStyle = transformedEvent.type === "Build" ? "rgba(0, 0, 255, .5)" : "rgba(255, 0, 0, .5)";
+                context.fillStyle = "rgba(255, 255, 255, .9)";
                 context.fill();
                 context.lineWidth = .2;
                 context.strokeStyle = "#FFF";
@@ -132,9 +132,9 @@ var liveworld = function(dataUrl) {
                 context.beginPath();
                 path(sphere);
                 context.lineWidth = 3;
-                context.strokeStyle = "#000";
+                context.strokeStyle = "rgba(255,255,255,0.5)";
                 context.stroke();
-                context.fillStyle = "#fff";
+                context.fillStyle = "rgba(255, 255, 255, 0.1)";
                 context.fill();
 
                 context.save();
@@ -145,13 +145,13 @@ var liveworld = function(dataUrl) {
 
                 context.beginPath();
                 path(land);
-                context.fillStyle = "#dadac4";
+                context.fillStyle = "rgba(255, 255, 255, 0.5)";
                 context.fill();
 
                 context.beginPath();
                 path(grid);
                 context.lineWidth = .5;
-                context.strokeStyle = "rgba(0,0,119,.2)";
+                context.strokeStyle = "rgba(255,255,255,0.2)";
                 context.stroke();
 
                 context.restore();
@@ -160,15 +160,15 @@ var liveworld = function(dataUrl) {
                 context.beginPath();
                 path(grid);
                 context.lineWidth = .5;
-                context.strokeStyle = "rgba(0,119,119,.2)";
+                context.strokeStyle = "rgba(255,255,255,0.2)";
                 context.stroke();
 
                 context.beginPath();
                 path(land);
-                context.fillStyle = "rgba(0,100,0,.5)";
+                context.fillStyle = "rgba(255,255,255,0.5)";
                 context.fill();
                 context.lineWidth = .5;
-                context.strokeStyle = "#060";
+                context.strokeStyle = "rgba(255,255,255,0.8";
                 context.stroke();
 
                 if (eventsToDraw != undefined) {
