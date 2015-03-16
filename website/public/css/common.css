@@ -22,7 +22,7 @@ ol,ul {
     src: url(../fonts/Raleway-bold.ttf);
 }
 body{
-	width: 98%;
+	width: 100%;
 	font-family: raleway-light;
 }
 *:focus {
