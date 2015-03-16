@@ -106,7 +106,7 @@ var liveworld = function(dataUrl) {
                     type: "GeometryCollection",
                     geometries: circlePoints
                 });
-                context.fillStyle = "rgba(255, 255, 255, .9)";
+                context.fillStyle = "rgba(255, 255, 255, 1)";
                 context.fill();
                 context.lineWidth = .2;
                 context.strokeStyle = "#FFF";
