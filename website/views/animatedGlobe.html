@@ -5,7 +5,7 @@
       <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1">
       <meta name="description" content="1self Dev Community View"/>
-      <meta name="keywords" content="Admin, Dashboard, Bootstrap3, Sass, transform, CSS3, HTML5, Web design, UI Design, Responsive Dashboard, Responsive Admin, Admin Theme, Best Admin UI, Bootstrap Theme, Wrapbootstrap, Bootstrap" />
+      <meta name="keywords" content="1self globe animated self data visualization" />
     <meta name="author" content="Bootstrap Gallery" />
     <link rel="shortcut icon" href="/img/fav.ico">
     <link href="/css/import.css" rel="stylesheet" media="screen">
@@ -33,7 +33,7 @@
         ga('create', 'UA-49828181-1', 'quantifieddev.org');
         ga('send', 'pageview');
 
-        var dataUrl = {{dateUrl}};
+        var dataUrl = "{{dataUrl}}";
     </script>
   </head>
   <body>
@@ -51,12 +51,12 @@
 
 
           <button id="embed-globe" class="btn btn-default btn-small embed-globe" type="button" style="color: white; background-color: #3E9FD3; border: 1px solid white"class="btn btn-success" title="Copy this code" data-container="body" data-toggle="popover" data-placement="top"
-                  data-content='<iframe id="qd-globe" src="https://app.1self.co/community/globe" width="100%" scrolling="no" frameborder="0">
+                  data-content='<iframe id="animatedglobe" src="{{representationUrl}}" width="100%" scrolling="no" frameborder="0">
           </iframe>
-          <script src="https://app.1self.co/js/iframeResizer.min.js"></script>
+          <script src="{{resizerUrl}}"></script>
           <script>
-            var win = document.getElementById("qd-globe").contentWindow;
-             document.getElementById("qd-globe").onload = function() {
+            var win = document.getElementById("animatedglobe").contentWindow;
+             document.getElementById("animatedglobe").onload = function() {
               iFrameResize({
                 resizedCallback: function(data) {
                   data.iframe.style.height = data.height - 25 + "px";
@@ -64,7 +64,7 @@
               });
               win.postMessage(
                 window.location.toString(),
-                "https://app.1self.co/community/globe"
+                "{{representationUrl}}"
               );
               return false;
             }
@@ -82,5 +82,11 @@
     <script src="/js/topojson.v1.min.js"></script>
     <script src="/js/underscore-min.js"></script>
     <script src="/js/animatedglobe.js"></script>
+    <<script >
+      $(document).ready(
+          function(){
+            liveworld(dataUrl);
+        });
+    </script>
   </body>
 </html>

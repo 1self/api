@@ -1312,14 +1312,16 @@ module.exports = function(app) {
         , createAppToken);
 
     var parseTokenFromAuthorization = function(req, res, next){
-        var auth = req.headers.authorization;
-        var auth = auth.split("Basic ");
-        var token = "";
+        var token = req.query.token;
 
-        if (auth[0] === "") {
-            token = auth[1];
-        } else {
-            token = auth[0];
+        if(token === undefined){
+            var auth = req.headers.authorization;
+            var auth = auth.split("Basic ");
+            if (auth[0] === "") {
+                token = auth[1];
+            } else {
+                token = auth[0];
+            }
         }
 
         req.authToken = token;
@@ -1440,7 +1442,7 @@ module.exports = function(app) {
         if(req.params.representation === "json"){
             res.status(200).send(req.resultDataset);
         }
-        else if(req.params.representation === ".animatedglobe"){
+        else if(req.params.representation === "animatedglobe"){
             var dataUrlComponents = [
                 "/v1/apps",
                 req.params.appId,
@@ -1448,12 +1450,41 @@ module.exports = function(app) {
                 req.params.objectTags,
                 req.params.actionTags,
                 ".json"
-            ]
+            ];
+
+            var representationUrlComponents = [
+                CONTEXT_URI,
+                "v1/apps",
+                req.params.appId,
+                "events",
+                req.params.objectTags,
+                req.params.actionTags,
+                "." + req.params.representation
+            ];
+
+            var resizerUrlComponents = [
+                CONTEXT_URI,
+                "js/iframeResizer.min.js"
+            ];
+
+            var dataUrl = dataUrlComponents.join("/") + "?token=" + req.authToken;
+            var representationUrl = representationUrlComponents.join("/") + "?token=" + req.authToken;
+            var resizerUrl = resizerUrlComponents.join("/");
+
             var model = {
-                dataUrl: dataUrlComponents.join("/")
+                dataUrl: dataUrl,
+                representationUrl: representationUrl,
+                resizerUrl: resizerUrl
             }
 
             res.render('animatedGlobe', model);
+        }
+        else{
+            var knownRepresentations = [
+                ".json",
+                ".animatedglobe"
+            ]
+            res.status(404).send("You requested an unknown representation. Known representations are: \r\n" + knownRepresentations.join("\r\n"));
         }
     }
 

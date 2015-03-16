@@ -54,12 +54,9 @@ var liveworld = function(dataUrl) {
         d3.json(dataUrl, function(error, events) {
             var data = events;
             transformedEvents = [];
-            var createLocations = [];
-            var buildLocations = [];
-            var wtfLocations = [];
 
             for (var i = events.length - 1; i >= 0; i--) {
-                var eventFromServer = events[i].payload;
+                var eventFromServer = events[i];
                 if(eventFromServer.location === undefined){
                     continue;
                 }
@@ -69,13 +66,10 @@ var liveworld = function(dataUrl) {
                     location: {
                         lon: eventFromServer.location.long,
                         lat: eventFromServer.location.lat
-                    },
-                    type: getEventType(eventFromServer), // "wtf" or "Build"
-                    language: eventFromServer.properties.Language != undefined ? eventFromServer.properties.Language[0] : ""
+                    }
                 
                 }
                     transformedEvents.push(singleEvent);
-                    createLocations.push(singleEvent.location);
             };
             createCircles();
         })
@@ -189,4 +183,3 @@ var liveworld = function(dataUrl) {
     }
 
 };
-$(document).ready(liveworld);

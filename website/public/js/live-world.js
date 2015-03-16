@@ -1,4 +1,4 @@
-var liveworld = function(dataUrl) {
+var liveworld = function() {
     $(function() {
         $("#embed-globe").popover({
             container: "body"
@@ -21,7 +21,24 @@ var liveworld = function(dataUrl) {
         attachEvent("onmessage", handleIFrameReferrer);
     }
 
+    var liveDurationMins = parseInt($('#world-time-select').find(":selected").val());
+    var selectedLanguage = $('#world-language-select').find(":selected").val();
+    var selectedEventType = $('#world-event-select').find(":selected").val();
     var transformedEvents = [];
+    $("#world-time-select").change(function() {
+        liveDurationMins = $(this).find(":selected").val();
+        loadData();
+    });
+
+    $("#world-language-select").change(function() {
+        selectedLanguage = $(this).find(":selected").val();
+        loadData();
+    });
+
+    $("#world-event-select").change(function() {
+        selectedEventType = $(this).find(":selected").val();
+        loadData();
+    });
 
     var width = $("#live-world").parent().parent().width();
     var height = width;
@@ -49,15 +66,54 @@ var liveworld = function(dataUrl) {
         .projection(projection)
         .context(context);
 
-    var loadData = function() {
+    //d3.select(self.frameElement).style("height", height + "px");
 
-        d3.json(dataUrl, function(error, events) {
+    var getEventType = function(eventFromServer) {
+        return _.contains(eventFromServer.actionTags, "Build") ? "Build" : "wtf";
+    };
+
+    var url = function() {
+        return (location.hostname == "app-staging.1self.co") ?
+            "https://app-staging.1self.co/live/devbuild/" :
+            "https://app.1self.co/live/devbuild/";
+    };
+
+    var getLiveEventsUrl = function() {
+        var liveDevBuildUrl = url() + liveDurationMins;
+
+        var langQuery = (selectedLanguage !== "all") ? "lang=" + selectedLanguage : "";
+        var eventQuery = (selectedEventType !== "all") ? "eventType=" + selectedEventType : "";
+
+        if (langQuery && eventQuery) {
+            liveDevBuildUrl += "?" + langQuery + "&" + eventQuery;
+        } else if (langQuery) {
+            liveDevBuildUrl += "?" + langQuery;
+        } else if (eventQuery) {
+            liveDevBuildUrl += "?" + eventQuery;
+        };
+
+        return liveDevBuildUrl;
+    }
+
+    var loadData = function() {
+        var liveDevBuildUrl = getLiveEventsUrl();
+
+        d3.json(liveDevBuildUrl, function(error, events) {
             var data = events;
             transformedEvents = [];
             var createLocations = [];
             var buildLocations = [];
             var wtfLocations = [];
 
+            var isBuildLocationUnique = function(singleEvent) {
+                return singleEvent.type === "create" && !(_.findWhere(createLocations, singleEvent.location))
+            }
+            var isBuildLocationUnique = function(singleEvent) {
+                return singleEvent.type === "Build" && !(_.findWhere(buildLocations, singleEvent.location))
+            }
+            var isWtfLocationUnique = function(singleEvent) {
+                return singleEvent.type === "wtf" && !(_.findWhere(wtfLocations, singleEvent.location))
+            }
             for (var i = events.length - 1; i >= 0; i--) {
                 var eventFromServer = events[i].payload;
                 if(eventFromServer.location === undefined){
@@ -74,8 +130,18 @@ var liveworld = function(dataUrl) {
                     language: eventFromServer.properties.Language != undefined ? eventFromServer.properties.Language[0] : ""
                 
                 }
+                if (isBuildLocationUnique(singleEvent)) {
                     transformedEvents.push(singleEvent);
                     createLocations.push(singleEvent.location);
+                }
+                if (isBuildLocationUnique(singleEvent)) {
+                    transformedEvents.push(singleEvent);
+                    buildLocations.push(singleEvent.location);
+                }
+                if (isWtfLocationUnique(singleEvent)) {
+                    transformedEvents.push(singleEvent);
+                    wtfLocations.push(singleEvent.location);
+                }
             };
             createCircles();
         })
