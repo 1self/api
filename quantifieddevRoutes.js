@@ -1269,10 +1269,15 @@ module.exports = function(app) {
 
         mongoRepository.findOne('registeredApps', query)
             .then(function(app) {
-                req.app = app;
-                next();
+                if(app === null){
+                    res.status(401).send({});
+                }
+                else{
+                    req.app = app;
+                    next();
+                }
             }, function(err) {
-                console.log(err)
+                res.send(500);
             });
     };
 
@@ -1281,28 +1286,21 @@ module.exports = function(app) {
         .then(function(token){
             var scope = req.body;
             var permission = {
-            token: token,
-            scope: scope
+                token: token,
+                scope: scope,
+                appId: req.app.appId
             }
 
-            var app = req.app1self;
-            var key = "permissions." + token;
-            var updateObject = {
-                _id: app._id,
-                "$set": {
-                    key: permission
-                }
-            };
-
-            mongoRepository.update('registeredApps', updateObject)
+            mongoRepository.insert('apptoken', permission)
                 .then(function() {
-                    res.status(200).send(permission);
+                    var result = {
+                        token: token,
+                        scope: scope
+                    }
+                    res.status(200).send(result);
                 }, function(err) {
                     res.status(500).send(err);
                 });
-
-            return deferred.promise;
-
         });
 
     };
@@ -1310,6 +1308,47 @@ module.exports = function(app) {
     app.post("/v1/apps/:appId/token"
         , verifyAppCredentials
         , createAppToken);
+
+    var verifyAppToken = function(req, res, next){
+        var auth = req.headers.authorization;
+        var auth = auth.split('Basic ');
+        var appToken = '';
+
+        if (auth[0] === '') {
+            appToken = auth[1]
+        } else {
+            appToken = auth[0];
+        }
+
+        var query = {
+            token: appToken
+        };
+
+        mongoRepository.findOne('apptoken', query)
+            .then(function(permission) {
+                if(permission === null){
+                    res.status(401).send({});
+                }
+                else{
+                    req.permission = permission;
+                    next();
+                }
+            }, function(err) {
+                res.send(500);
+            });
+    }
+
+    var returnGlobe = function(req, res){
+        if(req.permission === undefined || req.permission === null){
+            res.status(401).send();
+        }
+
+        res.send(200);
+    }
+
+    app.get("/v1/apps/:appId/events/:objectTags/:actionTags/location/.globe"
+        , verifyAppToken
+        , returnGlobe);
 
     app.get("/timeline", sessionManager.requiresSession, function(req, res) {
         res.render('timeline', {

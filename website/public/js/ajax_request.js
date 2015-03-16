@@ -17,9 +17,16 @@
     };
 //:objectTags/:actionTags/:operation/:period
     var postV1Ajax = function (objectTags, actionTags, operation, period) {
-        var oneMonthAgo = encodeURIComponent(moment.utc().startOf('day').subtract('days', 30).toISOString());
-        var today = encodeURIComponent(moment.utc().endOf('day').toISOString());
-        var dataDuration = "?from=" + oneMonthAgo + "&to=" + today;
+        if (period === "daily") {
+            var oneMonthAgo = encodeURIComponent(moment.utc().startOf('day').subtract('days', 30).toISOString());
+            var today = encodeURIComponent(moment.utc().endOf('day').toISOString());
+            var dataDuration = "?from=" + oneMonthAgo + "&to=" + today;
+        }
+        else {
+            var epochDate = encodeURIComponent(moment.unix(1).utc().toISOString());
+            var today = encodeURIComponent(moment.utc().endOf('day').toISOString());
+            var dataDuration = "?from=" + epochDate + "&to=" + today;
+        }
         return $.ajax({
             url: "/v1/users/" + username + "/events/" + objectTags + "/" + actionTags + "/" + operation + "/" + period + "/type/json" + dataDuration,
             headers: {
