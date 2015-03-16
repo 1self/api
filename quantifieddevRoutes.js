@@ -193,7 +193,6 @@ module.exports = function(app) {
                     if (exists) {
                         getStreamsForUser(req.session.username)
                             .then(function(user) {
-
                                 return util.linkStreamToUser(user, streamId);
                             })
                             .then(function(isStreamLinked) {
@@ -202,6 +201,8 @@ module.exports = function(app) {
                                     username: req.session.username,
                                     avatarUrl: req.session.avatarUrl
                                 });
+                            }).catch(function(err){
+                                console.log("Error is", err);
                             });
                     } else {
                         console.log("error during linking stream to user ");
@@ -215,6 +216,7 @@ module.exports = function(app) {
                 });
 
         } else {
+
             getStreamsForUser(req.session.username)
                 .then(function(user) {
                     if (user.streams && req.query.link_data !== "true") {
@@ -228,6 +230,8 @@ module.exports = function(app) {
                             avatarUrl: req.session.avatarUrl
                         });
                     }
+                }).catch(function(err){
+                    console.log("Error is", err);
                 });
         }
     });
@@ -1273,7 +1277,7 @@ module.exports = function(app) {
                 req.app1self = app;
                 next();
             }, function(err) {
-                console.log(err)
+                res.send(500);
             });
     };
 
@@ -1300,9 +1304,6 @@ module.exports = function(app) {
                 }, function(err) {
                     res.status(500).send(err);
                 });
-
-            return deferred.promise;
-
         });
 
     };

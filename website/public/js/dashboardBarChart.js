@@ -1,25 +1,25 @@
-window.qd.plotCaffeineHistory = function () {
+window.qd.plotDashboardBarChart = function (divId, events, color, yAxisLabel, toolTipText) {
     setTimeout(function () {
-        $('#caffeine-history').empty();
-        var data = window.qd.caffeineEvents;
+        $(divId).empty();
+        var data = events;
         var margin = {
             top: 20,
             right: 30,
             bottom: 30,
             left: 30
         };
-        var width = $("#caffeine-history").width();
+        var width = $(divId).width();
         var height = width / 1.61;
         if ($(window).width() >645 &&  $(window).width() < 1030) {
-                height = (width / 2.7);
-            }
-            if ($(window).width() < 345) {
-                height = (width / 1);
-            }
+            height = (width / 2.7);
+        }
+        if ($(window).width() < 345) {
+            height = (width / 1);
+        }
         var oneMonthAgo = new Date(moment().subtract("month", 1).format("MM/DD/YYYY"));
         var tomorrow = new Date(moment().add('day', 1).format("MM/DD/YYYY"));
         var x = d3.time.scale()
-            .domain([oneMonthAgo , tomorrow])
+            .domain([oneMonthAgo, tomorrow])
             .rangeRound([0, width - margin.left - margin.right])
             .nice(4);
         var maxDataValue = d3.max(data, function (d) {
@@ -42,15 +42,15 @@ window.qd.plotCaffeineHistory = function () {
             .ticks(yTicks)
             .tickPadding(8);
 
-        var svg = d3.select("#caffeine-history").append('svg')
+        var svg = d3.select(divId).append('svg')
             .attr('class', 'chart')
             .attr('width', width)
             .attr('height', height)
             .append('g')
             .attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
         var tipText = function (d) {
-            return "<strong>" + d.value + (d.value === 1 ? " cup" : " cups") +
-                "</strong> <span style='color:lightgrey'> on " + moment(d.date).format("ddd MMM DD") + "</span>";
+            var toolTip = toolTipText.replace("{{value}}", d.value);
+            return "<strong>" + toolTip + "</strong> <span style='color:lightgrey'> on " + moment(d.date).format("ddd MMM DD") + "</span>";
         };
         var tooltipDivForMobile = d3.select("body").append("div")
             .attr("class", "tooltip")
@@ -64,10 +64,11 @@ window.qd.plotCaffeineHistory = function () {
         svg.call(tip);
         svg.selectAll('.chart')
             .data(data)
-            .enter().append('rect')
+            .enter()
+            .append('rect')
             .attr('class', 'bar')
-            .style("fill", "#e93d31")
-            .style("stroke", d3.rgb("#e93d31").darker())
+            .style("fill", color)
+            .style("stroke", d3.rgb(color).darker())
             .attr('x', function (d) {
                 return x(new Date(d.date));
             })
@@ -124,7 +125,6 @@ window.qd.plotCaffeineHistory = function () {
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text("Caffeine Count");
-
+            .text(yAxisLabel);
     }, 1000);
 };

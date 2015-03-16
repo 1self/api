@@ -17,7 +17,7 @@ exports.requiresSession = function (req, res, next) {
 };
 
 exports.setSession = function (req, res, user) {
-    req.session.username = user.username;
+    req.session.username = user.username.toLowerCase();
     req.session.encodedUsername = user.encodedUsername;
     req.session.registrationToken = user.registrationToken;
     req.session.githubUsername = user.profile.username;

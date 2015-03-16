@@ -4,20 +4,18 @@ var dashboardGraphs = ['updateBuildModel'
                         , 'updateTweetModel'
                         , 'updateSongsByDayModel'
                         , 'updateStepsModel'
-                        , 'updateHydrationModel'
-                        , 'updateCaffeineModel'
                         , 'updateBuildDurationModel'
                         , 'updateHourlyBuildHeatMap'
                         , 'updateHourlyStepsHeatMap'
                         , 'updateHourlyTracksHeatMap'
                         , 'updateHourlyWtfHeatMap'
-                        , 'updateHourlyHydrationHeatMap'
-                        , 'updateHourlyCaffeineHeatMap'
                         , 'updateActiveEvents'
                         , 'updateHourlyGithubPushHeatMap'
-                        , 'updateCorrelationData',
-                        , 'updateStepsVsTracksCorrelationData',
-                        , 'updateIDEActivityVsTracksCorrelationData'];
+                        , 'updateCorrelationData'
+                        , 'updateStepsVsTracksCorrelationData'
+                        , 'updateIDEActivityVsTracksCorrelationData'
+                        , 'updateTwitterFollowerCount'
+                        , 'updateTwitterFollowingCount'];
 $(window).resize(function() {
     window.qd.replotGraphs();
 });
