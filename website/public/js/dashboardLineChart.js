@@ -25,6 +25,12 @@ window.qd.plotDashboardLineChart = function (divId, events, color, yAxisLabel, t
         var maxDataValue = d3.max(data, function (d) {
             return d.value;
         });
+        var sortEventsOnDate = function (events) {
+            events.sort(function (first, second) {
+                return new Date(first.date).getTime() - new Date(second.date).getTime();
+            });
+        };
+        sortEventsOnDate(events);
         var y = d3.scale.linear()
             .domain([0, maxDataValue])
             .range([height - margin.top - margin.bottom, 0]).nice();
