@@ -18,6 +18,7 @@ var platformUri = process.env.PLATFORM_BASE_URI;
 var sharedSecret = process.env.SHARED_SECRET;
 var validator = require('validator');
 var mongoRepository = require('./mongoRepository.js');
+var eventRepository = require('./eventRepository.js');
 var SignupModule = require('./modules/signupModule.js')
 
 var emailConfigOptions = {
@@ -192,7 +193,6 @@ module.exports = function(app) {
                     if (exists) {
                         getStreamsForUser(req.session.username)
                             .then(function(user) {
-
                                 return util.linkStreamToUser(user, streamId);
                             })
                             .then(function(isStreamLinked) {
@@ -201,6 +201,8 @@ module.exports = function(app) {
                                     username: req.session.username,
                                     avatarUrl: req.session.avatarUrl
                                 });
+                            }).catch(function(err){
+                                console.log("Error is", err);
                             });
                     } else {
                         console.log("error during linking stream to user ");
@@ -214,6 +216,7 @@ module.exports = function(app) {
                 });
 
         } else {
+
             getStreamsForUser(req.session.username)
                 .then(function(user) {
                     if (user.streams && req.query.link_data !== "true") {
@@ -227,6 +230,8 @@ module.exports = function(app) {
                             avatarUrl: req.session.avatarUrl
                         });
                     }
+                }).catch(function(err){
+                    console.log("Error is", err);
                 });
         }
     });
@@ -1269,13 +1274,8 @@ module.exports = function(app) {
 
         mongoRepository.findOne('registeredApps', query)
             .then(function(app) {
-                if(app === null){
-                    res.status(401).send({});
-                }
-                else{
-                    req.app = app;
-                    next();
-                }
+                req.app1self = app;
+                next();
             }, function(err) {
                 res.send(500);
             });
@@ -1285,17 +1285,20 @@ module.exports = function(app) {
         generateToken()
         .then(function(token){
             var scope = req.body;
+            var app = req.app1self;
+            var key = "permissions." + token;
             var permission = {
                 token: token,
-                scope: scope,
-                appId: req.app.appId
-            }
+                appId: app.appId,
+                scope: scope
+            };
 
             mongoRepository.insert('apptoken', permission)
                 .then(function() {
                     var result = {
-                        token: token,
-                        scope: scope
+                        token: permission.token,
+                        appId: permission.appId,
+                        scope: permission.scope
                     }
                     res.status(200).send(result);
                 }, function(err) {
@@ -1309,46 +1312,190 @@ module.exports = function(app) {
         , verifyAppCredentials
         , createAppToken);
 
-    var verifyAppToken = function(req, res, next){
-        var auth = req.headers.authorization;
-        var auth = auth.split('Basic ');
-        var appToken = '';
+    var parseTokenFromAuthorization = function(req, res, next){
+        var token = req.query.token;
 
-        if (auth[0] === '') {
-            appToken = auth[1]
-        } else {
-            appToken = auth[0];
+        if(token === undefined){
+            var auth = req.headers.authorization;
+            var auth = auth.split("Basic ");
+            if (auth[0] === "") {
+                token = auth[1];
+            } else {
+                token = auth[0];
+            }
         }
 
+        req.authToken = token;
+        next();
+    };
+
+    var lookupAppToken = function(req, res, next){
+
         var query = {
-            token: appToken
+            token: req.authToken
         };
 
         mongoRepository.findOne('apptoken', query)
             .then(function(permission) {
+                req.permission = permission;
                 if(permission === null){
-                    res.status(401).send({});
+                    res.status(401).send("Couldn't athenticate, the application token is unknown.")
                 }
-                else{
-                    req.permission = permission;
-                    next();
-                }
+                next();
             }, function(err) {
-                res.send(500);
+                res.status(500).send("Server error while looking up token.")
             });
     }
 
-    var returnGlobe = function(req, res){
-        if(req.permission === undefined || req.permission === null){
-            res.status(401).send();
+    var differentTags = function(tags1, tags2){
+        var result = _.difference(tags1, tags2).length > 0;
+        return result;
+    }
+    var verifyTokenPermission = function(req,res, next){
+        var objectTags = req.params.objectTags.split(",");
+        var actionTags = req.params.actionTags.split(",");
+        
+        var result = false;
+
+        var requestPermissionMismatch = 
+        objectTags.length !== req.permission.scope.objectTags.length 
+        || actionTags.length !== req.permission.scope.actionTags.length
+        || differentTags(objectTags, req.permission.scope.objectTags)
+        || differentTags(actionTags, req.permission.scope.actionTags);
+
+        if(requestPermissionMismatch){
+            res.status(401).send("Couldn't authenticate, the object tags or action tags in the request don't match those granted to the token");
         }
 
-        res.send(200);
+        next();
     }
 
-    app.get("/v1/apps/:appId/events/:objectTags/:actionTags/location/.globe"
-        , verifyAppToken
-        , returnGlobe);
+    var getStreams = function(req, res, next) {
+        var query = {
+            appId: req.permission.appId
+        }
+
+        var projection = {
+            streamid: 1
+        }
+
+        var mapStreamObjectsToArray = function(streamObject){
+            return streamObject.streamid;
+        }
+
+        mongoRepository.find("stream", query, projection).then(
+        function(streams) {
+            if (streams === null) {
+                streams = [];
+            }
+
+            streams = _.map(streams, mapStreamObjectsToArray);
+            req.streams = streams;
+            next();
+        });
+    }
+
+    var getEvents = function(req, res, next){
+        var query = {
+            "payload.streamid": {
+                "$in": req.streams
+            },
+
+            "payload.objectTags": {
+                "$in": req.permission.scope.objectTags
+            },
+
+            "payload.actionTags": {
+                "$in": req.permission.scope.actionTags
+            }
+
+        };
+
+        var projection = {
+            "_id": 0,
+            "emptyProjection": 1
+        };
+
+        if(req.permission.scope.location === true){
+            projection["payload.location"] = "location";
+        }
+
+        var removePayload = function(event){
+            return event.payload;
+        }
+
+        var addEventsToRequest = function(events){
+            events = _.map(events, removePayload);
+            req.resultDataset = events;
+            if(req.resultDataset === null){
+                req.resultDataset = [];
+            }
+            
+            next();
+        }
+
+        eventRepository.find("oneself", query, projection).then(
+            addEventsToRequest
+            );
+    }
+
+    var convertToRepresentation = function(req, res, next){
+        if(req.params.representation === "json"){
+            res.status(200).send(req.resultDataset);
+        }
+        else if(req.params.representation === "animatedglobe"){
+            var dataUrlComponents = [
+                "/v1/apps",
+                req.params.appId,
+                "events",
+                req.params.objectTags,
+                req.params.actionTags,
+                ".json"
+            ];
+
+            var representationUrlComponents = [
+                CONTEXT_URI,
+                "v1/apps",
+                req.params.appId,
+                "events",
+                req.params.objectTags,
+                req.params.actionTags,
+                "." + req.params.representation
+            ];
+
+            var resizerUrlComponents = [
+                CONTEXT_URI,
+                "js/iframeResizer.min.js"
+            ];
+
+            var dataUrl = dataUrlComponents.join("/") + "?token=" + req.authToken;
+            var representationUrl = representationUrlComponents.join("/") + "?token=" + req.authToken;
+            var resizerUrl = resizerUrlComponents.join("/");
+
+            var model = {
+                dataUrl: dataUrl,
+                representationUrl: representationUrl,
+                resizerUrl: resizerUrl
+            }
+
+            res.render('animatedGlobe', model);
+        }
+        else{
+            var knownRepresentations = [
+                ".json",
+                ".animatedglobe"
+            ]
+            res.status(404).send("You requested an unknown representation. Known representations are: \r\n" + knownRepresentations.join("\r\n"));
+        }
+    }
+
+    app.get("/v1/apps/:appId/events/:objectTags/:actionTags/.:representation"
+        , parseTokenFromAuthorization
+        , lookupAppToken
+        , verifyTokenPermission
+        , getStreams
+        , getEvents
+        , convertToRepresentation);
 
     app.get("/timeline", sessionManager.requiresSession, function(req, res) {
         res.render('timeline', {

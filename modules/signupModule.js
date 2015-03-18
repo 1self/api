@@ -158,7 +158,7 @@ SignupModule.prototype.signup = function (user, req, res) {
             var userCreated = {
                 profile: user,
                 registeredOn: new Date(),
-                username: oneselfUsername,
+                username: oneselfUsername.toLowerCase(),
                 encodedUsername: encUserObj.encodedUsername,
                 salt: encUserObj.salt
             };

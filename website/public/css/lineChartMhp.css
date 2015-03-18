@@ -1,0 +1,55 @@
+body {
+    width: 100vw;
+    height: 100vh;
+    font-family: "Raleway-Thin", "helvetica neue", helvetica, arial;
+    background-color: rgb(36, 155, 186);
+    color: rgb(256, 256, 256);
+}
+
+.line,
+.axis path,
+.axis line {
+    fill: none;
+    stroke: rgb(256, 256, 256);
+    stroke-width: 1px;
+    shape-rendering: crispEdges;
+}
+
+.area {
+    fill: rgb(256, 256, 256);
+    opacity: 0.5;
+    stroke-width: 0;
+}
+
+circle {
+    fill: rgb(256, 256, 256);
+}
+       
+.axis text {
+    font-size: 12px;
+    text-transform: uppercase;
+    fill: rgb(256, 256, 256);
+}
+
+.x.axis text {
+    text-anchor: start !important;
+}
+
+.x.axis .tick:nth-child(7) text {
+    text-anchor: end !important;
+}
+
+
+.y.axis .tick:nth-child(1) text,
+.tick line {
+    display: none;
+}
+
+div.tooltip {   
+    position: fixed;
+    top: 50px;
+    right: 150px;         
+    text-align: right;            
+    font-size: 24px;                     
+    pointer-events: none;         
+}
