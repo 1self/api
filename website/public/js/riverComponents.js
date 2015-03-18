@@ -5,6 +5,19 @@
     display: "None"
   }
 
+
+  var NoDataMessage = React.createClass({displayName: "NoDataMessage",
+    render: function() {
+      return (
+        React.createElement("div", {className: "msg"}, 
+          React.createElement("p", null, "This is your data river."), 
+          React.createElement("p", null, "You don't have any data yet but soon your data will start flooding in. When it does your timeline will show you your streams of data as they arrive. You can use your river data as a jump off point for further exploration of your data. We'll also pop useful, interesting and fun insights as stuff happens in your data."), 
+          React.createElement("p", null, "There's always something new happening in your river so come back often :)")
+        )
+        )
+    }
+  });
+
   var River = React.createClass({displayName: "River",
     getInitialState: function(){
       return {events: [], skip: 0, limit: 50, showMore: true};      
@@ -45,12 +58,17 @@
       var dateGroups = riverEvents.map(function(dateGroup){
         return React.createElement(DateGroup, {key: dateGroup.date, day: dateGroup.date, group: dateGroup.data});
       });
-      return ( 
-        React.createElement("div", null, 
-          dateGroups, 
-          this.state.showMore ? React.createElement(MoreButton, {clickHandler: this.fetchEventData}) : undefined
-        )
-      );
+
+      return (
+          React.createElement("div", null, 
+          this.state.events.length === 0 ? React.createElement(NoDataMessage, null) : ( 
+            React.createElement("div", null, 
+            dateGroups, 
+            this.state.showMore ? React.createElement(MoreButton, {clickHandler: this.fetchEventData}) : undefined
+            )
+          )
+          )
+        );
     }
   });
 
