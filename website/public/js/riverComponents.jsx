@@ -2,9 +2,12 @@
   var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
   var styleDisplayNone = {
-    display: "None"
+    'display' : "None"
   }
 
+  var styleMarginLeft = {
+    'margin-right' : "10px"
+  };
 
   var NoDataMessage = React.createClass({
     render: function() {
@@ -18,9 +21,19 @@
     }
   });
 
+  var LoadingMessage = React.createClass({
+    render: function() {
+      return (
+        <div id="spinner">
+          <img src="/img/ajax-loader.gif" width="20px" height="20px" style={styleMarginLeft} />Loading...
+        </div>
+        );
+    }
+  });
+
   var River = React.createClass({
     getInitialState: function(){
-      return {events: [], skip: 0, limit: 50, showMore: true};      
+      return {events: [], loading: true, skip: 0, limit: 50, showMore: true};      
     },
 
     fetchEventData: function() {
@@ -36,6 +49,7 @@
         success: function(result) {
           if (self.isMounted()) {
             self.setState({
+              loading: false,
               skip: self.state.skip + 50,
               limit: 50,
               events: self.state.events.concat(result),
@@ -59,16 +73,21 @@
         return <DateGroup key={dateGroup.date} day={dateGroup.date} group={dateGroup.data} />;
       });
 
-      return (
-          <div>
-          {this.state.events.length === 0 ? <NoDataMessage /> : ( 
+      var componentToShow;
+      if (this.state.loading === true) {
+        componentToShow = <LoadingMessage />;
+      } else if (this.state.events.length === 0) {
+        componentToShow = <NoDataMessage />;
+      } else {
+        componentToShow = ( 
             <div>
             {dateGroups}
             {this.state.showMore ? <MoreButton clickHandler={this.fetchEventData} /> : undefined}
             </div>
-          )}
-          </div>
-        );
+          );
+      }
+
+      return componentToShow;
     }
   });
 

@@ -29,6 +29,10 @@ var formatTime = function(time) {
 };
 
 var groupEventsByDate = function(events) {
+    if (events !== null || typeof events.length !== 'number') {
+        return [];
+    }
+
     var dictGroup = function() {
         var groups = {};
         events.forEach(function(event) {
@@ -50,6 +54,10 @@ var groupEventsByDate = function(events) {
 };
 
 var groupSuccessiveEventsByTags = function(events) {
+    if (events !== null || typeof events.length !== 'number') {
+        return [];
+    }
+
     groups = [];
 
     var tags = function(event) {
