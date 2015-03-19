@@ -40,6 +40,8 @@ app.use(session({
     }
 }));
 
+
+
 app.use(bodyParser.urlencoded({
     extended: true
 }));
@@ -1125,9 +1127,19 @@ app.get('/eventsCount', function (req, res) {
         });
 });
 
-app.post('/stream/:id/event', postEvent);
+var publishEvent = function(req, res, next){
+    redisClient.publish("events", req.body);
+}
 
-app.post('/v1/streams/:id/events', validateRequest.validate, postEvent);
+app.post('/stream/:id/event', 
+    publishEvent,
+    postEvent);
+
+
+app.post('/v1/streams/:id/events'
+    , validateRequest.validate
+    , publishEvent
+    , postEvent);
 
 var endsWith = function (string, suffix) {
     return string.indexOf(suffix, string.length - suffix.length) !== -1;
