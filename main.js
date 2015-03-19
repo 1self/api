@@ -165,9 +165,10 @@ var getStreamIdForUsername = function (encodedUsername, forUsername) {
 
 var saveEvent = function (myEvent, stream, res) {
     myEvent.streamid = stream.streamid;
-    myEvent.eventDateTime = {
-        "$date": formatEventDateTime(myEvent.dateTime)
-    };
+    var dateInfo = formatEventDateTime(myEvent.dateTime);
+    myEvent.eventDateTime = dateInfo.eventDateTime;
+    myEvent.eventLocalDateTime = dateInfo.eventLocalDateTime;
+    myEvent.offset = dateInfo.offset;
     return platformService.saveEvent(myEvent);
 };
 
@@ -1128,11 +1129,25 @@ app.post('/stream/:id/event', postEvent);
 
 app.post('/v1/streams/:id/events', validateRequest.validate, postEvent);
 
+var endsWith = function(string, suffix) {
+    return string.indexOf(suffix, string.length - suffix.length) !== -1;
+};
 var formatEventDateTime = function (datetime) {
+    var currentMoment = moment();
+    var offset = null;
     if (typeof datetime !== 'undefined') {
-        return moment(datetime).toISOString();
-    } else {
-        return moment(new Date()).toISOString();
+        currentMoment = moment(datetime);
+    }
+    var utcDate = currentMoment.toISOString();
+    var localISODate = utcDate;
+    if (!endsWith(datetime, "Z")) {
+        offset = currentMoment._tzm;
+        localISODate = currentMoment.subtract(offset, 'minutes').toISOString();
+    }
+    return {
+        eventDateTime: {"$date": utcDate},
+        eventLocalDateTime: {"$date": localISODate},
+        offset: offset
     }
 };
 
@@ -1165,9 +1180,10 @@ var saveBatchEvents = function (myEvents, stream) {
     var deferred = q.defer();
     var myEventsWithPayload = _.map(myEvents, function (myEvent) {
         myEvent.streamid = stream.streamid;
-        myEvent.eventDateTime = {
-            "$date": formatEventDateTime(myEvent.dateTime)
-        };
+        var dateInfo = formatEventDateTime(myEvent.dateTime);
+        myEvent.eventDateTime = dateInfo.eventDateTime;
+        myEvent.eventLocalDateTime = dateInfo.eventLocalDateTime;
+        myEvent.offset = dateInfo.offset;
         return {
             'payload': myEvent
         };

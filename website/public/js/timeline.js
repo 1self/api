@@ -145,7 +145,7 @@ var computeChartUrl = function(event) {
 };
 
 var constructRiverData = function(events) {
-    var data = []
+    var data = [];
     var dateGrouped = groupEventsByDate(events);
 
     dateGrouped.forEach(function(groupedEvents){
