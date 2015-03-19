@@ -1,7 +1,7 @@
 (function ($) {
 
     var postAjax = function (urlParam, successCallback, failureCallback) {
-        $.ajax({
+        return $.ajax({
             url: "/quantifieddev/" + urlParam,
             headers: {
                 "Accept": "application/json",

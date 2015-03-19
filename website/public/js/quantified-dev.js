@@ -1,6 +1,34 @@
 var qd = function () {
     var result = {};
 
+    result.showNoDataMessage = true;
+    result.hideMessage = function() {
+        result.showNoDataMessage = false;
+    };
+
+    result.initProgress = function(total, completed_fn) {
+        result['total'] = total;
+        result['progress'] = 0;
+
+        if(typeof completed_fn !== 'undefined') {
+            result['completed'] = completed_fn;
+        }
+    };
+
+    result.updateProgress = function() {
+        result['progress'] += 1;
+        var progress = Math.ceil((result['progress']/result['total']) * 100);
+        console.log(progress)
+
+        if(progress >= 100) {
+            if(typeof result['completed'] !== 'undefined') {
+                result['completed']();
+            }
+        }
+
+        return progress; 
+    };
+
     var compare = function (todaysEvents, yesterdayEvents) {
         var difference = todaysEvents - yesterdayEvents;
         var percentChange = (difference / yesterdayEvents) * 100;
@@ -20,10 +48,12 @@ var qd = function () {
      }*/
     result.updateBuildModel = function () {
         postAjax("mydev", plotBuildEvents)
+        .always(result.updateProgress)
     };
 
     var showParentDiv = function (graphData, graphParentTileId) {
         if (graphData.length > 0) {
+            result.hideMessage();
             $(graphParentTileId).show();
             return true;
         }
@@ -37,6 +67,7 @@ var qd = function () {
         }
 
         if (graphData.length > 0) {
+            result.hideMessage();
             $(graphParentTileId).show();
             result.plotHourlyEventMap(graphTileId, graphData, toolTipText);
         }
@@ -82,6 +113,7 @@ var qd = function () {
     result.updateNoiseModel = function () {
         postV1Ajax("ambient,sound", "sample", "mean(dbspl)", "daily")
             .done(plotNoiseEvents)
+            .always(result.updateProgress)
             .fail(function (error) {
                 console.error("Error is: " + error);
             });
@@ -90,6 +122,7 @@ var qd = function () {
     result.updateTweetModel = function () {
         postV1Ajax("twitter,tweet", "publish", "count", "daily")
             .done(plotTweetEvents)
+            .always(result.updateProgress)
             .fail(function (error) {
                 console.error("Error is: " + error);
             });
@@ -98,6 +131,7 @@ var qd = function () {
     result.updateSongsByDayModel = function () {
         postV1Ajax("music", "listen", "count", "daily")
             .done(plotSongsByDayEvents)
+            .always(result.updateProgress)
             .fail(function (error) {
                 console.error("Error is: " + error);
             });
@@ -106,6 +140,7 @@ var qd = function () {
     result.updateStepsModel = function () {
         postV1Ajax("steps", "walked", "sum(numberOfSteps)", "daily")
             .done(plotStepsEvents)
+            .always(result.updateProgress)
             .fail(function (error) {
                 console.error("Error is: " + error);
             });
@@ -114,6 +149,7 @@ var qd = function () {
     result.updateWTFModel = function () {
         postV1Ajax("Computer,Software", "wtf", "count", "daily")
             .done(plotWtfEvents)
+            .always(result.updateProgress)
             .fail(function (error) {
                 console.error("Error is: " + error);
             });
@@ -134,6 +170,7 @@ var qd = function () {
     result.updateBuildDurationModel = function () {
         postV1Ajax("Computer,Software", "Build,Finish", "mean(BuildDuration)", "daily")
             .done(plotBuildDurationEvents)
+            .always(result.updateProgress)
             .fail(function (error) {
                 console.error("Error is: " + error);
             });
@@ -154,6 +191,7 @@ var qd = function () {
     result.updateActiveEvents = function () {
         postV1Ajax("Computer,Software", "Develop", "sum(duration)", "daily")
             .done(plotActivity)
+            .always(result.updateProgress)
             .fail(function (error) {
                 console.error("Error is: " + error);
             });
@@ -167,6 +205,7 @@ var qd = function () {
     result.updateTwitterFollowerCount = function () {
         postV1Ajax("internet,social-network,twitter,social-graph,inbound,follower", "sample", "max(count)", "daily")
             .done(plotTwitterFollowerCount)
+            .always(result.updateProgress)
             .fail(function (error) {
                 console.error("Error is: " + error);
             });
@@ -180,6 +219,7 @@ var qd = function () {
     result.updateTwitterFollowingCount = function () {
         postV1Ajax("internet,social-network,twitter,social-graph,outbound,following", "sample", "max(count)", "daily")
             .done(plotTwitterFollowingCount)
+            .always(result.updateProgress)
             .fail(function (error) {
                 console.error("Error is: " + error);
             });
@@ -220,6 +260,7 @@ var qd = function () {
     result.updateHourlyBuildHeatMap = function () {
         postV1Ajax("Computer,Software", "Build,Finish", "count", "hourOfDay")
             .done(plotHourlyBuildEvents)
+            .always(result.updateProgress)
             .fail(function (error) {
                 console.error("Error is: " + error);
             });
@@ -228,6 +269,7 @@ var qd = function () {
     result.updateHourlyStepsHeatMap = function () {
         postV1Ajax("steps", "walked", "sum(numberOfSteps)", "hourOfDay")
             .done(plotHourlyStepsEvents)
+            .always(result.updateProgress)
             .fail(function (error) {
                 console.log("Error is: " + error);
             })
@@ -236,6 +278,7 @@ var qd = function () {
     result.updateHourlyTracksHeatMap = function () {
         postV1Ajax("music", "listen", "count", "hourOfDay")
             .done(plotHourlyTracksEvents)
+            .always(result.updateProgress)
             .fail(function (error) {
                 console.log("Error is: " + error);
             });
@@ -251,6 +294,7 @@ var qd = function () {
     result.updateHourlyWtfHeatMap = function () {
         postV1Ajax("Computer,Software", "wtf", "count", "hourOfDay")
             .done(plotHourlyWtfEvents)
+            .always(result.updateProgress)
             .fail(function (error) {
                 console.log("Error is: " + error);
             });
@@ -269,6 +313,7 @@ var qd = function () {
     result.updateHourlyGithubPushHeatMap = function () {
         postV1Ajax("Computer,Software,Source Control", "Push", "count", "hourOfDay")
             .done(plotHourlyGithubPushEvents)
+            .always(result.updateProgress)
             .fail(function (error) {
                 console.error("Error is: " + error);
             });
@@ -276,20 +321,47 @@ var qd = function () {
 
     var plotIDEActivityVsGithubPushesCorrelationData = function (iDEActivityVsGithubPushesCorrelationData) {
         result.iDEActivityVsGithubPushesCorrelationData = iDEActivityVsGithubPushesCorrelationData;
+        
+        if(iDEActivityVsGithubPushesCorrelationData.length === 0) {
+            result.updateProgress();
+            return;
+        }
+        
+        result.hideMessage();
+        $("#correlate-events-parent").show();
         var toolTipText = "Active programming duration of {{xValue}} mins with {{yValue}} github push(es)";
         result.plotScatterPlot('#correlate-events', iDEActivityVsGithubPushesCorrelationData, 'activeTimeInMinutes', 'githubPushEventCount', "IDE Activity In Minutes", "Push Count", toolTipText);
+        result.updateProgress();
     };
 
     var plotStepsVsTracksCorrelationData = function (stepsVsTracksCorrelationData) {
         result.stepsVsTracksCorrelationData = stepsVsTracksCorrelationData;
+
+        if(stepsVsTracksCorrelationData.length === 0) {
+            result.updateProgress();
+            return;
+        }
+
+        result.hideMessage();
+        $("#correlate-steps-vs-tracks-events-parent").show();
         var toolTipText = "{{xValue}} steps walked with {{yValue}} tracks listened";
         result.plotScatterPlot('#correlate-steps-vs-tracks-events', stepsVsTracksCorrelationData, 'stepSum', 'musicListenCount', 'Steps', "Count of Tracks Listened", toolTipText);
+        result.updateProgress();
     };
 
     var plotIDEActivityVsTracksCorrelationData = function (iDEActivityVsTracksCorrelationData) {
         result.iDEActivityVsTracksCorrelationData = iDEActivityVsTracksCorrelationData;
+        
+        if(iDEActivityVsTracksCorrelationData.length === 0) {
+            result.updateProgress();
+            return;
+        }
+
+        result.hideMessage();
+        $('#correlate-ideactivity-vs-tracks-events-parent').show();
         var toolTipText = "Active programming duration of {{xValue}} mins with {{yValue}} tracks listened";
         result.plotScatterPlot('#correlate-ideactivity-vs-tracks-events', iDEActivityVsTracksCorrelationData, 'activeTimeInMinutes', 'musicListenCount', 'IDE Activity In Minutes', "Count of Tracks Listened", toolTipText);
+        result.updateProgress();
     };
 
     result.updateCorrelationData = function () {
@@ -347,6 +419,7 @@ var qd = function () {
         });
         return tweetValues;
     };
+
     result.tweetWtfSparkline = function () {
         if (!result.wtfEvents) {
             return;
@@ -455,18 +528,22 @@ var qd = function () {
             $("#compare-build-history-parent").show();
             $.when(result.getEventsFor(myUsername, "mydev"), result.getTheirEventsFor(myUsername, theirUsername, "mydev"))
                 .done(handlePlotComparisonGraphsSuccess)
+                .always(result.updateProgress)
                 .fail("Error getting build events!");
             $("#compare-active-events-parent").show();
             $.when(result.getEventsFor(myUsername, "myActiveEvents"), result.getTheirEventsFor(myUsername, theirUsername, "myActiveEvents"))
                 .done(result.compareActiveEvents)
+                .always(result.updateProgress)
                 .fail("Error getting active events!");
             $("#diff-hourly-github-events-parent").show();
             $.when(result.getEventsFor(myUsername, "hourlyGithubPushEvents"), result.getTheirEventsFor(myUsername, theirUsername, "hourlyGithubPushEvents"))
                 .done(result.compareGithubPushCount)
+                .always(result.updateProgress)
                 .fail("Error in comparison of hourly github push events");
             $("#daily-github-event-compare-parent").show();
             $.when(result.getEventsFor(myUsername, "dailyGithubPushEvents"), result.getTheirEventsFor(myUsername, theirUsername, "dailyGithubPushEvents"))
                 .done(result.compareDailyGithubPushCount)
+                .always(result.updateProgress)
                 .fail("Error in comparison of hourly github push events");
         }
         result.updateCompareGithubEvents();

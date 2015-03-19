@@ -20,6 +20,12 @@ $(window).resize(function() {
     window.qd.replotGraphs();
 });
 $(window).load(function() {
+    window.qd.initProgress(dashboardGraphs.length, function(){
+        $('#spinner').hide();
+        if(window.qd.showNoDataMessage) {
+            $("#noDataMessage").show();
+        }
+    });
     window.qd.plotGraphs(dashboardGraphs);
 });
 $(document).ready(function() {

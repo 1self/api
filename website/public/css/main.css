@@ -912,6 +912,7 @@ aside#sidebar ul.recent-visits li:last-child {
     background: white;
     min-height: 660px;
     padding: 0;
+    background-color: rgb(233, 62, 90);
 }
 
 @media (max-width: 767px) {
@@ -1648,8 +1649,8 @@ aside#sidebar ul.recent-visits li:last-child {
 }
 
 .alert-success {
-    background-color: #ecf3e6;
-    color: #8fbb6c;
+    background-color: #00a2d4;
+    color: #fff;
 }
 
 .alert-success hr {
@@ -2285,4 +2286,21 @@ aside#sidebar #menu > ul > li.selected#integrations,
 .page-title ul.breadcrumb li,
 #river .panel-title{
     color: white;
+}
+
+
+.msg {
+    color: #fff;
+    font-family: Helvetica;
+    font-size: 16px;
+    line-height: 20px;
+}
+
+.msg p {
+    margin-bottom: 15px;
+}
+
+#spinner {
+    color: #fff;
+    font-size: 20px;
 }

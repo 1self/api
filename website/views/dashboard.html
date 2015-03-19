@@ -136,6 +136,14 @@
     {% endif %}
 </div>
 <!-- Page title end -->
+    <div id="spinner"><img src="/img/ajax-loader.gif" width="20px" height="20px" style="margin-right: 10px" />Loading...</div>
+    <div class="msg" id="noDataMessage" style="display:none">
+        <hr/>
+        <p>This is your dashboard.</p>
+        <p>You don't have any data yet but soon your data will start flooding in. When it does you'll be able to see your data visaulized in our handy charts. You're another step towards living smarter :)</p>
+        <p>Come back often and see how your data progresses over time.</p>
+        <p>Don’t forget, you can integrate lots more data by linking up different sources from the <span style="font-style: italic">Integrations</span> tab on the left.</p>        
+    </div>
     <div class="row graph-container-row">
     <div id="hourlyGithubPush-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
     <div class="panel panel-secondary fixed-height panel-red-border">
@@ -338,7 +346,7 @@
         </div>
     </div>
 </div>
-    <div id="correlate-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+    <div id="correlate-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none">
     <div class="panel panel-secondary fixed-height panel-red-border">
         <div class="helpContainer">
             <div class="row"><a class="close pull-right" onclick=show("correlate-events-parent")>×</a></div>
@@ -589,7 +597,7 @@
             </div>
         </div>
     </div>
-    <div id="correlate-ideactivity-vs-tracks-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+    <div id="correlate-ideactivity-vs-tracks-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none">
         <div class="panel panel-secondary fixed-height panel-red-border">
             <div class="panel-heading">
                 <div class="row">
@@ -606,7 +614,7 @@
             </div>
         </div>
     </div>
-    <div id="correlate-steps-vs-tracks-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+    <div id="correlate-steps-vs-tracks-events-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none">
     <div class="panel panel-secondary fixed-height panel-red-border">
         <div class="panel-heading">
             <div class="row">
