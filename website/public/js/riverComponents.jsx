@@ -318,4 +318,9 @@
     }
   });
 
+
+$.ajaxPrefilter(function( options, originalOptions, jqXHR ) {
+    options.async = true;
+});
+
 React.render(<River source={"/v1/users/" + username + "/events"} />, document.getElementById('river'));
