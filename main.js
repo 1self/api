@@ -1129,7 +1129,7 @@ app.post('/stream/:id/event', postEvent);
 
 app.post('/v1/streams/:id/events', validateRequest.validate, postEvent);
 
-var endsWith = function(string, suffix) {
+var endsWith = function (string, suffix) {
     return string.indexOf(suffix, string.length - suffix.length) !== -1;
 };
 var formatEventDateTime = function (datetime) {
@@ -1352,6 +1352,55 @@ app.get('/quantifieddev/correlate', function (req, res) {
         });
 });
 
+var getEventParams = function (event) {
+    var eventSplit = event.split("/");
+    return {
+        "objectTags": eventSplit[0],
+        "actionTags": eventSplit[1],
+        "operation": eventSplit[2]
+    };
+};
+
+// /v1/users/:username/correlate/:period/type/json?firstEvent=:objectTags/:actionTags/:operation&secondEvent=:objectTags/:actionTags/:operation
+app.get('/v1/users/:username/correlate/:period/type/json', function (req, res) {
+    var firstEvent = req.query.firstEvent;
+    var secondEvent = req.query.secondEvent;
+    var fromDate = req.query.from;
+    var toDate = req.query.to;
+
+    var firstEventParams = getEventParams(firstEvent);
+    var secondEventParams = getEventParams(secondEvent);
+    firstEventParams.period = req.params.period;
+    secondEventParams.period = req.params.period;
+
+    var encodedUsername = req.headers.authorization;
+    var forUsername = req.query.forUsername;
+    validEncodedUsername(encodedUsername)
+        .then(function () {
+            return getStreamIdForUsername(encodedUsername, forUsername);
+        })
+        .then(function (streams) {
+            var streamids = _.map(streams, function (stream) {
+                return stream.streamid;
+            });
+            var firstEventQuery = getQueryForVisualizationAPI(streamids, firstEventParams, fromDate, toDate, "value_first");
+            var secondEventQuery = getQueryForVisualizationAPI(streamids, secondEventParams, fromDate, toDate, "value_second");
+            var query = {
+                "spec": JSON.stringify([firstEventQuery, secondEventQuery]),
+                "merge": true
+            };
+            //console.log("Query for correlate: ", JSON.stringify(query));
+            return query;
+        })
+        .then(platformService.aggregate)
+        .then(transformPlatformDataToQDEvents)
+        .then(function (response) {
+            res.send(response);
+        }).catch(function (error) {
+            res.status(404).send("stream not found");
+        });
+});
+
 app.get('/quantifieddev/correlate/steps/trackcount', function (req, res) {
     var encodedUsername = req.headers.authorization;
     var forUsername = req.query.forUsername;
@@ -1393,10 +1442,11 @@ app.get('/quantifieddev/extensions/message', function (req, res) {
     res.send(JSON.stringify(result));
 });
 
-var getQueryForVisualizationAPI = function (streamIds, params, fromDate, toDate) {
+var getQueryForVisualizationAPI = function (streamIds, params, fromDate, toDate, result) {
     var actionTags = params.actionTags.split(',');
     var objectTags = params.objectTags.split(',');
     var period = params.period;
+    var resultField = result || "value";
     var groupQuery = {
         "$groupBy": {
             "fields": [
@@ -1457,10 +1507,10 @@ var getQueryForVisualizationAPI = function (streamIds, params, fromDate, toDate)
     query["$" + operation]["data"] = groupQuery;
     query["$" + operation]["filterSpec"] = {};
     query["$" + operation]["projectionSpec"] = {
-        "resultField": "value"
+        "resultField": resultField
     };
 
-    return {spec: JSON.stringify(query)};
+    return query;
 };
 
 //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}({{:property}})/daily/{{barchart/json}}
@@ -1471,7 +1521,10 @@ app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period
         console.log("validating");
 
         var query = getQueryForVisualizationAPI([req.params.streamId], req.params, req.query.from, req.query.to);
-        platformService.aggregate(query)
+        platformService
+            .aggregate({
+                spec: JSON.stringify(query)
+            })
             .then(function (response) {
                 console.log("trying to transform events");
                 res.send(transformPlatformDataToQDEvents(response[0]));
@@ -1519,7 +1572,10 @@ app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/t
                 var streamIds = _.map(streams, function (stream) {
                     return stream.streamid;
                 });
-                return getQueryForVisualizationAPI(streamIds, req.params, req.query.from, req.query.to);
+                var query = getQueryForVisualizationAPI(streamIds, req.params, req.query.from, req.query.to);
+                return {
+                    spec: JSON.stringify(query)
+                }
             })
             .then(platformService.aggregate)
             .then(function (response) {
