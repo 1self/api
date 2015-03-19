@@ -11,8 +11,8 @@
       return (
         <div className="msg">
           <p>This is your data river.</p>
-          <p>You don't have any data yet but soon your data will start flooding in. When it does your timeline will show you your streams of data as they arrive. You can use your river data as a jump off point for further exploration of your data. We'll also pop useful, interesting and fun insights as stuff happens in your data.</p>
-          <p>There's always something new happening in your river so come back often :)</p>
+          <p>You don`t have any data yet but soon your data will start flooding in. When it does your timeline will show you your streams of data as they arrive. You can use your river data as a jump off point for further exploration of your data. We`ll also pop useful, interesting and fun insights as stuff happens in your data.</p>
+          <p>There`s always something new happening in your river so come back often :)</p>
         </div>
         )
     }
