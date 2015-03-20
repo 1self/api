@@ -360,6 +360,19 @@ var qd = function () {
         result.updateProgress();
     };
 
+    var plotTwitterFollowersVsTweetsCorrelationData = function (twitterFollowersVsTweetsCorrelationData){
+        if (twitterFollowersVsTweetsCorrelationData.length === 0) {
+            result.updateProgress();
+            return;
+        }
+        result.twitterFollowersVsTweetsCorrelationData = twitterFollowersVsTweetsCorrelationData;
+        result.hideMessage();
+        $('#correlate-twitter-followers-vs-tweets-parent').show();
+        var toolTipText = "{{xValue}} Twitter followers with {{yValue}} tweets";
+        result.plotScatterPlot('#correlate-twitter-followers-vs-tweets', twitterFollowersVsTweetsCorrelationData, 'Twitter Followers', "Number of tweets", toolTipText);
+        result.updateProgress();
+    };
+
     result.updateCorrelationData = function () {
         postV1CorrelateAjax("daily", "Computer,Software/Develop/sum(duration)", "Computer,Software,Source Control/Github,Push/count")
             .done(plotIDEActivityVsGithubPushesCorrelationData)
@@ -379,6 +392,14 @@ var qd = function () {
     result.updateIDEActivityVsTracksCorrelationData = function () {
         postV1CorrelateAjax("daily", "Computer,Software/Develop/sum(duration)", "music/listen/count")
             .done(plotIDEActivityVsTracksCorrelationData)
+            .fail(function (err) {
+                console.error("Error fetching correlation data: " + err)
+            });
+    };
+
+    result.updateTwitterFollowersVsTweetsCorrelationData = function () {
+        postV1CorrelateAjax("daily","internet,social-network,twitter,social-graph,inbound,follower/sample/max(count)", "twitter,tweet/publish/count")
+            .done(plotTwitterFollowersVsTweetsCorrelationData)
             .fail(function (err) {
                 console.error("Error fetching correlation data: " + err)
             });
@@ -571,6 +592,7 @@ var qd = function () {
         plotIDEActivityVsGithubPushesCorrelationData(result.iDEActivityVsGithubPushesCorrelationData);
         plotStepsVsTracksCorrelationData(result.stepsVsTracksCorrelationData);
         plotIDEActivityVsTracksCorrelationData(result.iDEActivityVsTracksCorrelationData);
+        plotTwitterFollowersVsTweetsCorrelationData(result.twitterFollowersVsTweetsCorrelationData);
     };
 
     return result;

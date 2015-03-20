@@ -1194,10 +1194,9 @@ app.get('/v1/users/:username/correlate/:period/type/json', function (req, res) {
     secondEventParams.period = req.params.period;
 
     var encodedUsername = req.headers.authorization;
-    var forUsername = req.query.forUsername;
     validEncodedUsername(encodedUsername)
         .then(function () {
-            return getStreamIdForUsername(encodedUsername, forUsername);
+            return getStreamIdForUsername(encodedUsername);
         })
         .then(function (streams) {
             var streamids = _.map(streams, function (stream) {
@@ -1209,7 +1208,6 @@ app.get('/v1/users/:username/correlate/:period/type/json', function (req, res) {
                 "spec": JSON.stringify([firstEventQuery, secondEventQuery]),
                 "merge": true
             };
-            //console.log("Query for correlate: ", JSON.stringify(query));
             return query;
         })
         .then(platformService.aggregate)
