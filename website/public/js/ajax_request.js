@@ -42,7 +42,7 @@
         var today = encodeURIComponent(moment.utc().endOf('day').toISOString());
         var dataDuration = "&from=" + epochDate + "&to=" + today;
         return $.ajax({
-            url: "/v1/users/" + username + "/correlate/" + period + "/type/json?firstEvent=" + firstEvent + "&secondEvent=" + secondEvent + dataDuration,
+            url: "/v1/users/" + username + "/correlate/" + period + "/.json?firstEvent=" + firstEvent + "&secondEvent=" + secondEvent + dataDuration,
             headers: {
                 "Accept": "application/json",
                 "Authorization": $.cookie("_eun")

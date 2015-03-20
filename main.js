@@ -1181,8 +1181,8 @@ var getEventParams = function (event) {
     };
 };
 
-// /v1/users/:username/correlate/:period/type/json?firstEvent=:objectTags/:actionTags/:operation&secondEvent=:objectTags/:actionTags/:operation
-app.get('/v1/users/:username/correlate/:period/type/json', function (req, res) {
+// /v1/users/:username/correlate/:period/.json?firstEvent=:objectTags/:actionTags/:operation&secondEvent=:objectTags/:actionTags/:operation
+app.get('/v1/users/:username/correlate/:period/.json', function (req, res) {
     var firstEvent = req.query.firstEvent;
     var secondEvent = req.query.secondEvent;
     var fromDate = req.query.from;
