@@ -1,4 +1,4 @@
-window.qd.plotScatterPlot = function (divId, correlateEvents, firstField, secondField, xAxisLabel, yAxisLabel, toolTipText) {
+window.qd.plotScatterPlot = function (divId, correlateEvents, xAxisLabel, yAxisLabel, toolTipText) {
     setTimeout(function () {
         var s = $(divId).empty();
         s = d3.select(divId);
@@ -20,8 +20,8 @@ window.qd.plotScatterPlot = function (divId, correlateEvents, firstField, second
         var _groupCorrelateEvents = function (events) {
             return _.map(events, function (event) {
                 return {
-                    x: event[firstField],
-                    y: event[secondField],
+                    x: event.value1 || 0,
+                    y: event.value2 || 0,
                     date: event.date
                 };
             });

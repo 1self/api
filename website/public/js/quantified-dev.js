@@ -2,31 +2,31 @@ var qd = function () {
     var result = {};
 
     result.showNoDataMessage = true;
-    result.hideMessage = function() {
+    result.hideMessage = function () {
         result.showNoDataMessage = false;
     };
 
-    result.initProgress = function(total, completed_fn) {
+    result.initProgress = function (total, completed_fn) {
         result['total'] = total;
         result['progress'] = 0;
 
-        if(typeof completed_fn !== 'undefined') {
+        if (typeof completed_fn !== 'undefined') {
             result['completed'] = completed_fn;
         }
     };
 
-    result.updateProgress = function() {
+    result.updateProgress = function () {
         result['progress'] += 1;
-        var progress = Math.ceil((result['progress']/result['total']) * 100);
+        var progress = Math.ceil((result['progress'] / result['total']) * 100);
         console.log(progress)
 
-        if(progress >= 100) {
-            if(typeof result['completed'] !== 'undefined') {
+        if (progress >= 100) {
+            if (typeof result['completed'] !== 'undefined') {
                 result['completed']();
             }
         }
 
-        return progress; 
+        return progress;
     };
 
     var compare = function (todaysEvents, yesterdayEvents) {
@@ -48,7 +48,7 @@ var qd = function () {
      }*/
     result.updateBuildModel = function () {
         postAjax("mydev", plotBuildEvents)
-        .always(result.updateProgress)
+            .always(result.updateProgress)
     };
 
     var showParentDiv = function (graphData, graphParentTileId) {
@@ -59,9 +59,9 @@ var qd = function () {
         }
         return false;
     };
-    
+
     result.plotHeatmapWith = function (graphParentTileId, graphTileId, graphData, toolTipText) {
-        if(graphData === undefined){
+        if (graphData === undefined) {
             console.log('graph data for ' + graphTileId + ' is empty');
             return;
         }
@@ -175,17 +175,17 @@ var qd = function () {
                 console.error("Error is: " + error);
             });
     };
+    var convertSecondsToMinutes = function (data, value) {
+        data.forEach(function (d) {
+            return d[value] = d[value] / 60;
+        });
+    };
     var plotActivity = function (activeEvents) {
         result.activeEvents = activeEvents;
         if (showParentDiv(activeEvents, "#active-event-history-parent")) {
             var toolTipText = "{{value}} min(s)";
-            var convertSecondsToMinutes = function (data) {
-                return data.map(function (d) {
-                    return {date: d.date, value: (d.value / 60)};
-                });
-            };
-            var events = convertSecondsToMinutes(activeEvents);
-            result.plotDashboardBarChart('#active-event-history', events, '#e93e5a', 'Activity Duration(mins)', toolTipText);
+            convertSecondsToMinutes(activeEvents, "value");
+            result.plotDashboardBarChart('#active-event-history', activeEvents, '#e93e5a', 'Activity Duration(mins)', toolTipText);
         }
     };
     result.updateActiveEvents = function () {
@@ -320,60 +320,89 @@ var qd = function () {
     };
 
     var plotIDEActivityVsGithubPushesCorrelationData = function (iDEActivityVsGithubPushesCorrelationData) {
-        result.iDEActivityVsGithubPushesCorrelationData = iDEActivityVsGithubPushesCorrelationData;
-        
-        if(iDEActivityVsGithubPushesCorrelationData.length === 0) {
+        if (iDEActivityVsGithubPushesCorrelationData.length === 0) {
             result.updateProgress();
             return;
         }
-        
+        convertSecondsToMinutes(iDEActivityVsGithubPushesCorrelationData, "value1");
+        result.iDEActivityVsGithubPushesCorrelationData = iDEActivityVsGithubPushesCorrelationData;
         result.hideMessage();
         $("#correlate-events-parent").show();
         var toolTipText = "Active programming duration of {{xValue}} mins with {{yValue}} github push(es)";
-        result.plotScatterPlot('#correlate-events', iDEActivityVsGithubPushesCorrelationData, 'activeTimeInMinutes', 'githubPushEventCount', "IDE Activity In Minutes", "Push Count", toolTipText);
+        result.plotScatterPlot('#correlate-events', iDEActivityVsGithubPushesCorrelationData, "IDE Activity In Minutes", "Push Count", toolTipText);
         result.updateProgress();
     };
 
     var plotStepsVsTracksCorrelationData = function (stepsVsTracksCorrelationData) {
         result.stepsVsTracksCorrelationData = stepsVsTracksCorrelationData;
-
-        if(stepsVsTracksCorrelationData.length === 0) {
+        if (stepsVsTracksCorrelationData.length === 0) {
             result.updateProgress();
             return;
         }
-
         result.hideMessage();
         $("#correlate-steps-vs-tracks-events-parent").show();
         var toolTipText = "{{xValue}} steps walked with {{yValue}} tracks listened";
-        result.plotScatterPlot('#correlate-steps-vs-tracks-events', stepsVsTracksCorrelationData, 'stepSum', 'musicListenCount', 'Steps', "Count of Tracks Listened", toolTipText);
+        result.plotScatterPlot('#correlate-steps-vs-tracks-events', stepsVsTracksCorrelationData, 'Steps', "Count of Tracks Listened", toolTipText);
         result.updateProgress();
     };
 
     var plotIDEActivityVsTracksCorrelationData = function (iDEActivityVsTracksCorrelationData) {
-        result.iDEActivityVsTracksCorrelationData = iDEActivityVsTracksCorrelationData;
-        
-        if(iDEActivityVsTracksCorrelationData.length === 0) {
+        if (iDEActivityVsTracksCorrelationData.length === 0) {
             result.updateProgress();
             return;
         }
-
+        convertSecondsToMinutes(iDEActivityVsTracksCorrelationData, "value1");
+        result.iDEActivityVsTracksCorrelationData = iDEActivityVsTracksCorrelationData;
         result.hideMessage();
         $('#correlate-ideactivity-vs-tracks-events-parent').show();
         var toolTipText = "Active programming duration of {{xValue}} mins with {{yValue}} tracks listened";
-        result.plotScatterPlot('#correlate-ideactivity-vs-tracks-events', iDEActivityVsTracksCorrelationData, 'activeTimeInMinutes', 'musicListenCount', 'IDE Activity In Minutes', "Count of Tracks Listened", toolTipText);
+        result.plotScatterPlot('#correlate-ideactivity-vs-tracks-events', iDEActivityVsTracksCorrelationData, 'IDE Activity In Minutes', "Count of Tracks Listened", toolTipText);
+        result.updateProgress();
+    };
+
+    var plotTwitterFollowersVsTweetsCorrelationData = function (twitterFollowersVsTweetsCorrelationData){
+        if (twitterFollowersVsTweetsCorrelationData.length === 0) {
+            result.updateProgress();
+            return;
+        }
+        result.twitterFollowersVsTweetsCorrelationData = twitterFollowersVsTweetsCorrelationData;
+        result.hideMessage();
+        $('#correlate-twitter-followers-vs-tweets-parent').show();
+        var toolTipText = "{{xValue}} Twitter followers with {{yValue}} tweets";
+        result.plotScatterPlot('#correlate-twitter-followers-vs-tweets', twitterFollowersVsTweetsCorrelationData, 'Twitter Followers', "Number of tweets", toolTipText);
         result.updateProgress();
     };
 
     result.updateCorrelationData = function () {
-        postAjax("correlate?firstEvent=Develop&secondEvent=Push", plotIDEActivityVsGithubPushesCorrelationData);
+        postV1CorrelateAjax("daily", "Computer,Software/Develop/sum(duration)", "Computer,Software,Source Control/Github,Push/count")
+            .done(plotIDEActivityVsGithubPushesCorrelationData)
+            .fail(function (err) {
+                console.error("Error fetching correlation data: " + err)
+            });
     };
 
     result.updateStepsVsTracksCorrelationData = function () {
-        postAjax("correlate/steps/trackcount", plotStepsVsTracksCorrelationData);
+        postV1CorrelateAjax("daily", "steps/walked/sum(numberOfSteps)", "music/listen/count")
+            .done(plotStepsVsTracksCorrelationData)
+            .fail(function (err) {
+                console.error("Error fetching correlation data: " + err)
+            });
     };
 
     result.updateIDEActivityVsTracksCorrelationData = function () {
-        postAjax("correlate/ideactivity/trackcount", plotIDEActivityVsTracksCorrelationData);
+        postV1CorrelateAjax("daily", "Computer,Software/Develop/sum(duration)", "music/listen/count")
+            .done(plotIDEActivityVsTracksCorrelationData)
+            .fail(function (err) {
+                console.error("Error fetching correlation data: " + err)
+            });
+    };
+
+    result.updateTwitterFollowersVsTweetsCorrelationData = function () {
+        postV1CorrelateAjax("daily","internet,social-network,twitter,social-graph,inbound,follower/sample/max(count)", "twitter,tweet/publish/count")
+            .done(plotTwitterFollowersVsTweetsCorrelationData)
+            .fail(function (err) {
+                console.error("Error fetching correlation data: " + err)
+            });
     };
 
     result.plotGraphs = function (graphs) {
@@ -563,6 +592,7 @@ var qd = function () {
         plotIDEActivityVsGithubPushesCorrelationData(result.iDEActivityVsGithubPushesCorrelationData);
         plotStepsVsTracksCorrelationData(result.stepsVsTracksCorrelationData);
         plotIDEActivityVsTracksCorrelationData(result.iDEActivityVsTracksCorrelationData);
+        plotTwitterFollowersVsTweetsCorrelationData(result.twitterFollowersVsTweetsCorrelationData);
     };
 
     return result;
