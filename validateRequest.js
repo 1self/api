@@ -28,15 +28,15 @@ exports.validateStreamIdAndReadToken = function (req, res, next) {
 };
 
 exports.validateDateRange = function(req, res, next) {
-    var result;
+    var result = "";
     var error = false;
 
     if(req.query.from === undefined){
-        result += "a from date (in UTC) is required (&from=20150115T10:00:00.000Z)\n";
+        result += " a from date (in UTC) is required (&from=20150115T10:00:00.000Z)\n";
         error = true;
     }
     if(req.query.to === undefined){
-        result += "a to date (in UTC) is required (&to=20150115T10:00:00.000Z)\n";
+        result += " a to date (in UTC) is required (&to=20150115T10:00:00.000Z)\n";
         error = true;
     }
 

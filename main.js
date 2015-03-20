@@ -1157,43 +1157,43 @@ var getEventParams = function (event) {
 };
 
 // /v1/users/:username/correlate/:period/.json?firstEvent=:objectTags/:actionTags/:operation&secondEvent=:objectTags/:actionTags/:operation
-app.get('/v1/users/:username/correlate/:period/.json', function (req, res) {
-    var username = req.params.username;
-    var firstEvent = req.query.firstEvent;
-    var secondEvent = req.query.secondEvent;
-    var fromDate = req.query.from;
-    var toDate = req.query.to;
+    app.get('/v1/users/:username/correlate/:period/.json',  validateRequest.validateDateRange, function (req, res) {
+        var firstEvent = req.query.firstEvent;
+        var secondEvent = req.query.secondEvent;
+        var fromDate = req.query.from;
+        var toDate = req.query.to;
 
-    var firstEventParams = getEventParams(firstEvent);
-    var secondEventParams = getEventParams(secondEvent);
-    firstEventParams.period = req.params.period;
-    secondEventParams.period = req.params.period;
+        var firstEventParams = getEventParams(firstEvent);
+        var secondEventParams = getEventParams(secondEvent);
+        firstEventParams.period = req.params.period;
+        secondEventParams.period = req.params.period;
 
-    var encodedUsername = req.headers.authorization;
-    validateEncodedUsername(encodedUsername, username)
-        .then(function () {
-            return getStreamIdForUsername(encodedUsername);
-        })
-        .then(function (streams) {
-            var streamids = _.map(streams, function (stream) {
-                return stream.streamid;
+        var encodedUsername = req.headers.authorization;
+        validEncodedUsername(encodedUsername)
+            .then(function () {
+                return getStreamIdForUsername(encodedUsername);
+            })
+            .then(function (streams) {
+                var streamids = _.map(streams, function (stream) {
+                    return stream.streamid;
+                });
+                var firstEventQuery = getQueryForVisualizationAPI(streamids, firstEventParams, fromDate, toDate, "value1");
+                var secondEventQuery = getQueryForVisualizationAPI(streamids, secondEventParams, fromDate, toDate, "value2");
+                var query = {
+                    "spec": JSON.stringify([firstEventQuery, secondEventQuery]),
+                    "merge": true
+                };
+                return query;
+            })
+            .then(platformService.aggregate)
+            .then(transformPlatformDataToQDEvents)
+            .then(function (response) {
+                res.send(response);
+            }).catch(function (error) {
+                res.status(404).send("stream not found");
             });
-            var firstEventQuery = getQueryForVisualizationAPI(streamids, firstEventParams, fromDate, toDate, "value1");
-            var secondEventQuery = getQueryForVisualizationAPI(streamids, secondEventParams, fromDate, toDate, "value2");
-            var query = {
-                "spec": JSON.stringify([firstEventQuery, secondEventQuery]),
-                "merge": true
-            };
-            return query;
-        })
-        .then(platformService.aggregate)
-        .then(transformPlatformDataToQDEvents)
-        .then(function (response) {
-            res.send(response);
-        }).catch(function (error) {
-            res.status(404).send("stream not found");
-        });
-});
+    });
+    var username = req.params.username;
 
 app.get('/quantifieddev/extensions/message', function (req, res) {
     var result = {
