@@ -106,25 +106,6 @@ var validateEncodedUsername = function (encodedUsername, username) {
     return deferred.promise;
 };
 
-var validateShareTokenAndGraphUrl = function (shareToken, graphUrl) {
-    var deferred = q.defer();
-    var graphShareObject = {"graphUrl": graphUrl, "shareToken": shareToken};
-
-    checkGraphAlreadyShared(graphShareObject)
-        .then(function (graphShareObject) {
-            if (graphShareObject) {
-                deferred.resolve();
-            } else {
-                deferred.reject("Invalid input");
-            }
-        }).catch(function (err) {
-            console.log("Error is", err);
-            deferred.reject(err);
-        });
-
-    return deferred.promise;
-};
-
 var checkGraphAlreadyShared = function (graphShareObject) {
     var deferred = q.defer();
     mongoRespository.findOne('graphShares', graphShareObject)
@@ -1335,7 +1316,7 @@ var authorizeUser = function (req, res, next) {
             req.param("objectTags") + "/" + req.param("actionTags") + "/" +
             req.param("operation") + "/" + req.param("period") + "/barchart";
 
-        validateShareTokenAndGraphUrl(req.query.shareToken, graphUrl)
+        util.validateShareTokenAndGraphUrl(req.query.shareToken, graphUrl)
             .then(function () {
                 req.forUsername = username;
                 next();

@@ -1150,25 +1150,6 @@ module.exports = function(app) {
         }
     });
 
-    var checkShareTokenAndGraphUrlExists = function(shareToken, graphUrl) {
-        var deferred = Q.defer();
-
-        var tokenGraphUrlQuery = {
-            "graphUrl": graphUrl,
-            "shareToken": shareToken
-        };
-        mongoRepository.findOne('graphShares', tokenGraphUrlQuery)
-            .then(function(entry) {
-                if (entry) {
-                    deferred.resolve(true);
-                } else {
-                    deferred.resolve(false);
-                }
-            }, function(err) {
-                deferred.reject(err);
-            });
-        return deferred.promise;
-    };
 
     var validateShareToken = function(req, res, next) {
         var shareToken = req.query.shareToken;
@@ -1179,15 +1160,13 @@ module.exports = function(app) {
 
         console.log("Graph Url is", graphUrl);
 
-        checkShareTokenAndGraphUrlExists(shareToken, graphUrl).then(function(status) {
-            if (status) {
-                next();
+        util.validateShareTokenAndGraphUrl(shareToken, graphUrl).then(function() {
+            next();
+        }).catch(function(){
+            if (req.session.username && req.session.username !== username) {
+                res.status(401).send("Sorry, you don't have permission to see this data");
             } else {
-                if (req.session.username && req.session.username !== username) {
-                    res.status(401).send("Sorry, you don't have permission to see this data");
-                } else {
-                    sessionManager.requiresSession(req, res, next);
-                }
+                sessionManager.requiresSession(req, res, next);
             }
         });
     };

@@ -223,5 +223,23 @@ Util.prototype.findUser = function (oneselfUsername) {
     return deferred.promise;
 };
 
+Util.prototype.validateShareTokenAndGraphUrl = function (shareToken, graphUrl) {
+    var deferred = q.defer();
+    var graphShareObject = {"graphUrl": graphUrl, "shareToken": shareToken};
+
+    checkGraphAlreadyShared(graphShareObject)
+        .then(function (graphShareObject) {
+            if (graphShareObject) {
+                deferred.resolve();
+            } else {
+                deferred.reject("Invalid input");
+            }
+        }).catch(function (err) {
+            console.log("Error is", err);
+            deferred.reject(err);
+        });
+    return deferred.promise;
+};
+
 
 module.exports = new Util();
