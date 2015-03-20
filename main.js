@@ -82,11 +82,15 @@ var convertSecsToMinutes = function (seconds) {
     return Math.round(seconds / 60 * 100) / 100;
 };
 
-var validEncodedUsername = function (encodedUsername) {
+var validateEncodedUsername = function (encodedUsername, username) {
     var deferred = q.defer();
-    var query = {
+    var query = typeof username === 'undefined' ? {
         "encodedUsername": encodedUsername
+    } : {
+        "encodedUsername": encodedUsername,
+        "username": username
     };
+
     mongoRespository.findOne('users', query)
         .then(function (user) {
             if (user) {
@@ -992,11 +996,12 @@ var findUniqueStreamIdsFromEvents = function (events) {
 
 // timeline api
 app.get('/v1/users/:username/events', function (req, res) {
+    var username = req.params.username;
     var skipCount = parseInt(req.query.skip) || 0;
     var limitCount = parseInt(req.query.limit) || 50; // by default show only 50 events per page
 
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername)
+    validateEncodedUsername(encodedUsername, username)
         .then(function () {
             return getStreamIdForUsername(encodedUsername, req.query.forUsername);
         })
@@ -1274,7 +1279,7 @@ app.get('/live/devbuild/:durationMins', function (req, res) {
 app.get('/quantifieddev/mydev', function (req, res) {
     var encodedUsername = req.headers.authorization;
     var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername)
+    validateEncodedUsername(encodedUsername)
         .then(function () {
             return getStreamIdForUsername(encodedUsername, forUsername)
         })
@@ -1289,7 +1294,7 @@ app.get('/quantifieddev/mydev', function (req, res) {
 
 app.get('/quantifieddev/githubPushEventForCompare', function (req, res) {
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername)
+    validateEncodedUsername(encodedUsername)
         .then(function () {
             return getStreamIdForUsername(encodedUsername, req.query.forUsername);
         })
@@ -1305,7 +1310,7 @@ app.get('/quantifieddev/githubPushEventForCompare', function (req, res) {
 app.get('/quantifieddev/compare/ideActivity', function (req, res) {
     var encodedUsername = req.headers.authorization;
     var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername)
+    validateEncodedUsername(encodedUsername)
         .then(function () {
             return getStreamIdForUsername(encodedUsername, forUsername)
         }).then(getTotalUsersOfQd)
@@ -1320,7 +1325,7 @@ app.get('/quantifieddev/compare/ideActivity', function (req, res) {
 
 app.get('/quantifieddev/dailyGithubPushEvents', function (req, res) {
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername)
+    validateEncodedUsername(encodedUsername)
         .then(function () {
             return getStreamIdForUsername(encodedUsername, req.query.forUsername);
         })
@@ -1338,7 +1343,7 @@ app.get('/quantifieddev/correlate', function (req, res) {
     var secondEvent = req.query.secondEvent;
     var encodedUsername = req.headers.authorization;
     var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername)
+    validateEncodedUsername(encodedUsername)
         .then(function () {
             return getStreamIdForUsername(encodedUsername, forUsername);
         })
@@ -1363,6 +1368,7 @@ var getEventParams = function (event) {
 
 // /v1/users/:username/correlate/:period/type/json?firstEvent=:objectTags/:actionTags/:operation&secondEvent=:objectTags/:actionTags/:operation
 app.get('/v1/users/:username/correlate/:period/type/json', function (req, res) {
+    var username = req.params.username;
     var firstEvent = req.query.firstEvent;
     var secondEvent = req.query.secondEvent;
     var fromDate = req.query.from;
@@ -1374,10 +1380,9 @@ app.get('/v1/users/:username/correlate/:period/type/json', function (req, res) {
     secondEventParams.period = req.params.period;
 
     var encodedUsername = req.headers.authorization;
-    var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername)
+    validateEncodedUsername(encodedUsername, username)
         .then(function () {
-            return getStreamIdForUsername(encodedUsername, forUsername);
+            return getStreamIdForUsername(encodedUsername);
         })
         .then(function (streams) {
             var streamids = _.map(streams, function (stream) {
@@ -1404,7 +1409,7 @@ app.get('/v1/users/:username/correlate/:period/type/json', function (req, res) {
 app.get('/quantifieddev/correlate/steps/trackcount', function (req, res) {
     var encodedUsername = req.headers.authorization;
     var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername)
+    validateEncodedUsername(encodedUsername)
         .then(function () {
             return getStreamIdForUsername(encodedUsername, forUsername);
         })
@@ -1421,7 +1426,7 @@ app.get('/quantifieddev/correlate/steps/trackcount', function (req, res) {
 app.get('/quantifieddev/correlate/ideactivity/trackcount', function (req, res) {
     var encodedUsername = req.headers.authorization;
     var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername)
+    validateEncodedUsername(encodedUsername)
         .then(function () {
             return getStreamIdForUsername(encodedUsername, forUsername);
         })
@@ -1537,22 +1542,24 @@ app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period
 var authorizeUser = function (req, res, next) {
     var shareToken = req.query.shareToken;
     var encodedUsername = req.headers.authorization;
+    var username = req.param("username");
+
     if (shareToken && shareToken !== 'undefined') {
         // TODO remove barchart hardcoded renderType
-        var graphUrl = "/v1/users/" + req.param("username") + "/events/" +
+        var graphUrl = "/v1/users/" + username + "/events/" +
             req.param("objectTags") + "/" + req.param("actionTags") + "/" +
             req.param("operation") + "/" + req.param("period") + "/barchart";
 
         validateShareTokenAndGraphUrl(req.query.shareToken, graphUrl)
             .then(function () {
-                req.forUsername = req.param("username");
+                req.forUsername = username;
                 next();
             }).catch(function (err) {
                 console.log("Error is", err);
                 res.send(400, "Invalid input");
             });
     } else if (encodedUsername && encodedUsername !== 'undefined') {
-        validEncodedUsername(encodedUsername)
+        validateEncodedUsername(encodedUsername)
             .then(function () {
                 req.forUsername = req.query.forUsername;
                 next();
@@ -1696,7 +1703,7 @@ app.post("/v1/comments", function (req, res) {
 
     chartComment.comment.text = validator.escape(chartComment.comment.text); //escape html
 
-    validEncodedUsername(encodedUsername, "", [])
+    validateEncodedUsername(encodedUsername)
         .then(function () {
             return findGraphUrl(chartComment.graphUrl);
         })

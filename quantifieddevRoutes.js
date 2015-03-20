@@ -1172,7 +1172,8 @@ module.exports = function(app) {
 
     var validateShareToken = function(req, res, next) {
         var shareToken = req.query.shareToken;
-        var graphUrl = "/v1/users/" + req.param("username") + "/events/" +
+        var username = req.param("username");
+        var graphUrl = "/v1/users/" + username + "/events/" +
             req.param("objectTags") + "/" + req.param("actionTags") + "/" +
             req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType");
 
@@ -1182,7 +1183,11 @@ module.exports = function(app) {
             if (status) {
                 next();
             } else {
-                sessionManager.requiresSession(req, res, next);
+                if (req.session.username && req.session.username !== username) {
+                    res.status(401).send("Sorry, you don't have permission to see this data");
+                } else {
+                    sessionManager.requiresSession(req, res, next);
+                }
             }
         });
     };
