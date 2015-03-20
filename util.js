@@ -223,6 +223,17 @@ Util.prototype.findUser = function (oneselfUsername) {
     return deferred.promise;
 };
 
+var checkGraphAlreadyShared = function (graphShareObject) {
+    var deferred = q.defer();
+    mongoRespository.findOne('graphShares', graphShareObject)
+        .then(function (graphShareObject) {
+            deferred.resolve(graphShareObject);
+        }, function (err) {
+            deferred.reject(err);
+        });
+    return deferred.promise;
+};
+
 Util.prototype.validateShareTokenAndGraphUrl = function (shareToken, graphUrl) {
     var deferred = q.defer();
     var graphShareObject = {"graphUrl": graphUrl, "shareToken": shareToken};

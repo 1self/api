@@ -106,17 +106,6 @@ var validateEncodedUsername = function (encodedUsername, username) {
     return deferred.promise;
 };
 
-var checkGraphAlreadyShared = function (graphShareObject) {
-    var deferred = q.defer();
-    mongoRespository.findOne('graphShares', graphShareObject)
-        .then(function (graphShareObject) {
-            deferred.resolve(graphShareObject);
-        }, function (err) {
-            deferred.reject(err);
-        });
-    return deferred.promise;
-};
-
 var getStreamIdForUsername = function (encodedUsername, forUsername) {
     var deferred = q.defer();
     var query = null;
