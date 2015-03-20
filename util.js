@@ -225,7 +225,7 @@ Util.prototype.findUser = function (oneselfUsername) {
 
 var checkGraphAlreadyShared = function (graphShareObject) {
     var deferred = q.defer();
-    mongoRespository.findOne('graphShares', graphShareObject)
+    mongoRepository.findOne('graphShares', graphShareObject)
         .then(function (graphShareObject) {
             deferred.resolve(graphShareObject);
         }, function (err) {

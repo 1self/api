@@ -44,7 +44,7 @@ var insertRegTokenforEachUser = function(callback){
     //         callback();
     //     })});
 
-    // mongoRespository.update('users', {}, {great: true}, {multi: true}).then(function(count){
+    // mongoRepository.update('users', {}, {great: true}, {multi: true}).then(function(count){
     //     console.log(count);
     // })
 

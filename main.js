@@ -15,7 +15,7 @@ var cookieParser = require('cookie-parser');
 var fs = require('fs');
 var validateRequest = require("./validateRequest");
 var validator = require('validator');
-var mongoRespository = require('./mongoRepository.js');
+var mongoRepository = require('./mongoRepository.js');
 var platformService = require('./platformService.js');
 var CONTEXT_URI = process.env.CONTEXT_URI;
 
@@ -91,7 +91,7 @@ var validateEncodedUsername = function (encodedUsername, username) {
         "username": username
     };
 
-    mongoRespository.findOne('users', query)
+    mongoRepository.findOne('users', query)
         .then(function (user) {
             if (user) {
                 deferred.resolve();
@@ -121,7 +121,7 @@ var getStreamIdForUsername = function (encodedUsername, forUsername) {
     var projection = {
         "streams": 1
     };
-    mongoRespository.findOne('users', query, projection)
+    mongoRepository.findOne('users', query, projection)
         .then(function (user) {
             if (!user) {
                 deferred.reject("user not found");
@@ -151,7 +151,7 @@ var authenticateWriteToken = function (writeToken, id) {
     var query = {
         streamid: id
     };
-    mongoRespository.findOne('stream', query)
+    mongoRepository.findOne('stream', query)
         .then(function (stream) {
             if (stream === null || stream.writeToken !== writeToken) {
                 deferred.reject();
@@ -380,7 +380,7 @@ var generateWeek = function (defaultValues) {
 
 var getTotalUsersOfQd = function (streams) {
     var deferred = q.defer();
-    mongoRespository.count('users', {})
+    mongoRepository.count('users', {})
         .then(function (count) {
             deferred.resolve([count, streams]);
         }, function (err) {
@@ -676,7 +676,7 @@ app.get('/health', function (request, response) {
 });
 
 app.get('/users_count', function (req, res) {
-    mongoRespository.count('users', {}).then(function (count) {
+    mongoRepository.count('users', {}).then(function (count) {
         if (!count) {
             res.send(400, "Error")
         } else {
@@ -688,7 +688,7 @@ app.get('/users_count', function (req, res) {
 });
 
 app.get('/recent_signups', function (req, res) {
-    mongoRespository.find('users', {
+    mongoRepository.find('users', {
         "profile.profileUrl": {$exists: true}
     }, {
         "sort": [
@@ -709,7 +709,7 @@ var validateClient = function (appId, appSecret) {
         appSecret: appSecret
     };
 
-    mongoRespository.findOne('registeredApps', query)
+    mongoRepository.findOne('registeredApps', query)
         .then(function (result) {
             if (!result) {
                 deferred.reject();
@@ -820,9 +820,9 @@ app.get('/v1/users/:username/events', function (req, res) {
         .then(function (events) {
             var streamIds = findUniqueStreamIdsFromEvents(events);
             var fetchIconUrlFromApp = function (streamId) {
-                return mongoRespository.findOne('stream', {streamid: streamId}, {appId: 1})
+                return mongoRepository.findOne('stream', {streamid: streamId}, {appId: 1})
                     .then(function (stream) {
-                        return mongoRespository.findOne('registeredApps', {appId: stream.appId}, {iconUrl: 1})
+                        return mongoRepository.findOne('registeredApps', {appId: stream.appId}, {iconUrl: 1})
                     })
                     .then(function (registeredApp) {
                         if (registeredApp) {
@@ -855,7 +855,7 @@ var findUser = function (username, registrationToken) {
         username: username,
         registrationToken: registrationToken
     };
-    mongoRespository.findOne("users", query)
+    mongoRepository.findOne("users", query)
         .then(function (user) {
             if (!_.isEmpty(user)) {
                 deferred.resolve(user);
@@ -1025,7 +1025,7 @@ var updateLatestSyncField = function (streamId, latestSyncField) {
     var updateObject = {
         $set: {"latestSyncField": latestSyncField}
     };
-    mongoRespository.update('stream', query, updateObject)
+    mongoRepository.update('stream', query, updateObject)
         .then(function () {
             deferred.resolve(updateObject);
         }, function (err) {
@@ -1352,7 +1352,7 @@ var findGraphUrl = function (graphUrl) {
     var deferred = q.defer();
     var query = {graphUrl: graphUrl};
 
-    mongoRespository.findOne('comments', query)
+    mongoRepository.findOne('comments', query)
         .then(function (chartComments) {
             if (chartComments) {
                 deferred.resolve(chartComments);
@@ -1374,7 +1374,7 @@ var updateChartComment = function (chartComment) {
             "comments": chartComment.comment
         }
     };
-    mongoRespository.update('comments', query, commentToInsert)
+    mongoRepository.update('comments', query, commentToInsert)
         .then(function () {
             deferred.resolve();
         }, function (err) {
@@ -1405,7 +1405,7 @@ var getCommentsForChart = function (graph, dateRange) {
         });
     };
 
-    mongoRespository.find('comments', graph)
+    mongoRepository.find('comments', graph)
         .then(function (chartComments) {
             deferred.resolve(transform(chartComments));
         }, function (err) {
@@ -1440,7 +1440,7 @@ app.get("/v1/user/:username/exists", function (req, res) {
     var query = {
         "username": username.toLowerCase()
     };
-    mongoRespository.findOne('users', query)
+    mongoRepository.findOne('users', query)
         .then(function (user) {
             if (!user) {
                 res.status(404).send("");
@@ -1467,7 +1467,7 @@ app.post("/v1/comments", function (req, res) {
                 chartComment.comments = [chartComment.comment];
                 delete chartComment.comment;
                 chartComment.dataPointDate = moment.utc(chartComment.dataPointDate, "YYYY-MM-DD").toDate();
-                return mongoRespository.insert('comments', chartComment);
+                return mongoRepository.insert('comments', chartComment);
             }
             else {
                 return updateChartComment(chartComment);
@@ -1500,7 +1500,7 @@ app.get('/v1/app', function (req, res) {
         res.send(400, "I am sorry :( You can't access this page.");
     }
 
-    mongoRespository.find('registeredApps', {})
+    mongoRepository.find('registeredApps', {})
         .then(function (data) {
             res.send(data);
         });
