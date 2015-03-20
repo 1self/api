@@ -36,6 +36,20 @@
         });
     };
 
+// /v1/users/:username/correlate/:period/type/json?firstEvent=:objectTags/:actionTags/:operation&secondEvent=:objectTags/:actionTags/:operation
+    var postV1CorrelateAjax = function (period, firstEvent, secondEvent) {
+        var epochDate = encodeURIComponent(moment.unix(1).utc().toISOString());
+        var today = encodeURIComponent(moment.utc().endOf('day').toISOString());
+        var dataDuration = "&from=" + epochDate + "&to=" + today;
+        return $.ajax({
+            url: "/v1/users/" + username + "/correlate/" + period + "/type/json?firstEvent=" + firstEvent + "&secondEvent=" + secondEvent + dataDuration,
+            headers: {
+                "Accept": "application/json",
+                "Authorization": $.cookie("_eun")
+            }
+        });
+    };
+
     var postAjaxWithData = function (url, data, successCallback, failureCallback) {
         $.ajax({
             url: url,
@@ -54,4 +68,5 @@
     window.postAjaxWithData = postAjaxWithData;
     window.postAjax = postAjax;
     window.postV1Ajax = postV1Ajax;
+    window.postV1CorrelateAjax = postV1CorrelateAjax;
 })(jQuery);

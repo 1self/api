@@ -800,60 +800,6 @@ var correlateIDEActivityAndTracks = function (streams) {
     return deferred.promise;
 };
 
-var correlateGithubPushesAndIDEActivity = function (streams, firstEvent, secondEvent) {
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var deferred = q.defer();
-    var sumQuery = {
-        "$sum": {
-            "field": {
-                "name": "properties.duration"
-            },
-            "data": getQueryForStreamIdActionTagAndObjectTag(streamids, firstEvent),
-            "filterSpec": {},
-            "projectionSpec": {
-                "resultField": "activeTimeInSecs"
-            }
-        }
-    };
-    var countQuery = {
-        "$count": {
-            "data": getQueryForStreamIdActionTagAndObjectTag(streamids, secondEvent),
-            "filterSpec": {},
-            "projectionSpec": {
-                "resultField": "githubPushEventCount"
-            }
-        }
-    };
-    var query = {
-        spec: JSON.stringify([sumQuery, countQuery]),
-        merge: true
-    };
-    var processResult = function (result) {
-        if (_.isEmpty(result)) {
-            deferred.resolve([]);
-        } else {
-            for (var date in result) {
-                if (result[date].activeTimeInSecs === undefined) {
-                    result[date].activeTimeInSecs = 0;
-                }
-                if (result[date].githubPushEventCount === undefined) {
-                    result[date].githubPushEventCount = 0;
-                }
-                result[date].activeTimeInMinutes = convertSecsToMinutes(result[date].activeTimeInSecs);
-                result[date].date = date;
-            }
-            deferred.resolve(result);
-        }
-    };
-    platformService.aggregate(query)
-        .then(processResult, function (err) {
-            deferred.reject(err);
-        });
-    return deferred.promise;
-};
-
 app.get('/', function (request, response) {
     response.redirect('/timeline');
 });
@@ -1333,25 +1279,6 @@ app.get('/quantifieddev/dailyGithubPushEvents', function (req, res) {
         });
 });
 
-app.get('/quantifieddev/correlate', function (req, res) {
-    var firstEvent = req.query.firstEvent;
-    var secondEvent = req.query.secondEvent;
-    var encodedUsername = req.headers.authorization;
-    var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername)
-        .then(function () {
-            return getStreamIdForUsername(encodedUsername, forUsername);
-        })
-        .then(function (streams) {
-            return correlateGithubPushesAndIDEActivity(streams, firstEvent, secondEvent);
-        })
-        .then(function (response) {
-            res.send(response);
-        }).catch(function (error) {
-            res.status(404).send("stream not found");
-        });
-});
-
 var getEventParams = function (event) {
     var eventSplit = event.split("/");
     return {
@@ -1383,8 +1310,8 @@ app.get('/v1/users/:username/correlate/:period/type/json', function (req, res) {
             var streamids = _.map(streams, function (stream) {
                 return stream.streamid;
             });
-            var firstEventQuery = getQueryForVisualizationAPI(streamids, firstEventParams, fromDate, toDate, "value_first");
-            var secondEventQuery = getQueryForVisualizationAPI(streamids, secondEventParams, fromDate, toDate, "value_second");
+            var firstEventQuery = getQueryForVisualizationAPI(streamids, firstEventParams, fromDate, toDate, "value1");
+            var secondEventQuery = getQueryForVisualizationAPI(streamids, secondEventParams, fromDate, toDate, "value2");
             var query = {
                 "spec": JSON.stringify([firstEventQuery, secondEventQuery]),
                 "merge": true
