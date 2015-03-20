@@ -335,31 +335,28 @@ var qd = function () {
 
     var plotStepsVsTracksCorrelationData = function (stepsVsTracksCorrelationData) {
         result.stepsVsTracksCorrelationData = stepsVsTracksCorrelationData;
-
         if (stepsVsTracksCorrelationData.length === 0) {
             result.updateProgress();
             return;
         }
-
         result.hideMessage();
         $("#correlate-steps-vs-tracks-events-parent").show();
         var toolTipText = "{{xValue}} steps walked with {{yValue}} tracks listened";
-        result.plotScatterPlot('#correlate-steps-vs-tracks-events', stepsVsTracksCorrelationData, 'stepSum', 'musicListenCount', 'Steps', "Count of Tracks Listened", toolTipText);
+        result.plotScatterPlot('#correlate-steps-vs-tracks-events', stepsVsTracksCorrelationData, 'Steps', "Count of Tracks Listened", toolTipText);
         result.updateProgress();
     };
 
     var plotIDEActivityVsTracksCorrelationData = function (iDEActivityVsTracksCorrelationData) {
-        result.iDEActivityVsTracksCorrelationData = iDEActivityVsTracksCorrelationData;
-
         if (iDEActivityVsTracksCorrelationData.length === 0) {
             result.updateProgress();
             return;
         }
-
+        convertSecondsToMinutes(iDEActivityVsTracksCorrelationData, "value1");
+        result.iDEActivityVsTracksCorrelationData = iDEActivityVsTracksCorrelationData;
         result.hideMessage();
         $('#correlate-ideactivity-vs-tracks-events-parent').show();
         var toolTipText = "Active programming duration of {{xValue}} mins with {{yValue}} tracks listened";
-        result.plotScatterPlot('#correlate-ideactivity-vs-tracks-events', iDEActivityVsTracksCorrelationData, 'activeTimeInMinutes', 'musicListenCount', 'IDE Activity In Minutes', "Count of Tracks Listened", toolTipText);
+        result.plotScatterPlot('#correlate-ideactivity-vs-tracks-events', iDEActivityVsTracksCorrelationData, 'IDE Activity In Minutes', "Count of Tracks Listened", toolTipText);
         result.updateProgress();
     };
 
@@ -372,11 +369,19 @@ var qd = function () {
     };
 
     result.updateStepsVsTracksCorrelationData = function () {
-        postAjax("correlate/steps/trackcount", plotStepsVsTracksCorrelationData);
+        postV1CorrelateAjax("daily", "steps/walked/sum(numberOfSteps)", "music/listen/count")
+            .done(plotStepsVsTracksCorrelationData)
+            .fail(function (err) {
+                console.error("Error fetching correlation data: " + err)
+            });
     };
 
     result.updateIDEActivityVsTracksCorrelationData = function () {
-        postAjax("correlate/ideactivity/trackcount", plotIDEActivityVsTracksCorrelationData);
+        postV1CorrelateAjax("daily", "Computer,Software/Develop/sum(duration)", "music/listen/count")
+            .done(plotIDEActivityVsTracksCorrelationData)
+            .fail(function (err) {
+                console.error("Error fetching correlation data: " + err)
+            });
     };
 
     result.plotGraphs = function (graphs) {
