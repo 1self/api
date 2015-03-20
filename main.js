@@ -1162,6 +1162,7 @@ var getEventParams = function (event) {
         var secondEvent = req.query.secondEvent;
         var fromDate = req.query.from;
         var toDate = req.query.to;
+        var username = req.params.username;
 
         var firstEventParams = getEventParams(firstEvent);
         var secondEventParams = getEventParams(secondEvent);
@@ -1169,7 +1170,7 @@ var getEventParams = function (event) {
         secondEventParams.period = req.params.period;
 
         var encodedUsername = req.headers.authorization;
-        validEncodedUsername(encodedUsername)
+        validateEncodedUsername(encodedUsername, username)
             .then(function () {
                 return getStreamIdForUsername(encodedUsername);
             })
@@ -1193,7 +1194,6 @@ var getEventParams = function (event) {
                 res.status(404).send("stream not found");
             });
     });
-    var username = req.params.username;
 
 app.get('/quantifieddev/extensions/message', function (req, res) {
     var result = {
