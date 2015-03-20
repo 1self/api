@@ -1161,12 +1161,15 @@ module.exports = function(app) {
         console.log("Graph Url is", graphUrl);
 
         util.validateShareTokenAndGraphUrl(shareToken, graphUrl).then(function() {
+            console.log("Valid share token!");
             next();
         }).catch(function(){
-            if (req.session.username && req.session.username !== username) {
-                res.status(401).send("Sorry, you don't have permission to see this data");
+            console.log("Invalid share token - checking signed in")
+            if (req.session.username && req.session.username === username) {
+                next();
+                //sessionManager.requiresSession(req, res, next);
             } else {
-                sessionManager.requiresSession(req, res, next);
+                res.status(401).send("Sorry, you don't have permission to see this data");
             }
         });
     };
