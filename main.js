@@ -979,7 +979,7 @@ var formatEventDateTime = function (datetime) {
     }
     var utcDate = currentMoment.toISOString();
     var localISODate = utcDate;
-    if (!endsWith(datetime, "Z")) {
+    if (typeof datetime !== 'undefined' && !endsWith(datetime, "Z")) {
         offset = currentMoment._tzm;
         localISODate = currentMoment.subtract(offset, 'minutes').toISOString();
     }
