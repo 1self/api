@@ -2,49 +2,55 @@
 <html xmlns="http://www.w3.org/1999/html">
 	<head>
 		<meta charset="UTF-8">
-		<link href="../css/barChart.css" rel="stylesheet" media="screen">
+		<link href="../css/scatterplot.css" rel="stylesheet" media="screen">
 		<script src="../js/jquery.js"></script>
 		<script src="../js/daterange/moment.js"></script>
 		<script src="../js/underscore-min.js"></script>
 		<script src="../packages/d3/d3.min.js"></script>
 		<script src="../js/d3.tip.v0.6.3.js"></script>
-		<script src="../packages/d3/d3.geo.projection.v0.min.js"></script>
-		<script src="../js/barChart.js"></script>
+		<script src="../js/scatterplot.js"></script>
 		<script>
 		var events = [];
 		events.push({
 			date: new Date(moment().subtract("days", 0).format("MM/DD/YYYY")),
-			value: 42
+			value1: 42,
+			value2: 12
 		});
 		events.push({
 			date: new Date(moment().subtract("days", 1).format("MM/DD/YYYY")),
-			value: 13
+			value1: 13,
+            value2: 10
 		});
 		events.push({
 			date: new Date(moment().subtract("days", 2).format("MM/DD/YYYY")),
-			value: 76
+			value1: 76,
+            value2: 18
 		});
 		events.push({
 			date: new Date(moment().subtract("days", 3).format("MM/DD/YYYY")),
-			value: 15
+			value1: 15,
+            value2: 32
 		});
 		events.push({
 			date: new Date(moment().subtract("days", 4).format("MM/DD/YYYY")),
-			value: 67
+			value1: 67,
+            value2: 45
 		});
 		events.push({
 			date: new Date(moment().subtract("days", 5).format("MM/DD/YYYY")),
-			value: 24
+			value1: 24,
+            value2: 18
 		});
 		events.push({
 			date: new Date(moment().subtract("days", 6).format("MM/DD/YYYY")),
-			value: 52
+			value1: 52,
+            value2: 12
 		});
 		var now = new Date();
 		var operation = 'sum(prop)';
 
 		var weekAgo = new Date().setDate(now.getDate() -7);
-		charts.plotBarChart('#chart', events, weekAgo, now, "units");
+		charts.plotScatterPlot('#chart', events, weekAgo, now, "units");
 		</script>
 	</head>
 	<body style="background: rgb(36, 155, 186)">
