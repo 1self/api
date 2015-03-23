@@ -1220,6 +1220,13 @@ module.exports = function(app) {
             });
         };
 
+        //v1/me/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{.barchart/.json}}
+        app.get("/v1/me/events/:objectTags/:actionTags/:operation/:period/:renderType", sessionManager.requiresSession, function(req, res) {
+            var username = req.session.username;
+            var redirectTo = req.url.replace("/me/", "/users/" + username + "/");
+            res.redirect(CONTEXT_URI + redirectTo);
+        });
+
         util.streamExists(streamId, readToken)
             .then(function(exists) {
                 if (exists) {
