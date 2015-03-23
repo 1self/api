@@ -9,7 +9,7 @@ charts.plotScatterPlot = function (divId, events, fromDate, toDate) {
             bottom: 30,
             left: 30
         };
-        var width = window.innerWidth;
+        var width = window.innerWidth - margin.left - margin.right;
         var height = width / 1.61;
 
         var _groupCorrelateEvents = function (events) {
@@ -28,7 +28,7 @@ charts.plotScatterPlot = function (divId, events, fromDate, toDate) {
             xMap = function (d) {
                 return xScale(xValue(d));
             },
-            xAxis = d3.svg.axis().scale(xScale).orient("bottom");
+            xAxis = d3.svg.axis().scale(xScale).orient("bottom").ticks(5);
 
         var yValue = function (d) {
                 return d.y;
@@ -68,11 +68,11 @@ charts.plotScatterPlot = function (divId, events, fromDate, toDate) {
                 .data(data)
                 .enter().append("circle")
                 .attr("class", "dot")
-                .attr("r", 3.5)
+                .attr("r", 7.5)
                 .attr("cx", xMap)
                 .attr("cy", yMap)
                 .style("fill", function (d) {
-                    return (d.x === 0 || d.y === 0) ? "lightgrey" : "#e93e5a";
+                    return (d.x === 0 || d.y === 0) ? "rgba(196, 196, 196, 0.5)" : "rgba(61, 61, 61, 0.2)";
                 })
                 .on("click", function (d) {
                     if ($(window).width() < 768) {
