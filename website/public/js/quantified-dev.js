@@ -136,7 +136,7 @@ var qd = function () {
     };
 
     result.updateStepsModel = function () {
-        postV1Ajax("steps", "walked", "sum(numberOfSteps)", "daily")
+        postV1Ajax("self", "exercise,walk", "sum(steps)", "daily")
             .done(plotStepsEvents)
             .always(result.updateProgress)
             .fail(function (error) {
@@ -265,7 +265,7 @@ var qd = function () {
     };
 
     result.updateHourlyStepsHeatMap = function () {
-        postV1Ajax("steps", "walked", "sum(numberOfSteps)", "hourOfDay")
+        postV1Ajax("self", "exercise,walk", "sum(steps)", "hourOfDay")
             .done(plotHourlyStepsEvents)
             .always(result.updateProgress)
             .fail(function (error) {
@@ -380,7 +380,7 @@ var qd = function () {
     };
 
     result.updateStepsVsTracksCorrelationData = function () {
-        postV1CorrelateAjax("daily", "steps/walked/sum(numberOfSteps)", "music/listen/count")
+        postV1CorrelateAjax("daily", "self/exercise,walk/sum(steps)", "music/listen/count")
             .done(plotStepsVsTracksCorrelationData)
             .fail(function (err) {
                 console.error("Error fetching correlation data: " + err)
