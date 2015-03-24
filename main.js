@@ -1157,7 +1157,7 @@ var getEventParams = function (event) {
 };
 
 // /v1/users/:username/correlate/:period/.json?firstEvent=:objectTags/:actionTags/:operation&secondEvent=:objectTags/:actionTags/:operation
-    app.get('/v1/users/:username/correlate/:period/.json',  validateRequest.validateDateRange, function (req, res) {
+    app.get('/v1/users/:username/correlate/:period/type/.json',  validateRequest.validateDateRange, function (req, res) {
         var firstEvent = req.query.firstEvent;
         var secondEvent = req.query.secondEvent;
         var fromDate = req.query.from;
@@ -1415,6 +1415,7 @@ var getCommentsForChart = function (graph, dateRange) {
 };
 
 // Get comments for the graph url
+// /v1/comments?username=:username&objectTags=:objectTags&actionTags=:actionTags&operation=:operation&period=:period&renderType=:renderType&from=:from&to=:to
 app.get("/v1/comments"
     , validateRequest.validateDateRange
     , function (req, res) {
@@ -1429,7 +1430,7 @@ app.get("/v1/comments"
         var dateRange = {
             from: req.query.from,
             to: req.query.to
-        }
+        };
         getCommentsForChart(graph, dateRange).then(function (comments) {
             res.send(comments);
         });

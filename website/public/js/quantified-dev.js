@@ -18,8 +18,6 @@ var qd = function () {
     result.updateProgress = function () {
         result['progress'] += 1;
         var progress = Math.ceil((result['progress'] / result['total']) * 100);
-        console.log(progress)
-
         if (progress >= 100) {
             if (typeof result['completed'] !== 'undefined') {
                 result['completed']();
