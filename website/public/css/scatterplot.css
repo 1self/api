@@ -1,11 +1,6 @@
 /*.chart {
     background-color: #4CBB62;
 }*/
-
-.bar {
-    background-color: rgb(255, 255, 255);
-}
-
 .axis path {
     fill: none;
     /*stroke: #fff;*/
@@ -18,16 +13,11 @@ text {
     font-family: "Raleway-Thin", "helvetica neue", helvetica, arial
 }
 
-.overlay {
-    text-shadow: 0px 0px 9px rgba(0, 0, 0, 0.5);
-}
-
-
-
 .d3-tip, .tooltip {
+    text-align: center;
     line-height: 1;
     font-weight: bold;
-    font-size: 30px;
+    font-size: 10px;
     padding: 12px;
     background: rgba(0, 0, 0, 0.8);
     color: #fff;

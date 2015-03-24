@@ -1,59 +1,272 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/html">
-	<head>
-		<meta charset="UTF-8">
-		<link href="../css/scatterplot.css" rel="stylesheet" media="screen">
-		<script src="../js/jquery.js"></script>
-		<script src="../js/daterange/moment.js"></script>
-		<script src="../js/underscore-min.js"></script>
-		<script src="../packages/d3/d3.min.js"></script>
-		<script src="../js/d3.tip.v0.6.3.js"></script>
-		<script src="../js/scatterplot.js"></script>
-		<script>
-		var events = [];
-		events.push({
-			date: new Date(moment().subtract("days", 0).format("MM/DD/YYYY")),
-			value1: 42,
-			value2: 12
-		});
-		events.push({
-			date: new Date(moment().subtract("days", 1).format("MM/DD/YYYY")),
-			value1: 13,
-            value2: 10
-		});
-		events.push({
-			date: new Date(moment().subtract("days", 2).format("MM/DD/YYYY")),
-			value1: 76,
-            value2: 18
-		});
-		events.push({
-			date: new Date(moment().subtract("days", 3).format("MM/DD/YYYY")),
-			value1: 15,
-            value2: 32
-		});
-		events.push({
-			date: new Date(moment().subtract("days", 4).format("MM/DD/YYYY")),
-			value1: 67,
-            value2: 45
-		});
-		events.push({
-			date: new Date(moment().subtract("days", 5).format("MM/DD/YYYY")),
-			value1: 24,
-            value2: 18
-		});
-		events.push({
-			date: new Date(moment().subtract("days", 6).format("MM/DD/YYYY")),
-			value1: 52,
-            value2: 12
-		});
-		var now = new Date();
-		var operation = 'sum(prop)';
+<head>
+    <meta charset="UTF-8">
+    <link href="../css/scatterplot.css" rel="stylesheet" media="screen">
+    <script src="../js/jquery.js"></script>
+    <script src="../js/daterange/moment.js"></script>
+    <script src="../js/underscore-min.js"></script>
+    <script src="../packages/d3/d3.min.js"></script>
+    <script src="../js/d3.tip.v0.6.3.js"></script>
+    <script src="../js/scatterplot.js"></script>
+    <script>
+        var events = [
+            {"date": "10/13/2014", "value1": 455.77, "value2": 1}, {
+                "date": "06/25/2014",
+                "value2": 3
+            }, {"date": "08/21/2014", "value1": 9227, "value2": 11}, {
+                "date": "03/04/2015",
+                "value1": 585,
+                "value2": 14
+            }, {"date": "07/31/2014", "value1": 1030.948}, {
+                "date": "02/26/2015",
+                "value1": 36,
+                "value2": 3
+            }, {"date": "06/02/2014", "value2": 1}, {"date": "01/16/2015", "value2": 6}, {
+                "date": "03/10/2015",
+                "value1": 7730,
+                "value2": 4
+            }, {"date": "09/16/2014", "value2": 3}, {"date": "02/05/2015", "value1": 18}, {
+                "date": "07/24/2014",
+                "value1": 58
+            }, {"date": "10/20/2014", "value2": 3}, {"date": "09/19/2014", "value1": 80.158}, {
+                "date": "11/04/2014",
+                "value2": 6
+            }, {"date": "08/06/2014", "value1": 1769.895, "value2": 5}, {
+                "date": "03/16/2015",
+                "value1": 321,
+                "value2": 1
+            }, {"date": "08/14/2014", "value1": 678, "value2": 1}, {
+                "date": "09/22/2014",
+                "value1": 20.973
+            }, {"date": "10/06/2014", "value1": 3685.8780000000006}, {
+                "date": "02/25/2015",
+                "value1": 215,
+                "value2": 6
+            }, {"date": "01/20/2015", "value2": 1}, {"date": "04/17/2014", "value2": 2}, {
+                "date": "06/05/2014",
+                "value2": 4
+            }, {"date": "02/13/2015", "value1": 1184, "value2": 2}, {
+                "date": "03/03/2015",
+                "value1": 258,
+                "value2": 2
+            }, {"date": "06/17/2014", "value2": 3}, {
+                "date": "03/18/2015",
+                "value1": 548,
+                "value2": 2
+            }, {"date": "08/12/2014", "value1": 2665, "value2": 6}, {
+                "date": "07/02/2014",
+                "value2": 1
+            }, {"date": "03/13/2015", "value1": 38, "value2": 10}, {
+                "date": "10/14/2014",
+                "value1": 1868.639,
+                "value2": 2
+            }, {"date": "03/11/2015", "value1": 10849, "value2": 4}, {
+                "date": "09/08/2014",
+                "value2": 2
+            }, {"date": "03/19/2015", "value1": 3662, "value2": 4}, {
+                "date": "12/05/2014",
+                "value1": 37
+            }, {"date": "06/30/2014", "value1": 16875, "value2": 2}, {
+                "date": "12/08/2014",
+                "value1": 108
+            }, {"date": "09/15/2014", "value2": 3}, {"date": "09/05/2014", "value2": 3}, {
+                "date": "10/09/2014",
+                "value1": 6568.740999999999,
+                "value2": 9
+            }, {"date": "03/23/2015", "value1": 3583}, {"date": "09/14/2014", "value2": 1}, {
+                "date": "07/30/2014",
+                "value1": 309
+            }, {"date": "07/18/2014", "value2": 3}, {"date": "01/15/2015", "value2": 2}, {
+                "date": "08/11/2014",
+                "value1": 11842,
+                "value2": 1
+            }, {"date": "12/03/2014", "value1": 187}, {
+                "date": "09/18/2014",
+                "value1": 2371.593,
+                "value2": 1
+            }, {"date": "02/10/2015", "value1": 4730.0509999999995, "value2": 2}, {
+                "date": "06/19/2014",
+                "value2": 1
+            }, {"date": "02/27/2015", "value1": 308, "value2": 5}, {
+                "date": "09/04/2014",
+                "value2": 1
+            }, {"date": "01/14/2015", "value2": 4}, {"date": "05/14/2014", "value2": 2}, {
+                "date": "07/14/2014",
+                "value2": 5
+            }, {"date": "08/23/2014", "value1": 351}, {"date": "09/07/2014", "value2": 1}, {
+                "date": "01/19/2015",
+                "value2": 4
+            }, {"date": "02/18/2015", "value1": 80, "value2": 2}, {
+                "date": "05/21/2014",
+                "value2": 4
+            }, {"date": "05/13/2014", "value2": 4}, {
+                "date": "02/11/2015",
+                "value1": 14157.431000000004,
+                "value2": 1
+            }, {"date": "08/19/2014", "value1": 7540, "value2": 6}, {
+                "date": "06/26/2014",
+                "value2": 4
+            }, {"date": "02/16/2015", "value1": 304}, {"date": "12/10/2014", "value1": 44}, {
+                "date": "09/24/2014",
+                "value1": 44.113
+            }, {"date": "05/28/2014", "value2": 6}, {
+                "date": "08/20/2014",
+                "value1": 9785,
+                "value2": 3
+            }, {"date": "09/02/2014", "value1": 304, "value2": 1}, {
+                "date": "08/27/2014",
+                "value1": 4746,
+                "value2": 1
+            }, {"date": "01/07/2015", "value2": 6}, {
+                "date": "08/25/2014",
+                "value1": 2499,
+                "value2": 5
+            }, {"date": "02/15/2015", "value1": 44}, {
+                "date": "08/13/2014",
+                "value1": 9795,
+                "value2": 6
+            }, {"date": "10/07/2014", "value1": 3374.573, "value2": 1}, {
+                "date": "02/04/2015",
+                "value1": 58,
+                "value2": 3
+            }, {"date": "02/09/2015", "value1": 4267.653, "value2": 1}, {
+                "date": "11/06/2014",
+                "value2": 4
+            }, {"date": "02/03/2015", "value1": 161, "value2": 4}, {
+                "date": "08/01/2014",
+                "value1": 2471,
+                "value2": 3
+            }, {"date": "10/08/2014", "value1": 1726.6219999999998, "value2": 3}, {
+                "date": "07/23/2014",
+                "value1": 5461,
+                "value2": 6
+            }, {"date": "03/20/2015", "value1": 4061, "value2": 6}, {
+                "date": "04/29/2014",
+                "value2": 1
+            }, {"date": "04/30/2014", "value2": 2}, {"date": "06/03/2014", "value2": 8}, {
+                "date": "09/29/2014",
+                "value1": 4364.596999999999,
+                "value2": 2
+            }, {"date": "09/30/2014", "value1": 9405.176999999998, "value2": 2}, {
+                "date": "10/17/2014",
+                "value2": 1
+            }, {"date": "06/04/2014", "value2": 1}, {
+                "date": "02/20/2015",
+                "value1": 136,
+                "value2": 2
+            }, {"date": "02/23/2015", "value1": 120, "value2": 2}, {
+                "date": "11/07/2014",
+                "value2": 14
+            }, {"date": "08/04/2014", "value1": 2082, "value2": 4}, {
+                "date": "08/18/2014",
+                "value1": 8687,
+                "value2": 2
+            }, {"date": "07/25/2014", "value1": 410}, {
+                "date": "08/22/2014",
+                "value1": 5128,
+                "value2": 7
+            }, {"date": "07/03/2014", "value2": 4}, {"date": "03/17/2015", "value1": 3675}, {
+                "date": "07/15/2014",
+                "value2": 5
+            }, {"date": "10/27/2014", "value2": 2}, {
+                "date": "09/25/2014",
+                "value1": 954.489,
+                "value2": 1
+            }, {"date": "12/31/2014", "value2": 1}, {
+                "date": "10/01/2014",
+                "value1": 1849.3300000000004,
+                "value2": 1
+            }, {"date": "06/10/2014", "value2": 1}, {"date": "07/09/2014", "value2": 1}, {
+                "date": "09/01/2014",
+                "value1": 2833.954,
+                "value2": 2
+            }, {"date": "07/22/2014", "value1": 249.009, "value2": 5}, {
+                "date": "03/09/2015",
+                "value1": 60
+            }, {"date": "03/02/2015", "value1": 235, "value2": 1}, {
+                "date": "06/20/2014",
+                "value2": 2
+            }, {"date": "03/12/2015", "value1": 3413, "value2": 10}, {
+                "date": "02/12/2015",
+                "value1": 704,
+                "value2": 2
+            }, {"date": "01/06/2015", "value2": 1}, {"date": "07/21/2014", "value2": 2}, {
+                "date": "02/17/2015",
+                "value1": 399,
+                "value2": 2
+            }, {"date": "06/18/2014", "value2": 10}, {
+                "date": "02/06/2015",
+                "value1": 292,
+                "value2": 1
+            }, {"date": "05/30/2014", "value2": 11}, {
+                "date": "10/10/2014",
+                "value1": 3392.4780000000005,
+                "value2": 1
+            }, {"date": "07/17/2014", "value1": 1601.016}, {
+                "date": "09/26/2014",
+                "value1": 350,
+                "value2": 1
+            }, {"date": "07/29/2014", "value1": 2454.52, "value2": 1}, {
+                "date": "08/08/2014",
+                "value1": 8118,
+                "value2": 2
+            }, {"date": "02/24/2015", "value1": 99, "value2": 4}, {
+                "date": "06/24/2014",
+                "value2": 3
+            }, {"date": "08/07/2014", "value1": 2268, "value2": 2}, {
+                "date": "05/20/2014",
+                "value2": 2
+            }, {"date": "01/12/2015", "value2": 2}, {"date": "06/12/2014", "value2": 5}, {
+                "date": "08/28/2014",
+                "value1": 237
+            }, {"date": "05/06/2014", "value2": 2}, {"date": "05/16/2014", "value2": 2}, {
+                "date": "03/15/2015",
+                "value1": 269
+            }];
+        /*events.push({
+         date: new Date(moment().subtract("days", 0).format("MM/DD/YYYY")),
+         value1: 42,
+         value2: 12
+         });
+         events.push({
+         date: new Date(moment().subtract("days", 1).format("MM/DD/YYYY")),
+         value1: 13,
+         value2: 10
+         });
+         events.push({
+         date: new Date(moment().subtract("days", 2).format("MM/DD/YYYY")),
+         value1: 76,
+         value2: 18
+         });
+         events.push({
+         date: new Date(moment().subtract("days", 3).format("MM/DD/YYYY")),
+         value1: 15,
+         value2: 32
+         });
+         events.push({
+         date: new Date(moment().subtract("days", 4).format("MM/DD/YYYY")),
+         value1: 67,
+         value2: 45
+         });
+         events.push({
+         date: new Date(moment().subtract("days", 5).format("MM/DD/YYYY")),
+         value1: 24,
+         value2: 18
+         });
+         events.push({
+         date: new Date(moment().subtract("days", 6).format("MM/DD/YYYY")),
+         value1: 52,
+         value2: 12
+         });*/
+        var now = new Date();
+        var operation = 'sum(prop)';
 
-		var weekAgo = new Date().setDate(now.getDate() -7);
-		charts.plotScatterPlot('#chart', events, weekAgo, now, "units");
-		</script>
-	</head>
-	<body style="background: rgb(36, 155, 186)">
-		<div id='chart' width='500' height='500'></div>
-	</body>
+        var weekAgo = new Date().setDate(now.getDate() - 7);
+        charts.plotScatterPlot('#chart', events, weekAgo, now, "units");
+    </script>
+</head>
+<body style="background: #249BBA">
+<div id='chart' width='500' height='500'></div>
+</body>
 </html>

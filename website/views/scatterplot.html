@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head lang="en">
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no"/>
+    <meta charset="UTF-8">
+    <title></title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="/css/bootstrap-modal.css" rel="stylesheet" media="screen">
+    <link href="/css/chart.css" rel="stylesheet" media="screen">
+    <link href="/css/scatterplot.css" rel="stylesheet" media="screen">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="/js/jquery.js"></script>
+    <script src="/js/jquery.cookie.js"></script>
+    <script src="/js/core_utils.js"></script>
+    <script>
+        var graphOwnerAvatarUrl = "{{graphOwnerAvatarUrl}}";
+        var firstEventTitle = "{{firstEventTitle}}";
+        var secondEventTitle = "{{secondEventTitle}}";
+        var username = "{{username}}";
+        var firstEvent = "{{firstEvent}}";
+        var secondEvent = "{{secondEvent}}";
+        var period = "{{period}}";
+        var renderType = "{{renderType}}";
+        var oneselfAppUrl = "{{oneselfAppUrl}}";
+        var toDate = "{{toDate}}";
+        var fromDate = "{{fromDate}}";
+
+    </script>
+</head>
+<body>
+  <table class="header-main">
+  </table>
+<table class="header">
+    <tr class="headerrow">
+        <td class="avatar">
+            {% if graphOwnerAvatarUrl %}
+            <img src="{{graphOwnerAvatarUrl}}"/>
+            {% endif %}
+        </td>
+        <td id="chartTitle" class="page-title"></td>
+    </tr>
+</table>
+
+<div class="no-data" style="display:none">
+    Nothing to correlate!
+</div>
+
+<div id="chart" class="chart">
+</div>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/daterange/moment.js"></script>
+<script src="/js/underscore-min.js"></script>
+<script src="/packages/d3/d3.min.js"></script>
+<script src="/js/d3.tip.v0.6.3.js"></script>
+<script src="/js/scatterplot.js"></script>
+<script src="/js/correlate.js"></script>
+
+</body>
+</html>

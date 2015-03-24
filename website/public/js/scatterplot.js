@@ -1,13 +1,13 @@
 window.charts = window.charts || {};
 
-charts.plotScatterPlot = function (divId, events, fromDate, toDate) {
+charts.plotScatterPlot = function (divId, events, xAxisLabel, yAxisLabel) {
     setTimeout(function () {
         $(divId).empty();
         var margin = {
             top: 20,
-            right: 30,
+            right: 50,
             bottom: 30,
-            left: 30
+            left: 50
         };
         var width = window.innerWidth - margin.left - margin.right;
         var height = width / 1.61;
@@ -49,16 +49,16 @@ charts.plotScatterPlot = function (divId, events, fromDate, toDate) {
             .attr('class', 'd3-tip')
             .offset([-10, 0])
             .html(function (d) {
-                /*var toolTip = toolTipText.replace("{{xValue}}", xValue(d));
-                 toolTip = toolTip.replace("{{yValue}}", yValue(d));*/
-                return xValue(d) + "<span style='color:lightgrey'> vs " + yValue(d) + " on " + moment(d.date).format("ddd MMM DD") + "</span>";
+                return xValue(d) + "<span style='color:lightgrey'> vs " + yValue(d) + "<br> on " + moment(d.date).format("ddd MMM DD") + "</span>";
             });
         svg.call(tip);
         var _plotGraph = function () {
             var data = _groupCorrelateEvents(events);
             // don't want dots overlapping axis, so add in buffer to data domain
-            xScale.domain([d3.min(data, xValue) - 1, d3.max(data, xValue) + 1]);
-            yScale.domain([d3.min(data, yValue) - 1, d3.max(data, yValue) + 1]);
+            var minXVal = Math.max(0, d3.min(data, xValue) - 1);
+            var minYVal = Math.max(0, d3.min(data, yValue) - 1);
+            xScale.domain([minXVal, d3.max(data, xValue) + 1]);
+            yScale.domain([minYVal, d3.max(data, yValue) + 1]);
 
             // draw dots
             var div = d3.select("body").append("div")
@@ -79,7 +79,7 @@ charts.plotScatterPlot = function (divId, events, fromDate, toDate) {
                         div.transition()
                             .duration(200)
                             .style("opacity", .9);
-                        div.html("<strong>" + xValue(d) + " vs " + yValue(d) + "</strong> <span style='color:lightgrey'> on " + moment(d.date).format("ddd MMM DD") + "</span>")
+                        div.html("<strong>" + xValue(d) + " vs " + yValue(d) + "</strong><br/> <span style='color:lightgrey'> on " + moment(d.date).format("ddd MMM DD") + "</span>")
                             .style("left", (d3.event.pageX) - 80 + "px")
                             .style("top", (d3.event.pageY) + "px");
                     }
@@ -110,7 +110,7 @@ charts.plotScatterPlot = function (divId, events, fromDate, toDate) {
                 .attr("x", width)
                 .attr("y", -6)
                 .style("text-anchor", "end")
-                .text("X-axis");
+                .text(xAxisLabel);
 
             // y-axis
             svg.append("g")
@@ -122,7 +122,7 @@ charts.plotScatterPlot = function (divId, events, fromDate, toDate) {
                 .attr("y", 6)
                 .attr("dy", ".71em")
                 .style("text-anchor", "end")
-                .text("Y-axis");
+                .text(yAxisLabel);
         };
         _plotGraph();
     }, 1000);

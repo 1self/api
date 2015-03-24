@@ -62,9 +62,11 @@ window.qd.plotScatterPlot = function (divId, correlateEvents, xAxisLabel, yAxisL
         svg.call(tip);
         var _plotGraph = function () {
             var data = _groupCorrelateEvents(correlateEvents);
+            var minXVal = Math.max(0, d3.min(data, xValue) - 1);
+            var minYVal = Math.max(0, d3.min(data, yValue) - 1);
             // don't want dots overlapping axis, so add in buffer to data domain
-            xScale.domain([d3.min(data, xValue) - 1, d3.max(data, xValue) + 1]);
-            yScale.domain([d3.min(data, yValue) - 1, d3.max(data, yValue) + 1]);
+            xScale.domain([minXVal, d3.max(data, xValue) + 1]);
+            yScale.domain([minYVal, d3.max(data, yValue) + 1]);
 
             // draw dots
             var div = d3.select("body").append("div")
