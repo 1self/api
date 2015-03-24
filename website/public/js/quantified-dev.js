@@ -175,7 +175,7 @@ var qd = function () {
     };
     var convertSecondsToMinutes = function (data, value) {
         data.forEach(function (d) {
-            return d[value] = d[value] / 60;
+            return d[value] = Math.round((d[value] / 60) * 100)/100;
         });
     };
     var plotActivity = function (activeEvents) {
@@ -239,6 +239,15 @@ var qd = function () {
         result.plotHeatmapWith("#hourlyBuild-heat-map-parent", '#hourlyBuild-heat-map', hourlyBuildEvents, toolTipText);
     };
 
+    var plotHourlyActivityEvents = function (hourlyActivityEvents) {
+        result.hourlyActivityEvents = hourlyActivityEvents;
+        convertSecondsToMinutes(hourlyActivityEvents, "value");
+        var eventCount = Math.round(getEventCountForHourlyEvents(hourlyActivityEvents) * 100)/100;
+        $('#totalActivityCount').html("Total Mins Of Programming Activity : " + eventCount);
+        var toolTipText = "{{value}} mins";
+        result.plotHeatmapWith("#hourlyActivityPush-heat-map-parent", '#hourlyActivityPush-heat-map', hourlyActivityEvents, toolTipText);
+    };
+
     var plotHourlyStepsEvents = function (hourlyStepsEvents) {
         result.hourlyStepsEvents = hourlyStepsEvents;
         var eventCount = getEventCountForHourlyEvents(hourlyStepsEvents);
@@ -258,6 +267,15 @@ var qd = function () {
     result.updateHourlyBuildHeatMap = function () {
         postV1Ajax("Computer,Software", "Build,Finish", "count", "hourOfDay")
             .done(plotHourlyBuildEvents)
+            .always(result.updateProgress)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
+    };
+
+    result.updateHourlyActivityHeatMap = function () {
+        postV1Ajax("Computer,Software", "Develop", "sum(duration)", "hourOfDay")
+            .done(plotHourlyActivityEvents)
             .always(result.updateProgress)
             .fail(function (error) {
                 console.error("Error is: " + error);
@@ -587,6 +605,7 @@ var qd = function () {
         plotHourlyTracksEvents(result.hourlyTracksEvents);
         plotHourlyWtfEvents(result.hourlyWtfEvents);
         plotHourlyGithubPushEvents(result.hourlyGithubPushEvents);
+        plotHourlyActivityEvents(result.hourlyActivityEvents);
         plotIDEActivityVsGithubPushesCorrelationData(result.iDEActivityVsGithubPushesCorrelationData);
         plotStepsVsTracksCorrelationData(result.stepsVsTracksCorrelationData);
         plotIDEActivityVsTracksCorrelationData(result.iDEActivityVsTracksCorrelationData);
