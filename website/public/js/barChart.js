@@ -1,6 +1,6 @@
 window.charts = window.charts || {};
 
-var addUnits = function(svg, units, graphHeight) {
+var addUnits = function (svg, units, graphHeight) {
     if (units !== undefined) {
         svg.append("text")
             .attr("text-anchor", "end")
@@ -12,85 +12,85 @@ var addUnits = function(svg, units, graphHeight) {
 }
 
 
-var addYaxis = function(svg, yAxis){
- // var filter = svg.append("svg:defs")
- //            .append("filter")
- //            .attr("x", "-10%")
- //            .attr("y", "-100%")
- //            .attr("id", "nowline-drop-shadow")
- //            .attr("height", "200%")
- //            .attr("width", "180%");
+var addYaxis = function (svg, yAxis) {
+    // var filter = svg.append("svg:defs")
+    //            .append("filter")
+    //            .attr("x", "-10%")
+    //            .attr("y", "-100%")
+    //            .attr("id", "nowline-drop-shadow")
+    //            .attr("height", "200%")
+    //            .attr("width", "180%");
 
- //        var comptransf = filter.append("feComponentTransfer");
- //        comptransf.append("feFuncA")
- //            .attr("type", "linear")
- //            .attr("slope", "10.7")
- //        comptransf.append("feFuncR")
- //            .attr("type", "linear")
- //            .attr("slope", "-10.7")
- //        comptransf.append("feFuncG")
- //            .attr("type", "linear")
- //            .attr("slope", "0")
- //        comptransf.append("feFuncB")
- //            .attr("type", "linear")
- //            .attr("slope", "0")
+    //        var comptransf = filter.append("feComponentTransfer");
+    //        comptransf.append("feFuncA")
+    //            .attr("type", "linear")
+    //            .attr("slope", "10.7")
+    //        comptransf.append("feFuncR")
+    //            .attr("type", "linear")
+    //            .attr("slope", "-10.7")
+    //        comptransf.append("feFuncG")
+    //            .attr("type", "linear")
+    //            .attr("slope", "0")
+    //        comptransf.append("feFuncB")
+    //            .attr("type", "linear")
+    //            .attr("slope", "0")
 
- //        var blur = filter.append("feGaussianBlur")
- //            .attr("stdDeviation", 0);
- //        blur.transition().delay(1500).attr("stdDeviation", 5);
+    //        var blur = filter.append("feGaussianBlur")
+    //            .attr("stdDeviation", 0);
+    //        blur.transition().delay(1500).attr("stdDeviation", 5);
 
- //        var feMerge = filter.append("feMerge");
+    //        var feMerge = filter.append("feMerge");
 
- //        feMerge.append("feMergeNode");
- //        feMerge.append("feMergeNode")
- //            .attr("in", "SourceGraphic");
+    //        feMerge.append("feMergeNode");
+    //        feMerge.append("feMergeNode")
+    //            .attr("in", "SourceGraphic");
 
     svg.append('g')
-            .attr('class', 'y axis')
-            .call(yAxis)
-            .style("filter", "url(#overlay-shadow)");
+        .attr('class', 'y axis')
+        .call(yAxis)
+        .style("filter", "url(#overlay-shadow)");
 }
 
-var createOverlayDropshadow = function(svg){
+var createOverlayDropshadow = function (svg) {
     var filter = svg.append("svg:defs")
-            .append("filter")
-            .attr("x", "-10%")
-            .attr("y", "-100%")
-            .attr("id", "overlay-shadow")
-            .attr("height", "200%")
-            .attr("width", "180%");
+        .append("filter")
+        .attr("x", "-10%")
+        .attr("y", "-100%")
+        .attr("id", "overlay-shadow")
+        .attr("height", "200%")
+        .attr("width", "180%");
 
-        var comptransf = filter.append("feComponentTransfer");
-        comptransf.append("feFuncA")
-            .attr("type", "linear")
-            .attr("slope", "0.5")
-        comptransf.append("feFuncR")
-            .attr("type", "linear")
-            .attr("slope", "0")
-        comptransf.append("feFuncG")
-            .attr("type", "linear")
-            .attr("slope", "0")
-        comptransf.append("feFuncB")
-            .attr("type", "linear")
-            .attr("slope", "0")
+    var comptransf = filter.append("feComponentTransfer");
+    comptransf.append("feFuncA")
+        .attr("type", "linear")
+        .attr("slope", "0.5")
+    comptransf.append("feFuncR")
+        .attr("type", "linear")
+        .attr("slope", "0")
+    comptransf.append("feFuncG")
+        .attr("type", "linear")
+        .attr("slope", "0")
+    comptransf.append("feFuncB")
+        .attr("type", "linear")
+        .attr("slope", "0")
 
-        var blur = filter.append("feGaussianBlur")
-            .attr("stdDeviation", 0);
-        blur.transition().delay(5000).attr("stdDeviation", 4);
+    var blur = filter.append("feGaussianBlur")
+        .attr("stdDeviation", 0);
+    blur.transition().delay(5000).attr("stdDeviation", 4);
 
-        var feMerge = filter.append("feMerge");
+    var feMerge = filter.append("feMerge");
 
-        feMerge.append("feMergeNode");
-        feMerge.append("feMergeNode")
-            .attr("in", "SourceGraphic");
+    feMerge.append("feMergeNode");
+    feMerge.append("feMergeNode")
+        .attr("in", "SourceGraphic");
 }
 
-var addNowLine = function(svg, x, graphHeight) {
+var addNowLine = function (svg, x, graphHeight) {
     var lineFunction = d3.svg.line()
-        .x(function(d) {
+        .x(function (d) {
             return d.x;
         })
-        .y(function(d) {
+        .y(function (d) {
             return d.y;
         })
         .interpolate('linear');
@@ -130,13 +130,13 @@ var addNowLine = function(svg, x, graphHeight) {
         .text('now');
 };
 
-charts.plotBarChart = function(divId, events, fromDate, toDate) {
+charts.plotBarChart = function (divId, events, fromDate, toDate) {
     var units;
 
-    events = _.sortBy(events, function(e) {
+    events = _.sortBy(events, function (e) {
         return e.date;
     })
-    setTimeout(function() {
+    setTimeout(function () {
         $(divId).empty();
         var margin = {
             top: 20,
@@ -148,8 +148,8 @@ charts.plotBarChart = function(divId, events, fromDate, toDate) {
         //var width = 1406;
         var height = width / 1.61;
 
-        var dateMax = new Date(moment(toDate).format("MM/DD/YYYY"));
-        var dateMin = new Date(moment(fromDate).format("MM/DD/YYYY"));
+        var dateMin = new Date(moment.utc(fromDate).format("MM/DD/YYYY"));
+        var dateMax = new Date(moment.utc(toDate).add('days', 1).format("MM/DD/YYYY"));
         var dateDiff = ((dateMax - dateMin) / 1000 / 60 / 60 / 24);
 
         var xWidth = Math.round(width / dateDiff);
@@ -157,7 +157,7 @@ charts.plotBarChart = function(divId, events, fromDate, toDate) {
             .domain([dateMin, dateMax])
             .rangeRound([0, width]);
 
-        var maxDataValue = d3.max(events, function(d) {
+        var maxDataValue = d3.max(events, function (d) {
             return d.value;
         });
 
@@ -184,7 +184,7 @@ charts.plotBarChart = function(divId, events, fromDate, toDate) {
             .attr('id', 'bars')
             .attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
 
-        var tipText = function(d) {
+        var tipText = function (d) {
             return "<strong>" + operation + " " + d.value +
                 "</strong> <span style='color:lightgrey'> on " + moment(d.date).format("ddd MMM DD") + "</span>";
         };
@@ -194,7 +194,7 @@ charts.plotBarChart = function(divId, events, fromDate, toDate) {
         var tip = d3.tip()
             .attr('class', 'd3-tip')
             .offset([-10, 0])
-            .html(function(d) {
+            .html(function (d) {
                 return tipText(d);
             });
         svg.call(tip);
@@ -276,11 +276,11 @@ charts.plotBarChart = function(divId, events, fromDate, toDate) {
             .attr('class', 'bar')
             .style("fill", "url(#gradient)")
             .style("stroke", "rgba(255,255,255,0.7)")
-            .on("click", function(d) {
+            .on("click", function (d) {
                 var bars = svg.selectAll('.bar');
                 bars
                     .transition()
-                    .style("stroke", function(data) {
+                    .style("stroke", function (data) {
 
                         if (d === data) {
                             return null;
@@ -288,26 +288,26 @@ charts.plotBarChart = function(divId, events, fromDate, toDate) {
                             return "rgba(255,255,255,0.7)";
                         }
                     })
-                    .style("filter", function(data) {
+                    .style("filter", function (data) {
                         if (d === data) {
                             return "url(#drop-shadow)";
                         }
                     })
-                    .style("stroke-width", function(data) {
+                    .style("stroke-width", function (data) {
                         if (d === data) {
                             return "3px";
                         } else {
                             return "1px";
                         }
                     })
-                    .style("fill", function(data) {
+                    .style("fill", function (data) {
                         if (d === data) {
                             return "url(#gradient_highlight)";
                         } else {
                             return "url(#gradient)"
                         }
                     })
-                    .style("background-color", function(data) {
+                    .style("background-color", function (data) {
                         if (d === data) {
                             return "rgba(0, 0, 0, 0.22)";
                         }
@@ -342,23 +342,23 @@ charts.plotBarChart = function(divId, events, fromDate, toDate) {
                 blur.transition().attr("stdDeviation", 5);
             })
 
-        .attr('x', function(d) {
-            return x(new Date(d.date));
-        })
+            .attr('x', function (d) {
+                return x(new Date(d.date));
+            })
             .attr('y', height)
             .attr('width', xWidth)
             .attr('height', 0)
             .transition()
             .delay(
-                function(d, i) {
-                    return i * 130 + 30;
-                })
+            function (d, i) {
+                return i * 130 + 30;
+            })
             .ease('cubic')
             .duration(240)
-            .attr('height', function(d) {
+            .attr('height', function (d) {
                 return innerGraphHeight - y(d.value);
             })
-            .attr('y', function(d) {
+            .attr('y', function (d) {
                 return innerGraphHeight - (innerGraphHeight - y(d.value));
             });
 
@@ -374,18 +374,18 @@ charts.plotBarChart = function(divId, events, fromDate, toDate) {
         addNowLine(svg, x, innerGraphHeight);
         addUnits(svg, units, innerGraphHeight);
 
-        var getDatesForEvents = function() {
-            return _.map(events, function(event) {
+        var getDatesForEvents = function () {
+            return _.map(events, function (event) {
                 return moment(event.date);
             });
         };
 
-        var getLatestDataPointDate = function() {
+        var getLatestDataPointDate = function () {
             var datesForDataPoints = getDatesForEvents();
             return new Date(Math.max.apply(null, datesForDataPoints));
         };
 
-        var getDataPointDescription = function(eventValue) {
+        var getDataPointDescription = function (eventValue) {
             //get the operation
             var operation_string = operation.split('('),
                 operation_type = operation_string[0],
@@ -409,28 +409,28 @@ charts.plotBarChart = function(divId, events, fromDate, toDate) {
             }
         };
 
-        var showDetailsForDate = function(date) {
+        var showDetailsForDate = function (date) {
             var eventValue;
             svg.selectAll('.bar')
-                .style("stroke", function(data) {
+                .style("stroke", function (data) {
                     if (moment(data.date).isSame(moment(date))) {
                         return null;
                     } else {
                         return "rgba(255,255,255,0.7)";
                     }
                 })
-                .style("filter", function(data) {
+                .style("filter", function (data) {
                     if (moment(data.date).isSame(moment(date))) {
                         return "url(#drop-shadow)";
                     }
                 })
-                .style("stroke-width", function(data) {
+                .style("stroke-width", function (data) {
                     if (moment(data.date).isSame(moment(date))) {
                         return "5px";
                     } else {
                         return "1px";
                     }
-                }).style("fill", function(data) {
+                }).style("fill", function (data) {
                     if (moment(data.date).isSame(moment(date))) {
                         return "url(#gradient_highlight)";
                     } else {
@@ -443,14 +443,14 @@ charts.plotBarChart = function(divId, events, fromDate, toDate) {
 
         };
 
-        var setGraphUrl = function(date) {
+        var setGraphUrl = function (date) {
             var day = moment(date).format("DD");
             var month = moment(date).format("MM");
             var year = moment(date).format("YYYY");
             charts.graphUrl = window.location.href.split(window.location.origin)[1].split("?")[0] + "/" + year + "/" + month + "/" + day;
         }
 
-        var highlightLatestDataPointDate = function() {
+        var highlightLatestDataPointDate = function () {
             var date = window.localStorage.selectedDate || getLatestDataPointDate();
             setGraphUrl(date);
             charts.selectedDate = moment(date).format("YYYY-MM-DD");
