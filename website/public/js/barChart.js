@@ -144,18 +144,18 @@ charts.plotBarChart = function(divId, events, fromDate, toDate) {
             bottom: 0,
             left: 0
         };
-        var width = window.innerWidth;
+        var width = $('body').innerWidth();
+        //var width = 1406;
         var height = width / 1.61;
-        
-        var dataMax = new Date(moment(toDate));
-        var dataMin = new Date(moment(fromDate));   
-        var dataDiff = ((dataMax - dataMin) / 1000 / 60 / 60 / 24);
-        
-        var xWidth = width / dataDiff;
+
+        var dateMax = new Date(moment(toDate).format("MM/DD/YYYY"));
+        var dateMin = new Date(moment(fromDate).format("MM/DD/YYYY"));
+        var dateDiff = ((dateMax - dateMin) / 1000 / 60 / 60 / 24);
+
+        var xWidth = Math.round(width / dateDiff);
         var x = d3.time.scale()
-            .domain([dataMin, dataMax])
-            .rangeRound([0, width - margin.left - margin.right])
-            .nice();
+            .domain([dateMin, dateMax])
+            .rangeRound([0, width]);
 
         var maxDataValue = d3.max(events, function(d) {
             return d.value;
@@ -322,7 +322,7 @@ charts.plotBarChart = function(divId, events, fromDate, toDate) {
 
                 // in order to make the shadow work correctly the highlighted
                 // bar needs to be drawn last. This makes the <g> element that
-                // is created last in the list of elements which makes it on 
+                // is created last in the list of elements which makes it on
                 // top of everything else
                 for (var i = bars.data().length - 1; i >= 0; i--) {
                     if (d === bars.data()[i]) {
