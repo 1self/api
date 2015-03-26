@@ -1128,7 +1128,9 @@ app.get('/eventsCount', function (req, res) {
 });
 
 var publishEvent = function(req, res, next){
-    redisClient.publish("events", req.body);
+    req.body.streamid = req.params.id;
+    redisClient.publish("events", JSON.stringify(req.body));
+    next();
 }
 
 app.post('/stream/:id/event', 
