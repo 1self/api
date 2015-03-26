@@ -120,9 +120,9 @@ var computeChartUrl = function(event) {
         operation = "max(points)";
     } else if (event.payload.objectTags.indexOf("reputation") !== -1) {
         operation = "max(points)";
-    } else if (event.payload.objectTags.indexOf("questions") !== -1) {
+    } else if ((event.payload.objectTags.indexOf("questions") !== -1) && (event.payload.properties["asked"] !== undefined)) {
         operation = "max(asked)";
-    } else if (event.payload.objectTags.indexOf("answers") !== -1) {
+    } else if ((event.payload.objectTags.indexOf("questions") !== -1) && (event.payload.properties["answered"] !== undefined)) {
         operation = "max(answered)";
     } else if (typeof(prop) !== "undefined") {
         operation = "sum(" + prop + ")";
