@@ -1388,20 +1388,20 @@ module.exports = function (app) {
         }
 
         next();
-    }
+    };
 
     var getStreams = function (req, res, next) {
         var query = {
             appId: req.permission.appId
-        }
+        };
 
         var projection = {
             streamid: 1
-        }
+        };
 
         var mapStreamObjectsToArray = function (streamObject) {
             return streamObject.streamid;
-        }
+        };
 
         mongoRepository.find("stream", query, projection).then(
             function (streams) {
@@ -1413,7 +1413,7 @@ module.exports = function (app) {
                 req.streams = streams;
                 next();
             });
-    }
+    };
 
     var getEvents = function (req, res, next) {
         var query = {
@@ -1442,7 +1442,7 @@ module.exports = function (app) {
 
         var removePayload = function (event) {
             return event.payload;
-        }
+        };
 
         var addEventsToRequest = function (events) {
             events = _.map(events, removePayload);
@@ -1452,12 +1452,12 @@ module.exports = function (app) {
             }
 
             next();
-        }
+        };
 
         eventRepository.find("oneself", query, projection).then(
             addEventsToRequest
         );
-    }
+    };
 
     var convertToRepresentation = function (req, res, next) {
         if (req.params.representation === "json") {
@@ -1492,11 +1492,17 @@ module.exports = function (app) {
             var representationUrl = representationUrlComponents.join("/") + "?token=" + req.authToken;
             var resizerUrl = resizerUrlComponents.join("/");
 
+            var circleColor = "red"; // default circle color if none specified
+            if (req.query.circleColor) {
+                circleColor = req.query.circleColor;
+            }
+
             var model = {
                 dataUrl: dataUrl,
                 representationUrl: representationUrl,
-                resizerUrl: resizerUrl
-            }
+                resizerUrl: resizerUrl,
+                circleColor: circleColor
+            };
 
             res.render('animatedGlobe', model);
         }
@@ -1504,10 +1510,10 @@ module.exports = function (app) {
             var knownRepresentations = [
                 ".json",
                 ".animatedglobe"
-            ]
+            ];
             res.status(404).send("You requested an unknown representation. Known representations are: \r\n" + knownRepresentations.join("\r\n"));
         }
-    }
+    };
 
     app.get("/v1/apps/:appId/events/:objectTags/:actionTags/.:representation"
         , parseTokenFromAuthorization
