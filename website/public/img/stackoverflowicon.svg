@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="110px" height="110px" viewBox="0 0 110 110" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.2.2 (9983) - http://www.bohemiancoding.com/sketch -->
+    <title>stack overflow</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Mobile-Portrait-13" sketch:type="MSArtboardGroup" transform="translate(-663.000000, -584.000000)">
+            <g id="stack-overflow" sketch:type="MSLayerGroup" transform="translate(663.000000, 584.000000)">
+                <path d="M55,110 C85.3756612,110 110,85.3756612 110,55 C110,24.6243388 85.3756612,0 55,0 C24.6243388,0 0,24.6243388 0,55 C0,85.3756612 24.6243388,110 55,110 Z" id="Path-4" fill="#F47920" sketch:type="MSShapeGroup"></path>
+                <g id="Group" transform="translate(29.000000, 16.000000)" fill="#FFFFFF" sketch:type="MSShapeGroup">
+                    <path d="M0.0199394851,41.2590457 L5.30411517,41.2393267 L5.30644851,63.6173816 L43.4466533,63.5612918 L43.5058354,41.3981746 L48.7028288,41.283585 L48.6741923,69.1952436 L0.0668184874,69.0999349 L0.0199394851,41.2590457 Z" id="Path-32"></path>
+                    <path d="M10.491351,52.9831167 L38.3120237,53.0096279 L38.3120237,58.3162435 L10.5180784,58.3357434 L10.491351,52.9831167 Z" id="Path-33"></path>
+                    <path d="M10.9554744,47.5711138 L11.6011743,42.0664313 L38.2345991,45.4048665 L37.7310211,50.2112755 L10.9554744,47.5711138 Z" id="Path-34"></path>
+                    <path d="M14.9138864,30.1929337 L13.062484,35.3553811 L38.3595391,43.2828776 L39.8704854,38.6548165 L14.9138864,30.1929337 Z" id="Path-35"></path>
+                    <path d="M20.2088803,18.8606145 L17.6010502,23.2268505 L40.6044282,36.5858499 L42.9852875,32.4685121 L20.2088803,18.8606145 Z" id="Path-36"></path>
+                    <path d="M24.807265,12.3084122 L28.3774934,8.61569136 L47.2071553,27.3104467 L44.1239594,30.590163 L24.807265,12.3084122 Z" id="Path-37"></path>
+                    <path d="M38.0428407,0.52715595 L52.4542096,22.7266439 L48.907951,25.4255246 L33.9577917,3.76787235 L38.0428407,0.52715595 Z" id="Path-38"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
