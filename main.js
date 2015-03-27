@@ -15,7 +15,7 @@ var cookieParser = require('cookie-parser');
 var fs = require('fs');
 var validateRequest = require("./validateRequest");
 var validator = require('validator');
-var mongoRespository = require('./mongoRepository.js');
+var mongoRepository = require('./mongoRepository.js');
 var platformService = require('./platformService.js');
 var CONTEXT_URI = process.env.CONTEXT_URI;
 
@@ -84,12 +84,16 @@ var convertSecsToMinutes = function (seconds) {
     return Math.round(seconds / 60 * 100) / 100;
 };
 
-var validEncodedUsername = function (encodedUsername) {
+var validateEncodedUsername = function (encodedUsername, username) {
     var deferred = q.defer();
-    var query = {
+    var query = typeof username === 'undefined' ? {
         "encodedUsername": encodedUsername
+    } : {
+        "encodedUsername": encodedUsername,
+        "username": username
     };
-    mongoRespository.findOne('users', query)
+
+    mongoRepository.findOne('users', query)
         .then(function (user) {
             if (user) {
                 deferred.resolve();
@@ -101,36 +105,6 @@ var validEncodedUsername = function (encodedUsername) {
             deferred.reject(err);
         });
 
-    return deferred.promise;
-};
-
-var validateShareTokenAndGraphUrl = function (shareToken, graphUrl) {
-    var deferred = q.defer();
-    var graphShareObject = {"graphUrl": graphUrl, "shareToken": shareToken};
-
-    checkGraphAlreadyShared(graphShareObject)
-        .then(function (graphShareObject) {
-            if (graphShareObject) {
-                deferred.resolve();
-            } else {
-                deferred.reject("Invalid input");
-            }
-        }).catch(function (err) {
-            console.log("Error is", err);
-            deferred.reject(err);
-        });
-
-    return deferred.promise;
-};
-
-var checkGraphAlreadyShared = function (graphShareObject) {
-    var deferred = q.defer();
-    mongoRespository.findOne('graphShares', graphShareObject)
-        .then(function (graphShareObject) {
-            deferred.resolve(graphShareObject);
-        }, function (err) {
-            deferred.reject(err);
-        });
     return deferred.promise;
 };
 
@@ -149,7 +123,7 @@ var getStreamIdForUsername = function (encodedUsername, forUsername) {
     var projection = {
         "streams": 1
     };
-    mongoRespository.findOne('users', query, projection)
+    mongoRepository.findOne('users', query, projection)
         .then(function (user) {
             if (!user) {
                 deferred.reject("user not found");
@@ -179,7 +153,7 @@ var authenticateWriteToken = function (writeToken, id) {
     var query = {
         streamid: id
     };
-    mongoRespository.findOne('stream', query)
+    mongoRepository.findOne('stream', query)
         .then(function (stream) {
             if (stream === null || stream.writeToken !== writeToken) {
                 deferred.reject();
@@ -408,7 +382,7 @@ var generateWeek = function (defaultValues) {
 
 var getTotalUsersOfQd = function (streams) {
     var deferred = q.defer();
-    mongoRespository.count('users', {})
+    mongoRepository.count('users', {})
         .then(function (count) {
             deferred.resolve([count, streams]);
         }, function (err) {
@@ -695,167 +669,6 @@ var getDailyGithubPushEventsCount = function (streams) {
     return deferred.promise;
 };
 
-var correlateStepsAndTracks = function (streams) {
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var deferred = q.defer();
-    var sumQuery = {
-        "$sum": {
-            "field": {
-                "name": "properties.numberOfSteps"
-            },
-            "data": getQueryForStreamIdActionTagAndObjectTag(streamids, 'walked', 'steps'),
-            "filterSpec": {},
-            "projectionSpec": {
-                "resultField": "stepSum"
-            }
-        }
-    };
-    var countQuery = {
-        "$count": {
-            "data": getQueryForStreamIdActionTagAndObjectTag(streamids, 'listen', 'music'),
-            "filterSpec": {},
-            "projectionSpec": {
-                "resultField": "musicListenCount"
-            }
-        }
-    };
-    var query = {
-        spec: JSON.stringify([sumQuery, countQuery]),
-        merge: true
-    };
-    var processResult = function (result) {
-        if (_.isEmpty(result)) {
-            deferred.resolve([]);
-        } else {
-            for (var date in result) {
-                if (result[date].stepSum === undefined) {
-                    result[date].stepSum = 0;
-                }
-                if (result[date].musicListenCount === undefined) {
-                    result[date].musicListenCount = 0;
-                }
-                result[date].date = date;
-            }
-            deferred.resolve(result);
-        }
-    };
-    platformService.aggregate(query)
-        .then(processResult, function (err) {
-            deferred.reject(err);
-        });
-    return deferred.promise;
-};
-
-var correlateIDEActivityAndTracks = function (streams) {
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var deferred = q.defer();
-    var sumQuery = {
-        "$sum": {
-            "field": {
-                "name": "properties.duration"
-            },
-            "data": getQueryForStreamIdActionTagAndObjectTag(streamids, 'Develop', 'Software'),
-            "filterSpec": {},
-            "projectionSpec": {
-                "resultField": "activeTimeInSecs"
-            }
-        }
-    };
-    var countQuery = {
-        "$count": {
-            "data": getQueryForStreamIdActionTagAndObjectTag(streamids, 'listen', 'music'),
-            "filterSpec": {},
-            "projectionSpec": {
-                "resultField": "musicListenCount"
-            }
-        }
-    };
-    var query = {
-        spec: JSON.stringify([sumQuery, countQuery]),
-        merge: true
-    };
-    var processResult = function (result) {
-        if (_.isEmpty(result)) {
-            deferred.resolve([]);
-        } else {
-            for (var date in result) {
-                if (result[date].activeTimeInSecs === undefined) {
-                    result[date].activeTimeInSecs = 0;
-                }
-                if (result[date].musicListenCount === undefined) {
-                    result[date].musicListenCount = 0;
-                }
-                result[date].activeTimeInMinutes = convertSecsToMinutes(result[date].activeTimeInSecs);
-                result[date].date = date;
-            }
-            deferred.resolve(result);
-        }
-    };
-    platformService.aggregate(query)
-        .then(processResult, function (err) {
-            deferred.reject(err);
-        });
-    return deferred.promise;
-};
-
-var correlateGithubPushesAndIDEActivity = function (streams, firstEvent, secondEvent) {
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var deferred = q.defer();
-    var sumQuery = {
-        "$sum": {
-            "field": {
-                "name": "properties.duration"
-            },
-            "data": getQueryForStreamIdActionTagAndObjectTag(streamids, firstEvent),
-            "filterSpec": {},
-            "projectionSpec": {
-                "resultField": "activeTimeInSecs"
-            }
-        }
-    };
-    var countQuery = {
-        "$count": {
-            "data": getQueryForStreamIdActionTagAndObjectTag(streamids, secondEvent),
-            "filterSpec": {},
-            "projectionSpec": {
-                "resultField": "githubPushEventCount"
-            }
-        }
-    };
-    var query = {
-        spec: JSON.stringify([sumQuery, countQuery]),
-        merge: true
-    };
-    var processResult = function (result) {
-        if (_.isEmpty(result)) {
-            deferred.resolve([]);
-        } else {
-            for (var date in result) {
-                if (result[date].activeTimeInSecs === undefined) {
-                    result[date].activeTimeInSecs = 0;
-                }
-                if (result[date].githubPushEventCount === undefined) {
-                    result[date].githubPushEventCount = 0;
-                }
-                result[date].activeTimeInMinutes = convertSecsToMinutes(result[date].activeTimeInSecs);
-                result[date].date = date;
-            }
-            deferred.resolve(result);
-        }
-    };
-    platformService.aggregate(query)
-        .then(processResult, function (err) {
-            deferred.reject(err);
-        });
-    return deferred.promise;
-};
-
 app.get('/', function (request, response) {
     response.redirect('/timeline');
 });
@@ -865,7 +678,7 @@ app.get('/health', function (request, response) {
 });
 
 app.get('/users_count', function (req, res) {
-    mongoRespository.count('users', {}).then(function (count) {
+    mongoRepository.count('users', {}).then(function (count) {
         if (!count) {
             res.send(400, "Error")
         } else {
@@ -877,7 +690,7 @@ app.get('/users_count', function (req, res) {
 });
 
 app.get('/recent_signups', function (req, res) {
-    mongoRespository.find('users', {
+    mongoRepository.find('users', {
         "profile.profileUrl": {$exists: true}
     }, {
         "sort": [
@@ -898,7 +711,7 @@ var validateClient = function (appId, appSecret) {
         appSecret: appSecret
     };
 
-    mongoRespository.findOne('registeredApps', query)
+    mongoRepository.findOne('registeredApps', query)
         .then(function (result) {
             if (!result) {
                 deferred.reject();
@@ -994,11 +807,12 @@ var findUniqueStreamIdsFromEvents = function (events) {
 
 // timeline api
 app.get('/v1/users/:username/events', function (req, res) {
+    var username = req.params.username;
     var skipCount = parseInt(req.query.skip) || 0;
     var limitCount = parseInt(req.query.limit) || 50; // by default show only 50 events per page
 
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername)
+    validateEncodedUsername(encodedUsername, username)
         .then(function () {
             return getStreamIdForUsername(encodedUsername, req.query.forUsername);
         })
@@ -1008,9 +822,9 @@ app.get('/v1/users/:username/events', function (req, res) {
         .then(function (events) {
             var streamIds = findUniqueStreamIdsFromEvents(events);
             var fetchIconUrlFromApp = function (streamId) {
-                return mongoRespository.findOne('stream', {streamid: streamId}, {appId: 1})
+                return mongoRepository.findOne('stream', {streamid: streamId}, {appId: 1})
                     .then(function (stream) {
-                        return mongoRespository.findOne('registeredApps', {appId: stream.appId}, {iconUrl: 1})
+                        return mongoRepository.findOne('registeredApps', {appId: stream.appId}, {iconUrl: 1})
                     })
                     .then(function (registeredApp) {
                         if (registeredApp) {
@@ -1043,7 +857,7 @@ var findUser = function (username, registrationToken) {
         username: username,
         registrationToken: registrationToken
     };
-    mongoRespository.findOne("users", query)
+    mongoRepository.findOne("users", query)
         .then(function (user) {
             if (!_.isEmpty(user)) {
                 deferred.resolve(user);
@@ -1154,7 +968,7 @@ var formatEventDateTime = function (datetime) {
     }
     var utcDate = currentMoment.toISOString();
     var localISODate = utcDate;
-    if (!endsWith(datetime, "Z")) {
+    if (typeof datetime !== 'undefined' && !endsWith(datetime, "Z")) {
         offset = currentMoment._tzm;
         localISODate = currentMoment.subtract(offset, 'minutes').toISOString();
     }
@@ -1225,7 +1039,7 @@ var updateLatestSyncField = function (streamId, latestSyncField) {
     var updateObject = {
         $set: {"latestSyncField": latestSyncField}
     };
-    mongoRespository.update('stream', query, updateObject)
+    mongoRepository.update('stream', query, updateObject)
         .then(function () {
             deferred.resolve(updateObject);
         }, function (err) {
@@ -1288,7 +1102,7 @@ app.get('/live/devbuild/:durationMins', function (req, res) {
 app.get('/quantifieddev/mydev', function (req, res) {
     var encodedUsername = req.headers.authorization;
     var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername)
+    validateEncodedUsername(encodedUsername)
         .then(function () {
             return getStreamIdForUsername(encodedUsername, forUsername)
         })
@@ -1303,7 +1117,7 @@ app.get('/quantifieddev/mydev', function (req, res) {
 
 app.get('/quantifieddev/githubPushEventForCompare', function (req, res) {
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername)
+    validateEncodedUsername(encodedUsername)
         .then(function () {
             return getStreamIdForUsername(encodedUsername, req.query.forUsername);
         })
@@ -1319,7 +1133,7 @@ app.get('/quantifieddev/githubPushEventForCompare', function (req, res) {
 app.get('/quantifieddev/compare/ideActivity', function (req, res) {
     var encodedUsername = req.headers.authorization;
     var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername)
+    validateEncodedUsername(encodedUsername)
         .then(function () {
             return getStreamIdForUsername(encodedUsername, forUsername)
         }).then(getTotalUsersOfQd)
@@ -1334,7 +1148,7 @@ app.get('/quantifieddev/compare/ideActivity', function (req, res) {
 
 app.get('/quantifieddev/dailyGithubPushEvents', function (req, res) {
     var encodedUsername = req.headers.authorization;
-    validEncodedUsername(encodedUsername)
+    validateEncodedUsername(encodedUsername)
         .then(function () {
             return getStreamIdForUsername(encodedUsername, req.query.forUsername);
         })
@@ -1343,25 +1157,6 @@ app.get('/quantifieddev/dailyGithubPushEvents', function (req, res) {
             res.send(response);
         }).catch(function (error) {
             console.log("Error is", error);
-            res.status(404).send("stream not found");
-        });
-});
-
-app.get('/quantifieddev/correlate', function (req, res) {
-    var firstEvent = req.query.firstEvent;
-    var secondEvent = req.query.secondEvent;
-    var encodedUsername = req.headers.authorization;
-    var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername)
-        .then(function () {
-            return getStreamIdForUsername(encodedUsername, forUsername);
-        })
-        .then(function (streams) {
-            return correlateGithubPushesAndIDEActivity(streams, firstEvent, secondEvent);
-        })
-        .then(function (response) {
-            res.send(response);
-        }).catch(function (error) {
             res.status(404).send("stream not found");
         });
 });
@@ -1375,79 +1170,44 @@ var getEventParams = function (event) {
     };
 };
 
-// /v1/users/:username/correlate/:period/type/json?firstEvent=:objectTags/:actionTags/:operation&secondEvent=:objectTags/:actionTags/:operation
-app.get('/v1/users/:username/correlate/:period/type/json', function (req, res) {
-    var firstEvent = req.query.firstEvent;
-    var secondEvent = req.query.secondEvent;
-    var fromDate = req.query.from;
-    var toDate = req.query.to;
+// /v1/users/:username/correlate/:period/.json?firstEvent=:objectTags/:actionTags/:operation&secondEvent=:objectTags/:actionTags/:operation
+    app.get('/v1/users/:username/correlate/:period/type/.json',  validateRequest.validateDateRange, function (req, res) {
+        var firstEvent = req.query.firstEvent;
+        var secondEvent = req.query.secondEvent;
+        var fromDate = req.query.from;
+        var toDate = req.query.to;
+        var username = req.params.username;
 
-    var firstEventParams = getEventParams(firstEvent);
-    var secondEventParams = getEventParams(secondEvent);
-    firstEventParams.period = req.params.period;
-    secondEventParams.period = req.params.period;
+        var firstEventParams = getEventParams(firstEvent);
+        var secondEventParams = getEventParams(secondEvent);
+        firstEventParams.period = req.params.period;
+        secondEventParams.period = req.params.period;
 
-    var encodedUsername = req.headers.authorization;
-    var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername)
-        .then(function () {
-            return getStreamIdForUsername(encodedUsername, forUsername);
-        })
-        .then(function (streams) {
-            var streamids = _.map(streams, function (stream) {
-                return stream.streamid;
+        var encodedUsername = req.headers.authorization;
+        validateEncodedUsername(encodedUsername, username)
+            .then(function () {
+                return getStreamIdForUsername(encodedUsername);
+            })
+            .then(function (streams) {
+                var streamids = _.map(streams, function (stream) {
+                    return stream.streamid;
+                });
+                var firstEventQuery = getQueryForVisualizationAPI(streamids, firstEventParams, fromDate, toDate, "value1");
+                var secondEventQuery = getQueryForVisualizationAPI(streamids, secondEventParams, fromDate, toDate, "value2");
+                var query = {
+                    "spec": JSON.stringify([firstEventQuery, secondEventQuery]),
+                    "merge": true
+                };
+                return query;
+            })
+            .then(platformService.aggregate)
+            .then(transformPlatformDataToQDEvents)
+            .then(function (response) {
+                res.send(response);
+            }).catch(function (error) {
+                res.status(404).send("stream not found");
             });
-            var firstEventQuery = getQueryForVisualizationAPI(streamids, firstEventParams, fromDate, toDate, "value_first");
-            var secondEventQuery = getQueryForVisualizationAPI(streamids, secondEventParams, fromDate, toDate, "value_second");
-            var query = {
-                "spec": JSON.stringify([firstEventQuery, secondEventQuery]),
-                "merge": true
-            };
-            //console.log("Query for correlate: ", JSON.stringify(query));
-            return query;
-        })
-        .then(platformService.aggregate)
-        .then(transformPlatformDataToQDEvents)
-        .then(function (response) {
-            res.send(response);
-        }).catch(function (error) {
-            res.status(404).send("stream not found");
-        });
-});
-
-app.get('/quantifieddev/correlate/steps/trackcount', function (req, res) {
-    var encodedUsername = req.headers.authorization;
-    var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername)
-        .then(function () {
-            return getStreamIdForUsername(encodedUsername, forUsername);
-        })
-        .then(function (streams) {
-            return correlateStepsAndTracks(streams);
-        })
-        .then(function (response) {
-            res.send(response);
-        }).catch(function (error) {
-            res.status(404).send("stream not found");
-        });
-});
-
-app.get('/quantifieddev/correlate/ideactivity/trackcount', function (req, res) {
-    var encodedUsername = req.headers.authorization;
-    var forUsername = req.query.forUsername;
-    validEncodedUsername(encodedUsername)
-        .then(function () {
-            return getStreamIdForUsername(encodedUsername, forUsername);
-        })
-        .then(function (streams) {
-            return correlateIDEActivityAndTracks(streams);
-        })
-        .then(function (response) {
-            res.send(response);
-        }).catch(function (error) {
-            res.status(404).send("stream not found");
-        });
-});
+    });
 
 app.get('/quantifieddev/extensions/message', function (req, res) {
     var result = {
@@ -1551,22 +1311,24 @@ app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period
 var authorizeUser = function (req, res, next) {
     var shareToken = req.query.shareToken;
     var encodedUsername = req.headers.authorization;
+    var username = req.param("username");
+
     if (shareToken && shareToken !== 'undefined') {
         // TODO remove barchart hardcoded renderType
-        var graphUrl = "/v1/users/" + req.param("username") + "/events/" +
+        var graphUrl = "/v1/users/" + username + "/events/" +
             req.param("objectTags") + "/" + req.param("actionTags") + "/" +
             req.param("operation") + "/" + req.param("period") + "/barchart";
 
-        validateShareTokenAndGraphUrl(req.query.shareToken, graphUrl)
+        util.validateShareTokenAndGraphUrl(req.query.shareToken, graphUrl)
             .then(function () {
-                req.forUsername = req.param("username");
+                req.forUsername = username;
                 next();
             }).catch(function (err) {
                 console.log("Error is", err);
                 res.send(400, "Invalid input");
             });
     } else if (encodedUsername && encodedUsername !== 'undefined') {
-        validEncodedUsername(encodedUsername)
+        validateEncodedUsername(encodedUsername)
             .then(function () {
                 req.forUsername = req.query.forUsername;
                 next();
@@ -1604,7 +1366,7 @@ var findGraphUrl = function (graphUrl) {
     var deferred = q.defer();
     var query = {graphUrl: graphUrl};
 
-    mongoRespository.findOne('comments', query)
+    mongoRepository.findOne('comments', query)
         .then(function (chartComments) {
             if (chartComments) {
                 deferred.resolve(chartComments);
@@ -1626,7 +1388,7 @@ var updateChartComment = function (chartComment) {
             "comments": chartComment.comment
         }
     };
-    mongoRespository.update('comments', query, commentToInsert)
+    mongoRepository.update('comments', query, commentToInsert)
         .then(function () {
             deferred.resolve();
         }, function (err) {
@@ -1657,7 +1419,7 @@ var getCommentsForChart = function (graph, dateRange) {
         });
     };
 
-    mongoRespository.find('comments', graph)
+    mongoRepository.find('comments', graph)
         .then(function (chartComments) {
             deferred.resolve(transform(chartComments));
         }, function (err) {
@@ -1667,6 +1429,7 @@ var getCommentsForChart = function (graph, dateRange) {
 };
 
 // Get comments for the graph url
+// /v1/comments?username=:username&objectTags=:objectTags&actionTags=:actionTags&operation=:operation&period=:period&renderType=:renderType&from=:from&to=:to
 app.get("/v1/comments"
     , validateRequest.validateDateRange
     , function (req, res) {
@@ -1681,7 +1444,7 @@ app.get("/v1/comments"
         var dateRange = {
             from: req.query.from,
             to: req.query.to
-        }
+        };
         getCommentsForChart(graph, dateRange).then(function (comments) {
             res.send(comments);
         });
@@ -1692,7 +1455,7 @@ app.get("/v1/user/:username/exists", function (req, res) {
     var query = {
         "username": username.toLowerCase()
     };
-    mongoRespository.findOne('users', query)
+    mongoRepository.findOne('users', query)
         .then(function (user) {
             if (!user) {
                 res.status(404).send("");
@@ -1710,7 +1473,7 @@ app.post("/v1/comments", function (req, res) {
 
     chartComment.comment.text = validator.escape(chartComment.comment.text); //escape html
 
-    validEncodedUsername(encodedUsername, "", [])
+    validateEncodedUsername(encodedUsername)
         .then(function () {
             return findGraphUrl(chartComment.graphUrl);
         })
@@ -1719,7 +1482,7 @@ app.post("/v1/comments", function (req, res) {
                 chartComment.comments = [chartComment.comment];
                 delete chartComment.comment;
                 chartComment.dataPointDate = moment.utc(chartComment.dataPointDate, "YYYY-MM-DD").toDate();
-                return mongoRespository.insert('comments', chartComment);
+                return mongoRepository.insert('comments', chartComment);
             }
             else {
                 return updateChartComment(chartComment);
@@ -1752,7 +1515,7 @@ app.get('/v1/app', function (req, res) {
         res.send(400, "I am sorry :( You can't access this page.");
     }
 
-    mongoRespository.find('registeredApps', {})
+    mongoRepository.find('registeredApps', {})
         .then(function (data) {
             res.send(data);
         });

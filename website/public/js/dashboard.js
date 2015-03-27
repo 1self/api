@@ -11,11 +11,13 @@ var dashboardGraphs = ['updateBuildModel'
                         , 'updateHourlyWtfHeatMap'
                         , 'updateActiveEvents'
                         , 'updateHourlyGithubPushHeatMap'
+                        , 'updateHourlyActivityHeatMap'
                         , 'updateCorrelationData'
                         , 'updateStepsVsTracksCorrelationData'
                         , 'updateIDEActivityVsTracksCorrelationData'
                         , 'updateTwitterFollowerCount'
-                        , 'updateTwitterFollowingCount'];
+                        , 'updateTwitterFollowingCount'
+                        , 'updateTwitterFollowersVsTweetsCorrelationData'];
 $(window).resize(function() {
     window.qd.replotGraphs();
 });

@@ -1,21 +1,16 @@
-window.qd.plotScatterPlot = function (divId, correlateEvents, xAxisLabel, yAxisLabel, toolTipText) {
+window.charts = window.charts || {};
+
+charts.plotScatterPlot = function (divId, events, xAxisLabel, yAxisLabel) {
     setTimeout(function () {
-        var s = $(divId).empty();
-        s = d3.select(divId);
+        $(divId).empty();
         var margin = {
-                top: 20,
-                right: 20,
-                bottom: 30,
-                left: 40
-            },
-            width = $(divId).width() - margin.left - margin.right,
-            height = (width / 1.61) - margin.top - margin.bottom;
-        if ($(window).width() > 650 && $(window).width() < 1030) {
-            height = (width / 2.7) - margin.top - margin.bottom;
-        }
-        if ($(window).width() < 345) {
-            height = (width / 1) - margin.top - margin.bottom;
-        }
+            top: 20,
+            right: 50,
+            bottom: 30,
+            left: 50
+        };
+        var width = window.innerWidth - margin.left - margin.right;
+        var height = width / 1.61;
 
         var _groupCorrelateEvents = function (events) {
             return _.map(events, function (event) {
@@ -26,7 +21,6 @@ window.qd.plotScatterPlot = function (divId, correlateEvents, xAxisLabel, yAxisL
                 };
             });
         };
-        var heightnew = height - 10;
         var xValue = function (d) {
                 return d.x;
             },
@@ -34,12 +28,12 @@ window.qd.plotScatterPlot = function (divId, correlateEvents, xAxisLabel, yAxisL
             xMap = function (d) {
                 return xScale(xValue(d));
             },
-            xAxis = d3.svg.axis().scale(xScale).orient("bottom");
+            xAxis = d3.svg.axis().scale(xScale).orient("bottom").ticks(5);
 
         var yValue = function (d) {
                 return d.y;
             },
-            yScale = d3.scale.linear().range([heightnew, 0]),
+            yScale = d3.scale.linear().range([height, 0]),
             yMap = function (d) {
                 return yScale(yValue(d));
             },
@@ -55,16 +49,14 @@ window.qd.plotScatterPlot = function (divId, correlateEvents, xAxisLabel, yAxisL
             .attr('class', 'd3-tip')
             .offset([-10, 0])
             .html(function (d) {
-                var toolTip = toolTipText.replace("{{xValue}}", xValue(d));
-                toolTip = toolTip.replace("{{yValue}}", yValue(d));
-                return "<strong>" + toolTip + "</strong> <span style='color:lightgrey'> on " + moment(d.date).format("ddd MMM DD") + "</span>";
+                return xValue(d) + "<span style='color:lightgrey'> vs " + yValue(d) + "<br> on " + moment(d.date).format("ddd MMM DD") + "</span>";
             });
         svg.call(tip);
         var _plotGraph = function () {
-            var data = _groupCorrelateEvents(correlateEvents);
+            var data = _groupCorrelateEvents(events);
+            // don't want dots overlapping axis, so add in buffer to data domain
             var minXVal = Math.max(0, d3.min(data, xValue) - 1);
             var minYVal = Math.max(0, d3.min(data, yValue) - 1);
-            // don't want dots overlapping axis, so add in buffer to data domain
             xScale.domain([minXVal, d3.max(data, xValue) + 1]);
             yScale.domain([minYVal, d3.max(data, yValue) + 1]);
 
@@ -76,18 +68,18 @@ window.qd.plotScatterPlot = function (divId, correlateEvents, xAxisLabel, yAxisL
                 .data(data)
                 .enter().append("circle")
                 .attr("class", "dot")
-                .attr("r", 3.5)
+                .attr("r", 7.5)
                 .attr("cx", xMap)
                 .attr("cy", yMap)
                 .style("fill", function (d) {
-                    return (d.x === 0 || d.y === 0) ? "lightgrey" : "#e93e5a";
+                    return (d.x === 0 || d.y === 0) ? "rgba(196, 196, 196, 0.5)" : "rgba(61, 61, 61, 0.2)";
                 })
                 .on("click", function (d) {
                     if ($(window).width() < 768) {
                         div.transition()
                             .duration(200)
                             .style("opacity", .9);
-                        div.html("<strong>Active programming duration of " + xValue(d) + " mins with " + yValue(d) + " github" + (yValue(d) === 1 ? " push" : " pushes") + "</strong> <span style='color:lightgrey'> on " + moment(d.date).format("ddd MMM DD") + "</span>")
+                        div.html("<strong>" + xValue(d) + " vs " + yValue(d) + "</strong><br/> <span style='color:lightgrey'> on " + moment(d.date).format("ddd MMM DD") + "</span>")
                             .style("left", (d3.event.pageX) - 80 + "px")
                             .style("top", (d3.event.pageY) + "px");
                     }
