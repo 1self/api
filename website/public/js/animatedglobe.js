@@ -1,4 +1,5 @@
 var liveworld = function (dataUrl) {
+    $("body").css("background-color", frameBodyColor);
     $(function () {
         $("#embed-globe").popover({
             container: "body"

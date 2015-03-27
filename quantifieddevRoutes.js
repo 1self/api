@@ -1496,12 +1496,17 @@ module.exports = function (app) {
             if (req.query.circleColor) {
                 circleColor = req.query.circleColor;
             }
+            var frameBodyColor = "lightgray"; // default frame body color if none specified
+            if (req.query.frameBodyColor) {
+                frameBodyColor = req.query.frameBodyColor;
+            }
 
             var model = {
                 dataUrl: dataUrl,
                 representationUrl: representationUrl,
                 resizerUrl: resizerUrl,
-                circleColor: circleColor
+                circleColor: circleColor,
+                frameBodyColor: frameBodyColor
             };
 
             res.render('animatedGlobe', model);
