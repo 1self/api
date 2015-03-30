@@ -104,8 +104,12 @@ module.exports = function (app) {
         if (!(_.isEmpty(req.query.intent))) {
             req.session.intent = {};
             req.session.intent.name = req.query.intent;
+            req.session.intent.data = {
+                url: req.query.redirectUrl
+            };
+            console.log("INTENT DATA: ")
+            console.log(req.session.intent.data);
         }
-
 
         res.render('login', {
             authExists: authExists
