@@ -230,8 +230,8 @@ window.qd.plotBuildHistory = function() {
             .attr("width", 100);
 
         var legendColours = [
-            ["passed", "#00a2d4"],
-            ["failed", "#dd2649"]
+            ["passed", "#EC0027"],
+            ["failed", "#F1DADD"]
         ];
 
         legend.selectAll("g").data(legendColours)
