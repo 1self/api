@@ -87,14 +87,18 @@ var joinTags = function(event) {
 
 var computeChartUrl = function(event) {
     var findFirstNumericProperty = function(){
-        var keys = Object.keys(event.payload.properties);
+        var event_properties = event.payload.properties;
+        var keys = Object.keys(event_properties);
         var prop;
-        keys.forEach(function(key){
-            if (typeof(event.payload.properties[key]) === "number") {
-                prop = key;
-                return;
+
+        for(i = 0; i < keys.length; i++){
+            var val = event_properties[keys[i]];
+            if (typeof(val) === "number") {
+                prop = keys[i];
+                break;
             }
-        });
+        }
+
         return prop;
     };
 
