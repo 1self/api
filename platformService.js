@@ -59,7 +59,7 @@ var aggregate = function (query) {
             password: encryptedPassword
         },
         qs: query,
-        method: 'GET'
+        method: 'POST'
     };
     requestModule(requestDetails, function (error, response, body) {
         if (!error && response.statusCode == 200) {
