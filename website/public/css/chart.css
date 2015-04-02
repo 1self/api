@@ -406,7 +406,6 @@ ul.commentList li div {
     font-weight: bold;
     color: white;
 }
-
 @media screen and (min-device-width: 800px) {
     .comment_avatar, .count {
         position: relative;
@@ -444,3 +443,12 @@ ul.commentList li div {
     color: white;
 }
 
+@media screen and (max-width: 280px) {
+    #commentText{
+        width: 70%;
+        margin-bottom: 10px;
+    }
+    #addCommentInput .submitComment{
+        float:none;
+    }
+}
