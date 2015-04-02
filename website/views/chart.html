@@ -131,10 +131,8 @@
     </div>
     {% if isUserLoggedIn %}
     <div id="addCommentInput">
-        <div style="margin:0 auto">
         <img src="{{avatarUrl}}"/>
         <input id="commentText" type="text" placeholder="Add Comment">
-        </div>
         <button id="commentAddButton" class="btn submitComment" onclick="charts.addComment();"><span id="addText">Add</span> <div class="sending_comment_loader"></div></button>
     </div>
     {% else %}
