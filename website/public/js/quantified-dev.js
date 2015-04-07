@@ -243,7 +243,34 @@ var qd = function () {
                 console.error("Error is: " + error);
             });
     };
-
+    var plotInstagramFollowerCount = function (instagramFollowerCountEvents) {
+        result.instagramFollowerCountEvents = instagramFollowerCountEvents;
+        if (showParentDiv(instagramFollowerCountEvents, '#instagram-follower-count-graph-parent')) {
+            result.plotDashboardLineChart('#instagram-follower-count-graph', instagramFollowerCountEvents, "#00a2d4", 'No of Instagram Followers');
+        }
+    };
+    result.updateInstagramFollowerCount = function () {
+        postV1Ajax("internet,social-network,instagram,social-graph,inbound,follower", "sample", "max(count)", "daily")
+            .done(plotInstagramFollowerCount)
+            .always(result.updateProgress)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
+    };
+    var plotInstagramFollowingCount = function (instagramFollowingCountEvents) {
+        result.instagramFollowingCountEvents = instagramFollowingCountEvents;
+        if (showParentDiv(instagramFollowingCountEvents, '#instagram-following-count-graph-parent')) {
+            result.plotDashboardLineChart('#instagram-following-count-graph', instagramFollowingCountEvents, "#00a2d4", 'No of Instagram Followings');
+        }
+    };
+    result.updateInstagramFollowingCount = function () {
+        postV1Ajax("internet,social-network,instagram,social-graph,outbound,following", "sample", "max(count)", "daily")
+            .done(plotInstagramFollowingCount)
+            .always(result.updateProgress)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
+    };
     var getEventCountForHourlyEvents = function (events) {
         return _.reduce(_.map(events, function (event) {
             return event.value;
@@ -640,6 +667,10 @@ var qd = function () {
         plotHourlyWtfEvents(result.hourlyWtfEvents);
         plotHourlyGithubPushEvents(result.hourlyGithubPushEvents);
         plotHourlyActivityEvents(result.hourlyActivityEvents);
+        plotTwitterFollowerCount(result.twitterFollowerCountEvents);
+        plotTwitterFollowingCount(result.twitterFollowingCountEvents);
+        plotInstagramFollowerCount(result.instagramFollowerCountEvents);
+        plotInstagramFollowingCount(result.instagramFollowingCountEvents);
         plotIDEActivityVsGithubPushesCorrelationData(result.iDEActivityVsGithubPushesCorrelationData);
         plotStepsVsTracksCorrelationData(result.stepsVsTracksCorrelationData);
         plotIDEActivityVsTracksCorrelationData(result.iDEActivityVsTracksCorrelationData);
