@@ -11,7 +11,7 @@ console.log('Connecting to PLATFORM_BASE_URI : ' + platformUri);
 var saveEvent = function (event) {
     var deferred = q.defer();
     var options = {
-        url: platformUri + '/rest/events/',
+        url: platformUri + '/events/',
         auth: {
             user: "",
             password: encryptedPassword
@@ -33,7 +33,7 @@ var saveEvent = function (event) {
 var saveBatchEvents = function (batchEvents) {
     var deferred = q.defer();
     var options = {
-        url: platformUri + '/rest/events/batch',
+        url: platformUri + '/events/batch',
         auth: {
             user: "",
             password: encryptedPassword
@@ -53,7 +53,7 @@ var saveBatchEvents = function (batchEvents) {
 var aggregate = function (query) {
     var deferred = q.defer();
     var requestDetails = {
-        url: platformUri + '/rest/analytics/aggregate',
+        url: platformUri + '/analytics/aggregate',
         auth: {
             user: "",
             password: encryptedPassword
@@ -74,7 +74,7 @@ var aggregate = function (query) {
 var filter = function (query) {
     var deferred = q.defer();
     var requestDetails = {
-        url: platformUri + '/rest/events/filter',
+        url: platformUri + '/events/filter',
         auth: {
             user: "",
             password: encryptedPassword
@@ -97,7 +97,7 @@ var getEventsCount = function () {
     var deferred = q.defer();
 
     var options = {
-        url: platformUri + '/rest/events/eventsCount',
+        url: platformUri + '/events/eventsCount',
         auth: {
             user: "",
             password: encryptedPassword

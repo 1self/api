@@ -916,7 +916,7 @@ module.exports = function (app) {
                 'payload.actionTags': actionTags
             };
             var options = {
-                url: platformUri + '/rest/events/findStreams',
+                url: platformUri + '/events/findStreams',
                 auth: {
                     user: "",
                     password: encryptedPassword
