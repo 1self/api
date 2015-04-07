@@ -97,7 +97,6 @@ var addNowLine = function (svg, x, graphHeight) {
 
     var now = Date.now();
     var xGraphNowLocation = x(now);
-    console.log(xGraphNowLocation);
 
     var lineData = [{
         x: xGraphNowLocation,
