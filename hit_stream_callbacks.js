@@ -1,5 +1,3 @@
-process.env.DBURI = "mongodb://127.0.0.1:27017/quantifieddev";
-
 var mongoRepository = require('./mongoRepository.js');
 var Q = require('q');
 var requestModule = require('request');
@@ -84,7 +82,7 @@ var request = function (url, writeToken) {
         requestModule(options, function (err, resp, body) {
             if(!err){
                 log("Response for " + url + " is : " + resp.statusCode);
-            }else{  
+            }else{
                 log("Error for  " + url + " is: " + err);
             }
             deferred.resolve(resp);

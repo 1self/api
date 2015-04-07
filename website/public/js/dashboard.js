@@ -18,7 +18,9 @@ var dashboardGraphs = ['updateBuildModel'
                         , 'updateIDEActivityVsTracksCorrelationData'
                         , 'updateTwitterFollowerCount'
                         , 'updateTwitterFollowingCount'
-                        , 'updateTwitterFollowersVsTweetsCorrelationData'];
+                        , 'updateTwitterFollowersVsTweetsCorrelationData'
+                        , 'updateInstagramFollowerCount'
+                        , 'updateInstagramFollowingCount'];
 $(window).resize(function() {
     window.qd.replotGraphs();
 });
