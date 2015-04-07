@@ -93,7 +93,11 @@ module.exports = function (app) {
 
     app.get("/login", function (req, res) {
         if (req.session.username) {
-            res.redirect("/timeline");
+            var redirectUrl = "/timeline";
+            if(!_.isEmpty(req.query.redirectUrl)) {
+                redirectUrl = req.query.redirectUrl;
+            }
+            res.redirect(redirectUrl);
             return;
         }
         req.session.auth = 'login';
