@@ -139,13 +139,20 @@ var getStreamIdForUsername = function (encodedUsername, forUsername) {
     return deferred.promise;
 };
 
-var saveEvent = function (myEvent, stream, res) {
-    myEvent.streamid = stream.streamid;
-    var dateInfo = formatEventDateTime(myEvent.dateTime);
-    myEvent.eventDateTime = dateInfo.eventDateTime;
-    myEvent.eventLocalDateTime = dateInfo.eventLocalDateTime;
-    myEvent.offset = dateInfo.offset;
-    return platformService.saveEvent(myEvent);
+var authenthicateWriteTokenMiddleware = function (req, res, next) {
+    var writeToken = req.headers.authorization;
+    var query = {
+        streamid: req.params.streamid
+    };
+    
+    mongoRepository.findOne('stream', query)
+        .then(function (stream) {
+            if (stream === null || stream.writeToken !== writeToken) {
+                res.status(401).send()
+            } else {
+                next();
+            }
+        });
 };
 
 var authenticateWriteToken = function (writeToken, id) {
@@ -167,15 +174,8 @@ var authenticateWriteToken = function (writeToken, id) {
     return deferred.promise;
 };
 
-var postEvent = function (req, res) {
-    var writeToken = req.headers.authorization;
-    authenticateWriteToken(writeToken, req.params.id)
-        .then(function (stream) {
-            return saveEvent(req.body, stream);
-        },
-        function () {
-            res.status(404).send("stream not found");
-        })
+var saveEvent = function (req, res) {
+        platformService.saveEvent(req.event)
         .then(function (result) {
             res.send(result);
         }, function (err) {
@@ -942,24 +942,49 @@ app.get('/eventsCount', function (req, res) {
 });
 
 var publishEvent = function(req, res, next){
-    req.body.streamid = req.params.id;
-    redisClient.publish("events", JSON.stringify(req.body));
+    redisClient.publish("events", JSON.stringify(req.event));
     next();
 }
 
-app.post('/stream/:id/event', 
+var addDateTime = function(req, res, next){
+    var dateInfo = formatEventDateTime(req.event.dateTime);
+    req.event.eventDateTime = dateInfo.eventDateTime;
+    req.event.eventLocalDateTime = dateInfo.eventLocalDateTime;
+    req.event.offset = dateInfo.offset;
+    next();
+}
+
+var addStreamId = function(req,res, next){
+    req.event.streamid = req.params.streamid;
+    next();
+}
+
+var extractEvent = function(req, res, next){
+    req.event = req.body;
+    next(); 
+}
+
+app.post('/stream/:streamid/event', 
+    extractEvent,
+    authenthicateWriteTokenMiddleware,
+    addStreamId,
+    addDateTime,
     publishEvent,
-    postEvent);
+    saveEvent);
 
 
-app.post('/v1/streams/:id/events'
-    , validateRequest.validate
-    , publishEvent
-    , postEvent);
+app.post('/v1/streams/:streamid/events',
+    extractEvent,
+    authenthicateWriteTokenMiddleware,
+    addStreamId,
+    addDateTime,
+    publishEvent,
+    saveEvent);
 
 var endsWith = function (string, suffix) {
     return string.indexOf(suffix, string.length - suffix.length) !== -1;
 };
+
 var formatEventDateTime = function (datetime) {
     var currentMoment = moment();
     var offset = null;
