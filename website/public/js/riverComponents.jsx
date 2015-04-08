@@ -177,6 +177,16 @@
       }, 500);
     },
 
+    componentWillUpdate: function() {
+      window.localStorage['scrollPos'] = document.body.scrollTop;
+    },
+
+    componentDidUpdate: function(){
+      setTimeout(function(){
+        document.body.scrollTop = parseInt(window.localStorage['scrollPos'], 10);
+      }, 0);
+    },
+
     handleClick: function(state) {
       var notSelected;
       if(state === 'list') {

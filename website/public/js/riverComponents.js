@@ -9,7 +9,7 @@
     'margin-right' : "10px"
   };
 
-  var NoDataMessage = React.createClass({displayName: "NoDataMessage",
+  var NoDataMessage = React.createClass({displayName: 'NoDataMessage',
     render: function() {
       return (
         React.createElement("div", {className: "msg"}, 
@@ -21,7 +21,7 @@
     }
   });
 
-  var LoadingMessage = React.createClass({displayName: "LoadingMessage",
+  var LoadingMessage = React.createClass({displayName: 'LoadingMessage',
     render: function() {
       return (
         React.createElement("div", {id: "spinner"}, 
@@ -31,7 +31,7 @@
     }
   });
 
-  var River = React.createClass({displayName: "River",
+  var River = React.createClass({displayName: 'River',
     getInitialState: function(){
       return {events: [], loading: true, skip: 0, limit: 50, showMore: true};      
     },
@@ -91,7 +91,7 @@
     }
   });
 
-  var MoreButton = React.createClass({displayName: "MoreButton",
+  var MoreButton = React.createClass({displayName: 'MoreButton',
     render: function(){
       return (
         React.createElement("div", {className: "more_events_button_wrapper"}, 
@@ -101,7 +101,7 @@
     }
   });
 
-  var DateGroup = React.createClass({displayName: "DateGroup",
+  var DateGroup = React.createClass({displayName: 'DateGroup',
     render: function() {
       return ( 
         React.createElement("div", {className: "accordion-parent"}, 
@@ -112,7 +112,7 @@
     }
   });
 
-  var TagGroupList = React.createClass({displayName: "TagGroupList",
+  var TagGroupList = React.createClass({displayName: 'TagGroupList',
     render: function() {
       var key = 0;
       var tagGroups = this.props.groups.map(function(group){
@@ -127,7 +127,7 @@
     }
   });
 
-  var TagGroup = React.createClass({displayName: "TagGroup",
+  var TagGroup = React.createClass({displayName: 'TagGroup',
     render: function() {
       return (
         React.createElement("div", {className: "accordion-container"}, 
@@ -138,7 +138,7 @@
     }
   });
 
-  var TagGroupTitle = React.createClass({displayName: "TagGroupTitle",
+  var TagGroupTitle = React.createClass({displayName: 'TagGroupTitle',
     handleClick: function(event) {
       var node = $(this.getDOMNode());
       var wasVisible = $(node).next(".ui-accordion-content").is(':visible');
@@ -166,7 +166,7 @@
     }
   });
 
-  var TagGroupContent = React.createClass({displayName: "TagGroupContent",
+  var TagGroupContent = React.createClass({displayName: 'TagGroupContent',
     getInitialState: function(){
       return {display: 'list'};
     },
@@ -175,6 +175,18 @@
       $($(this.getDOMNode())).find(".list-container-class").animate({
         width: "100%"
       }, 500);
+    },
+
+    componentWillUpdate: function() {
+      window.localStorage['scrollPos'] = document.body.scrollTop;
+      console.log("Setting pos to " + window.localStorage['scrollPos']);
+    },
+
+    componentDidUpdate: function(){
+      setTimeout(function(){
+        document.body.scrollTop = parseInt(window.localStorage['scrollPos'], 10);
+        console.log("Scrolling to " + parseInt(window.localStorage['scrollPos'], 10));
+      }, 0);
     },
 
     handleClick: function(state) {
@@ -210,7 +222,7 @@
     }
   });
 
-  var EventsList = React.createClass({displayName: "EventsList",
+  var EventsList = React.createClass({displayName: 'EventsList',
     componentDidMount: function(){
       var parentNode = $(this.props.parent);
 
@@ -240,7 +252,7 @@
     }
   });
 
-  var Event = React.createClass({displayName: "Event",
+  var Event = React.createClass({displayName: 'Event',
     render: function(){
       return (
         React.createElement("div", {className: "details"}, 
@@ -254,7 +266,7 @@
     }
   });
 
-  var PropertyList = React.createClass({displayName: "PropertyList",
+  var PropertyList = React.createClass({displayName: 'PropertyList',
     render: function() {
       var properties = this.props.properties.map(function(prop){
         return React.createElement(Property, {key: prop.name, name: prop.name, value: prop.value});
@@ -268,7 +280,7 @@
     }
   });
 
-  var Property = React.createClass({displayName: "Property",
+  var Property = React.createClass({displayName: 'Property',
     render: function(){
       return (
         React.createElement("div", null, 
@@ -279,7 +291,7 @@
     }
   });
 
-  var EventsGraph = React.createClass({displayName: "EventsGraph",
+  var EventsGraph = React.createClass({displayName: 'EventsGraph',
     componentDidMount: function(){
       var parentNode = $(this.props.parent);
       var graphNode = $(this.refs['graph-container'].getDOMNode());
