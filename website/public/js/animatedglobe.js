@@ -1,15 +1,16 @@
-var liveworld = function(dataUrl) {
-    $(function() {
+var liveworld = function (dataUrl) {
+    $("body").css("background-color", frameBodyColor);
+    $(function () {
         $("#embed-globe").popover({
             container: "body"
         });
     });
 
-    var isUrl = function(str) {
+    var isUrl = function (str) {
         return str.match("^http");
     };
 
-    var handleIFrameReferrer = function(event) {
+    var handleIFrameReferrer = function (event) {
         if (isUrl(event.data)) {
             ga('send', 'event', 'embedded_globe', event.data);
         }
@@ -49,15 +50,15 @@ var liveworld = function(dataUrl) {
         .projection(projection)
         .context(context);
 
-    var loadData = function() {
+    var loadData = function () {
 
-        d3.json(dataUrl, function(error, events) {
+        d3.json(dataUrl, function (error, events) {
             var data = events;
             transformedEvents = [];
 
             for (var i = events.length - 1; i >= 0; i--) {
                 var eventFromServer = events[i];
-                if(eventFromServer.location === undefined){
+                if (eventFromServer.location === undefined) {
                     continue;
                 }
 
@@ -67,23 +68,23 @@ var liveworld = function(dataUrl) {
                         lon: eventFromServer.location.long,
                         lat: eventFromServer.location.lat
                     }
-                
-                }
-                    transformedEvents.push(singleEvent);
-            };
+
+                };
+                transformedEvents.push(singleEvent);
+            }
             createCircles();
         })
     };
 
     loadData();
-    setInterval(function() {
+    setInterval(function () {
             loadData()
         },
         60000);
 
-    var CircleSize = function(transformedEvent) {
+    var CircleSize = function (transformedEvent) {
         var size = Math.random(1, 0.7) * 0.7;
-        return function() {
+        return function () {
             size += 0.03;
             if (size > 2.1) {
                 size = 0.3;
@@ -94,11 +95,11 @@ var liveworld = function(dataUrl) {
 
     var eventsToDraw;
 
-    var createCircles = function() {
-        eventsToDraw = transformedEvents.map(function(transformedEvent) {
+    var createCircles = function () {
+        eventsToDraw = transformedEvents.map(function (transformedEvent) {
             var circleSize = new CircleSize(transformedEvent);
 
-            var draw = function(context) {
+            var draw = function (context) {
                 var circle = d3.geo.circle().angle(circleSize()).origin([transformedEvent.location.lon, transformedEvent.location.lat]);
                 circlePoints = [circle()];
                 context.beginPath();
@@ -106,24 +107,24 @@ var liveworld = function(dataUrl) {
                     type: "GeometryCollection",
                     geometries: circlePoints
                 });
-                context.fillStyle = "rgba(255, 255, 255, 1)";
+                context.fillStyle = circleColor;
                 context.fill();
                 context.lineWidth = .2;
                 context.strokeStyle = "#FFF";
                 context.stroke();
-            }
+            };
 
             return draw;
         });
         animateCircles();
-    }
+    };
 
-    var animateCircles = function() {
-        d3.json("/topo/world-110m.json", function(error, topo) {
+    var animateCircles = function () {
+        d3.json("/topo/world-110m.json", function (error, topo) {
             var land = topojson.feature(topo, topo.objects.land),
                 grid = graticule();
 
-            var redrawGlobe = function() {
+            var redrawGlobe = function () {
                 var λ = (speed * (Date.now() - start) * 2),
                     φ = -15;
 
@@ -172,7 +173,7 @@ var liveworld = function(dataUrl) {
                 context.stroke();
 
                 if (eventsToDraw != undefined) {
-                    eventsToDraw.forEach(function(drawCompile) {
+                    eventsToDraw.forEach(function (drawCompile) {
                         drawCompile(context);
                     });
                 }

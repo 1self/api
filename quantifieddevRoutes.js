@@ -93,7 +93,11 @@ module.exports = function (app) {
 
     app.get("/login", function (req, res) {
         if (req.session.username) {
-            res.redirect("/timeline");
+            var redirectUrl = "/timeline";
+            if(!_.isEmpty(req.query.redirectUrl)) {
+                redirectUrl = req.query.redirectUrl;
+            }
+            res.redirect(redirectUrl);
             return;
         }
         req.session.auth = 'login';
@@ -104,8 +108,12 @@ module.exports = function (app) {
         if (!(_.isEmpty(req.query.intent))) {
             req.session.intent = {};
             req.session.intent.name = req.query.intent;
+            req.session.intent.data = {
+                url: req.query.redirectUrl
+            };
+            console.log("INTENT DATA: ")
+            console.log(req.session.intent.data);
         }
-
 
         res.render('login', {
             authExists: authExists
@@ -912,7 +920,7 @@ module.exports = function (app) {
                 'payload.actionTags': actionTags
             };
             var options = {
-                url: platformUri + '/rest/events/findStreams',
+                url: platformUri + '/events/findStreams',
                 auth: {
                     user: "",
                     password: encryptedPassword
@@ -1388,20 +1396,20 @@ module.exports = function (app) {
         }
 
         next();
-    }
+    };
 
     var getStreams = function (req, res, next) {
         var query = {
             appId: req.permission.appId
-        }
+        };
 
         var projection = {
             streamid: 1
-        }
+        };
 
         var mapStreamObjectsToArray = function (streamObject) {
             return streamObject.streamid;
-        }
+        };
 
         mongoRepository.find("stream", query, projection).then(
             function (streams) {
@@ -1413,7 +1421,7 @@ module.exports = function (app) {
                 req.streams = streams;
                 next();
             });
-    }
+    };
 
     var getEvents = function (req, res, next) {
         var query = {
@@ -1442,7 +1450,7 @@ module.exports = function (app) {
 
         var removePayload = function (event) {
             return event.payload;
-        }
+        };
 
         var addEventsToRequest = function (events) {
             events = _.map(events, removePayload);
@@ -1452,12 +1460,12 @@ module.exports = function (app) {
             }
 
             next();
-        }
+        };
 
         eventRepository.find("oneself", query, projection).then(
             addEventsToRequest
         );
-    }
+    };
 
     var convertToRepresentation = function (req, res, next) {
         if (req.params.representation === "json") {
@@ -1492,11 +1500,22 @@ module.exports = function (app) {
             var representationUrl = representationUrlComponents.join("/") + "?token=" + req.authToken;
             var resizerUrl = resizerUrlComponents.join("/");
 
+            var circleColor = "red"; // default circle color if none specified
+            if (req.query.circleColor) {
+                circleColor = req.query.circleColor;
+            }
+            var frameBodyColor = "lightgray"; // default frame body color if none specified
+            if (req.query.frameBodyColor) {
+                frameBodyColor = req.query.frameBodyColor;
+            }
+
             var model = {
                 dataUrl: dataUrl,
                 representationUrl: representationUrl,
-                resizerUrl: resizerUrl
-            }
+                resizerUrl: resizerUrl,
+                circleColor: circleColor,
+                frameBodyColor: frameBodyColor
+            };
 
             res.render('animatedGlobe', model);
         }
@@ -1504,10 +1523,10 @@ module.exports = function (app) {
             var knownRepresentations = [
                 ".json",
                 ".animatedglobe"
-            ]
+            ];
             res.status(404).send("You requested an unknown representation. Known representations are: \r\n" + knownRepresentations.join("\r\n"));
         }
-    }
+    };
 
     app.get("/v1/apps/:appId/events/:objectTags/:actionTags/.:representation"
         , parseTokenFromAuthorization

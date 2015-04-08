@@ -165,9 +165,30 @@ var qd = function () {
             result.plotDashboardBarChart('#buildDuration-history', events, '#e93e5a', 'Build Duration(seconds)', toolTipText);
         }
     };
+    var plotMeanBuildDurationEvents = function (meanBuildDurationEvents) {
+        result.meanBuildDurationEvents = meanBuildDurationEvents;
+        if (showParentDiv(meanBuildDurationEvents, "#mean-buildDuration-history-parent")) {
+            var toolTipText = "{{value}} sec(s)";
+            var convertMillisToSeconds = function (data) {
+                return _.each(data, function (d) {
+                    d.value = d.value / 1000;
+                });
+            };
+            var events = convertMillisToSeconds(meanBuildDurationEvents);
+            result.plotDashboardBarChart('#mean-buildDuration-history', events, '#e93e5a', 'Mean Build Duration(seconds)', toolTipText);
+        }
+    };
     result.updateBuildDurationModel = function () {
-        postV1Ajax("Computer,Software", "Build,Finish", "mean(BuildDuration)", "daily")
+        postV1Ajax("Computer,Software", "Build,Finish", "sum(BuildDuration)", "daily")
             .done(plotBuildDurationEvents)
+            .always(result.updateProgress)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
+    };
+    result.updateMeanBuildDurationModel = function () {
+        postV1Ajax("Computer,Software", "Build,Finish", "mean(BuildDuration)", "daily")
+            .done(plotMeanBuildDurationEvents)
             .always(result.updateProgress)
             .fail(function (error) {
                 console.error("Error is: " + error);
@@ -222,7 +243,34 @@ var qd = function () {
                 console.error("Error is: " + error);
             });
     };
-
+    var plotInstagramFollowerCount = function (instagramFollowerCountEvents) {
+        result.instagramFollowerCountEvents = instagramFollowerCountEvents;
+        if (showParentDiv(instagramFollowerCountEvents, '#instagram-follower-count-graph-parent')) {
+            result.plotDashboardLineChart('#instagram-follower-count-graph', instagramFollowerCountEvents, "#00a2d4", 'No of Instagram Followers');
+        }
+    };
+    result.updateInstagramFollowerCount = function () {
+        postV1Ajax("internet,social-network,instagram,social-graph,inbound,follower", "sample", "max(count)", "daily")
+            .done(plotInstagramFollowerCount)
+            .always(result.updateProgress)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
+    };
+    var plotInstagramFollowingCount = function (instagramFollowingCountEvents) {
+        result.instagramFollowingCountEvents = instagramFollowingCountEvents;
+        if (showParentDiv(instagramFollowingCountEvents, '#instagram-following-count-graph-parent')) {
+            result.plotDashboardLineChart('#instagram-following-count-graph', instagramFollowingCountEvents, "#00a2d4", 'No of Instagram Followings');
+        }
+    };
+    result.updateInstagramFollowingCount = function () {
+        postV1Ajax("internet,social-network,instagram,social-graph,outbound,following", "sample", "max(count)", "daily")
+            .done(plotInstagramFollowingCount)
+            .always(result.updateProgress)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
+    };
     var getEventCountForHourlyEvents = function (events) {
         return _.reduce(_.map(events, function (event) {
             return event.value;
@@ -489,6 +537,18 @@ var qd = function () {
         ga('send', 'event', 'tweet_click', 'Build Duration History');
     };
 
+    result.tweetMeanBuildDurationSparkline = function () {
+        if (!result.buildDurationEvents) {
+            return;
+        }
+        var tweetValues = generateTweetValues(result.meanBuildDurationEvents);
+        var sparkBar = window.oneSelf.toSparkBars(tweetValues);
+        var tweetText = sparkBar + " my mean build duration over the last 2 weeks. See yours at app.1self.co";
+        var hashTags = ['buildDuration', 'coding'].join(',');
+        $('#tweetMyMeanBuildDuration').attr('href', "https://twitter.com/share?url=''&hashtags=" + hashTags + "&text=" + tweetText);
+        ga('send', 'event', 'tweet_click', 'Mean Build Duration History');
+    };
+
     result.tweetActiveEventSparkline = function () {
         if (!result.activeEvents) {
             return;
@@ -600,12 +660,17 @@ var qd = function () {
         plotActivity(result.activeEvents);
         plotWtfEvents(result.wtfEvents);
         plotBuildDurationEvents(result.buildDurationEvents);
+        plotMeanBuildDurationEvents(result.meanBuildDurationEvents);
         plotHourlyBuildEvents(result.hourlyBuildEvents);
         plotHourlyStepsEvents(result.hourlyStepsEvents);
         plotHourlyTracksEvents(result.hourlyTracksEvents);
         plotHourlyWtfEvents(result.hourlyWtfEvents);
         plotHourlyGithubPushEvents(result.hourlyGithubPushEvents);
         plotHourlyActivityEvents(result.hourlyActivityEvents);
+        plotTwitterFollowerCount(result.twitterFollowerCountEvents);
+        plotTwitterFollowingCount(result.twitterFollowingCountEvents);
+        plotInstagramFollowerCount(result.instagramFollowerCountEvents);
+        plotInstagramFollowingCount(result.instagramFollowingCountEvents);
         plotIDEActivityVsGithubPushesCorrelationData(result.iDEActivityVsGithubPushesCorrelationData);
         plotStepsVsTracksCorrelationData(result.stepsVsTracksCorrelationData);
         plotIDEActivityVsTracksCorrelationData(result.iDEActivityVsTracksCorrelationData);

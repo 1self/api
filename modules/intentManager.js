@@ -22,8 +22,13 @@ IntentManager.prototype.process = function (intent, req, res) {
         if (intentName === "website_signup") {
             res.redirect(intentData.url);
         }
+        else if (intentName === "login") {
+            res.redirect(intentData.url);
+        }
         else if (intentName === "website_login") {
             res.redirect("/integrations");
+        } else if (intentName === "website_login_chart") {
+            res.redirect(intentData.url);
         } else if (intentName === "chart.comment") {
             res.redirect(intentData.url);
         } else if (intentName === "session.redirect") {

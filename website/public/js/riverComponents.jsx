@@ -193,12 +193,12 @@
             <div className="accordian-title-logo float-left height-ten-pixle"></div>
             <div className="accordian-heading float-left">
               <span className="list-graph-toggle-container">
-              <a ref="list" href="#" onClick={this.handleClick.bind(this, 'list')} className="graph-toggle-link border-right list-link active-link">
+              <span ref="list" onClick={this.handleClick.bind(this, 'list')} className="graph-toggle-link border-right list-link active-link">
                 <img src="img/list-icon.png" className="graph-toggle-icon" />
-              </a>
-              <a ref="graph" href="#" onClick={this.handleClick.bind(this, 'graph')} className="graph-toggle-link graph-link">
+              </span>
+              <span ref="graph" onClick={this.handleClick.bind(this, 'graph')} className="graph-toggle-link graph-link">
                 <img src="img/graph-icon.png" className="graph-toggle-icon" />
-              </a>
+              </span>
               </span>
               
             </div>
