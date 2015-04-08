@@ -177,18 +177,6 @@
       }, 500);
     },
 
-    componentWillUpdate: function() {
-      window.localStorage['scrollPos'] = document.body.scrollTop;
-      console.log("Setting pos to " + window.localStorage['scrollPos']);
-    },
-
-    componentDidUpdate: function(){
-      setTimeout(function(){
-        document.body.scrollTop = parseInt(window.localStorage['scrollPos'], 10);
-        console.log("Scrolling to " + parseInt(window.localStorage['scrollPos'], 10));
-      }, 0);
-    },
-
     handleClick: function(state) {
       var notSelected;
       if(state === 'list') {
@@ -205,10 +193,10 @@
             React.createElement("div", {className: "accordian-title-logo float-left height-ten-pixle"}), 
             React.createElement("div", {className: "accordian-heading float-left"}, 
               React.createElement("span", {className: "list-graph-toggle-container"}, 
-              React.createElement("a", {ref: "list", href: "#", onClick: this.handleClick.bind(this, 'list'), className: "graph-toggle-link border-right list-link active-link"}, 
+              React.createElement("span", {ref: "list", onClick: this.handleClick.bind(this, 'list'), className: "graph-toggle-link border-right list-link active-link"}, 
                 React.createElement("img", {src: "img/list-icon.png", className: "graph-toggle-icon"})
               ), 
-              React.createElement("a", {ref: "graph", href: "#", onClick: this.handleClick.bind(this, 'graph'), className: "graph-toggle-link graph-link"}, 
+              React.createElement("span", {ref: "graph", onClick: this.handleClick.bind(this, 'graph'), className: "graph-toggle-link graph-link"}, 
                 React.createElement("img", {src: "img/graph-icon.png", className: "graph-toggle-icon"})
               )
               )
