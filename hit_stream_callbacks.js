@@ -1,20 +1,23 @@
 var mongoRepository = require('./mongoRepository.js');
 var Q = require('q');
-var requestModule = require('request');
+var request = Q.denodeify(require('request'));
 var fs = require('fs');
 
-var log = function(message){
+var log = function(message) {
     message = "\n" + new Date() + ": " + message;
     console.log(message);
-    fs.appendFile('stream_callback_hit.log', message, function (err) {
+    fs.appendFile('stream_callback_hit.log', message, function(err) {
 
     });
 };
 
-
-var hitStreamCallbacks = function(){
+var hitStreamCallbacks = function() {
     log("Starting sync");
-    mongoRepository.find('stream', {})
+    mongoRepository.find('stream', {
+            'callbackUrl': {
+                '$ne': null
+            }
+        })
         .then(replaceTemplateVars)
         .then(hitCallbackUrls)
         .then(function() {
@@ -22,13 +25,13 @@ var hitStreamCallbacks = function(){
         });
 };
 
-var replaceTemplateVars = function (streams) {
+var replaceTemplateVars = function(streams) {
     var deferred = Q.defer();
     var callbackUrls = [];
-    streams.forEach(function(stream){
-        if(null == stream || !stream.callbackUrl) return;
+    streams.forEach(function(stream) {
+        if (null == stream || !stream.callbackUrl) return;
         var requestData = {},
-        url = stream.callbackUrl;
+            url = stream.callbackUrl;
 
         url = url.replace("{{latestSyncField}}", encodeURIComponent(stream.latestSyncField));
         url = url.replace("{{streamid}}", stream.streamid);
@@ -38,38 +41,11 @@ var replaceTemplateVars = function (streams) {
 
         callbackUrls.push(requestData);
     });
-
     deferred.resolve(callbackUrls);
     return deferred.promise;
 };
 
-var hitCallbackUrls = function (urls) {
-    var totalUrls = urls.length;
-    log("Total urls to hit: " + totalUrls);
-    var deferred = Q.defer();
-    var requests = [];
-
-    urls.reduce(function(acc, url, index){
-        return acc
-            .then(function(){
-                return request(url.callbackUrl, url.writeToken);
-            })
-            .then(function(){
-                if(index === totalUrls - 1) {
-                    log("Finished processing all urls.");
-                    deferred.resolve();
-                }
-            })
-            .catch(function(){
-                console.log("Error for url: " + url);
-            });
-    }, Q.resolve())
-
-    return deferred.promise;
-};
-
-var request = function (url, writeToken) {
-    var deferred = Q.defer();
+var delayedRequest = function(url, writeToken) {
     var options = {
         url: url,
         headers: {
@@ -78,21 +54,25 @@ var request = function (url, writeToken) {
         method: 'GET'
     };
 
-    setTimeout(function(){
-        requestModule(options, function (err, resp, body) {
-            if(!err){
-                log("Response for " + url + " is : " + resp.statusCode);
-            }else{
-                log("Error for  " + url + " is: " + err);
-            }
-            deferred.resolve(resp);
-        })
-    }, 20000);
-
-    return deferred.promise;
+    return Q.delay(10000).then(function() {
+        return request(options);
+    });
 };
 
-
+var hitCallbackUrls = function(urls) {
+    return urls.reduce(function(acc, url, index) {
+        return acc
+            .then(function() {
+                return delayedRequest(url.callbackUrl, url.writeToken);
+            })
+            .then(function(res) {
+                log("Done executing " + url + " with response " + res);
+            })
+            .catch(function(err) {
+                log("Error for url: " + url + " error was : " + err);
+            });
+    }, Q.resolve())
+};
 
 hitStreamCallbacks();
 setInterval(hitStreamCallbacks, 18000000);
