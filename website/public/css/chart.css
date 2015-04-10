@@ -106,6 +106,18 @@ svg, img {
     -o-animation:      slidein 0.3s 3.2s forwards; /* Opera 12+ */
     animation:         slidein 0.3s 3.2s forwards; /* IE 10+, Fx 29+ */
 }
+
+.loginModal .modal-body {
+    text-align: left;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.margin-bottom {
+    margin-bottom: 10px;
+}
   
 @keyframes slidein {
     from{

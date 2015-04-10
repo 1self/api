@@ -141,23 +141,31 @@
     </button>
     {% endif %}
 
-    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginLabel"
+    <div class="modal fade loginModal" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginLabel"
          aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span
                             aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <h4 class="modal-title">Please log in</h4>
+                    <h4 class="modal-title bold">Join 1self</h4>
                 </div>
                 <div class="modal-body">
-                    <p>To proceed further, please login to 1self.</p>
+                    <p>
+                        <div class="bold margin-bottom">Live smarter</div>
+                        <div class="margin-bottom">
+                        Collect, compare, correlate and comment on all of your data to live a smarter life
+                        </div>
+                        <a href="www.1self.co" target="_blank">1self.co</a>
+                    </p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal"><span
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><span
                             class="font-size">Close</span></button>
-                    <a id="login" class="btn btn-primary"><span
-                            class="font-size">Login to 1self</span></a>
+                    <a id="login" class="btn btn-default"><span
+                            class="font-size">Log in</span></a>
+                    <a id="signup" class="btn btn-primary"><span
+                            class="font-size">Join</span></a>
                 </div>
             </div>
         </div>
