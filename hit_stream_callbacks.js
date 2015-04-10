@@ -66,10 +66,10 @@ var hitCallbackUrls = function(urls) {
                 return delayedRequest(url.callbackUrl, url.writeToken);
             })
             .then(function(res) {
-                log("Done executing " + url + " with response " + res);
+        log("Done executing " + url.callbackUrl + " with response " + res[0].statusCode + '\n' + res[0].body);
             })
             .catch(function(err) {
-                log("Error for url: " + url + " error was : " + err);
+                log("Error for url: " + url.callbackUrl + " error was : " + err);
             });
     }, Q.resolve())
 };
