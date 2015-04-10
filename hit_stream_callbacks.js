@@ -66,7 +66,7 @@ var hitCallbackUrls = function(urls) {
                 return delayedRequest(url.callbackUrl, url.writeToken);
             })
             .then(function(res) {
-                log("Done executing " + url.callbackUrl + " with response " + res.response + '\n' + res.body);
+		log("Done executing " + url.callbackUrl + " with response " + res[0].statusCode + '\n' + res[0].body);
             })
             .catch(function(err) {
                 log("Error for url: " + url.callbackUrl + " error was : " + err);
