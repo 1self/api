@@ -253,7 +253,7 @@ var displayCommentsSummary = function () {
 
 $(document).ready(function () {
 
-    $("#login").click(function () {
+    $("#signup").click(function () {
         if (window.parent !== window) {
             var parentWindow = window.parent;
             var msg = {
@@ -264,7 +264,49 @@ $(document).ready(function () {
             };
             parentWindow.postMessage(msg, "*");
         } else {
-            $("#login").attr('href', '/signup?intent=chart.comment&redirectUrl=' + encodeURIComponent(window.location.href));
+            $("#signup").attr('href', '/signup?intent=chart.comment&redirectUrl=' + encodeURIComponent(window.location.href));
+        }
+    });
+    $("#join1self").click(function () {
+        if (window.parent !== window) {
+            var parentWindow = window.parent;
+            var msg = {
+                msgType: 'auth',
+                loginUrl: oneselfAppUrl + "/signup",
+                oneselfAppUrl: oneselfAppUrl,
+                intent: 'chart.join'
+            };
+            parentWindow.postMessage(msg, "*");
+        } else {
+            window.location.href= '/signup?intent=chart.join&redirectUrl=' + encodeURIComponent(window.location.href);
+        }
+    });
+    $("#signup").click(function () {
+        if (window.parent !== window) {
+            var parentWindow = window.parent;
+            var msg = {
+                msgType: 'auth',
+                loginUrl: oneselfAppUrl + "/signup",
+                oneselfAppUrl: oneselfAppUrl,
+                intent: 'chart.comment'
+            };
+            parentWindow.postMessage(msg, "*");
+        } else {
+            $("#signup").attr('href', '/signup?intent=chart.comment&redirectUrl=' + encodeURIComponent(window.location.href));
+        }
+    });
+    $("#login").click(function () {
+        if (window.parent !== window) {
+            var parentWindow = window.parent;
+            var msg = {
+                msgType: 'auth',
+                loginUrl: oneselfAppUrl + "/login",
+                oneselfAppUrl: oneselfAppUrl,
+                intent: 'chart.comment'
+            };
+            parentWindow.postMessage(msg, "*");
+        } else {
+            $("#login").attr('href', '/login?intent=chart.comment&redirectUrl=' + encodeURIComponent(window.location.href));
         }
     });
 

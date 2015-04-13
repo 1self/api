@@ -31,6 +31,8 @@ IntentManager.prototype.process = function (intent, req, res) {
             res.redirect(intentData.url);
         } else if (intentName === "chart.comment") {
             res.redirect(intentData.url);
+        } else if (intentName === "chart.join") {
+            res.redirect(intentData.url);
         } else if (intentName === "session.redirect") {
             res.redirect(intentData.url);
         }

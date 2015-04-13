@@ -106,6 +106,18 @@ svg, img {
     -o-animation:      slidein 0.3s 3.2s forwards; /* Opera 12+ */
     animation:         slidein 0.3s 3.2s forwards; /* IE 10+, Fx 29+ */
 }
+
+.loginModal .modal-body {
+    text-align: left;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.margin-bottom {
+    margin-bottom: 10px;
+}
   
 @keyframes slidein {
     from{
@@ -131,22 +143,6 @@ svg, img {
     }
 }
 
-
-
-.button1self img{
-    width: 53px;
-    height: 53px;
-    max-width: 200px;
-    margin-left: -11px;
-    margin-top: -3px;
-    overflow: visible;
-    position: absolute;
-    top: -1px;
-    right: -4px;
-}
-
-
-
 .shareGraphButton, .addCommentButton, .button1self {
     padding: 3px 8px;
     border: 2px solid #F2F2F2;
@@ -160,18 +156,15 @@ svg, img {
 
 .button1self {
     position: absolute;
-    border: 0px;
     box-shadow: 5px 5px 7px #393939;
-    width: 44px;
+    width: 84px;
     height: 44px;
     border-radius: 79px;
-    /* background-image: url(/img/1selfbutton.png); */
     background-size: 53px 53px;
     background-position: -5px;
     overflow: visible;
     padding: 0px;
-    border: 0px;
-    right: -50px;
+    right: -100px;
         top: 15px;
     -webkit-animation: slideinbutton1self 0.3s 3.2s forwards; /* Safari 4+ */
     -moz-animation:    slideinbutton1self 0.3s 3.2s forwards; /* Fx 5+ */
