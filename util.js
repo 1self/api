@@ -4,6 +4,9 @@ var mongoRepository = require('./mongoRepository.js');
 var q = require('q');
 var _ = require("underscore")
 var moment = require("moment");
+var redis = require("redis");
+
+var redisPublish = redis.createClient();
 
 var Util = function () {
 };
@@ -160,12 +163,25 @@ var insertStreamForUser = function (user, streamid) {
             }
         }
     };
+
     var query = {
         "username": user.username.toLowerCase()
     };
+
     mongoRepository.update('users', query, updateObject)
         .then(function (user) {
+            var message = {
+                type: 'userupdate',
+                username: username,
+                streamidAdded: streamid
+            }
+
+            // It's important that the publish of the event is done once the data has 
+            // been written: downstream processing uses this message to know to reload 
+            // the user. 
+            redisPublish.publish('users', JSON.stringify(message));
             deferred.resolve(true);
+
         }, function (err) {
             deferred.reject(err);
         });
