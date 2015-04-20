@@ -1,17 +1,14 @@
-var mongoRepository = require('./mongoRepository.js');
-var eventRepository = require('./eventRepository.js');
-var Q = require('q');
+var mongoRepository = require('.././mongoRepository.js');
+var eventRepository = require('.././eventRepository.js');
+var q = require('q');
 var moment = require("moment");
-var platformService = require('./platformService.js');
+var platformService = require('.././platformService.js');
+var _ = require("underscore");
 
 var appIds = ["app-id-9adce70ae3ef5c4c8389910b9abb95b1", //github
     "app-id-07be2f65eccd23895b75313a1eb8283b", //lastfm
-    "app-id-tw4f3dsd91d9a3e715ff98bb9eedbd0a", //twitter
-    "app-id-gf4f3dsd93d9a3e715ff98bb9eedbd0a"]; //Google Fit
+    "app-id-tw4f3dsd91d9a3e715ff98bb9eedbd0a"]; //twitter
 
-var findStreamsForAppIds = function (appIds) {
-
-};
 
 var getLatestSyncField = function (streamId) {
     var deferred = q.defer();
@@ -57,38 +54,45 @@ var updateLatestSyncField = function (streamId, latestSyncField) {
 
 var query = {
     "appId": {
-        "$in": appIds
+        "$in": appIds //["app-id-9adce70ae3ef5c4c8389910b9abb95b1","app-id-07be2f65eccd23895b75313a1eb8283b","app-id-tw4f3dsd91d9a3e715ff98bb9eedbd0a"]
     }
 };
 var projection = {};
 
 mongoRepository.find("stream", query, projection)
     .then(function (streams) {
-        _.forEach(streams, function (stream) {
+        var count = 0;
+        console.log("-------------------- Total streams: ",streams.length);
+        return _.map(streams, function (stream) {
             var query = {
                 "payload.streamid": stream.streamid,
                 "event.createdOn": {
-                    "$gt": moment("2015-03-13T00:00:00.000Z").toISOString()
+                    "$gt": new Date(2015,2,13)  //ISODate("2015-03-13T00:00:00.000Z")
                 }
             };
             return eventRepository.remove("oneself", query)
                 .then(function (noOfEventsRemoved) {
-                    console.log("No Of Events Removed: ", noOfEventsRemoved);
-                    return getLatestSyncField(streamId);
+                    return getLatestSyncField(stream.streamid);
                 })
                 .then(function (latestSyncField) {
                     if (_.isEmpty(latestSyncField)) {
                         if (stream.appId === "app-id-tw4f3dsd91d9a3e715ff98bb9eedbd0a") {
                             latestSyncField = "00000000";
                         }
-                        else if(stream.appId === "app-id-gf4f3dsd93d9a3e715ff98bb9eedbd0a"){
+                        else if (stream.appId === "app-id-gf4f3dsd93d9a3e715ff98bb9eedbd0a") {
                             latestSyncField = null;
                         }
                         else {
-                            latestSyncField = new Date(1970,1,1).toISOString();
+                            latestSyncField = new Date(1970, 1, 1);
                         }
                     }
-                    return updateLatestSyncField(streamId, latestSyncField)
+                    console.log("Streamid: ",stream.streamid," LatestSyncField: ",latestSyncField);
+                    return updateLatestSyncField(stream.streamid, latestSyncField)
                 })
-        });
+                .then(function(){
+                    console.log("Done for Streamid: ",stream.streamid);
+                    count++;
+                    console.log("------------------------- Streams completed: ",count);
+                })
+        })
     });
