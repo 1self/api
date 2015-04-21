@@ -169,12 +169,12 @@ var insertStreamForUser = function (user, streamid) {
     };
 
     mongoRepository.update('users', query, updateObject)
-        .then(function (user) {
+        .then(function () {
             var message = {
                 type: 'userupdate',
-                username: username,
+                username: user.username,
                 streamidAdded: streamid
-            }
+            };
 
             // It's important that the publish of the event is done once the data has 
             // been written: downstream processing uses this message to know to reload 
