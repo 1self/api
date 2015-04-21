@@ -43,9 +43,13 @@ app.use(session({
 
 
 app.use(bodyParser.urlencoded({
+    limit: '100mb',
     extended: true
 }));
-app.use(bodyParser.json());
+
+app.use(bodyParser.json({
+    limit: '100mb'
+}));
 
 app.engine('html', swig.renderFile);
 app.use(express.static(path.join(__dirname, 'website/public')));
