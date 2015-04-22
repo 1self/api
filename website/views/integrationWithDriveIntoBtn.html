@@ -40,17 +40,30 @@
 			<div class="clear-both"></div>
 			<p class="padding-top-three-percent paragraph-text ">Or, continue uniting your data and start living a smarter life</p>
         <div class="social-container">
-
-            {% for integration in integrations %}
-            <div class="social-img-container">
-                <a href="/integrations/{{integration.integrationId}}" class="link">
-                    <img src="{{integration.iconUrl}}" class="social-img" style="border: 4px solid {{integration.bgColor}}" tabindex="0">
-                    <img src="/img/tick.svg" {% if integration.alreadyIntegrated  %} class="social-img tick-show"{% endif %}{% if !integration.alreadyIntegrated %} class="social-img tick-hide"{% endif %}>
-                </a>
-                <span class="social-group-title">{{integration.title}}</span>
+            <div class="hosted-integrations">
+                <p class="welcome-details padding-top-three-percent">Hosted Integrations</p>
+                {% for integration in integrations %}
+                <div class="social-img-container">
+                    <a href="/integrations/{{integration.integrationId}}" class="link">
+                        <img src="{{integration.iconUrl}}" class="social-img" style="border: 4px solid {{integration.bgColor}}" tabindex="0">
+                        <img src="/img/tick.svg" {% if integration.alreadyIntegrated  %} class="social-img tick-show"{% endif %}{% if !integration.alreadyIntegrated %} class="social-img tick-hide"{% endif %}>
+                    </a>
+                    <span class="social-group-title">{{integration.title}}</span>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-
+            <div>
+                <p class="welcome-details">Downloadable Apps</p>
+                {% for app in apps %}
+                <div class="social-img-container">
+                    <a href="/integrations/{{app.integrationId}}" class="link">
+                        <img src="{{app.iconUrl}}" class="social-img" style="border: 4px solid {{app.bgColor}}" tabindex="0">
+                        <img src="/img/tick.svg" {% if app.alreadyIntegrated  %} class="social-img tick-show"{% endif %}{% if !app.alreadyIntegrated %} class="social-img tick-hide"{% endif %}>
+                    </a>
+                    <span class="social-group-title">{{app.title}}</span>
+                </div>
+                {% endfor %}
+            </div>
         </div>
 	</div>
 </body>

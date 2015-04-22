@@ -57,6 +57,23 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
+    var separateIntegrationsAndApps = function(integrations) {
+        var apps = [];
+        var ints = [];
+        _.map(integrations, function(integration){
+            if(integration.type==="hosted"){
+                ints.push(integration);
+            }
+            else {
+                apps.push(integration);
+            }
+        });
+        return {
+            integrations: ints,
+            apps: apps
+        }
+    };
+
     app.get("/integrations", sessionManager.requiresSession, function (req, res) {
         var totalIntegrationsIntegrated = 0;
         getActiveIntegrations()
@@ -68,7 +85,8 @@ module.exports = function (app) {
                         iconUrl: int.iconUrl,
                         bgColor: int.bgColor,
                         fgColor: int.fgColor,
-                        appId: int.appId
+                        appId: int.appId,
+                        type: int.type
                     }
                 })
             }).then(function (integrations) {
@@ -83,8 +101,10 @@ module.exports = function (app) {
                         })
                     });
             }).then(function (integrations) {
+                var separatedIntegrations = separateIntegrationsAndApps(integrations);
                 var infoForIntegrations = {
-                    integrations: integrations,
+                    integrations: separatedIntegrations.integrations,
+                    apps: separatedIntegrations.apps,
                     totalIntegrationsIntegrated: totalIntegrationsIntegrated,
                     avatarUrl: req.session.avatarUrl,
                     username: req.session.username
