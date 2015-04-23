@@ -147,7 +147,9 @@ module.exports = function (app) {
                     integrationUrl: int.integrationUrl,
                     alreadyIntegrated: int.alreadyIntegrated,
                     username: req.session.username,
-                    registrationToken: req.session.registrationToken
+                    registrationToken: req.session.registrationToken,
+                    type: int.type,
+                    instructions: int.instructions
                 });
             })
             .catch(function (err) {

@@ -30,7 +30,11 @@
     <div class="divider">
         {% if !alreadyIntegrated %}
         <div class="connect-now-btn-container">
+            {% if type === "hosted" %}
             <a class="custom-button connect-now-btn absolute left-aligned small-btn connect" href="{{integrationUrl}}?username={{username}}&token={{registrationToken}}" >Connect Now</a>
+            {% else %}
+            <a class="custom-button connect-now-btn absolute left-aligned small-btn connect" href="{{downloadLink}}" >Download Now</a>
+            {% endif %}
         </div>
         {% else %}
         <div class="middle-dot-container">
@@ -39,17 +43,26 @@
         {% endif %}
     </div>
     <P class="custom-paragraph-text">
-        {{longDesc}}
+        {% for longDescPara in longDesc %}
+            <P class="custom-paragraph-text">{{ longDescPara }}</P>
+            <br/>
+        {% endfor %}
     </P>
     <h2 class="orange-color">Instructions</h2>
     <P class="custom-paragraph-text blue-color">
-        {{instructions}}
+        {% for instruction in instructions %}
+            <P class="custom-paragraph-text">{{ instruction }}</P>
+            <br/>
+        {% endfor %}
     </P>
     {% if !alreadyIntegrated %}
-    <a class="custom-button connect-now-btn absolute left-aligned small-btn connect" href="{{integrationUrl}}?username={{username}}&token={{registrationToken}}" >Connect</a>
+        {% if type === "hosted" %}
+            <a class="custom-button connect-now-btn absolute left-aligned small-btn connect" href="{{integrationUrl}}?username={{username}}&token={{registrationToken}}" >Connect</a>
+        {% else %}
+            <a class="custom-button connect-now-btn absolute left-aligned small-btn connect" href="{{downloadLink}}">Download</a>
+        {% endif %}
     {% endif %}
     <a href="/integrations" class="custom-button connect-now-btn absolute left-aligned">Return to Integrations</a>
-
 </div>
 </body>
 </html>
