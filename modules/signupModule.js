@@ -16,7 +16,7 @@ var SignupModule = function () {
 SignupModule.prototype.startSignup = function(session){
         session.service = undefined;
         session.auth = 'signup';
-    }
+    };
 
 SignupModule.prototype.signingUpWithGithub = function(session) {
         session.service = 'github';
@@ -26,7 +26,7 @@ SignupModule.prototype.signingUpWithGithub = function(session) {
         // back to the signup page doesn't make a request to the server
         // which means session.auth ends up not being set.
         session.auth = 'signup';
-    }
+    };
 
 SignupModule.prototype.signingUpWithFacebook = function(session) {
         session.service = 'facebook';
@@ -36,7 +36,7 @@ SignupModule.prototype.signingUpWithFacebook = function(session) {
         // back to the signup page doesn't make a request to the server
         // which means session.auth ends up not being set.
         session.auth = 'signup';
-    }
+    };
 
 SignupModule.prototype.getAuthService = function(session) {
         var result = '';
@@ -48,7 +48,7 @@ SignupModule.prototype.getAuthService = function(session) {
         }
 
         return result;
-    }
+    };
 
 SignupModule.prototype.getAuthServiceUrl = function(session) {
         var result = '';
@@ -60,7 +60,7 @@ SignupModule.prototype.getAuthServiceUrl = function(session) {
         }
 
         return result;
-    }
+    };
 
 SignupModule.prototype.signup = function (user, req, res) {
     var deferredOuter = q.defer();
@@ -73,14 +73,14 @@ SignupModule.prototype.signup = function (user, req, res) {
         var deferred = q.defer();
         var by1selfUsername = {
             "username": data.username
-        }
+        };
         mongoRepository.findOne('users', by1selfUsername)
             .then(function (user) {
                 data.user = user;
                 deferred.resolve(data);
             });
         return deferred.promise;
-    }
+    };
 
     var doSignup = function () {
         var oneselfUsername = req.session.oneselfUsername;

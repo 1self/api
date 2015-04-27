@@ -22,6 +22,7 @@ exports.setSession = function (req, res, user) {
     req.session.registrationToken = user.registrationToken;
     req.session.githubUsername = user.profile.username;
     req.session.avatarUrl = user.profile.avatarUrl;
+    req.session.isSignupComplete = true;
     res.cookie('_eun', req.session.encodedUsername);
 };
 

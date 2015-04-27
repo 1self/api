@@ -87,14 +87,16 @@ module.exports = function (app) {
             var signupUrl = "/signup/" + req.query.service;
             res.redirect(signupUrl);
         } else {
-            res.render('signup');
+            res.render('signup', {
+                username: req.session.oneselfUsername
+            });
         }
     });
 
     app.get("/login", function (req, res) {
         if (req.session.username) {
             var redirectUrl = "/timeline";
-            if(!_.isEmpty(req.query.redirectUrl)) {
+            if (!_.isEmpty(req.query.redirectUrl)) {
                 redirectUrl = req.query.redirectUrl;
             }
             res.redirect(redirectUrl);
@@ -104,7 +106,7 @@ module.exports = function (app) {
         var authExists = req.query.authExists;
 
         // Make sure to delete any oneselfUsername in session as it's used only while signup
-        delete req.session.oneselfUsername;
+        //delete req.session.oneselfUsername; (oneself username now used in login flow as well, for incomplete Signup process)
         if (!(_.isEmpty(req.query.intent))) {
             req.session.intent = {};
             req.session.intent.name = req.query.intent;
@@ -121,13 +123,19 @@ module.exports = function (app) {
     });
 
     app.post('/login', function (req, res) {
-
         req.session.service = req.body.service;
-
         if (req.body.service === "github") {
-            res.redirect("/login/github");
+            if (!req.session.isSignupComplete) {
+                res.redirect("/signup/github");
+            } else {
+                res.redirect("/login/github");
+            }
         } else if (req.body.service === "facebook") {
-            res.redirect("/login/facebook");
+            if (!req.session.isSignupComplete) {
+                res.redirect("/signup/facebook");
+            } else {
+                res.redirect("/login/facebook");
+            }
         }
     });
 
@@ -154,6 +162,7 @@ module.exports = function (app) {
 
     app.post("/captureUsername", function (req, res) {
         req.session.oneselfUsername = req.body.username;
+        req.session.isSignupComplete = false;
         if (req.body.service === "github") {
             res.redirect("/signup/github");
         } else if (req.body.service === "facebook") {

@@ -59,11 +59,11 @@ module.exports = function (app) {
         };
         var doAuth = function (user) {
             var deferred = q.defer();
-
             if (isEmpty(user)) {
-                SignupModule.signup(oAuthUser,req, res).then(function (userRecord) {
-                    deferred.resolve(userRecord);
-                });
+                SignupModule.signup(oAuthUser, req, res)
+                    .then(function (userRecord) {
+                        deferred.resolve(userRecord);
+                    });
             }
             else {
                 LoginModule.login(oAuthUser, req, res).then(function () {
@@ -156,12 +156,12 @@ module.exports = function (app) {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    var recordFacebookSignup = function(req, res, next){
+    var recordFacebookSignup = function (req, res, next) {
         SignupModule.signingUpWithFacebook(req.session);
         next();
     }
 
-    var recordFacebookLogin = function(req, res, next){
+    var recordFacebookLogin = function (req, res, next) {
         req.session.login = 'facebook';
         next();
     }
@@ -178,12 +178,12 @@ module.exports = function (app) {
         passport.authenticate('facebook', {failureRedirect: CONTEXT_URI + '/signup'}),
         handleFacebookCallback);
 
-    var recordGithubLogin = function(req, res, next){
+    var recordGithubLogin = function (req, res, next) {
         req.session.login = 'github';
         next();
     }
 
-    var recordGithubSignup = function(req, res, next){
+    var recordGithubSignup = function (req, res, next) {
         SignupModule.signingUpWithGithub(req.session);
         next();
     }
@@ -191,15 +191,15 @@ module.exports = function (app) {
     app.get('/login/github'
         , recordGithubLogin
         , passport.authenticate('github', {
-        scope: 'user:email'
-    }));
+            scope: 'user:email'
+        }));
 
     app.get('/signup/github'
         , recordGithubSignup
         , passport.authenticate('github', {
-        scope: 'user:email'
-    }));
-    
+            scope: 'user:email'
+        }));
+
     app.get('/auth/github/1self_website', function (req, res, next) {
         req.session.redirectUrl = "/dashboard";
         passport.authenticate('github', {
