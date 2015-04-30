@@ -1430,22 +1430,30 @@ module.exports = function (app) {
             },
 
             "payload.objectTags": {
-                "$in": req.permission.scope.objectTags
+                "$all": req.permission.scope.objectTags
             },
 
             "payload.actionTags": {
-                "$in": req.permission.scope.actionTags
+                "$all": req.permission.scope.actionTags
             }
 
         };
 
         var projection = {
             "_id": 0,
-            "emptyProjection": 1
+            "emptyProjection": 1,
+	    "payload.dateTime": 1
         };
 
         if (req.permission.scope.location === true) {
             projection["payload.location"] = "location";
+        }
+	
+	console.log(req.permission.scope);
+	console.log(req.permission.scope['ultraviolet-index']);
+	if(req.permission.scope['ultraviolet-index'] === true) {
+	    console.log("ultraviolet scope found");
+	    projection["payload.properties.ultraviolet-index"] = true;
         }
 
         var removePayload = function (event) {
@@ -1462,6 +1470,7 @@ module.exports = function (app) {
             next();
         };
 
+	console.log(projection);
         eventRepository.find("oneself", query, projection).then(
             addEventsToRequest
         );
