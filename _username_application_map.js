@@ -28,6 +28,7 @@ var findAppsFor = function(username){
                 })
                 .then(function(){
                         console.log("Jhala");
+                        process.exit(0);
                 });
 };
 
@@ -76,9 +77,9 @@ var drawMap = function(streams, apps){
         var deferred = Q.defer();
         streams.forEach(function(stream){
 		if(stream.appId !== undefined){
-                var app = _.find(apps, function(app) {return app.appId === stream.appId; });
-                console.log(app.appName + "   "  +  "     " + app.title + "     " + app.appId + "    " + stream.streamid);
-}
+                        var app = _.find(apps, function(app) {return app.appId === stream.appId; });
+                        console.log("Name: " + app.appName + "   "  +  "     Title: " + app.title + "     AppId: " + app.appId + "    StreamId: " + stream.streamid);
+                }
         });
         
         deferred.resolve(true);
