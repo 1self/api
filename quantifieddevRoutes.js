@@ -1456,6 +1456,20 @@ module.exports = function (app) {
 	    projection["payload.properties.ultraviolet-index"] = true;
         }
 
+	if(req.permission.scope['humidity-percent'] === true) {
+            projection["payload.properties.humidity-percent"] = true;
+        }
+
+
+        if(req.permission.scope['lux'] === true) {
+            projection["payload.properties.lux"] = true;
+        }
+
+
+        if(req.permission.scope['celsius'] === true) {
+            projection["payload.properties.celsius"] = true;
+        }
+
         var removePayload = function (event) {
             return event.payload;
         };
