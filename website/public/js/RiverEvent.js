@@ -38,6 +38,11 @@
 
     RiverEvent.prototype.formatProperties = function() {
         var self = this;
+
+        if(self.event.payload.properties === undefined){
+            return [{}];
+        }
+
         return Object.keys(self.event.payload.properties).map(function(key) {
             return {
                 name: key,

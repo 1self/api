@@ -88,7 +88,11 @@ var joinTags = function(event) {
 var computeChartUrl = function(event) {
     var findFirstNumericProperty = function(){
         var event_properties = event.payload.properties;
-        var keys = Object.keys(event_properties);
+        if(event_properties === undefined){
+	    return undefined;
+	}
+
+	var keys = Object.keys(event_properties);
         var prop;
 
         for(i = 0; i < keys.length; i++){
@@ -112,7 +116,9 @@ var computeChartUrl = function(event) {
     var prop = findFirstNumericProperty();
 
     //dirty hack for noiseapp/twitter or show first numeric property if any (for now)
-    if (event.payload.objectTags.indexOf("sound") !== -1) {
+    if(prop === undefined){
+        operation = "count";
+    } else if (event.payload.objectTags.indexOf("sound") !== -1) {
         operation = "mean(dba)";
     } else if (event.payload.objectTags.indexOf("tweets") !== -1 || event.payload.objectTags.indexOf("tweet") !== -1) {
         operation = "count";
