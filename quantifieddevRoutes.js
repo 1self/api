@@ -1198,12 +1198,10 @@ module.exports = function (app) {
         var readToken = req.query.readToken;
 
         var respondWithImage = function(imageName){
-            console.log("Responding")
             res.sendfile("images/" + imageName);
         };
 
         var serveImage = function(){
-            console.log("Serving")
             util.getSharedGraphImagePath(req.query.shareToken)
             .then(respondWithImage)
             .catch(function(err){
