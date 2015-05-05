@@ -19,7 +19,8 @@ var sharedSecret = process.env.SHARED_SECRET;
 var validator = require('validator');
 var mongoRepository = require('./mongoRepository.js');
 var eventRepository = require('./eventRepository.js');
-var SignupModule = require('./modules/signupModule.js')
+var SignupModule = require('./modules/signupModule.js');
+var imageCapture = require('./imageCapture.js');
 
 var emailConfigOptions = {
     root: path.join(__dirname, "/website/public/email_templates")
@@ -815,8 +816,14 @@ module.exports = function (app) {
             });
     });
 
+
+    var genImageName = function(shareUrl) {
+        return require('crypto').createHash('sha1').update(shareUrl).digest('hex');
+    };
+
     app.get('/v1/graph/share', function (req, res) {
         var graphUrl = req.query.graphUrl;
+        console.log('SHARE URL ', graphUrl);
         var bgColor = req.query.bgColor;
         var fromDate = req.query.from;
         var toDate = req.query.to;
@@ -841,9 +848,14 @@ module.exports = function (app) {
                     graphUrl: graphUrl,
                     bgColor: bgColor,
                     fromDate: fromDate,
-                    toDate: toDate
+                    toDate: toDate,
+                    imageUrl: genImageName(graphUrl) + ".png"
                 };
+
                 return insertGraphShareEntryInDb(graphShareObject)
+                    .then(function(){
+                        return imageCapture.saveChartImg(genShareUrl(graphShareObject)+"&hideButtons=true", 'images/' + graphShareObject.imageUrl);
+                    })
                     .then(function () {
                         var graphShareUrl = genShareUrl(graphShareObject);
                         res.send({
@@ -1040,24 +1052,6 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    // var getAlreadySharedGraphObject = function (graphUrl) {
-    //     var deferred = Q.defer();
-    //     var query = {
-    //         "graphUrl": graphUrl
-    //     };
-    //     mongoRepository.findOne('graphShares', query)
-    //         .then(function (graphShareObject) {
-    //             if (graphShareObject) {
-    //                 deferred.resolve(graphShareObject);
-    //             } else {
-    //                 deferred.resolve(null);
-    //             }
-    //         }, function (err) {
-    //             deferred.reject(err);
-    //         });
-    //     return deferred.promise;
-    // };
-
     var insertGraphShareEntryInDb = function (graphShareObject) {
         var deferred = Q.defer();
         mongoRepository.insert('graphShares', graphShareObject)
@@ -1112,6 +1106,7 @@ module.exports = function (app) {
             'from': min
         }
     };
+
     //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
     app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/:renderType", validateRequest.validateStreamIdAndReadToken, function (req, res) {
         var dateRange = getDateRange(req);
@@ -1136,6 +1131,8 @@ module.exports = function (app) {
             req.session.redirectUrl = req.originalUrl + queryString;
 
             var graphTitle = getGraphTitle(req.param("objectTags"), req.param("actionTags"));
+            var hideShareButtons = !(_.isEmpty(req.query.hideButtons)) && req.query.hideButtons === 'true';
+
             res.render('chart', {
                 readToken: req.param("readToken"),
                 oneselfAppUrl: process.env.CONTEXT_URI,
@@ -1148,7 +1145,8 @@ module.exports = function (app) {
                 period: req.param("period"),
                 renderType: req.param("renderType"),
                 fromDate: dateRange.from,
-                toDate: dateRange.to
+                toDate: dateRange.to,
+                hideButtons: hideShareButtons
             });
         }
     });
@@ -1158,7 +1156,7 @@ module.exports = function (app) {
         var username = req.param("username");
         var graphUrl = "/v1/users/" + username + "/events/" +
             req.param("objectTags") + "/" + req.param("actionTags") + "/" +
-            req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType");
+            req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType").split('.')[0];
 
         console.log("Graph Url is", graphUrl);
 
@@ -1198,10 +1196,36 @@ module.exports = function (app) {
         req.session.redirectUrl = req.originalUrl;
         var streamId = req.query.streamId;
         var readToken = req.query.readToken;
-        //        var shareToken = req.query.shareToken;
+
+        var respondWithImage = function(imageName){
+            console.log("Responding")
+            res.sendfile("images/" + imageName);
+        };
+
+        var serveImage = function(){
+            console.log("Serving")
+            util.getSharedGraphImagePath(req.query.shareToken)
+            .then(respondWithImage)
+            .catch(function(err){
+                console.log("Error resolving image " + err);
+                res.status(500).send(err);
+            })
+        };
+
         var renderChart = function (graphOwnerAvatarUrl) {
+            if (req.param("renderType") === 'barchart.png') {
+                util.checkImageExists(req.query.shareToken)
+                .then(serveImage)
+                .catch(function(err){
+                    console.log("Error image not available");
+                    res.status(404).send("Image not available");
+                })
+            } else {
+            
             var graphTitle = getGraphTitle(req.param("objectTags"), req.param("actionTags"));
             var isUserLoggedIn = !(_.isEmpty(req.session.username));
+            var hideShareButtons = !(_.isEmpty(req.query.hideButtons)) && req.query.hideButtons === 'true';
+
             res.render('chart', {
                 isUserLoggedIn: isUserLoggedIn,
                 oneselfAppUrl: process.env.CONTEXT_URI,
@@ -1217,8 +1241,10 @@ module.exports = function (app) {
                 shareToken: req.query.shareToken,
                 renderType: req.param("renderType"),
                 fromDate: dateRange.from,
-                toDate: dateRange.to
+                toDate: dateRange.to,
+                hideButtons: hideShareButtons
             });
+        }
         };
 
         util.streamExists(streamId, readToken)
@@ -1233,7 +1259,7 @@ module.exports = function (app) {
                         })
                         .then(renderChart)
                         .catch(function (error) {
-                            console.error("error during linking stream to user ", error);
+                            console.error("Error while linking stream to user ", error);
                             res.status(500).send("Internal server error.");
                         });
                 } else {
