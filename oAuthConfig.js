@@ -17,7 +17,7 @@ OAuthConfig.prototype.getGithubEmailAddresses = function (accessToken) {
     var options = {
         url: "https://api.github.com/user/emails?access_token=" + accessToken,
         headers: {
-            "User-Agent": "Quantified Dev Localhost"
+            "User-Agent": "1self"
         }
     };
     request(options, function (err, res, body) {

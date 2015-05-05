@@ -374,9 +374,31 @@ var qd = function () {
             result.plotHeatmapWith('#hourlyGithubPush-heat-map-parent', '#hourlyGithubPush-heat-map', hourlyGithubPushEvents, toolTipText);
         }
     };
+
+    var plotHourlyGithubCommitEvents = function (hourlyGithubCommitEvents) {
+        result.hourlyGithubCommitEvents = hourlyGithubCommitEvents;
+        var eventCount = getEventCountForHourlyEvents(hourlyGithubCommitEvents);
+        $('#totalPushCount').html("Total No of Commits : " + eventCount);
+        if (eventCount === 0) {
+            $("#connect_to_github_btn").show();
+        } else {
+            var toolTipText = "{{value}} pushes";
+            result.plotHeatmapWith('#hourlyGithubCommit-heat-map-parent', '#hourlyGithubCommit-heat-map', hourlyGithubCommitEvents, toolTipText);
+        }
+    };
+
     result.updateHourlyGithubPushHeatMap = function () {
         postV1Ajax("Computer,Software,Source Control", "Push", "count", "hourOfDay")
             .done(plotHourlyGithubPushEvents)
+            .always(result.updateProgress)
+            .fail(function (error) {
+                console.error("Error is: " + error);
+            });
+    };
+
+    result.updateHourlyGithubCommitHeatMap = function () {
+        postV1Ajax("git,github,computer,software,source control", "commit", "count", "hourOfDay")
+            .done(plotHourlyGithubCommitEvents)
             .always(result.updateProgress)
             .fail(function (error) {
                 console.error("Error is: " + error);
@@ -666,6 +688,7 @@ var qd = function () {
         plotHourlyTracksEvents(result.hourlyTracksEvents);
         plotHourlyWtfEvents(result.hourlyWtfEvents);
         plotHourlyGithubPushEvents(result.hourlyGithubPushEvents);
+        plotHourlyGithubCommitEvents(result.hourlyGithubCommitEvents);
         plotHourlyActivityEvents(result.hourlyActivityEvents);
         plotTwitterFollowerCount(result.twitterFollowerCountEvents);
         plotTwitterFollowingCount(result.twitterFollowingCountEvents);
