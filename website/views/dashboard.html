@@ -142,109 +142,146 @@
         <p>This is your dashboard.</p>
         <p>You don't have any data yet but soon your data will start flooding in. When it does you'll be able to see your data visaulized in our handy charts. You're another step towards living smarter :)</p>
         <p>Come back often and see how your data progresses over time.</p>
-        <p>Don’t forget, you can integrate lots more data by linking up different sources from the <span style="font-style: italic">Integrations</span> tab on the left.</p>        
+        <p>Don’t forget, you can integrate lots more data by linking up different sources from the <span style="font-style: italic">Integrations</span> tab on the left.</p>
     </div>
     <div class="row graph-container-row">
     <div id="hourlyGithubPush-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
-    <div class="panel panel-secondary fixed-height panel-red-border">
-        <div class="helpContainer">
-            <div class="row"><a class="close pull-right" onclick=show("hourlyGithubPush-heat-map-parent")>×</a></div>
-            <div class="row">
-                <h4 class="heading">Help - Github Push Events</h4>
+        <div class="panel panel-secondary fixed-height panel-red-border">
+            <div class="helpContainer">
+                <div class="row"><a class="close pull-right" onclick=show("hourlyGithubPush-heat-map-parent")>×</a></div>
+                <div class="row">
+                    <h4 class="heading">Help - Github Push Events</h4>
 
-                <div class="help-description">
-                    <h4>What does this show me?
-                    </h4>
+                    <div class="help-description">
+                        <h4>What does this show me?
+                        </h4>
 
-                    <p>We’ve taken all your pushes to the public repositories and visualized your weekly push patterns.
-                        We’ve broken the week down into hourly buckets and counted how many pushes you have done in each
-                        hour. The more pushes, the darker the square in the heatmap.
-                    </p>
+                        <p>We’ve taken all your pushes to the public repositories and visualized your weekly hopatterns.
+                            We’ve broken the week down into hourly buckets and counted how many pushes you have done in each
+                            hour. The more pushes, the darker the square in the heatmap.
+                        </p>
 
-                    <p>Try squinting at the picture - what does the overall pattern tell you? Try scanning horizontally
-                        along the days to see the daily pattern of when you push. Which days do you push most? Do you
-                        push on the weekend? Try scanning vertically, is there a pattern? Do you push before lunch?
-                        Before you finish working for the day? Are there parts of the week that don’t have any pushes at
-                        all? Why is that?
-                    </p>
-                </div>
-                <div class="help-description">
-                    <h4>How do I get data into this graph?
-                    </h4>
+                        <p>Try squinting at the picture - what does the overall pattern tell you? Try scanning horizontally
+                            along the days to see the daily pattern of when you push. Which days do you push most? Do you
+                            push on the weekend? Try scanning vertically, is there a pattern? Do you push before lunch?
+                            Before you finish working for the day? Are there parts of the week that don’t have any pushes at
+                            all? Why is that?
+                        </p>
+                    </div>
+                    <div class="help-description">
+                        <h4>How do I get data into this graph?
+                        </h4>
 
-                    <p>You need to have pushed to a public repository on GitHub to see something in this graph. Then,
-                        just click on ‘Link Data’, “Link Up My Public GitHub Data’ to get started.
-                    </p>
-                </div>
-                <div class="help-description">
-                    <h4>When will I see something interesting?
-                    </h4>
+                        <p>You need to have pushed to a public repository on GitHub to see something in this graph. Then,
+                            just click on ‘Link Data’, “Link Up My Public GitHub Data’ to get started.
+                        </p>
+                    </div>
+                    <div class="help-description">
+                        <h4>When will I see something interesting?
+                        </h4>
 
-                    <p>Immediately! GitHub keeps all your pushes in a useful historical data source. This means that we
-                        are able to retrieve data reaching back before you signed up to 1self.
-                    </p>
-                </div>
-                <div class="help-description">
-                    <h4>How do I update the data?
-                    </h4>
+                        <p>Immediately! GitHub keeps all your pushes in a useful historical data source. This means that we
+                            are able to retrieve data reaching back before you signed up to 1self.
+                        </p>
+                    </div>
+                    <div class="help-description">
+                        <h4>How do I update the data?
+                        </h4>
 
-                    <p>Right now you have to do that manually - what a drag! Don’t worry, it’s easy. Just hit the
-                        refresh button on the header of the graph, it’s the one with two arrows in a circle. When you
-                        hit refresh, we go back to github and sync up the data.</p>
-                </div>
-                <div class="help-description">
-                    <h4>Can I see pushes to private repos?
-                    </h4>
+                        <p>Right now you have to do that manually - what a drag! Don’t worry, it’s easy. Just hit the
+                            refresh button on the header of the graph, it’s the one with two arrows in a circle. When you
+                            hit refresh, we go back to github and sync up the data.</p>
+                    </div>
+                    <div class="help-description">
+                        <h4>Can I see pushes to private repos?
+                        </h4>
 
-                    <p>Not yet, it’s coming soon though. You can bump it up the queue by letting us know this is
-                        important to you, just go to http://quantifieddev.uservoice.com and send us a request.
-                    </p>
-                </div>
-                <div class="help-description">
-                    <h4>How should I push it?</h4>
+                        <p>Not yet, it’s coming soon though. You can bump it up the queue by letting us know this is
+                            important to you, just go to http://quantifieddev.uservoice.com and send us a request.
+                        </p>
+                    </div>
+                    <div class="help-description">
+                        <h4>How should I push it?</h4>
 
-                    <p>
-                        Like this:
-                    </p>
-                    <iframe width="280" height="158" src="//www.youtube.com/embed/DUgKyX98n2I" frameborder="0"
-                            allowfullscreen></iframe>
-                </div>
-                <div class="help-description">
-                    <h4>See something interesting?
-                    </h4>
+                        <p>
+                            Like this:
+                        </p>
+                        <iframe width="280" height="158" src="//www.youtube.com/embed/DUgKyX98n2I" frameborder="0"
+                                allowfullscreen></iframe>
+                    </div>
+                    <div class="help-description">
+                        <h4>See something interesting?
+                        </h4>
 
-                    <p>Show us! We’d love hearing the stories behind the data. Send your story to <a
-                            href="mailto:team@1self.co">team@1self.co</a>
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="panel-heading cursor-move">
-            <div class="row">
-                <div class="col-sm-8 col-xs-12">
-                    <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly GitHub Push Events</h3>
-                    <br>
-
-
-                </div>
-                <div class="col-sm-4 col-xs-12 ex-sm-margin-top-five">
-                    <button id="hourlyGithubPush-heat-map-help" class="pull-right help-btn pull-xs-left"
-                            onclick=show("hourlyGithubPush-heat-map-parent")></button>
+                        <p>Show us! We’d love hearing the stories behind the data. Send your story to <a
+                                href="mailto:team@1self.co">team@1self.co</a>
+                        </p>
+                    </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-12 col-sm-12 col-xs-12"><span id="totalPushCount"
-                                                               class="pull-right pull-xs-left"></span></div>
+            <div class="panel-heading cursor-move">
+                <div class="row">
+                    <div class="col-sm-8 col-xs-12">
+                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly GitHub Push Events</h3>
+                        <br>
+
+
+                    </div>
+                    <div class="col-sm-4 col-xs-12 ex-sm-margin-top-five">
+                        <button id="hourlyGithubPush-heat-map-help" class="pull-right help-btn pull-xs-left"
+                                onclick=show("hourlyGithubPush-heat-map-parent")></button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12"><span id="totalPushCount"
+                                                                   class="pull-right pull-xs-left"></span></div>
+                </div>
+
             </div>
+            <div class="panel-body">
+                <div id="hourlyGithubPush-heat-map" class="hourlyHeatMapContainer">
 
-        </div>
-        <div class="panel-body">
-            <div id="hourlyGithubPush-heat-map" class="hourlyHeatMapContainer">
-
+                </div>
             </div>
         </div>
     </div>
-</div>
+
+    <!-- Start -->
+    <div id="hourlyGithubCommit-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12"
+         style="display:none;">
+        <div class="panel panel-secondary fixed-height panel-red-border">
+            <div class="helpContainer">
+                <div class="row"><a class="close pull-right"
+                                    onclick=show("hourlyGithubCommit-heat-map-parent")>×</a></div>
+                <div class="row">
+                    <h4 class="heading">Help - GitHub Commit Events</h4>
+                </div>
+            </div>
+            <div class="panel-heading cursor-move">
+                <div class="row">
+                    <div class="col-sm-8 col-xs-12">
+                        <h3 class="panel-title"><i class="icon-bar-chart"></i>Hourly GitHub Commit Events</h3>
+                        <br>
+                    </div>
+                    <div class="col-sm-4 col-xs-12 ex-sm-margin-top-five">
+                        <button id="hourlyGithubCommit-heat-map-help" class="pull-right help-btn pull-xs-left"
+                                onclick=show("hourlyGithubCommit-heat-map-parent")>
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <span id="totalCommitCount" class="pull-right pull-xs-left"></span></div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div id="hourlyGithubCommit-heat-map" class="hourlyHeatMapContainer">
+                </div>
+            </div>
+        </div>
+    </div>
+   <!-- End -->
+
     <div id="hourlyActivityPush-heat-map-parent" class="col-lg-6 col-md-6 col-sx-12 col-sm-12" style="display:none;">
             <div class="panel panel-secondary fixed-height panel-red-border">
                 <div class="panel-heading cursor-move">
