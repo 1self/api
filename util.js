@@ -268,5 +268,37 @@ Util.prototype.validateShareTokenAndGraphUrl = function (shareToken, graphUrl) {
     return deferred.promise;
 };
 
+Util.prototype.checkImageExists = function (shareToken) {
+    var deferred = q.defer();
+    var graphShareObject = {"shareToken": shareToken};
+
+    mongoRepository.findOne('graphShares', graphShareObject)
+    .then(function (graphShareObject) {
+        deferred.resolve(_.isEmpty(graphShareObject.imageUrl));
+    }, function (err) {
+        deferred.reject(err);
+    });
+    
+    return deferred.promise;
+}
+
+Util.prototype.getSharedGraphImagePath = function (shareToken) {
+    var deferred = q.defer();
+    var graphShareObject = {"shareToken": shareToken};
+
+    checkGraphAlreadyShared(graphShareObject)
+        .then(function (graphShareObject) {
+            if (graphShareObject) {
+                deferred.resolve(graphShareObject.imageUrl);
+            } else {
+                deferred.reject("Invalid input");
+            }
+        }).catch(function (err) {
+            console.log("Error is", err);
+            deferred.reject(err);
+        });
+    return deferred.promise;
+};
+
 
 module.exports = new Util();
