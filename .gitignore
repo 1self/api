@@ -5,3 +5,4 @@
 TAGS
 node_modules
 .env*
+images/*
