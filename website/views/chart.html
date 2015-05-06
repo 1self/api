@@ -171,7 +171,7 @@
     </div>
 
     <div class="modal fade" id="shareModal" tabindex="-1" role="dialog" aria-labelledby="shareLabel"
-         aria-hidden="true">
+         aria-hidden="true" style="top: 5%">
         <div class="modal-content">
             <div class="modal-dialog modal-sm">
                 <div class="modal-header">
@@ -179,14 +179,15 @@
                             aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <h4 class="modal-title" id="shareLabel">Share your graph with friends</h4>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="max-height: calc(100vh - 210px);
+    overflow-y: auto;">
                     <div id="loadingDiv">Loading ...</div>
                     <div id="shareContentDiv">
                         <div id="shareLinkDiv">
                             <p>Copy the url below and share it with your friends. They will be able to access this
                               graph.</p>
 
-                            <div id="graphShareHyperLink" style="border: 1px solid ; padding: 5px; border-color: #ccc; word-wrap: break-word;resize: none;width: 260px; overflow:visible;margin-bottom:10px;"> 
+                            <div id="graphShareHyperLink" style="border: 1px solid ; padding: 5px; border-color: #ccc; resize: none; overflow-x:scroll; margin-bottom:10px;"> 
                             </div>
 
                         </div>

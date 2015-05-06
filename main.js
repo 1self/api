@@ -1,3 +1,5 @@
+/// <reference path="typings/express/express.d.ts" />
+
 var express = require("express");
 var moment = require("moment");
 var url = require('url');
