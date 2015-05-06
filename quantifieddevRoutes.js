@@ -1,3 +1,8 @@
+/// <reference path="typings/node/node.d.ts"/>
+/// <reference path="typings/q/Q.d.ts"/>
+/// <reference path="typings/underscore/underscore.d.ts" />
+/// <reference path="typings/express/express.d.ts" />
+
 var requestModule = require('request');
 var sessionManager = require("./sessionManagement");
 var _ = require("underscore");
@@ -48,7 +53,6 @@ module.exports = function (app) {
     };
 
     app.get("/signup", function (req, res) {
-
         //sessionManager.resetSession(req);
         if (req.session.username) {
             res.redirect("/timeline");
@@ -610,7 +614,7 @@ module.exports = function (app) {
     };
 
     var filterPrimaryEmailId = function (githubEmails) {
-        emails = githubEmails.githubUser.emails;
+        var emails = githubEmails.githubUser.emails;
         var primaryEmail;
         var primaryEmailObject = _.find(emails, function (emailObj) {
             return emailObj.primary === true;
@@ -1310,7 +1314,7 @@ module.exports = function (app) {
         var appId = '';
         var appSecret = '';
         if (auth[0] = 'Basic') {
-            authParts = auth[1].split(':');
+            var authParts = auth[1].split(':');
             appId = authParts[0];
             appSecret = authParts[1];
         } else {

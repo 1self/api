@@ -147,9 +147,9 @@
 	.modal-overflow .modal-body {
 		position: static;
 		margin: 0;
-		height: auto !important;
-		max-height: none !important;
-		overflow: visible !important;
+		height: auto;
+		max-height: none;
+		overflow: visible;
 	}
 	
 	.modal-footer,

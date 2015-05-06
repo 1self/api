@@ -127,8 +127,15 @@ var handleAddComment = function () {
 };
 
 var handleShareGraph = function () {
+    $("#shareModal").modal({show: true});
+    $('#shareContentDiv').hide();
     var unregisteredUserOnStreamsPage = function () {
         return !isUserLoggedIn && (window.location.pathname.search("streams") !== -1);
+    };
+    
+    var resolveImageUrl = function(url, imageType) {
+        var i = url.indexOf('&bg');
+        return url.substring(0,i).replace('barchart', 'barchart.' + imageType);
     };
 
     if (isUserLoggedIn) {
@@ -141,16 +148,17 @@ var handleShareGraph = function () {
                 to: toDate
             },
             success: function (data) {
-                $("#shareModal").modal({show: true});
                 $("#loadingDiv").hide();
+                $('#shareContentDiv').show();
                 var link = window.location.origin + data.graphShareUrl;
-                var graphShareLink = "<a href='" + link + "'> " + link + " </a>";
+                var imageLink = resolveImageUrl(link, 'png');
+                var graphShareLink = "<a href='" + imageLink + "'> " + imageLink + " </a>";
                 $("#graphShareHyperLink").html(graphShareLink);
                 $("#graphShareLink").html(link);
                 $("#shareModal").modal({show: true});
             },
             error: function () {
-                alert("some problem. Please try again later.");
+                alert("Some problem. Please try again later.");
             }
         });
     } else if (unregisteredUserOnStreamsPage()) {
