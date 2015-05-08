@@ -250,6 +250,8 @@ var checkGraphAlreadyShared = function (graphShareObject) {
     return deferred.promise;
 };
 
+Util.prototype.checkGraphAlreadyShared = checkGraphAlreadyShared
+
 Util.prototype.validateShareTokenAndGraphUrl = function (shareToken, graphUrl) {
     var deferred = q.defer();
     var graphShareObject = {"graphUrl": graphUrl, "shareToken": shareToken};
@@ -274,13 +276,13 @@ Util.prototype.checkImageExists = function (shareToken) {
 
     mongoRepository.findOne('graphShares', graphShareObject)
     .then(function (graphShareObject) {
-        deferred.resolve(_.isEmpty(graphShareObject.imageUrl));
+        deferred.resolve(!_.isEmpty(graphShareObject.imageUrl));
     }, function (err) {
         deferred.reject(err);
     });
     
     return deferred.promise;
-}
+};
 
 Util.prototype.getSharedGraphImagePath = function (shareToken) {
     var deferred = q.defer();
@@ -295,6 +297,23 @@ Util.prototype.getSharedGraphImagePath = function (shareToken) {
             }
         }).catch(function (err) {
             console.log("Error is", err);
+            deferred.reject(err);
+        });
+    return deferred.promise;
+};
+
+Util.prototype.addSharedGraphImagePath = function(graphShareObject, imgPath) {
+    var deferred = q.defer();
+    var updateObject = {$set: {'imageUrl': imgPath }};
+    var options = {upsert: true};
+
+    var query = graphShareObject;
+    console.log(updateObject);
+
+    mongoRepository.update('graphShares', query, updateObject, options)
+        .then(function () {
+            deferred.resolve(true);
+        }, function (err) {
             deferred.reject(err);
         });
     return deferred.promise;

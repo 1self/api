@@ -824,49 +824,117 @@ module.exports = function (app) {
     var genImageName = function(shareUrl) {
         return require('crypto').createHash('sha1').update(shareUrl).digest('hex');
     };
-
-    app.get('/v1/graph/share', function (req, res) {
+    
+    var constructGraphShareObject = function(req) {
         var graphUrl = req.query.graphUrl;
-        console.log('SHARE URL ', graphUrl);
         var bgColor = req.query.bgColor;
         var fromDate = req.query.from;
         var toDate = req.query.to;
-
-        var genShareUrl = function (graphShareObject) {
-            var result = graphShareObject.graphUrl + "?";
-            var params = [
-                "shareToken=" + graphShareObject.shareToken,
-                "bgColor=" + graphShareObject.bgColor,
-                "from=" + graphShareObject.fromDate,
-                "to=" + graphShareObject.toDate
-            ]
-
-            result += params.join("&");
-            return result;
-        };
-
-        generateToken()
-            .then(function (token) {
-                var graphShareObject = {
-                    shareToken: token,
+        
+        var graphShareObject = {
                     graphUrl: graphUrl,
                     bgColor: bgColor,
                     fromDate: fromDate,
-                    toDate: toDate,
-                    imageUrl: genImageName(graphUrl) + ".png"
+                    toDate: toDate
                 };
+        return graphShareObject;
+    };
+    
+    var genShareUrl = function (graphShareObject) {
+        var result = graphShareObject.graphUrl + "?";
+        var params = [
+            "shareToken=" + graphShareObject.shareToken,
+            "bgColor=" + graphShareObject.bgColor,
+            "from=" + graphShareObject.fromDate,
+            "to=" + graphShareObject.toDate
+        ]
 
-                return insertGraphShareEntryInDb(graphShareObject)
-                    .then(function(){
-                        return imageCapture.saveChartImg(genShareUrl(graphShareObject)+"&hideButtons=true", 'images/' + graphShareObject.imageUrl);
-                    })
-                    .then(function () {
-                        var graphShareUrl = genShareUrl(graphShareObject);
-                        res.send({
-                            graphShareUrl: graphShareUrl
-                        });
-                    });
+        result += params.join("&");
+        return result;
+    };
+    
+    var graphShareController = function(req) {
+        var deferred = Q.defer();
+        
+        var saveGraphObject = function (token) {
+            graphShareObject.shareToken = token;
+            return insertGraphShareEntryInDb(graphShareObject);
+        };
+        
+        var handleGraphShare = function(result){
+            console.log(result);
+            if(result) {
+                deferred.resolve(result);
+            } else {
+                generateToken()
+                .then(saveGraphObject)
+                .then(function (graphShareObject) {
+                    deferred.resolve(graphShareObject);
+                 })
+                .catch(function(err){
+                    console.log(err);
+                    deferred.reject(err);
+                });
+            }
+        };
+        
+        var graphShareObject = constructGraphShareObject(req);
+        util.checkGraphAlreadyShared(graphShareObject)
+        .then(handleGraphShare)
+        .catch(function(err){
+            console.log(err);
+            deferred.reject(err);
+        });
+        return deferred.promise;
+    };
+
+    app.get('/v1/graph/share', function (req, res) {
+        graphShareController(req)
+        .then(function(graphShareObject){
+            res.send({
+                graphShareUrl: genShareUrl(graphShareObject)
             });
+        })
+        .catch(function(err){
+            console.log(err);            
+            res.status(500).send(err);
+        });
+    });
+    
+    app.get('/v1/graph/share/image', function(req, res){
+        var sendError = function (err) {
+            console.log(err);
+            res.status(500).send({ error: 500 });
+        };
+            
+        graphShareController(req)
+        .then(function(graphShareObject){
+            delete graphShareObject._id;
+            
+            var sendResponse = function() {
+                res.send({
+                    graphShareImageUrl: graphShareObject.graphUrl.replace('barchart', 'barchart.png') + '?shareToken=' + graphShareObject.shareToken
+                });
+            };
+            
+            var updateDatabase = function () {
+                util.addSharedGraphImagePath(graphShareObject, imageName)
+                .then(function (done) {
+                    sendResponse();
+                })
+                .catch(sendError);
+            };
+            
+            if(typeof graphShareObject.imageUrl !== 'undefined') {
+                sendResponse();
+            } else {
+                var imageName = genImageName(graphShareObject.graphUrl) + '.png';
+                imageCapture.saveChartImage(genShareUrl(graphShareObject)+"&hideButtons=true", 'images/' + imageName)
+                .then(updateDatabase)
+                .catch(sendError);
+            }
+        })
+        .catch(sendError);
     });
 
     app.post('/v1/share_graph', sessionManager.requiresSession, function (req, res) {

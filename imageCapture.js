@@ -4,7 +4,7 @@ var phantomjs = require('phantomjs')
 var binPath = phantomjs.path
 var q = require('q');
 
-exports.saveChartImg = function(url, output) {
+exports.saveChartImage = function(url, output) {
     var deferred = q.defer();
     var apiUrl = process.env.CONTEXT_URI + url;
 
