@@ -10,7 +10,7 @@ var insert = function (collection, document) {
     mongoDbConnection(function (qdDb) {
         qdDb.collection(collection).insert(document, function (err, insertedRecords) {
             if (err) {
-                console.err(err);
+                console.error(err);
                 deferred.reject(err);
             } else {
                 deferred.resolve(insertedRecords[0]);
@@ -26,7 +26,7 @@ var find = function (collection, query, projection) {
     mongoDbConnection(function (qdDb) {
         qdDb.collection(collection).find(query, projection, function (err, documents) {
             if (err) {
-                console.err(err);
+                console.error(err);
                 deferred.reject(err);
             } else {
                 documents.toArray(function (err, docs) {
@@ -44,7 +44,7 @@ var findOne = function (collection, query, projection) {
     mongoDbConnection(function (qdDb) {
         qdDb.collection(collection).findOne(query, projection, function (err, document) {
             if (err) {
-                console.err(err);
+                console.error(err);
                 deferred.reject(err);
             } else {
                 deferred.resolve(document);
@@ -59,7 +59,7 @@ var count = function (collection, query) {
     mongoDbConnection(function (qdDb) {
         qdDb.collection(collection).count(query, function (err, count) {
             if (err) {
-                console.err(err);
+                console.error(err);
                 deferred.reject(err);
             } else {
                 deferred.resolve(count);
@@ -75,7 +75,7 @@ var update = function (collection, query, updateObject, options) {
     mongoDbConnection(function (qdDb) {
         qdDb.collection(collection).update(query, updateObject, options, function (err, updateCount) {
             if (err) {
-                console.err(err);
+                console.error(err);
                 deferred.reject(err);
             } else {
                 deferred.resolve(updateCount);
@@ -91,7 +91,7 @@ var remove = function (collection, query, options) {
     mongoDbConnection(function (qdDb) {
         qdDb.collection(collection).remove(query, options, function (err, removeCount) {
             if (err) {
-                console.err(err);
+                console.error(err);
                 deferred.reject(err);
             } else {
                 deferred.resolve(removeCount);
