@@ -128,7 +128,6 @@ var handleAddComment = function () {
 
 var handleShareGraph = function () {
     $("#shareModal").modal({show: true});
-    $('#shareContentDiv').hide();
     var unregisteredUserOnStreamsPage = function () {
         return !isUserLoggedIn && (window.location.pathname.search("streams") !== -1);
     };
@@ -139,6 +138,50 @@ var handleShareGraph = function () {
     };
 
     if (isUserLoggedIn) {
+
+        var active = 'graph';
+        var graphShareLink = '<p>Loading...</p>';
+        $('#showGraphShare').click(function(e){
+            active = 'graph';
+            $("#graphShareHyperLink").html(graphShareLink);
+
+            $('#showImageShare').removeClass('active');
+            $('#showGraphShare').addClass('active');
+        });
+
+        var imageShareLink = '<p>Loading...</p>';
+        $('#showImageShare').click(function(e){
+            active = 'image';
+            $("#graphShareHyperLink").html(imageShareLink);
+
+            $('#showImageShare').addClass('active');
+            $('#showGraphShare').removeClass('active');
+        });
+
+        $.ajax({
+            url: "/v1/graph/share/image",
+            data: {
+                graphUrl: window.location.pathname,
+                bgColor: getBackgroundColor(),
+                from: fromDate,
+                to: toDate
+            },
+            success: function (data) {
+                $("#loadingDiv").hide();
+                $('#shareContentDiv').show();
+                var link = window.location.origin + data.graphShareImageUrl;
+                imageShareLink = "<a href='" + link + "'> " + link + " </a>";
+                if(active === 'image') {
+                    $("#graphShareHyperLink").html(imageShareLink);
+                }
+
+                $("#shareModal").modal({show: true});
+            },
+            error: function () {
+                alert("Some problem. Please try again later.");
+            }
+        });
+
         $.ajax({
             url: "/v1/graph/share",
             data: {
@@ -151,9 +194,12 @@ var handleShareGraph = function () {
                 $("#loadingDiv").hide();
                 $('#shareContentDiv').show();
                 var link = window.location.origin + data.graphShareUrl;
-                var imageLink = resolveImageUrl(link, 'png');
-                var graphShareLink = "<a href='" + imageLink + "'> " + imageLink + " </a>";
-                $("#graphShareHyperLink").html(graphShareLink);
+                graphShareLink = "<a href='" + link + "'> " + link + " </a>";
+                
+                if(active === 'graph'){
+                    $("#graphShareHyperLink").html(graphShareLink);
+                }
+
                 $("#graphShareLink").html(link);
                 $("#shareModal").modal({show: true});
             },

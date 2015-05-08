@@ -445,3 +445,13 @@ ul.commentList li div {
         float:none;
     }
 }
+
+.linkSelect {
+    border: 1px solid;
+    width: 50%;
+     border-color: #ccc;
+}
+
+.active {
+    background-color: #C1D1D3;
+}

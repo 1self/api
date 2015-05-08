@@ -182,12 +182,16 @@
                 <div class="modal-body" style="max-height: calc(100vh - 210px);
     overflow-y: auto;">
                     <div id="loadingDiv">Loading ...</div>
-                    <div id="shareContentDiv">
+                    <div id="shareContentDiv" style="display: none">
                         <div id="shareLinkDiv">
                             <p>Copy the url below and share it with your friends. They will be able to access this
                               graph.</p>
 
-                            <div id="graphShareHyperLink" style="border: 1px solid ; padding: 5px; border-color: #ccc; resize: none; overflow-x:scroll; margin-bottom:10px;"> 
+                            <div>
+                                <div id="showGraphShare" class="linkSelect active" style="float: left;">Graph</div>
+                                <div id="showImageShare" class="linkSelect" style="float: right;">Image</div>
+                                <div id="graphShareHyperLink" style="border: 1px solid ; padding: 5px; border-color: #ccc; resize: none; overflow-x:scroll; margin-bottom:10px;"> 
+                                </div>
                             </div>
 
                         </div>
