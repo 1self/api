@@ -167,7 +167,7 @@ var addFilter = function(svg){
             .attr("in", "SourceGraphic");
 }
 
-var setStartToCollapsed = function(chart, xScale, height){
+var setStartToCollapsed = function(chart, xScale, height, xWidth){
     chart.attr('x', function(d) {
             return xScale(new Date(d.fromDate));
         })
@@ -184,17 +184,6 @@ var addAnimation = function(bars){
             .delay(
                 function(d, i) {
                     return i * 130 + 30;
-                })
-            .ease('cubic')
-            .duration(240);
-    return result;
-}
-
-var addAnimationEnter = function(existingBars, newBars){
-    var result  = newBars.transition('grow-in')
-            .delay(
-                function(d, i) {
-                    return (i - existingBars.length) * 130 + 30;
                 })
             .ease('cubic')
             .duration(240);
@@ -264,9 +253,7 @@ var renderSelected = function(bar){
     }
 }
 
-
-
-charts.plotBarChart = function(divId, events, units) {
+charts.plotBarChart = function(divId, events, fromTime, tillTime, units) {
     events = _.sortBy(events, function(e) {
         return e.fromDate;
     })
@@ -281,49 +268,46 @@ charts.plotBarChart = function(divId, events, units) {
         var width = window.innerWidth;
         var height = width / 1.61;
 
-        charts.x = d3.time.scale()
+        var x = d3.time.scale()
             .domain([events[0].fromDate, events[events.length - 1].toDate])
             .rangeRound([0, width - margin.left - margin.right]);
             
+
+        var xWidth = calculateBarWidth(x);
+
         var maxDataValue = d3.max(events, function(d) {
             return d.value;
         });
 
         var innerGraphHeight = height - margin.top - margin.bottom;
 
-        charts.y = d3.scale.linear()
+        var y = d3.scale.linear()
             .domain([0, maxDataValue])
             .range([innerGraphHeight, 0])
             .nice(4);
 
-        charts.xAxis = d3.svg.axis()
-            .scale(charts.x)
-            .orient('top')
-            .ticks(10);
+        var xAxis = d3.svg.axis()
+            .scale(x);
 
-        charts.yAxis = d3.svg.axis()
-            .scale(charts.y)
+        var yAxis = d3.svg.axis()
+            .scale(y)
             .orient('right')
             .ticks(5);
 
         var svg = d3.select(divId).append('svg')
             .attr('class', 'chart')
             .attr('width', width)
-            .attr('height', height);
-
-
-            addYaxis(svg, charts.yAxis);
-            addXaxis(svg, charts.xAxis, innerGraphHeight);
-            
-            svg.append('g')
+            .attr('height', height)
+            .append('g')
             .attr('id', 'bars')
             .attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
         
         addGradients(svg);
         addFilter(svg);
 
-        var bars = svg.selectAll('.bar')
-            .data(events)
+        var chart = svg.selectAll('.chart');
+
+        var bars = chart.data(events)
             .enter()
             .append('rect')
             .attr('class', 'bar')
@@ -334,9 +318,9 @@ charts.plotBarChart = function(divId, events, units) {
             });
 
         bars.style("fill", "url(#gradient)");
-        setStartToCollapsed(bars, charts.x, height);
+        setStartToCollapsed(bars, x, height, xWidth);
         bars = addAnimation(bars);
-        setBarHeightUsingData(bars, charts.y, innerGraphHeight);
+        setBarHeightUsingData(bars, y, innerGraphHeight);
         
         var lastBar = bars.filter(':last-of-type');
         lastBar.each('end', function(d){
@@ -344,9 +328,10 @@ charts.plotBarChart = function(divId, events, units) {
         })
         
         
-        
+        addYaxis(svg, yAxis);
+        addXaxis(svg, xAxis, innerGraphHeight);
         createOverlayDropshadow(svg);
-        addNowLine(svg, charts.x, innerGraphHeight);
+        addNowLine(svg, x, innerGraphHeight);
         addUnits(svg, units, innerGraphHeight);
 
         var getDatesForEvents = function() {
@@ -382,57 +367,6 @@ charts.plotBarChart = function(divId, events, units) {
             } else {
                 return parseFloat(eventValue).toFixed(1) + "  " + value_unit;
             }
-        };
-
-        charts.update = function(divId, events){
-            var svg = d3.select('.chart');
-
-            charts.x.domain([events[0].fromDate, events[events.length - 1].toDate]);
-            svg.select(".x.axis").call(charts.xAxis);
-
-                var bars = svg.selectAll('.bar')
-                    .data(events);
-
-                bars.attr('x', function(d) {
-                        return charts.x(new Date(d.fromDate));
-                    })
-                    .attr('width', function(d){
-                        var width = charts.x(new Date(d.toDate)) - charts.x(new Date(d.fromDate));
-                        return width;
-                    });
-
-                newBars = svg.selectAll('.bar')
-                    .data(events)
-                    .enter()
-                    .append('rect')
-                    .attr('class', 'bar')
-                    .on("click", function(clickedBar) {
-                        revertSelected();
-                        selectedBar = d3.select(this);
-                        renderSelected(selectedBar);
-                    });
-
-                newBars.style("fill", "url(#gradient)");
-                setStartToCollapsed(newBars, charts.x, height);
-                newBars = addAnimationEnter(bars,   newBars);
-                setBarHeightUsingData(newBars, charts.y, innerGraphHeight);
-                
-                var lastBar = newBars.filter(':last-of-type');
-                lastBar.each('end', function(d){
-                    renderSelected(d3.select(this));
-                })
-                
-                
-                
-                createOverlayDropshadow(svg);
-                addNowLine(svg, charts.x, innerGraphHeight);
-                addUnits(svg, units, innerGraphHeight);
-            
-            
-            
-            createOverlayDropshadow(svg);
-
-            
         };
 
     }, 1000);
