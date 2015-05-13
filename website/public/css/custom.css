@@ -157,3 +157,7 @@ div.tooltip {
         height: 500px;
     }
 }
+
+svg.chart {
+    padding-left: 8px;
+}
