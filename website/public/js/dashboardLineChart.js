@@ -42,11 +42,13 @@ window.qd.plotDashboardLineChart = function (divId, events, color, yAxisLabel, t
             .tickFormat(d3.time.format('%b %d'))
             .tickPadding(8);
 
-        var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient('left')
-            .ticks(yTicks)
-            .tickPadding(8);
+            var yAxis = d3.svg.axis()
+                    .scale(y)
+                    .orient('left')
+                    .ticks(yTicks)
+                    .tickPadding(3)
+                    .tickFormat(d3.format("s"));
+            
 
         var svg = d3.select(divId).append('svg')
             .attr('class', 'chart')

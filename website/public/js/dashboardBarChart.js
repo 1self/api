@@ -40,7 +40,8 @@ window.qd.plotDashboardBarChart = function (divId, events, color, yAxisLabel, to
             .scale(y)
             .orient('left')
             .ticks(yTicks)
-            .tickPadding(8);
+                    .tickPadding(3)
+            .tickFormat(d3.format("s"));
 
         var svg = d3.select(divId).append('svg')
             .attr('class', 'chart')
