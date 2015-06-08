@@ -1038,11 +1038,6 @@ var getLatestSyncField = function (streamId) {
 var saveBatchEvents = function (myEvents, stream) {
     var deferred = q.defer();
     var myEventsWithPayload = _.map(myEvents, function (myEvent) {
-        myEvent.streamid = stream.streamid;
-        var dateInfo = formatEventDateTime(myEvent.dateTime);
-        myEvent.eventDateTime = dateInfo.eventDateTime;
-        myEvent.eventLocalDateTime = dateInfo.eventLocalDateTime;
-        myEvent.offset = dateInfo.offset;
         return {
             'payload': myEvent
         };
@@ -1079,9 +1074,9 @@ var updateLatestSyncField = function (streamId, latestSyncField) {
     return deferred.promise;
 };
 
-var postEvents = function (req, res) {
+var saveBatch = function (req, res) {
     var writeToken = req.headers.authorization;
-    authenticateWriteToken(writeToken, req.params.id)
+    authenticateWriteToken(writeToken, req.params.streamid)
         .then(function (stream) {
             return saveBatchEvents(req.body, stream);
         },
@@ -1094,9 +1089,29 @@ var postEvents = function (req, res) {
             res.status(500).send('Database error.');
         });
 };
-app.post('/stream/:id/batch', postEvents);
 
-app.post('/v1/streams/:id/events/batch', validateRequest.validate, postEvents);
+var publishBatch = function( req, res, next) {
+    _.forEach(req.body, function(event){
+        event.streamid = req.params.streamid;
+
+        var dateInfo = formatEventDateTime(event.dateTime);
+        event.eventDateTime = dateInfo.eventDateTime;
+        event.eventLocalDateTime = dateInfo.eventLocalDateTime;
+        event.offset = dateInfo.offset;
+
+        redisClient.publish("events", JSON.stringify(event));
+    });
+
+    next();
+}
+app.post('/stream/:streamid/batch'
+    , publishBatch
+    , saveBatch);
+
+app.post('/v1/streams/:streamid/events/batch'
+    , validateRequest.validate
+    , publishBatch
+    , saveBatch);
 
 app.get('/live/devbuild/:durationMins', function (req, res) {
     var durationMins = req.params.durationMins;
