@@ -1403,6 +1403,44 @@ var authorizeUser = function (req, res, next) {
     }
 };
 
+var getUser = function(req, res, next){
+    util.findUser(req.params.username)
+    .then(function(user){
+        req.user = user;
+        next();
+    })
+    .catch(function(error){
+        res.status(500).send(error);
+    });
+}
+
+var getRollup = function(req, res, next){
+    if(req.params.period === 'day'){
+        util.getRollupByDay(req.user._id, req.params.objectTags.split(','), req.params.actionTags.split(','), req.params.operation, req.params.property)
+        .then(function(rollups){
+            req.rollups = rollups;
+            next();
+        })
+        .catch(function(error){
+            res.status(500).send(error);
+        });
+    }
+    else{
+        req.rollups = [];
+        next();
+    }
+}
+
+var sendRollup = function(req, res, next){
+    res.status(200).send(req.rollups);
+}
+
+app.get("/v1/users/:username/rollups/:period/:objectTags/:actionTags/:operation/:property/.json"
+    , doNotAuthorize // authorize before putting onto production!
+    , getUser
+    , getRollup
+    , sendRollup);
+
 app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/type/json"
     , authorizeUser
     , validateRequest.validateDateRange

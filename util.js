@@ -239,6 +239,30 @@ Util.prototype.findUser = function (oneselfUsername) {
     return deferred.promise;
 };
 
+Util.prototype.getRollupByDay = function (userId, objectTags, actionTags, operation, property) {
+    var condition = {
+        "userId": userId,
+        "objectTags": objectTags,
+        "actionTags": actionTags
+    };
+    var deferred = q.defer();
+    mongoRepository.find('userRollupByDay', condition)
+        .then(function (rollups) {
+            var result = _(rollups).map(function(rollup){
+                return {
+                    date: rollup.date,
+                    value: rollup[operation][property]
+                };
+
+                
+            });
+            deferred.resolve(result);
+        }, function (err) {
+            deferred.reject(err);
+        });
+    return deferred.promise;
+};
+
 var checkGraphAlreadyShared = function (graphShareObject) {
     var deferred = q.defer();
     mongoRepository.findOne('graphShares', graphShareObject)
