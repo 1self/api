@@ -922,11 +922,6 @@ var doNotAuthorize = function(req, res, next){
 var getCards = function(req, res, next){
     util.findUser(req.params.username)
     .then(function(user){
-        var converted = _(user.cards).map(function(card){
-            card.id = card._id;
-            delete card._id;
-            return card;
-        })
         res.status(200).send(user.cards);
     })
     .catch(function(err){
