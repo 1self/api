@@ -1418,7 +1418,9 @@ var getRollup = function(req, res, next){
     if(req.params.period === 'day'){
         util.getRollupByDay(req.user._id, req.params.objectTags.split(','), req.params.actionTags.split(','), req.params.operation, req.params.property)
         .then(function(rollups){
-            req.rollups = rollups;
+            req.rollups = {};
+            req.rollups.data = rollups;
+            req.rollups.property = req.params.property;
             next();
         })
         .catch(function(error){
@@ -1435,10 +1437,17 @@ var sendRollup = function(req, res, next){
     res.status(200).send(req.rollups);
 }
 
+var addUnit = function(req, res, next){
+    if(req.rollups.property === 'duration'){
+        req.rollups.unit = 's';
+    }
+    next();
+}
 app.get("/v1/users/:username/rollups/:period/:objectTags/:actionTags/:operation/:property/.json"
     , doNotAuthorize // authorize before putting onto production!
     , getUser
     , getRollup
+    , addUnit
     , sendRollup);
 
 app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/type/json"
