@@ -915,6 +915,29 @@ app.post('/v1/users/:username/streams', function (req, res) {
         });
 });
 
+var doNotAuthorize = function(req, res, next){
+    next();
+}
+
+var getCards = function(req, res, next){
+    util.findUser(req.params.username)
+    .then(function(user){
+        var converted = _(user.cards).map(function(card){
+            card.id = card._id;
+            delete card._id;
+            return card;
+        })
+        res.status(200).send(user.cards);
+    })
+    .catch(function(err){
+        res.status(500).send(err);
+    });
+}
+
+app.get('/v1/users/:username/cards',
+    doNotAuthorize, // replace this with auth
+    getCards);
+
 // TODO: remove this once all existing github integration users are migrated
 app.post('/v1/users/:username/link', function (req, res) {
     var streamId = req.body.streamId;
