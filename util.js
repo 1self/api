@@ -239,6 +239,13 @@ Util.prototype.findUser = function (oneselfUsername) {
     return deferred.promise;
 };
 
+
+function getDescendantProp(obj, desc) {
+    var arr = desc.split(".");
+    while(arr.length && (obj = obj[arr.shift()]));
+    return obj;
+}
+
 Util.prototype.getRollupByDay = function (userId, objectTags, actionTags, operation, property) {
     var condition = {
         "userId": userId,
@@ -251,7 +258,7 @@ Util.prototype.getRollupByDay = function (userId, objectTags, actionTags, operat
             var result = _(rollups).map(function(rollup){
                 return {
                     date: rollup.date,
-                    value: rollup[operation][property]
+                    value: getDescendantProp(rollup, property)
                 };
 
                 

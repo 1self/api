@@ -1443,7 +1443,7 @@ var addUnit = function(req, res, next){
     }
     next();
 }
-app.get("/v1/users/:username/rollups/:period/:objectTags/:actionTags/:operation/:property/.json"
+app.get("/v1/users/:username/rollups/:period/:objectTags/:actionTags/:property/.json"
     , doNotAuthorize // authorize before putting onto production!
     , getUser
     , getRollup
