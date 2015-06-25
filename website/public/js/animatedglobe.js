@@ -1,10 +1,39 @@
 var liveworld = function (dataUrl) {
+    // when a tab is in the background we don't want to do any work at all. It's more respectful for power and battery.
+    var hidden, visibilityChange;
+    if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
+        hidden = "hidden";
+        visibilityChange = "visibilitychange";
+    } else if (typeof document.mozHidden !== "undefined") {
+        hidden = "mozHidden";
+        visibilityChange = "mozvisibilitychange";
+    } else if (typeof document.msHidden !== "undefined") {
+        hidden = "msHidden";
+        visibilityChange = "msvisibilitychange";
+    } else if (typeof document.webkitHidden !== "undefined") {
+        hidden = "webkitHidden";
+        visibilityChange = "webkitvisibilitychange";
+    }
+
+    var pageIsHidden = false;
+    function handleVisibilityChange() {
+        if (document[hidden]) {
+            console.log('page hidden event fired, page hidden');
+            pageIsHidden = true;
+        } else {
+            console.log('page hidden event fired, page shown');
+            pageIsHidden = false;
+        }
+    }
+
     $("body").css("background-color", frameBodyColor);
     $(function () {
         $("#embed-globe").popover({
             container: "body"
         });
     });
+
+    document.addEventListener(visibilityChange, handleVisibilityChange, false);
 
     var isUrl = function (str) {
         return str.match("^http");
@@ -50,7 +79,10 @@ var liveworld = function (dataUrl) {
         .projection(projection)
         .context(context);
 
-    var loadData = function () {
+    var loadData = function (callback) {
+        if(pageIsHidden){
+            console.log('page is hidden, not getting data');
+        }
 
         d3.json(dataUrl, function (error, events) {
             var data = events;
@@ -58,7 +90,7 @@ var liveworld = function (dataUrl) {
 
             for (var i = events.length - 1; i >= 0; i--) {
                 var eventFromServer = events[i];
-                if (eventFromServer.location === undefined) {
+                if (eventFromServer.location === undefined || eventFromServer.dateTime === undefined) {
                     continue;
                 }
 
@@ -67,36 +99,45 @@ var liveworld = function (dataUrl) {
                     location: {
                         lon: eventFromServer.location.long,
                         lat: eventFromServer.location.lat
-                    }
+                    },
+                    dateTime: eventFromServer.dateTime
 
                 };
                 transformedEvents.push(singleEvent);
             }
-            createCircles();
+
+            if(callback !== undefined){
+                callback();
+            }
         })
     };
 
-    loadData();
-    setInterval(function () {
-            loadData()
-        },
-        60000);
+    var animate = function(){
+        createCircles();
+    };
+
+    loadData(animate);
+    setInterval(loadData, 60000 * 5);
+
 
     var CircleSize = function (transformedEvent) {
-        var size = Math.random(1, 0.7) * 0.7;
+        var now = new Date();
+        var eventTime = new Date(transformedEvent.dateTime);
+        var diff = Math.abs(now - eventTime);
+        diff = diff / 1000; // seconds
+        diffDays = 1 + (diff / 60 / 60 / 24);
+        var size = (1 / diffDays) * 1;
+
         return function () {
-            size += 0.03;
-            if (size > 2.1) {
-                size = 0.3;
-            }
             return size;
-        }
+        };
     };
 
     var eventsToDraw;
 
+    var iteration = 0;
     var createCircles = function () {
-        eventsToDraw = transformedEvents.map(function (transformedEvent) {
+        eventsToDraw = transformedEvents.map(function (transformedEvent, i) {
             var circleSize = new CircleSize(transformedEvent);
 
             var draw = function (context) {
@@ -109,9 +150,6 @@ var liveworld = function (dataUrl) {
                 });
                 context.fillStyle = circleColor;
                 context.fill();
-                context.lineWidth = .2;
-                context.strokeStyle = "#FFF";
-                context.stroke();
             };
 
             return draw;
@@ -119,12 +157,22 @@ var liveworld = function (dataUrl) {
         animateCircles();
     };
 
+
+
     var animateCircles = function () {
         d3.json("/topo/world-110m.json", function (error, topo) {
             var land = topojson.feature(topo, topo.objects.land),
                 grid = graticule();
 
+
+            var interpolation = eventsToDraw.length / 50;
+
             var redrawGlobe = function () {
+                if(pageIsHidden === true){
+                    console.log('page is hidden, animation is off');
+                }
+
+                console.log(new Date().toString + ': redrawing');
                 var λ = (speed * (Date.now() - start) * 2),
                     φ = -15;
 
@@ -133,9 +181,9 @@ var liveworld = function (dataUrl) {
                 context.beginPath();
                 path(sphere);
                 context.lineWidth = 3;
-                context.strokeStyle = "rgba(255,255,255,0.5)";
+                context.strokeStyle = "rgba(255,255,255,1)";
                 context.stroke();
-                context.fillStyle = "rgba(255, 255, 255, 0.1)";
+                context.fillStyle = "rgba(255, 255, 255, 0)";
                 context.fill();
 
                 context.save();
@@ -146,13 +194,13 @@ var liveworld = function (dataUrl) {
 
                 context.beginPath();
                 path(land);
-                context.fillStyle = "rgba(255, 255, 255, 0.5)";
+                context.fillStyle = "rgba(255, 255, 255, 0.3)";
                 context.fill();
 
                 context.beginPath();
                 path(grid);
                 context.lineWidth = .5;
-                context.strokeStyle = "rgba(255,255,255,0.2)";
+                context.strokeStyle = "rgba(255,255,255,0.1)";
                 context.stroke();
 
                 context.restore();
@@ -161,26 +209,68 @@ var liveworld = function (dataUrl) {
                 context.beginPath();
                 path(grid);
                 context.lineWidth = .5;
-                context.strokeStyle = "rgba(255,255,255,0.2)";
+                context.strokeStyle = "rgba(255,255,255,0.1)";
                 context.stroke();
 
                 context.beginPath();
                 path(land);
-                context.fillStyle = "rgba(255,255,255,0.5)";
+                context.fillStyle = "rgba(255,255,255,1)";
                 context.fill();
                 context.lineWidth = .5;
-                context.strokeStyle = "rgba(255,255,255,0.8";
+                context.strokeStyle = "rgba(255,255,255,1";
                 context.stroke();
 
                 if (eventsToDraw != undefined) {
-                    eventsToDraw.forEach(function (drawCompile) {
+                    var sparseDraw = eventsToDraw.length / 50;
+                    eventsToDraw.forEach(function (drawCompile, i) {
                         drawCompile(context);
                     });
                 }
-                setTimeout(redrawGlobe, 1000);
+
+                iteration++;
+
+                // returning true finishes the animation
+                return false;
             };
-            redrawGlobe();
+
+            // using d3 timer function ensures that an animation frame is requested,
+            // improving the performance. This performs much better than calling
+            var animationOn = true;
+            var animationScheduled = false;
+            var doGlobeAnim = function(){
+                return function(){
+                    animationScheduled = false;
+                    if(animationOn){
+                        redrawGlobe();
+                        d3.timer(doGlobeAnim(), 5000);
+                        animationScheduled = true;
+                    }
+
+                    return true;
+                };
+            };
+            var handleVisibilityChangeForAnimation = function(){
+                if(document[hidden]){
+                    animationOn = false;
+                }
+                else {
+                    if(animationOn === false && !animationScheduled){
+                        d3.timer(doGlobeAnim(), 5000);
+                        animationSceduled = true;
+                    }
+                    animationOn = true;
+                }
+            }
+
+            document.addEventListener(visibilityChange, handleVisibilityChangeForAnimation, false);
+
+            if(animationOn){
+                d3.timer(doGlobeAnim(), 0);
+                animationScheduled = true;
+            }
         });
     }
 
 };
+
+
