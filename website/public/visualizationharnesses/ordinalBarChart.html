@@ -9,16 +9,17 @@
 		<script src="../packages/d3/d3.js"></script>
 		<script src="../js/d3.tip.v0.6.3.js"></script>
 		<script src="../packages/d3/d3.geo.projection.v0.min.js"></script>
-		<script src="../js/barChart.js"></script>
+		<script src="../js/barChart.ordinal.js"></script>
 		<script>
 		var events = [];
 
-		for (var i = -23; i <= 0; i++) {
+		for (var i = -16; i < 0; i++) {
 			events.push({
 				fromDate: new Date(moment().add("days", i).format("MM/DD/YYYY")),
 				toDate: new Date(moment().add("days", i + 1).format("MM/DD/YYYY")),
 				
-				value: Math.random()*100
+				value: (100 + (Math.random()*100)),
+				color: Math.random() > 0.5 ? "#FF5555" : (Math.random() > 0.5 ? "#33FF33": "#FFC72F")
 			});
 		};
 		
@@ -50,10 +51,22 @@
 		var operation = 'sum(prop)';
 
 		var weekAgo = new Date().setDate(now.getDate() -7);
-		charts.plotBarChart('#chart', events, weekAgo, now, "units");
+		var options = {
+			barGap: "20%",
+			barGradientOpacity:"0.2",
+			barShadowStrength:"2",
+			barShadowSize:"10	",
+			barSelectedStrength:"0.8",
+			barSelectedShadowSize:"5",
+			mixBlendMode:"screen",
+			selectionMovement:"2%",
+			selectionBrightening: "-30"
+		}
+
+		charts.plotBarChart('#chart', events, weekAgo, now, "units", options);
 		</script>
 	</head>
-	<body style="background: rgb(36, 155, 186)">
+	<body style="background: rgb(140, 140, 140)">
 		<div id='chart' width='500' height='500'></div>
 	</body>
 </html>
