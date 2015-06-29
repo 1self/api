@@ -1407,28 +1407,27 @@ module.exports = function (app) {
 
     var createAppToken = function (req, res, next) {
         generateToken()
-            .then(function (token) {
-                var scope = req.body;
-                var app = req.app1self;
-                var key = "permissions." + token;
-                var permission = {
-                    token: token,
-                    appId: app.appId,
-                    scope: scope
-                };
+        .then(function (token) {
+            var scope = req.body;
+            var app = req.app1self;
+            var permission = {
+                token: token,
+                appId: app.appId,
+                scope: scope
+            };
 
-                mongoRepository.insert('apptoken', permission)
-                    .then(function () {
-                        var result = {
-                            token: permission.token,
-                            appId: permission.appId,
-                            scope: permission.scope
-                        }
-                        res.status(200).send(result);
-                    }, function (err) {
-                        res.status(500).send(err);
-                    });
-            });
+            mongoRepository.insert('apptoken', permission)
+                .then(function () {
+                    var result = {
+                        token: permission.token,
+                        appId: permission.appId,
+                        scope: permission.scope
+                    }
+                    res.status(200).send(result);
+                }, function (err) {
+                    res.status(500).send(err);
+                });
+        });
 
     };
 

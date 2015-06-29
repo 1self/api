@@ -1005,6 +1005,87 @@ app.post('/v1/streams/:streamid/events',
     publishEvent,
     saveEvent);
 
+var authenticateReadToken = function(req, res, next){
+    var query = {
+        streamid: req.params.streamid,
+        readToken: req.token
+    };
+
+    mongoRepository.findOne('stream', query)
+    .then(function(stream){
+        if(stream){
+            next();
+        }
+        else{
+            res.status(401).send('read token is invalid for this stream');    
+        }
+    })
+    .catch(function(){
+        res.status(401).send('read token is invalid for this stream');
+    });
+}
+
+var createScopedToken = function(req, res, next){
+    util.generateToken()
+    .then(function (tokenBytes) {
+        var scope = req.body;
+        
+        var permission = {
+            token: tokenBytes,
+            streamId: req.streamid,
+            scope: scope
+        };
+
+        res.token = permission;
+        next();
+    })
+    .catch(function(error){
+        res.status(500).send('An error occurred generating the token');
+    });
+}
+
+var persistScopedToken = function(req, res, next){
+    mongoRepository.insert('streamscopedreadtoken', res.token)
+    .then(function () {
+        next();
+    })
+    .catch(function (error) {
+        res.status(500).send('couldnt save the token to the database');
+    });
+}
+
+var serveScopedToken = function(req, res, next){
+    res.status(200).send(res.token);
+}
+
+parseTokenFromAuthorization = function (req, res, next) {
+    var token = req.query.token;
+
+    if (token === undefined) {
+        var auth = req.headers.authorization;
+        var auth = auth.split("Basic ");
+        if (auth[0] === "") {
+            token = auth[1];
+        } else {
+            token = auth[0];
+        }
+    }
+
+    req.token = token;
+    next();
+};
+
+// in order to create tokens to read events you 
+// must prove that you are the stream owner. This is done 
+// with the master readToken. From there scoped tokens can 
+// be created
+app.post('/v1/streams/:streamid/readtokens',
+    parseTokenFromAuthorization,
+    authenticateReadToken,
+    createScopedToken,
+    persistScopedToken,
+    serveScopedToken);
+
 var endsWith = function (string, suffix) {
     return string.indexOf(suffix, string.length - suffix.length) !== -1;
 };

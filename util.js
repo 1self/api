@@ -350,5 +350,20 @@ Util.prototype.addSharedGraphImagePath = function(graphShareObject, imgPath) {
     return deferred.promise;
 };
 
+Util.prototype.generateToken = function () {
+    return q.Promise(function(resolve, reject){
+        crypto.randomBytes(32, function (ex, buf) {
+            if(ex){
+                reject(ex);
+            }
+
+            var token = buf.toString('hex');
+            resolve(token);
+        });
+    });
+    
+};
+
+
 
 module.exports = new Util();
