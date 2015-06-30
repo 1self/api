@@ -26,6 +26,7 @@ var mongoRepository = require('./mongoRepository.js');
 var eventRepository = require('./eventRepository.js');
 var SignupModule = require('./modules/signupModule.js');
 var imageCapture = require('./imageCapture.js');
+var eventRepository = require('./eventRepository.js');
 
 var emailConfigOptions = {
     root: path.join(__dirname, "/website/public/email_templates")
@@ -1179,6 +1180,153 @@ module.exports = function (app) {
         }
     };
 
+    var lookupScopedReadToken = function(req, res, next){
+        var query = {
+            token: req.authToken
+        };
+
+        mongoRepository.findOne('streamscopedreadtoken', query)
+        .then(function (token) {
+            if (token === null) {
+                res.status(401).send("Couldn't athenticate, the stream token is unknown.")
+            }
+            else{
+                req.token = token;
+                next();
+            }
+        }, function (err) {
+            res.status(500).send("Server error while looking up token.")
+        });
+    };
+    
+    var validateScopedStreamToken = function(req, res, next){
+
+        // token has [a,b,c], request has [a], intersection = [a], should allow
+        // token has [a,b,c], request has [d], intersection = [], should disallow
+        // token has [a,b,c], request has [a, d], interserction = [a], should disallow
+        // token has [a,b,c], request has [d, e], intersection = [], should disallow
+        // therefore, do an interection and make sure that the number of items is the same as the quest
+        var splitObjectTags = req.params.objectTags.split(',');
+        var objectTagsMatch = _.intersection(splitObjectTags, req.token.scope.objectTags).length === splitObjectTags.length;
+        if(!objectTagsMatch){
+            res.status(401).send('objectTags in the request are not permitted by the token');
+            return;
+        }
+
+        var splitActionTags = req.params.actionTags.split(',');
+        var actionTagsMatch = _.intersection(splitActionTags, req.token.scope.actionTags).length === splitActionTags.length;
+        if(!actionTagsMatch){
+            res.status(401).send('actionTags in the request are not permitted by the token');
+            return;
+        }
+
+        var propertiesMatch = req.token.scope.properties[req.params.property] !== undefined;
+        if(!propertiesMatch){
+            res.status(401).send('propery in the request is not permitted by the token');
+            return;
+        }
+
+        req.validatedToken = req.token;
+        next();
+    }
+
+    var getEventData = function() { 
+        var result = [];
+        // for (var i = -16; i < 0; i++) {
+        //  result.push({
+        //      fromDate: new Date(moment().add("days", i).format("MM/DD/YYYY")),
+        //      toDate: new Date(moment().add("days", i + 1).format("MM/DD/YYYY")),
+                
+        //      value: (100 + (Math.random()*100)),
+        //      color: Math.random() > 0.5 ? "#FF5555" : (Math.random() > 0.5 ? "#33FF33": "#FFC72F")
+        //  });
+        // };
+        
+    }
+
+    var renderStreamVisualization = function(req, res, next){
+        if(req.params.representation === 'json'){
+            var matchStreamId = {
+                $match: {"payload.streamid":req.token.streamId}
+            };
+
+            var matchProperties = {
+                $match: {
+                    $or: []
+                }
+            };
+
+            var projectProperties = {
+                $project:
+                {
+                    "_id": 0
+                }
+            }
+
+            for (var key in req.token.scope.properties) {
+                var propertyFilter = {};
+                var fullyQualifiedKey = 'payload.properties.' + key;
+                propertyFilter[fullyQualifiedKey] = {
+                    $ne: null
+                };
+                matchProperties.$match.$or.push(propertyFilter);
+                projectProperties.$project[key] = '$' + fullyQualifiedKey;
+            }
+
+            var match = {};
+
+            eventRepository.aggregate("oneself", [matchStreamId, matchProperties, projectProperties])
+            .then(function(events){
+                res.send(events);
+            })
+            .catch(function(error){
+                res.status(500).send('database error');
+            });
+        }        
+        else{
+
+            var dataUri = ['/v1/streams/', 
+                            req.params.streamId, 
+                            '/events/', 
+                            req.params.objectTags, '/', 
+                            req.params.actionTags, '/', 
+                            req.params.property, '/.json',
+                            '?token=',
+                            req.validatedToken.token].join('');
+            var model = {
+                dataUri: dataUri,
+                series: req.params.property
+            };
+
+            res.render('barchart-ordinal', model);
+        }
+    }
+
+    var parseTokenFromAuthorization = function (req, res, next) {
+        var token = req.query.token;
+
+        if (token === undefined) {
+            var auth = req.headers.authorization;
+            var auth = auth.split("Basic ");
+            if (auth[0] === "") {
+                token = auth[1];
+            } else {
+                token = auth[0];
+            }
+        }
+
+        req.authToken = token;
+        next();
+    };
+
+    //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
+    app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:property/.:representation", 
+        parseTokenFromAuthorization,
+        lookupScopedReadToken,
+        validateScopedStreamToken,
+        renderStreamVisualization
+    );
+
     //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
     app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/:renderType", validateRequest.validateStreamIdAndReadToken, function (req, res) {
         var dateRange = getDateRange(req);
@@ -1434,23 +1582,6 @@ module.exports = function (app) {
     app.post("/v1/apps/:appId/token"
         , verifyAppCredentials
         , createAppToken);
-
-    var parseTokenFromAuthorization = function (req, res, next) {
-        var token = req.query.token;
-
-        if (token === undefined) {
-            var auth = req.headers.authorization;
-            var auth = auth.split("Basic ");
-            if (auth[0] === "") {
-                token = auth[1];
-            } else {
-                token = auth[0];
-            }
-        }
-
-        req.authToken = token;
-        next();
-    };
 
     var lookupAppToken = function (req, res, next) {
 

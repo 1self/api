@@ -126,6 +126,23 @@ var remove = function (collection, query, options) {
     return deferred.promise;
 };
 
+var aggregate = function (collection, pipeline, options) {
+    var deferred = q.defer();
+    options = defaultFor(options, {});
+    eventDbConnection(function (eventDb) {
+        eventDb.collection(collection).aggregate(pipeline, options, function (err, docs) {
+            if (err) {
+                console.err(err);
+                deferred.reject(err);
+            } else {
+                deferred.resolve(docs);
+            }
+        });
+    });
+    return deferred.promise;
+};
+
+exports.aggregate = aggregate;
 exports.insert = insert;
 exports.find = find;
 exports.findOne = findOne;

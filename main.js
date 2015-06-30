@@ -1007,7 +1007,7 @@ app.post('/v1/streams/:streamid/events',
 
 var authenticateReadToken = function(req, res, next){
     var query = {
-        streamid: req.params.streamid,
+        streamid: req.params.streamId,
         readToken: req.token
     };
 
@@ -1017,11 +1017,11 @@ var authenticateReadToken = function(req, res, next){
             next();
         }
         else{
-            res.status(401).send('read token is invalid for this stream');    
+            res.status(401).send('authorization is invalid for this stream');    
         }
     })
     .catch(function(){
-        res.status(401).send('read token is invalid for this stream');
+        res.status(401).send('authorization is invalid for this stream');
     });
 }
 
@@ -1029,10 +1029,10 @@ var createScopedToken = function(req, res, next){
     util.generateToken()
     .then(function (tokenBytes) {
         var scope = req.body;
-        
+
         var permission = {
             token: tokenBytes,
-            streamId: req.streamid,
+            streamId: req.params.streamId,
             scope: scope
         };
 
@@ -1047,6 +1047,7 @@ var createScopedToken = function(req, res, next){
 var persistScopedToken = function(req, res, next){
     mongoRepository.insert('streamscopedreadtoken', res.token)
     .then(function () {
+        delete res.token._id;
         next();
     })
     .catch(function (error) {
@@ -1079,7 +1080,7 @@ parseTokenFromAuthorization = function (req, res, next) {
 // must prove that you are the stream owner. This is done 
 // with the master readToken. From there scoped tokens can 
 // be created
-app.post('/v1/streams/:streamid/readtokens',
+app.post('/v1/streams/:streamId/readtokens',
     parseTokenFromAuthorization,
     authenticateReadToken,
     createScopedToken,

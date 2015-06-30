@@ -1,172 +1,172 @@
 window.charts = window.charts || {};
 
-var baseColor = '#2089AB';
-var animationDelay = 1500;
+charts.barchartOrdinal = {};
 
-var barChartBrighter = function(d3rgb, points){
-    d3rgb.r += points;
-    d3rgb.g += points;
-    d3rgb.b += points;
-}
+charts.barchartOrdinal.plot = function(divId, events, units, options, series) {
+    var baseColor = '#2089AB';
+    var animationDelay = 1500;
 
-var addUnits = function(svg, units, graphHeight) {
-    if (units !== undefined) {
-        svg.append("text")
-            .attr("text-anchor", "end")
-            .attr("x", 55)
-            .attr("y", 4)
-            .attr('class', 'overlay')
-            .text(units);
-    }
-}
-
-
-var addYaxis = function(svg, yAxis){
-    svg.append('g')
-            .attr('class', 'y axis')
-            .call(yAxis)
-            .style("filter", "url(#overlay-shadow)");
-}
-
-var createOverlayDropshadow = function(svg){
-    var filter = svg.append("svg:defs")
-            .append("filter")
-            .attr("x", "-10%")
-            .attr("y", "-100%")
-            .attr("id", "overlay-shadow")
-            .attr("height", "200%")
-            .attr("width", "180%");
-
-        var comptransf = filter.append("feComponentTransfer");
-        comptransf.append("feFuncA")
-            .attr("type", "linear")
-            .attr("slope", "0.5")
-        comptransf.append("feFuncR")
-            .attr("type", "linear")
-            .attr("slope", "0")
-        comptransf.append("feFuncG")
-            .attr("type", "linear")
-            .attr("slope", "0")
-        comptransf.append("feFuncB")
-            .attr("type", "linear")
-            .attr("slope", "0")
-
-        var blur = filter.append("feGaussianBlur")
-            .attr("stdDeviation", 0);
-        blur.transition().delay(5000).attr("stdDeviation", 4);
-
-        var feMerge = filter.append("feMerge");
-
-        feMerge.append("feMergeNode");
-        feMerge.append("feMergeNode")
-            .attr("in", "SourceGraphic");
-}
-
-var addNowLine = function(svg, x, graphHeight) {
-    var lineFunction = d3.svg.line()
-        .x(function(d) {
-            return d.x;
-        })
-        .y(function(d) {
-            return d.y;
-        })
-        .interpolate('linear');
-
-    var now = Date.now();
-    var xGraphNowLocation = x(now);
-    console.log(xGraphNowLocation);
-
-    var lineData = [{
-        x: xGraphNowLocation,
-        y: 5
-    }, {
-        x: xGraphNowLocation,
-        y: graphHeight - 5
-    }];
-
-    // var lineGraph = svg.append('path')
-    //     .attr('d', lineFunction(lineData))
-    //     .attr('stroke', 'rgba(255, 255, 255, 0.8')
-    //     .attr('stroke-dasharray', [5, 5])
-    //     .attr('stroke-width', 1)
-    //     .attr('fill', 'none')
-    //     .style("filter", "url(#overlay-shadow)");
-
-    // var nowLabel = svg.append('text')
-    //     .attr('text-anchor', 'end')
-    //     .attr('x', xGraphNowLocation - 3)
-    //     .attr('y', 12)
-    //     .attr('class', 'overlay')
-    //     .text('now');
-};
-    
-
-
-
-
-var addAnimation = function(bars){
-    var result  = bars.selectAll('rect').transition('grow-in')
-            .delay(
-                function(d, i, j) {
-                    return j * (animationDelay / bars[0]    .length) + 30;
-                })
-            .ease('cubic')
-            .duration(240);
-    return result;
-}
-
-var addAnimationEnter = function(existingBars, newBars){
-    var result  = newBars.selectAll('rect').transition('grow-in')
-            .delay(
-                function(d, i, j) {
-                    return (j - existingBars.length) * 130 + 30;
-                })
-            .ease('cubic')
-            .duration(240);
-    return result;
-}
-
-var setBarHeightUsingData = function(bars, yScale, innerGraphHeight){
-    bars.attr('height', function(dataPoint) {
-        return innerGraphHeight - yScale(dataPoint.value);
-    })
-    .attr('y', function(dataPoint) {
-        return innerGraphHeight - (innerGraphHeight - yScale(dataPoint.value));
-    });
-}
-
-var addXaxis = function(svg, xAxis, innerGraphHeight){
-    svg.append('g')
-            .attr('class', 'x axis')
-            .attr('transform', 'translate(0, ' + (innerGraphHeight) + ')')
-            .call(xAxis);
-}
-
-var calculateBarWidth = function(x){
-    var now = new Date(moment());
-    var oneDayAgo = new Date(moment().subtract('days', 1));
-    var from = x(oneDayAgo);
-    var to = x(now);
-    var result = to - from;
-    return result;
-}
-
-d3.selection.prototype.moveToFront = function() {
-  return this.each(function(){
-    this.parentNode.appendChild(this);
-  });
-};
-
-var dataDrivenColour = function(d){
-    if(d.color){
-        return d3.rgb(d.color);
+    var barChartBrighter = function(d3rgb, points){
+        d3rgb.r += points;
+        d3rgb.g += points;
+        d3rgb.b += points;
     }
 
-    return "rgba(200, 200, 200, 0.5)";
-}
+    var addUnits = function(svg, units, graphHeight) {
+        if (units !== undefined) {
+            svg.append("text")
+                .attr("text-anchor", "end")
+                .attr("x", 55)
+                .attr("y", 4)
+                .attr('class', 'overlay')
+                .text(units);
+        }
+    }
+
+    var addYaxis = function(svg, yAxis){
+        svg.append('g')
+                .attr('class', 'y axis')
+                .call(yAxis)
+                .style("filter", "url(#overlay-shadow)");
+    }
+
+    var createOverlayDropshadow = function(svg){
+        var filter = svg.append("svg:defs")
+                .append("filter")
+                .attr("x", "-10%")
+                .attr("y", "-100%")
+                .attr("id", "overlay-shadow")
+                .attr("height", "200%")
+                .attr("width", "180%");
+
+            var comptransf = filter.append("feComponentTransfer");
+            comptransf.append("feFuncA")
+                .attr("type", "linear")
+                .attr("slope", "0.5")
+            comptransf.append("feFuncR")
+                .attr("type", "linear")
+                .attr("slope", "0")
+            comptransf.append("feFuncG")
+                .attr("type", "linear")
+                .attr("slope", "0")
+            comptransf.append("feFuncB")
+                .attr("type", "linear")
+                .attr("slope", "0")
+
+            var blur = filter.append("feGaussianBlur")
+                .attr("stdDeviation", 0);
+            blur.transition().delay(5000).attr("stdDeviation", 4);
+
+            var feMerge = filter.append("feMerge");
+
+            feMerge.append("feMergeNode");
+            feMerge.append("feMergeNode")
+                .attr("in", "SourceGraphic");
+    }
+
+    var addNowLine = function(svg, x, graphHeight) {
+        var lineFunction = d3.svg.line()
+            .x(function(d) {
+                return d.x;
+            })
+            .y(function(d) {
+                return d.y;
+            })
+            .interpolate('linear');
+
+        var now = Date.now();
+        var xGraphNowLocation = x(now);
+        console.log(xGraphNowLocation);
+
+        var lineData = [{
+            x: xGraphNowLocation,
+            y: 5
+        }, {
+            x: xGraphNowLocation,
+            y: graphHeight - 5
+        }];
+
+        // var lineGraph = svg.append('path')
+        //     .attr('d', lineFunction(lineData))
+        //     .attr('stroke', 'rgba(255, 255, 255, 0.8')
+        //     .attr('stroke-dasharray', [5, 5])
+        //      .attr('stroke-width', 1)
+        //     .attr('fill', 'none')
+        //     .style("filter", "url(#overlay-shadow)");
+
+        // var nowLabel = svg.append('text')
+        //     .attr('text-anchor', 'end')
+        //     .attr('x', xGraphNowLocation - 3)
+        //     .attr('y', 12)
+        //     .attr('class', 'overlay')
+        //     .text('now');
+    };
+        
 
 
-charts.plotBarChart = function(divId, events, weekAgo, now, units, options) {
+
+
+    var addAnimation = function(bars){
+        var result  = bars.selectAll('rect').transition('grow-in')
+                .delay(
+                    function(d, i, j) {
+                        return j * (animationDelay / bars[0]    .length) + 30;
+                    })
+                .ease('cubic')
+                .duration(240);
+        return result;
+    }
+
+    var addAnimationEnter = function(existingBars, newBars){
+        var result  = newBars.selectAll('rect').transition('grow-in')
+                .delay(
+                    function(d, i, j) {
+                        return (j - existingBars.length) * 130 + 30;
+                    })
+                .ease('cubic')
+                .duration(240);
+        return result;
+    }
+
+    var setBarHeightUsingData = function(bars, yScale, innerGraphHeight){
+        bars.attr('height', function(dataPoint) {
+            return innerGraphHeight - yScale(dataPoint[series]);
+        })
+        .attr('y', function(dataPoint) {
+            return innerGraphHeight - (innerGraphHeight - yScale(dataPoint[series]));
+        });
+    }
+
+    var addXaxis = function(svg, xAxis, innerGraphHeight){
+        svg.append('g')
+                .attr('class', 'x axis')
+                .attr('transform', 'translate(0, ' + (innerGraphHeight) + ')')
+                .call(xAxis);
+    }
+
+    var calculateBarWidth = function(x){
+        var now = new Date(moment());
+        var oneDayAgo = new Date(moment().subtract('days', 1));
+        var from = x(oneDayAgo);
+        var to = x(now);
+        var result = to - from;
+        return result;
+    }
+
+    d3.selection.prototype.moveToFront = function() {
+      return this.each(function(){
+        this.parentNode.appendChild(this);
+      });
+    };
+
+    var dataDrivenColour = function(d){
+        if(d.color){
+            return d3.rgb(d.color);
+        }
+
+        return "rgba(200, 200, 200, 0.5)";
+    }
+
     options = options || {};
     charts.options = options;
 
@@ -264,7 +264,7 @@ charts.plotBarChart = function(divId, events, weekAgo, now, units, options) {
             .attr('y', function(dataPoint) {
                 // watch out if you put a breakpoint in here, it disturbs the animation and causes
                 // 0 y
-                return (innerGraphHeight - (innerGraphHeight - chart.y(dataPoint.value)));
+                return (innerGraphHeight - (innerGraphHeight - chart.y(dataPoint[series])));
             })
             .attr('x', function(){
                 return parseFloat(d3.select(this).attr('x')) + xMove;
@@ -272,7 +272,7 @@ charts.plotBarChart = function(divId, events, weekAgo, now, units, options) {
            .style('filter', 'url(#light-drop-shadow)')
            .style('fill', dataDrivenColour(backgroundBarOld.datum()));
          
-            var originalHeight = innerGraphHeight - chart.y(gradientBarOld.datum().value);
+            var originalHeight = innerGraphHeight - chart.y(gradientBarOld.datum()[series]);
             gradientBarOld
            .transition()
            .delay(50)
@@ -282,7 +282,7 @@ charts.plotBarChart = function(divId, events, weekAgo, now, units, options) {
                return delay;
            })
             .attr('y', function(dataPoint) {
-                return (innerGraphHeight - (innerGraphHeight - chart.y(dataPoint.value)));
+                return (innerGraphHeight - (innerGraphHeight - chart.y(dataPoint[series])));
            })
            .attr('x', function(){
                 return parseFloat(d3.select(this).attr('x')) + xMove;
@@ -311,7 +311,7 @@ charts.plotBarChart = function(divId, events, weekAgo, now, units, options) {
             .attr('y', function(dataPoint) {
                 // watch out if you put a breakpoint in here, it disturbs the animation and causes
                 // 0 y
-                return (innerGraphHeight - (innerGraphHeight - chart.y(dataPoint.value))) - xMove;
+                return (innerGraphHeight - (innerGraphHeight - chart.y(dataPoint[series]))) - xMove;
             })
             .attr('x', function(){
                 return parseFloat(d3.select(this).attr('x')) - xMove;
@@ -321,7 +321,7 @@ charts.plotBarChart = function(divId, events, weekAgo, now, units, options) {
             .style('stroke-width', '30px')
             .style('fill', highlightColour);
          
-            var originalHeight = innerGraphHeight - chart.y(gradientBar.datum().value);
+            var originalHeight = innerGraphHeight - chart.y(gradientBar.datum()[series]);
             gradientBar
            .attr('height', originalHeight)
            .transition()
@@ -334,7 +334,7 @@ charts.plotBarChart = function(divId, events, weekAgo, now, units, options) {
             .attr('y', function(dataPoint) {
                 // watch out if you put a breakpoint in here, it disturbs the animation and causes
                 // 0 y
-                return (innerGraphHeight - (innerGraphHeight - chart.y(dataPoint.value))) - xMove;
+                return (innerGraphHeight - (innerGraphHeight - chart.y(dataPoint[series]))) - xMove;
            })
            .attr('x', function(){
                 return parseFloat(d3.select(this).attr('x')) - xMove;
@@ -454,7 +454,7 @@ charts.plotBarChart = function(divId, events, weekAgo, now, units, options) {
             .rangePoints([0, charts.rangeSize]);
             
         var maxDataValue = d3.max(events, function(d) {
-            return d.value;
+            return d[series];
         });
 
         var innerGraphHeight = height - margin.top - margin.bottom;
