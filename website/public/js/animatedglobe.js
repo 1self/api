@@ -1,7 +1,7 @@
 var liveworld = function (dataUrl) {
     // when a tab is in the background we don't want to do any work at all. It's more respectful for power and battery.
-    var hidden, visibilityChange;
-    if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
+    var hidden, visibilityChange; 
+    if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support 
         hidden = "hidden";
         visibilityChange = "visibilitychange";
     } else if (typeof document.mozHidden !== "undefined") {
@@ -14,7 +14,6 @@ var liveworld = function (dataUrl) {
         hidden = "webkitHidden";
         visibilityChange = "webkitvisibilitychange";
     }
-
     var pageIsHidden = false;
     function handleVisibilityChange() {
         if (document[hidden]) {
@@ -105,7 +104,6 @@ var liveworld = function (dataUrl) {
                 };
                 transformedEvents.push(singleEvent);
             }
-
             if(callback !== undefined){
                 callback();
             }
@@ -118,7 +116,11 @@ var liveworld = function (dataUrl) {
 
     loadData(animate);
     setInterval(loadData, 60000 * 5);
+<<<<<<< Updated upstream
 
+=======
+    
+>>>>>>> Stashed changes
 
     var CircleSize = function (transformedEvent) {
         var now = new Date();
@@ -156,6 +158,7 @@ var liveworld = function (dataUrl) {
         });
         animateCircles();
     };
+    
 
 
 
@@ -164,7 +167,11 @@ var liveworld = function (dataUrl) {
             var land = topojson.feature(topo, topo.objects.land),
                 grid = graticule();
 
+<<<<<<< Updated upstream
 
+=======
+            
+>>>>>>> Stashed changes
             var interpolation = eventsToDraw.length / 50;
 
             var redrawGlobe = function () {
@@ -180,7 +187,11 @@ var liveworld = function (dataUrl) {
 
                 context.beginPath();
                 path(sphere);
+<<<<<<< Updated upstream
                 context.lineWidth = 3;
+=======
+                context.lineWidth = 2;
+>>>>>>> Stashed changes
                 context.strokeStyle = "rgba(255,255,255,1)";
                 context.stroke();
                 context.fillStyle = "rgba(255, 255, 255, 0)";
@@ -228,7 +239,11 @@ var liveworld = function (dataUrl) {
                 }
 
                 iteration++;
+<<<<<<< Updated upstream
 
+=======
+                
+>>>>>>> Stashed changes
                 // returning true finishes the animation
                 return false;
             };
@@ -249,6 +264,10 @@ var liveworld = function (dataUrl) {
                     return true;
                 };
             };
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
             var handleVisibilityChangeForAnimation = function(){
                 if(document[hidden]){
                     animationOn = false;

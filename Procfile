@@ -1,2 +1,2 @@
-web: supervisor main.js
+web: supervisor -p 10000 main.js
 

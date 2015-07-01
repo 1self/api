@@ -1651,6 +1651,7 @@ module.exports = function (app) {
 
     var getEvents = function (req, res, next) {
         var query = {
+            "payload.location.lat": {$ne: ""},
             "payload.streamid": {
                 "$in": req.streams
             },
@@ -1668,7 +1669,8 @@ module.exports = function (app) {
         var projection = {
             "_id": 0,
             "emptyProjection": 1,
-	    "payload.dateTime": 1
+	    "payload.dateTime": "dateTime",
+            "payload.eventDateTime": true
         };
 
         if (req.permission.scope.location === true) {
@@ -1697,6 +1699,10 @@ module.exports = function (app) {
         }
 
         var removePayload = function (event) {
+            if(event.payload.dateTime === undefined){
+                event.payload.dateTime = event.payload.eventDateTime.toISOString();
+            }
+		
             return event.payload;
         };
 
@@ -1710,7 +1716,6 @@ module.exports = function (app) {
             next();
         };
 
-	console.log(projection);
         eventRepository.find("oneself", query, projection).then(
             addEventsToRequest
         );
