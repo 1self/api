@@ -827,7 +827,7 @@ module.exports = function (app) {
     };
     
     var constructGraphShareObject = function(req) {
-        var graphUrl = req.query.graphUrl;
+        var graphUrl = decodeURIComponent(req.query.graphUrl);
         var bgColor = req.query.bgColor;
         var fromDate = req.query.from;
         var toDate = req.query.to;
