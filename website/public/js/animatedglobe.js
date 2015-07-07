@@ -116,11 +116,6 @@ var liveworld = function (dataUrl) {
 
     loadData(animate);
     setInterval(loadData, 60000 * 5);
-<<<<<<< Updated upstream
-
-=======
-    
->>>>>>> Stashed changes
 
     var CircleSize = function (transformedEvent) {
         var now = new Date();
@@ -167,11 +162,6 @@ var liveworld = function (dataUrl) {
             var land = topojson.feature(topo, topo.objects.land),
                 grid = graticule();
 
-<<<<<<< Updated upstream
-
-=======
-            
->>>>>>> Stashed changes
             var interpolation = eventsToDraw.length / 50;
 
             var redrawGlobe = function () {
@@ -187,11 +177,7 @@ var liveworld = function (dataUrl) {
 
                 context.beginPath();
                 path(sphere);
-<<<<<<< Updated upstream
-                context.lineWidth = 3;
-=======
                 context.lineWidth = 2;
->>>>>>> Stashed changes
                 context.strokeStyle = "rgba(255,255,255,1)";
                 context.stroke();
                 context.fillStyle = "rgba(255, 255, 255, 0)";
@@ -239,11 +225,7 @@ var liveworld = function (dataUrl) {
                 }
 
                 iteration++;
-<<<<<<< Updated upstream
 
-=======
-                
->>>>>>> Stashed changes
                 // returning true finishes the animation
                 return false;
             };
@@ -264,10 +246,7 @@ var liveworld = function (dataUrl) {
                     return true;
                 };
             };
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
             var handleVisibilityChangeForAnimation = function(){
                 if(document[hidden]){
                     animationOn = false;
