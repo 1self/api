@@ -922,16 +922,44 @@ var doNotAuthorize = function(req, res, next){
 var getCards = function(req, res, next){
     util.findUser(req.params.username)
     .then(function(user){
-        res.status(200).send(user.cards);
+        req.user = user;
+        next();
     })
     .catch(function(err){
         res.status(500).send(err);
     });
 }
 
+var filterCards = function(req, res, next){
+    var filterFunc;
+    if(req.query.minStdDev && req.query.maxStdDev){
+        filterFunc = function(card){
+            return card.type === 'date' || card.sampleCorrectedStdDev > req.query.minStdDev && card.sampleCorrectedStdDev < req.query.maxStdDev;
+        }
+    }
+    else if(req.query.minStdDev)
+    {
+        filterFunc = function(card){
+            return card.type === 'date' || card.sampleCorrectedStdDev > req.query.minStdDev;
+        }   
+    }
+
+    if(filterFunc){
+        req.user.cards = _.filter(req.user.cards, filterFunc);
+    }
+
+    next();
+};
+
+var sendCards = function(req, res, next) {
+    res.status(200).send(req.user.cards);
+}
+
 app.get('/v1/users/:username/cards',
     doNotAuthorize, // replace this with auth
-    getCards);
+    getCards,
+    filterCards,
+    sendCards);
 
 // TODO: remove this once all existing github integration users are migrated
 app.post('/v1/users/:username/link', function (req, res) {
