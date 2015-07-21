@@ -246,14 +246,23 @@ function getDescendantProp(obj, desc) {
     return obj;
 }
 
-Util.prototype.getRollupByDay = function (userId, objectTags, actionTags, operation, property) {
+Util.prototype.getRollupByDay = function (userId, objectTags, actionTags, operation, property, to) {
     var condition = {
         "userId": userId,
         "objectTags": objectTags,
         "actionTags": actionTags
     };
+
+    var options = {
+        sort: "date"
+    }
+
+    if(to !== undefined){
+        condition.date = {$lte: to}
+    }
+
     var deferred = q.defer();
-    mongoRepository.find('userRollupByDay', condition)
+    mongoRepository.find('userRollupByDay', condition, options)
         .then(function (rollups) {
             var result = _(rollups).map(function(rollup){
                 return {

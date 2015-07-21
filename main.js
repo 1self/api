@@ -1526,7 +1526,7 @@ var getUser = function(req, res, next){
 
 var getRollup = function(req, res, next){
     if(req.params.period === 'day'){
-        util.getRollupByDay(req.user._id, req.params.objectTags.split(','), req.params.actionTags.split(','), req.params.operation, req.params.property)
+        util.getRollupByDay(req.user._id, req.params.objectTags.split(','), req.params.actionTags.split(','), req.params.operation, req.params.property, req.query.to)
         .then(function(rollups){
             req.rollups = {};
             req.rollups.data = rollups;
