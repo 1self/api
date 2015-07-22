@@ -930,6 +930,42 @@ var getCards = function(req, res, next){
     });
 }
 
+_.mixin({
+
+  // Get/set the value of a nested property
+  deep: function (obj, key, value) {
+
+    var keys = key.replace(/\[(["']?)([^\1]+?)\1?\]/g, '.$2').replace(/^\./, '').split('.'),
+        root,
+        i = 0,
+        n = keys.length;
+
+    // Set deep value
+    if (arguments.length > 2) {
+
+      root = obj;
+      n--;
+
+      while (i < n) {
+        key = keys[i++];
+        obj = obj[key] = _.isObject(obj[key]) ? obj[key] : {};
+      }
+
+      obj[keys[i]] = value;
+
+      value = root;
+
+    // Get deep value
+    } else {
+      while ((obj = obj[keys[i++]]) != null && i < n) {};
+      value = i < n ? void 0 : obj;
+    }
+
+    return value;
+  }
+
+});
+
 var filterCards = function(req, res, next){
     var filterFunc;
     if(req.query.minStdDev && req.query.maxStdDev){
@@ -946,6 +982,42 @@ var filterCards = function(req, res, next){
 
     if(filterFunc){
         req.user.cards = _.filter(req.user.cards, filterFunc);
+    }
+
+    if(req.query.extraFiltering)
+    {
+        var grouped = _(req.user.cards).groupBy(function(card){
+            return card.cardDate + '/' + card.type;
+        });
+
+        var cards = [];
+        
+        var groupedAndSorted = _(grouped).mapObject(function(value, key){
+            var sortedCardsForDay = _(value).reduce(function(memo, card){
+                if(card.propertyName !== undefined){
+                    _.deep(memo, card.propertyName + '.__card__', card);
+                }
+
+                return memo;
+            }, {})
+
+
+            var addBranch = function(node){
+                var candidateCard = node['__card__'];
+                if(candidateCard !== undefined){
+                    cards.push(candidateCard);
+                }
+                else{
+                    _.each(_.keys(node), function(nodeKey){
+                        addBranch(node[nodeKey], cards);
+                    });
+                }
+            };
+
+            addBranch(sortedCardsForDay);
+        });
+
+        req.user.cards = cards;
     }
 
     next();
