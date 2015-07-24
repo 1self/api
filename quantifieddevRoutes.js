@@ -250,6 +250,13 @@ module.exports = function (app) {
         }
     });
 
+    app.get("/card-stack", sessionManager.requiresSession, function (req, res) {
+        res.render('card-stack/index.html', {
+            username: req.session.username
+        });
+    });
+    
+
     app.get("/claimUsername", sessionManager.requiresSession, function (req, res) {
         if (req.query.username && _.isEmpty(req.session.username)) {
             res.render('claimUsername', {

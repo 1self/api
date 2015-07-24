@@ -43,7 +43,6 @@ app.use(session({
 }));
 
 
-
 app.use(bodyParser.urlencoded({
     limit: '100mb',
     extended: true
@@ -55,7 +54,9 @@ app.use(bodyParser.json({
 
 app.engine('html', swig.renderFile);
 app.use(express.static(path.join(__dirname, 'website/public')));
+app.use('/card-stack', express.static('website/card-stack'));
 app.set('views', __dirname + '/website/views');
+app.set('card-stackViews', __dirname + '/website/card-stack');
 app.set('view engine', 'html');
 /* app.set('view cache', false);
  swig.setDefaults({
