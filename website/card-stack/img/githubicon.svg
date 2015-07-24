@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="110px" height="110px" viewBox="0 0 110 110" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.2.2 (9983) - http://www.bohemiancoding.com/sketch -->
+    <title>githubicon</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <circle id="path-1" cx="55.3874551" cy="55.7571617" r="55"></circle>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Mobile-Portrait-7" sketch:type="MSArtboardGroup" transform="translate(-382.000000, -444.000000)">
+            <g id="integrations" sketch:type="MSLayerGroup" transform="translate(101.000000, 443.000000)">
+                <g id="github" transform="translate(280.000000, 0.000000)">
+                    <g id="githubicon" transform="translate(0.609023, 0.235955)">
+                        <g id="Path-9">
+                            <use fill="#F7F7FA" fill-rule="evenodd" sketch:type="MSShapeGroup" xlink:href="#path-1"></use>
+                            <use fill="none" xlink:href="#path-1"></use>
+                        </g>
+                        <g id="github-+-GitHub" transform="translate(18.536311, 28.354378)" fill="#000000" sketch:type="MSShapeGroup">
+                            <path d="M22.0781777,80.4036847 C31.5928262,83.2504865 43.672416,83.0884992 53.5061563,79.9166242 C53.5061563,81.0625364 51.3048623,73.439459 50.5146704,68.2810041 C49.858085,63.1557599 49.6989053,55.5268537 48.0319131,53.7577955 C51.163749,52.9575177 82.2350343,53.7577955 65.4348837,14.488727 C67.1991675,9.68145473 65.434881,1.90352639 64.5453473,0.572813153 C58.961498,0.681133539 50.7610831,5.92955646 50.7610831,5.92955646 C40.0523452,3.73287964 25.2087974,6.09113017 25.2087974,6.09113017 C19.3031985,1.62334426 11.5026041,0.681134104 11.5026041,0.681134104 C8.9723934,4.65391029 9.87435047,14.4415257 9.87435047,14.4415257 C-5.77863425,53.7577955 25.1301346,53.4422109 27.9377339,53.7577946 C25.513986,55.9375262 26.1270208,59.9302727 25.6831379,61.1907903 C8.74483416,67.044357 11.1193461,47.6856181 0.00664836148,52.3338884 C8.85247752,58.7922976 6.6573219,71.4737157 25.1301349,68.7387635 C25.1301349,68.7387635 23.2376016,79.4692746 22.0781777,80.4036847 Z" id="github"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

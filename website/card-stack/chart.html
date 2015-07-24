@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="chart.css">
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/d3/d3.min.js"></script>
+    <script src="js/chartDrawing.js"></script>
+    <script src="utils.js"></script>
+</head>
+
+<body>
+    <div class="outerContainer">
+        <div class="mainContainer"></div>
+    </div>
+
+    <script>
+
+    var lineColour = '#' + getQSParam().lineColour;
+    var vhlt = getQSParam().vhlt === "true";
+    var hhlt = getQSParam().hhlt === "true";
+    var vaxis = getQSParam().vaxis === "true";
+    var haxis = getQSParam().haxis === "true";
+    var doTransitions = getQSParam().doTransitions === "true";
+    var highlightDates = getQSParam().highlightDates;
+    var highlightCondition = getQSParam().highlightCondition;
+    var displayTooltips = getQSParam().displayTooltips === "true";
+    var dataSrc = 'http://app-staging.1self.co' + decodeURIComponent(getQSParam().dataSrc);
+    var offline = false;
+    var maxValue; // this is set in fn addRankings;
+
+    $('.mainContainer').ready(function () {
+        getData(dataSrc, function (data) {
+          drawSparkLine(data, null);
+        });
+    });
+
+    function stripNullValues(dataArray) {
+        var updatedArray = [];
+        var lowestValue;
+        var lowestIndex = -1;
+        var highestValue;
+        var highestIndex = -1;
+        var dataset = {};
+
+        for (var i = 0; i < dataArray.length; i++) {
+            if (!isNaN(dataArray[i].value)) {
+                updatedArray.push(dataArray[i]);
+            }
+        }
+
+        dataset.allData = updatedArray;
+
+        return dataset;
+    }
+
+    function addRankings(dataset) {
+
+        var ranking_sort = function(a, b) {
+            return a.value - b.value;
+        };
+
+        dataset.sort(ranking_sort);
+
+        for (var i = 0; i < dataset.length; i++) {
+            dataset[i].rankAsc = i;
+            dataset[i].rankDesc = dataset.length - 1 - i;
+
+            if (dataset[i].rankDesc === 0)
+                maxValue = dataset[i].value;
+        }
+    }
+
+    function highlightData(dataArray) {
+        var highlightDatesArray = [];
+
+        if (highlightDates) {
+            highlightDatesArray = highlightDates.split(',');
+        }
+
+        for (var i = 0; i < dataArray.length; i++) {
+            if (highlightCondition === "bottom10" && dataArray[i].rankAsc === 0) {
+                dataArray[i].highlight = "bottom10";
+            } else if (highlightCondition === "top10" && dataArray[i].rankDesc === 0) {
+                dataArray[i].highlight = "top10";
+            }
+
+            for (var k = 0; k < highlightDatesArray.length; k++) {
+                if (highlightDatesArray[k] === dataArray[i].date) {
+                    dataArray[i].highlight = "date";
+                }
+            }
+        }
+
+    }
+
+
+    function getData(dataSrc, callback) {
+        var sort_by_date = function(a, b) {
+            return new Date(a.date).getTime() - new Date(b.date).getTime();
+        };
+
+        if (offline) {
+            var data = {"data":[{"date":"2015-06-10","value":2},{"date":"2015-06-08","value":3},{"date":"2015-05-07","value":3},{"date":"2015-06-09","value":6},{"date":"2015-06-04","value":3},{"date":"2015-05-20","value":3},{"date":"2015-05-15","value":1},{"date":"2015-05-11","value":3},{"date":"2015-05-06","value":7},{"date":"2015-05-05","value":13},{"date":"2015-05-04","value":7},{"date":"2015-05-02","value":1},{"date":"2015-04-30","value":3}],"property":"pushId"};
+
+            highlightDates = "2015-06-10";
+            dataset = stripNullValues(data.data);
+            dataset.allData.sort(sort_by_date);
+            addRankings(dataset.allData);
+            dataset.allData.sort(sort_by_date);
+            highlightData(dataset.allData);
+            dataset.property = data.property;
+            callback(dataset);
+        } else {
+            var apiURL = dataSrc;
+            // alert(apiURL);
+            var jqxhr = $.getJSON(apiURL,
+                    function() {
+                        // console.log("accessed api for chart data");
+                    })
+                .done(function(data) {
+
+                    // console.log('chart data', data);
+                    dataset = stripNullValues(data.data);
+                    dataset.allData.sort(sort_by_date);
+                    addRankings(dataset.allData);
+                    dataset.allData.sort(sort_by_date);
+                    highlightData(dataset.allData);
+                    dataset.property = data.property;
+                    callback(dataset);
+                })
+                .fail(function(data) {
+                    console.log('error getting chart data', data);
+
+                });
+        }
+    }
+
+    function getColour(givenColour, offset) {
+        var colourArray = ['#dd2649', '#00a2d4', '#e93d31', '#f2ae1c', '#61b346', '#cf4b9a', '#367ec0', '#00ad87'];
+        var idx = 0;
+        for (var i in colourArray) {
+            if (colourArray[i] === givenColour) {
+                idx = i;
+                break;
+            }
+        }
+        return colourArray[(idx + offset) % colourArray.length];
+    }
+
+    function dataFormatType(dataProperty) {
+        returnObj = {};
+
+        if (dataProperty.indexOf("duration") > 0) {
+            returnObj.isDuration = true;
+        } else if (dataProperty.indexOf("percent") > 0) {
+            returnObj.isPercentage = true;
+        }
+
+        return returnObj;
+    }
+
+    function dataTextFormat(data, property) {
+
+        var isDuration = false;
+        var isPercentage = false;
+        var returnString = "";
+
+        var dataFormat = dataFormatType(property);
+
+        if (dataFormat.isDuration) {
+            if (data <= 60) {
+                returnString = Math.round(data) + "s";
+            } else if (data > 60 && data <= 3600) {
+                returnString = Math.floor(data / 60) + 'm ' + Math.round(data % 60) + 's';
+            } else {
+                returnString = Math.floor(data / 3600) + 'h ' + Math.round((data % 3600) / 60) + 'm';
+            }
+        } else if (dataFormat.isPercentage) {
+            returnString = data + "%";
+        } else {
+            returnString = data + '';
+        }
+        return returnString;
+    }
+
+    function formatYAxisLabel(property) {
+        return "";
+    }
+
+
+    // function dragstarted(d) {
+    //     console.log('dragstarted');
+    //   d3.event.sourceEvent.stopPropagation();
+    //   d3.select(this).classed("dragging", true);
+    // }
+
+    // function dragged(d) {
+    //     console.log('dragged');
+    //   d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+    // }
+
+    // function dragended(d) {
+    //     console.log('dragended');
+    //   d3.select(this).classed("dragging", false);
+    // }
+
+    function drawSparkLine(chartData, appendToElement) {
+
+        var data = chartData.allData;
+
+        console.log(chartData);
+
+        var width = $('body').width();
+        var height = $('body').height();
+
+        var yAxisLabel = formatYAxisLabel(chartData.property);
+
+        // Set the dimensions of the canvas / graph
+        var margin = {top: 20, right: 70, bottom: 20, left: 20};
+        if (vaxis) margin.left -= 0;
+        
+        width = width - margin.left - margin.right;
+        height = height - margin.top - margin.bottom;
+
+        // Parse the date / time
+        var parseDate = d3.time.format("%Y-%m-%d").parse,
+            formatDate = d3.time.format("%d-%b"),
+            bisectDate = d3.bisector(function(d) { return d.date; }).left;
+
+        data.forEach(function(d) {
+            d.date = parseDate(d.date);
+            // d.value = isNaN(d.value) ? 0 : d.value;
+            // d.value = +d.value;
+        });
+
+        // Set the ranges
+        var x = d3.time.scale()
+            .domain(d3.extent(data, function(d) { return d.date; }))
+            .range([0, width]);
+
+        var y = d3.scale.linear()
+            .domain([0, d3.max(data, function(d) { return d.value; })])
+            .range([height, 0]);
+
+        // setup x 
+        var xMap = function(d) { return x(d.date);}; // data -> display
+
+        // setup y
+        var yMap = function(d) { return y(d.value); }; // data -> display
+
+        var zoom = d3.behavior.zoom()
+            .x(x)
+            .scaleExtent([1, 10])
+            .on("zoom", zoomed);
+
+        // var drag = d3.behavior.drag()
+        //     .origin(function(d) { return d; })
+        //     .on("dragstart", dragstarted)
+        //     .on("drag", dragged)
+        //     .on("dragend", dragended);
+
+        var rankText = function(d) {
+            var returnText;
+            if (highlightCondition === "bottom10") {
+                returnText = d.rankAsc + 1;
+            } else if (highlightCondition === "top10") {
+                returnText = d.rankDesc + 1;
+            }
+            return ordinal_suffix_of(returnText);
+        };
+
+        var highlightTextElements = [];
+
+        var highlightTextStore = function(d) {
+            if (d.highlight) {
+                var highlightObj = {};
+                highlightObj.value = d.value;
+                highlightObj.rankAsc = d.rankAsc;
+                highlightObj.date = d.date;
+                highlightObj.psn = y(d.value);
+                highlightObj.newPsn = y(d.value);
+                highlightObj.highlight = d.highlight;
+                highlightTextElements.push(highlightObj);
+                return "highlight-text-active";
+            } else {
+                return "highlight-text-hidden";
+            }
+        };
+
+        var updateOverlaps = function() {
+            var top, bottom, overlap, difference;
+            var diffCheck = 38;
+            var padding = 0;
+
+            if (highlightTextElements.length > 1) {
+                difference = highlightTextElements[1].psn - highlightTextElements[0].psn;
+
+
+                if (difference < diffCheck && difference > 0) {
+                    overlap = true;
+                    top = highlightTextElements[0];
+                    bottom = highlightTextElements[1];
+                } else if (difference <= 0 && difference > -diffCheck) {
+                    overlap = true;
+                    top = highlightTextElements[1];
+                    bottom = highlightTextElements[0];
+                }
+                if (overlap) {
+                    if (top.psn <= diffCheck) {
+                        bottom.newPsn = top.psn + diffCheck + padding;
+                    } else {
+                        top.newPsn = bottom.psn - diffCheck - padding;
+                    }
+                }
+            }
+        };
+
+        var repositionLabel = function(label) {
+            for (var i = 0; i < highlightTextElements.length; i++) {
+                if (label.getAttribute('rankAsc') === highlightTextElements[i].rankAsc + '') {
+                    label.setAttribute('transform', 'translate(0,' + highlightTextElements[i].newPsn + ')');
+                }
+            }
+        };
+            
+        // Adds the svg canvas
+        var svg = d3.select(".mainContainer")
+            .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                .call(zoom);
+
+        var container = svg.append("g");
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom")
+            .ticks(5);
+
+        if (haxis) {
+            addXAxis(xAxis, svg, height, false, null, width, margin.bottom);
+        }
+
+        function getTimeFormatter(dataPoint) {
+            if (dataPoint <= 60) {
+                returnString = "%Ss";
+            } else if (dataPoint > 60 && dataPoint <= 3600) {
+                returnString = '%Mm %Ss';
+            } else {
+                returnString = '%Hh %Mm';
+            }
+            return returnString;
+        }
+
+        var fnTickFormat;
+
+        var dataFormat = dataFormatType(chartData.property);
+        if (dataFormat.isDuration) {
+            
+            fnTickFormat = function(d) {
+                var timeFormatter = getTimeFormatter(maxValue);
+                var formatTime = d3.time.format(timeFormatter);
+                
+                return formatTime(new Date(2012, 0, 1, 0, 0, d)); // new Date(year, month, day, hours, minutes, seconds, milliseconds);
+            };
+        } else {
+            fnTickFormat = function(d) { return d; };
+        }
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left")
+            .ticks(4)
+            .tickSize(-(width + margin.right - margin.left));
+            // .tickFormat(fnTickFormat);
+
+        if (vaxis) {
+            addYAxis(yAxis, svg, width + margin.right - margin.left, margin.left, yAxisLabel);
+        }
+
+        drawLollySticks(container, data, height, width, xMap, yMap, lineColour, doTransitions);
+
+        // add highlight text (rank)
+        container.selectAll(".highlight-text-selector")
+            .data(data)
+            .enter().append("text")
+            .attr("class", highlightTextStore )
+            .attr("rankAsc", function(d) { return d.rankAsc; } )
+            .attr("dx", width + 13)
+            .attr("dy", "-.3em")
+            .text(rankText);
+
+        // Update position of highlight labels if necessary
+        updateOverlaps();
+
+        // add highlight text (value)
+        container.selectAll(".highlight-text-selector")
+            .data(data)
+            .enter().append("text")
+            .attr("class", function(d) { return (d.highlight ? "highlight-text-active" : "highlight-text-hidden"); } )
+            .attr("rankAsc", function(d) { return d.rankAsc; } )
+            .attr("dx", width + 13)
+            .attr("dy", "1em")
+            .text(function(d) { return dataTextFormat(d.value, chartData.property); } );
+
+        // position labels as per updated position
+        container.selectAll(".highlight-text-active")
+            .each( function() { repositionLabel(this); } );
+
+        // add highlight main horizontal line
+        container.selectAll(".highlight-text-selector")
+            .data(highlightTextElements)
+            .enter().append("line")
+            .attr('class', "highlight-line")
+            .style("stroke", lineColour)
+            .style("stroke-dasharray", "4,2")
+            .style("stroke-width", 2)
+            .attr("x1", function(d) { return x(d.date); })
+            .attr("x2", function(d) { return d.psn === d.newPsn ? width + 10 : width + 6; } )
+            .attr("transform", function(d) { return "translate(0," + d.psn + ")"; } );
+
+
+        // add highlight final tick to label
+        container.selectAll(".highlight-text-selector")
+            .data(highlightTextElements)
+            .enter().append("line")
+            .attr('class', "highlight-line")
+            .style("stroke", lineColour)
+            // .style("stroke-dasharray", "4,2")
+            .style("stroke-width", 2)
+            .attr("x1", width + 6)
+            .attr("x2", width + 10 )
+            .attr("transform", function(d) { return "translate(0," + d.newPsn + ")"; } );
+
+        // add highlight vertical line to join main line to tick
+        container.selectAll(".highlight-text-selector")
+            .data(highlightTextElements)
+            .enter().append("line")
+            .attr('class', "highlight-line")
+            .style("stroke", lineColour)
+            .style("stroke-dasharray", "4,2")
+            .style("stroke-width", 2)
+            .attr("y1", function(d) { return d.newPsn; } )
+            .attr("y2", function(d) { return d.psn; } )
+            .attr("transform", "translate(" + (width + 6) + ",0)");
+
+        if (doTransitions) {
+        // draw main highlight inner dot
+            container.selectAll(".highlight-text-selector")
+                .data(highlightTextElements)
+                .enter().append("ellipse")
+                .attr("class", "highlight-inner-dot")
+                .attr("rx", 3.5)
+                .attr("ry", 3.5)
+                .style("fill", lineColour)
+                .style("display", function(d) { return d.highlight === "date" ? "block" : "none" ; } )
+                .attr("cx", -50)
+                .attr("cy", yMap)
+                .transition()
+                .delay(1000)
+                .duration(1000)
+                .attr("cx", xMap)
+                .each("end", function() {
+
+                // draw main highlight inner dot - transition to correct size from big
+                container.selectAll(".highlight-text-selector")
+                    .data(highlightTextElements)
+                    .enter().append("ellipse")
+                    .attr("class", "highlight-outer-dot")
+                    .attr("rx", 200)
+                    .attr("ry", 200)
+                    .attr("cx", xMap)
+                    .attr("cy", yMap)
+                    .style("fill", "none")
+                    .style("stroke", lineColour)
+                    .style("display", function(d) { return d.highlight === "date" ? "block" : "none" ; } )
+                    .transition()
+                    .duration(700)
+                    .attr("rx", 6)
+                    .attr("ry", 6);
+                });
+        } else {
+        // draw main highlight inner dot
+            container.selectAll(".highlight-text-selector")
+                .data(highlightTextElements)
+                .enter().append("ellipse")
+                .attr("class", "highlight-inner-dot")
+                .attr("rx", 3.5)
+                .attr("ry", 3.5)
+                .style("fill", lineColour)
+                .style("display", function(d) { return d.highlight === "date" ? "block" : "none" ; } )
+                .attr("cx", xMap)
+                .attr("cy", yMap);
+
+                // draw main highlight inner dot - transition to correct size from big
+            container.selectAll(".highlight-text-selector")
+                .data(highlightTextElements)
+                .enter().append("ellipse")
+                .attr("class", "highlight-outer-dot")
+                .attr("rx", 6)
+                .attr("ry", 6)
+                .attr("cx", xMap)
+                .attr("cy", yMap)
+                .style("fill", "none")
+                .style("stroke", lineColour)
+                .style("display", function(d) { return d.highlight === "date" ? "block" : "none" ; } );
+        }
+
+        var focus = container.append("g") 
+            .style("display", "none");
+
+        // place the date at the intersection
+        focus.append("text")
+            .attr("class", "y3")
+            .style("stroke", "#e7e9ee")
+            .style("stroke-width", "3.5px")
+            .style("opacity", 0.8)
+            .attr("dx", 8)
+            .attr("dy", "1em");
+        focus.append("text")
+            .attr("class", "y4")
+            .attr("dx", 8)
+            .attr("dy", "1em");
+
+       // append the x line
+        focus.append("line")
+            .attr("class", "x")
+            .style("stroke", getColour(lineColour, 1))
+            .style("stroke-dasharray", "4,2")
+            .style("opacity", 0.5)
+            .style("stroke-width", 2);
+            // .attr("y1", 0)
+            // .attr("y2", height);
+
+        // append the y line
+        focus.append("line")
+            .attr("class", "y")
+            .style("stroke", getColour(lineColour, 1))
+            .style("stroke-dasharray", "4,2")
+            .style("opacity", 0.5)
+            .style("stroke-width", 2)
+            .attr("x1", width)
+            .attr("x2", width);
+
+        // append the circle at the intersection
+        focus.append("circle")
+            .attr("class", "y")
+            .style("fill", "none")
+            .style("stroke", getColour(lineColour, 1))
+            .style("stroke-width", 2)
+            .attr("r", 4);
+
+        // place the value at the intersection
+        focus.append("text")
+            .attr("class", "y1")
+            .style("stroke", "#e7e9ee")
+            .style("stroke-width", "3.5px")
+            .style("opacity", 0.8)
+            .attr("dx", 8)
+            .attr("dy", "-.3em");
+        focus.append("text")
+            .attr("class", "y2")
+            .attr("dx", 8)
+            .attr("dy", "-.3em");
+
+        // place the date at the intersection
+        focus.append("text")
+            .attr("class", "y3")
+            .style("stroke", "#e7e9ee")
+            .style("stroke-width", "3.5px")
+            .style("opacity", 0.8)
+            .attr("dx", 8)
+            .attr("dy", "1em");
+        focus.append("text")
+            .attr("class", "y4")
+            .attr("dx", 8)
+            .attr("dy", "1em");
+
+        var rect = container.append("rect")
+            .attr("width", width)
+            .attr("height", height)
+            .style("fill", "none")
+            .style("pointer-events", "all"); 
+
+        // append the rectangle to capture mouse
+        if (false) { //displayTooltips) {//
+            rect.on("mouseover", function() { focus.style("display", null); });
+            rect.on("mouseout", function() { focus.style("display", "none"); });
+            rect.on("mousemove", mousemove);
+        }
+
+        // container.call(zoom);
+
+        // ToDo: refactor this so that this function doesn't depend on being declared after container
+        function zoomed() {
+
+            var tx = d3.event.translate[0];
+            var ty = d3.event.translate[1];
+            tx = Math.min(tx, 0);
+            // tx = Math.max(tx, -width);
+            // 
+            // d3.event.translate[0] = tx;
+
+            // console.log(d3.event);
+            console.log('zoomed', d3.event.translate, d3.event.scale, tx, width);
+            
+            d3.event.target.translate([tx, ty]);
+
+            container.attr("transform", "translate(" + tx + ",0)scale(" + d3.event.scale + ",1)");
+            
+            // d3.event.transform(x);
+            // svg.select(".y.axis").call(yAxis);
+            if (tx !== 0)
+                svg.select(".x.axis").call(xAxis);
+
+            container.selectAll('.dot, .highlight-inner-dot')
+                .attr('rx', 3.5 / d3.event.scale );
+
+            container.selectAll('.highlight-outer-dot')
+                .style('stroke-width', 1 / d3.event.scale )
+                .attr('rx', 6 / d3.event.scale );
+
+            container.selectAll('.lolly-stick')
+                .style('stroke-width', 1 / d3.event.scale );
+
+            container.selectAll('.highlight-line, .highlight-text-active')
+                .style('display', d3.event.scale === 1 ? 'block' : 'none');
+
+            // console.log('ticks a', yAxis.scale().ticks(yAxis.ticks()[0]));
+            // console.log('ticks b', yAxis.scale().ticks());
+            // container.selectAll('.y')
+            //     .each( function() { console.log(this); this.setAttribute("transform", "translate(0,0)"); } );
+        }
+
+        function mousemove() {
+            var x0 = x.invert(d3.mouse(this)[0]),
+                i = bisectDate(data, x0, 1),
+                d0 = data[i - 1],
+                d1 = data[i],
+                d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+
+            focus.select("circle.y")
+                .attr("transform",
+                      "translate(" + x(d.date) + "," +
+                                     y(d.value) + ")");
+
+            focus.select("text.y1")
+                .attr("transform",
+                      "translate(" + x(d.date) + "," +
+                                     y(d.value) + ")")
+                .text(rankText(d));
+
+            focus.select("text.y2")
+                .attr("transform",
+                      "translate(" + x(d.date) + "," +
+                                     y(d.value) + ")")
+                .text(rankText(d));
+
+            focus.select("text.y3")
+                .attr("transform",
+                      "translate(" + x(d.date) + "," +
+                                     y(d.value) + ")")
+                .text(dataTextFormat(d.value, chartData.property));
+
+            focus.select("text.y4")
+                .attr("transform",
+                      "translate(" + x(d.date) + "," +
+                                     y(d.value) + ")")
+                .text(dataTextFormat(d.value, chartData.property));
+
+            focus.select(".x")
+                .attr("transform",
+                      "translate(" + x(d.date) + "," +
+                                     y(d.value) + ")")
+                           .attr("y2", height - y(d.value));
+
+            focus.select(".y")
+                .attr("transform",
+                      "translate(" + width * -1 + "," +
+                                     y(d.value) + ")")
+                           .attr("x2", width + width);
+        }
+
+ 
+    }
+
+
+    </script>
+</body>
+
+</html>
