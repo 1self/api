@@ -1,0 +1,627 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<script type="text/javascript">
+window["_gaUserPrefs"] = {
+    ioo: function() {
+        return true;
+    }
+}
+</script>
+
+<head>
+    <script type="text/javascript">
+    window["_gaUserPrefs"] = {
+        ioo: function() {
+            return true;
+        }
+    }
+    </script>
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>RescueTime weekly summary</title>
+    <style>
+    /* -------------------------------------
+HEADER
+------------------------------------- */
+    
+    @font-face {
+        font-family: 'Raleway';
+        font-style: normal;
+        font-weight: 300;
+        src: local('Raleway Light'), local('Raleway-Light'), url(fonts/raleway.woff2) format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+    }
+    
+    table.wrapper {
+        width: 600px;
+        clear: both !important;
+        margin: auto;
+    }
+    
+    div.background-wrapper {
+        background-color: #edf4f9;
+    }
+    
+    td.header {
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+    
+    table.wrapper td {
+        vertical-align: top;
+    }
+    
+    table.wrapper table {
+        border-spacing: 0;
+    }
+    
+    .header.container table td.logo {
+        padding: 15px;
+    }
+    
+    .header.container table td.label {
+        padding: 15px;
+        padding-left: 0px;
+    }
+    
+    .white-rounded {
+        background: #fff;
+        border: 1px solid #d5dce0;
+        border-radius: 10px;
+    }
+    
+    .intro {
+        background: #FFFDF4;
+        border-radius: 10px;
+        border: 1px solid #D5DCE0;
+    }
+    
+    .intro p {
+        font-family: 'Raleway', Helvetica, Arial, sans;
+        font-size: 12px;
+        color: #666;
+        line-height: 21px;
+    }
+    /* ---------------------------------------------------
+TYPEOGRAPHY
+------------------------------------------------------ */
+    
+    body {
+        font-family: 'Raleway', sans-serif;
+    }
+    
+    h2 {
+        font-family: 'Raleway', Helvetica, Arial, sans;
+        font-size: 16px;
+        font-weight: normal;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+    
+    h1 {
+        font-family:  'Raleway', Helvetica, Arial, sans;
+        font-size: 18px;
+        color: #f2ae1c;
+        font-weight: normal;
+        margin: 0 0 10px;
+        padding: 0;
+    }
+    
+    .header p {
+        font-family: 'Raleway', Helvetica, Arial, sans;
+        font-size: 14px;
+        color: #f7f7fa;
+        margin: 0;
+        padding: 0;
+    }
+    
+    p.overview-measure {
+        font-family: 'Raleway', Helvetica, Arial, sans;
+        font-weight: bold;
+        font-size: 42px;
+        color: #104d82;
+        margin: 0;
+        padding: 0;
+    }
+    
+    p.overview-context {
+        font-family: 'Raleway', Helvetica, Arial, sans;
+        font-style: italic;
+        font-size: 13px;
+        color: #777;
+        margin: 0;
+        padding: 0;
+    }
+    
+    table.ranked-bullet-list td.ranked-bullet {
+        padding-top: 10px;
+    }
+    
+    table.ranked-bullet-list td.ranked-bullet div {
+        font-family: 'Raleway', Helvetica, Arial, sans;
+        background: #104d82;
+        color: #fff;
+        font-size: 14px;
+        font-weight: bold;
+        padding: 5px;
+        border-radius: 4px;
+        text-align: center;
+    }
+    
+    table.ranked-bullet-list td.ranked-label {
+        padding-top: 15px;
+        padding-left: 5px;
+    }
+    
+    table.ranked-bullet-list td.ranked-label p {
+        font-family: 'Raleway', Helvetica, Arial, sans;
+        font-size: 14px;
+        color: #000;
+        margin: 0;
+        padding: 0;
+    }
+    /* ---------------------------------------------------
+STRUCTURE
+Nuke it from orbit. It's the only way to be sure.
+------------------------------------------------------ */
+    /* Set a max-width, and make it display as block so it will automatically stretch to that width, but will also shrink down on a phone or something */
+    
+    .container {
+        display: block!important;
+        width: 600px!important;
+        margin: 0 auto!important;
+        /* makes it centered */
+        
+        clear: both!important;
+    }
+    /* This should also be a block element, so that it will fill 100% of the .container */
+    
+    .content {
+        padding: 0 15px;
+        margin: 0 auto;
+        display: block;
+    }
+    
+    table td.left-column {
+        border-right: 1px solid #bcbcbc;
+    }
+    
+    table td.right-column {
+        border-left: 1px solid #fff;
+    }
+    
+    table td.divider-top {
+        border-bottom: 1px solid #bcbcbc;
+    }
+    
+    table td.divider-bottom {
+        border-top: 1px solid #fff;
+    }
+    /* Let's make sure tables in the content area are 100% wide */
+    /*table.row { width: 600px; }*/
+    /* To deal with outlook formatting craziness, sometimes we need a spacer table */
+    
+    table.spacer {
+        width: 600px;
+    }
+    
+    table.spacer td {
+        height: 25px;
+        font-size: 1px;
+    }
+    
+    table.spacer td img {
+        width: 1px;
+        height: 25px;
+    }
+    
+    table.spacer-short {
+        width: 600px;
+    }
+    
+    table.spacer-short td {
+        height: 15px;
+        font-size: 1px;
+    }
+    
+    table.spacer-short td img {
+        width: 1px;
+        height: 15px;
+    }
+    
+    .white-rounded table.spacer td {
+        height: 15px;
+        font-size: 1px;
+    }
+    
+    table.spacer td img {
+        width: 1px;
+        height: 15px;
+    }
+    /* Be sure to place a .clear element after each set of columns, just to be safe */
+    
+    .clear {
+        display: block;
+        clear: both;
+    }
+    
+    table.goals-list span.goal-status {
+        margin: 0;
+        padding: 0;
+        font-family: 'Raleway', Helvetica, Arial, sans;
+        font-weight: bold;
+        font-size: 14px;
+        color: #666;
+        padding-top: 15px;
+    }
+    
+    table.goals-list h4 {
+        font-family: 'Raleway', Helvetica, Arial, sans;
+        color: #666;
+        font-size: 16px;
+        font-weight: normal;
+        margin-bottom: 0;
+        margin-top: 0;
+        padding-top: 12px;
+    }
+    
+    table.goals-list h4 a {
+        text-decoration: none;
+        color: #666;
+        border-bottom: 1px dashed #ccc;
+        line-height: 21px;
+    }
+    
+    table.goals-list p {
+        font-family: 'Raleway', Helvetica, Arial, sans;
+        color: #999;
+        padding: 15px 0 10px;
+        margin: 0;
+        font-size: 14px;
+    }
+    
+    table.goals-list p.goal-comparison {
+        line-height: 18px;
+        font-size: 12px;
+    }
+    
+    div.report-link {
+        border: 1px solid #d5dce0;
+        border-radius: 10px;
+        background-color: #fffdf4;
+        text-align: center;
+    }
+    
+    td.dashboard-report-link {
+        text-align: center;
+    }
+    
+    td.dashboard-report-link h4 {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        margin: 0;
+        font-weight: normal;
+        font-family: 'Raleway', Helvetica, Arial, sans;
+    }
+    
+    div.report-link h4 {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        margin: 0;
+        font-weight: normal;
+        font-family: 'Raleway', Helvetica, Arial, sans;
+    }
+    
+    .dashboard-report-link a,
+    div.report-link a {
+        font-size: 14px;
+        color: #cf4b9a;
+        text-decoration: none;
+    }
+    
+    table.tips-and-notices h2 {
+        color: #f2ae1c;
+    }
+    
+    table.tips-and-notices p {
+        font-family: 'Raleway', Helvetica, Arial, sans;
+        font-size: 14px;
+        color: #f7f7fa;
+        line-height: 20px;
+    }
+    
+    table.tips-and-notices p a {
+        color: #0063cd;
+        text-decoration: none;
+    }
+    
+    table.footer h5 {
+        font-family: 'Raleway', Helvetica, Arial, sans;
+        font-size: 12px;
+        color: #666;
+        padding: 0 0 5px;
+        margin: 0;
+        font-weight: normal;
+    }
+    
+    table.footer h5.logo {
+        padding-bottom: 20px;
+        ;
+    }
+    
+    table.footer p {
+        margin: 0;
+        padding: 0 0 15px;
+        color: #f7f7fa;
+    }
+    
+    table.footer p a {
+        color: #cf4b9a;
+        text-decoration: none;
+    }
+    
+    span.quote {
+        color: #ccc;
+        font-weight: bold;
+        font-size: 34px;
+        vertical-align: -13px;
+        line-height: 1px;
+    }
+    
+    table#follow-links p {
+        font-family: 'Raleway', Helvetica, Arial, sans;
+        font-size: 14px;
+        color: #666;
+        line-height: 20px;
+    }
+    
+    td.follow-links-content {
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 10px 5px;
+        text-align: center;
+        border: 1px solid #D5DCE0;
+    }
+    
+    td.follow-links-content h3 {
+        font-family: 'Raleway', Helvetica, Arial, sans;
+        color: #777;
+        font-size: 14px;
+        margin: 0;
+        padding: 0;
+    }
+    
+    td.follow-links-content h3 img {
+        vertical-align: middle;
+    }
+    /* -------------------------------------------
+PHONE
+For clients that support media queries.
+Nothing fancy.
+-------------------------------------------- */
+    
+    @media only screen and (max-width: 600px) {
+        a[class="btn"] {
+            display: block!important;
+            margin-bottom: 10px!important;
+            background-image: none!important;
+            margin-right: 0!important;
+        }
+        div[class="column"] {
+            width: auto!important;
+            float: none!important;
+        }
+        table.social div[class="column"] {
+            width: auto!important;
+        }
+    }
+    </style>
+    <style id="style-1-cropbar-clipper">
+    /* Copyright 2014 Evernote Corporation. All rights reserved. */
+    
+    .en-markup-crop-options {
+        top: 18px !important;
+        left: 50% !important;
+        margin-left: -100px !important;
+        width: 200px !important;
+        border: 2px rgba(255, 255, 255, .38) solid !important;
+        border-radius: 4px !important;
+    }
+    
+    .en-markup-crop-options div div:first-of-type {
+        margin-left: 0px !important;
+    }
+    </style>
+</head>
+
+<body topmargin="0" leftmargin="0" marginheight="0" marginwidth="0">
+    <div class="background-wrapper">
+        <table width="100%" cellpadding="0" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td bgcolor="#30363e" width="100%" align="center">
+                        <table width="600" class="wrapper">
+                            <tbody>
+                                <tr>
+                                    <td class="header container" align="left">
+                                        <table class="row" width="600">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="content">
+                                                            <a href="http://www.rescuetime.com/dashboard/?utm_source=stats&amp;utm_medium=email&amp;utm_campaign=weekly-free" title="RescueTime" style="border: none;"><img src="http://www.1self.co/images/logo.png" alt="1self" border="0"></a>
+                                                        </div>
+                                                    </td>
+                                                    <td align="right">
+                                                        <div class="content font-light">
+                                                            <h1>ed - You have 9 unread cards</h1>
+                                                            <p>For the week of June 7, 2015</p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="overview container white-rounded" align="left">
+                                        <!-- spacer table, yeah -->
+                                        <table class="spacer">
+                                            <tbody>
+                                                <tr>
+                                                    <td><img src="https://www.rescuetime.com/images/spacer.gif"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <table class="row" width="600">
+                                            <tbody>
+                                                <tr>
+                                                    <td width="600">
+                                                        <div class="content">
+                                                            <h2>Cards are generated to give you insights about your life.
+</h2>
+                                                            <br>
+                                                            <h2>Here's the card at the top of your stack:
+</h2>
+                                                            <p align="center"><img width="60%" src="img/card.png">
+                                                            </p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <!-- spacer table, yeah -->
+                                        <table class="spacer">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="divider-top"><img src="https://www.rescuetime.com/images/spacer.gif"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <!-- spacer table, yeah -->
+                                        <table class="row" width="600">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="dashboard-report-link">
+                                                        <h4><a href="https://www.rescuetime.com/dashboard/for/the/week/of/2015-06-07">Go to your card stack to explore this insight and your other 8 cards&nbsp;&nbsp;<img src="https://www.rescuetime.com/images/new-email/red-arrow.png" style="vertical-align: middle;" alt="RescueTime" border="0"></a></h4>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="lists container" align="left">
+                                        <!-- spacer table, yeah -->
+                                        <table class="spacer">
+                                            <tbody>
+                                                <tr>
+                                                    <td><img src="https://www.rescuetime.com/images/spacer.gif"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <!-- spacer table, yeah -->
+                                        <!-- dashboard and follow links -->
+                                        <table width="600" class="wrapper">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="overview container white-rounded">
+                                                        <table class="row" width="600" id="follow-links">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td width="45">&nbsp;</td>
+                                                                    <td style="text-align: right; vertical-align: middle;" align="right">
+                                                                        <a href="http://www.twitter.com/rescuetime" style="text-decoration: none;">
+                                                                            <img src="http://www.rescuetime.com/images/blog-images/twitter-icon.gif" alt="Twitter" border="0">
+                                                                        </a>
+                                                                        <a href="http://www.facebook.com/rescuetime" style="text-decoration: none;">
+                                                                            <img src="http://www.rescuetime.com/images/blog-images/facebook-icon.gif" alt="Facebook" border="0">
+                                                                        </a>
+                                                                        <a href="http://www.linkedin.com/company/rescuetime" style="text-decoration: none;">
+                                                                            <img src="http://www.rescuetime.com/images/blog-images/linkedin-icon.gif" alt="LinkedIn" border="0">
+                                                                        </a>
+                                                                        <a href="https://plus.google.com/b/103885128526585670397/103885128526585670397/posts" style="text-decoration: none;">
+                                                                            <img src="http://www.rescuetime.com/images/blog-images/googleplus-icon.gif" alt="Google+" border="0">
+                                                                        </a>
+                                                                    </td>
+                                                                    <td width="18">&nbsp;</td>
+                                                                    <td>
+                                                                        <p><strong>Follow RescueTime</strong> for tips and links about staying
+                                                                            <br> happy and productive in the modern workplace.</p>
+                                                                    </td>
+                                                                    <td width="45">&nbsp;</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <!-- spacer table, yeah -->
+                                        <table class="spacer">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="divider-top"><img src="https://www.rescuetime.com/images/spacer.gif"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="divider-bottom"><img src="https://www.rescuetime.com/images/spacer.gif"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <!-- tip and blog -->
+                                        <table class="row tips-and-notices" width="600">
+                                            <tbody>
+                                                <tr>
+                                                    <td width="600">
+                                                        <div class="content">
+                                                            <h2>Blog post goes here</h2>
+                                                            <p>Blah blah blog post content. Lorem ipsum and all that.</p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <!-- spacer table, yeah -->
+                                        <table class="spacer">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="divider-top"><img src="https://www.rescuetime.com/images/spacer.gif"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="divider-bottom"><img src="https://www.rescuetime.com/images/spacer.gif"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <!-- FOOTER -->
+                                        <table class="row footer" width="600">
+                                            <tbody>
+                                                <tr>
+                                                    <td width="160">
+                                                        <h5 class="logo"><a href="http://1self.co" title="1self.co" style="border: none;"><img src="http://www.1self.co/images/logo.png" alt="1self" border="0"></a></h5>
+                                                    </td>
+                                                    <td>
+                                                        <div class="box" style="padding: 0 10px;">
+                                                            <p style="margin-bottom: 8px; line-height: 16px; font-size: 11px; font-family: Helvetica, Arial, sans-serif;">You're receiving this weekly summary because you selected that option when signing up for RescueTime. Change your mind? We don't want to be a pest.
+                                                                <unsubscribe><a href="/unsubscribe?email=martinstrotton%2Brescuetime%40gmail.com">Unsubscribe Instantly</a></unsubscribe>.</p>
+                                                            <p style="margin-bottom: 8px; line-height: 16px; font-size: 11px; font-family: Helvetica, Arial, sans-serif;">RescueTime &amp; the RescueTime Logo are registered trademarks of RescueTime, Inc
+                                                                <br> RescueTime, Inc — 811 1st Ave. Suite 480 Seattle, WA 98104
+                                                                <br> RescueTime <a href="http://www.rescuetime.com/privacy">Privacy Policy</a> last updated June 1, 2015</p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <span id="buffer-extension-hover-button" style="display: none; position: absolute; z-index: 8675309; width: 100px; height: 25px; opacity: 0.9; cursor: pointer; top: 2653px; left: 2402.5px; background-image: url(chrome-extension://noojglkidnpfjbincgijbaiedldjfbhh/data/shared/img/buffer-hover-icon@1x.png); background-size: 100px 25px;"></span>
+    <span id="buffer-extension-hover-button" style="display: none; position: absolute; z-index: 8675309; width: 100px; height: 25px; opacity: 0.9; cursor: pointer; background-image: url(chrome-extension://noojglkidnpfjbincgijbaiedldjfbhh/data/shared/img/buffer-hover-icon@1x.png); background-size: 100px 25px;"></span></body>
+
+</html>
