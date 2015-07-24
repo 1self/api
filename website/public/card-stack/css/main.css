@@ -86,7 +86,6 @@ sub {
 img {
     border: 0
 ;
-    /* width: 40px; */
 }
 
 svg:not(:root) {
@@ -173,7 +172,6 @@ input {
     margin: 8px;
     position: absolute;
     cursor: pointer;
-    /*box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16), 0 2px 5px 0 rgba(0, 0, 0, 0.26); 0 3px 0 rgba(0, 0, 0, 0.2);*/
     -webkit-transition-duration: 0.66s;
     transition-duration: 0.66s;
     -webkit-transition-timing-function: swing;
@@ -190,7 +188,6 @@ input {
     margin: 8px;
     position: absolute;
     cursor: pointer;
-    /*box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16), 0 2px 5px 0 rgba(0, 0, 0, 0.26); 0 3px 0 rgba(0, 0, 0, 0.2);*/
     -webkit-transition-duration: 0.66s;
     transition-duration: 0.66s;
     -webkit-transition-timing-function: swing;
@@ -207,7 +204,6 @@ input {
     margin: 8px;
     position: absolute;
     cursor: pointer;
-    /*box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16), 0 2px 5px 0 rgba(0, 0, 0, 0.26); 0 3px 0 rgba(0, 0, 0, 0.2);*/
     -webkit-transition-duration: 0.66s;
     transition-duration: 0.66s;
     -webkit-transition-timing-function: swing;
@@ -215,7 +211,6 @@ input {
     left: 0px;
     bottom: 0px;
     display: table;
-    background-image: url(../img/profilepic.jpg);
     background-size: 100%;
     background-repeat: no-repeat;
 }
@@ -282,10 +277,6 @@ input {
 .flip-toggle .icon-button img {
     margin: 10px 0 0 10px;
 }
-
-/*.flip-open .flip-toggle:before {
-    background-color: red;
-}*/
 
 .flip-open-0 .flip-toggle:before {
     background-color: #dd2649;

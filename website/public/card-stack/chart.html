@@ -189,23 +189,6 @@
         return "";
     }
 
-
-    // function dragstarted(d) {
-    //     console.log('dragstarted');
-    //   d3.event.sourceEvent.stopPropagation();
-    //   d3.select(this).classed("dragging", true);
-    // }
-
-    // function dragged(d) {
-    //     console.log('dragged');
-    //   d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
-    // }
-
-    // function dragended(d) {
-    //     console.log('dragended');
-    //   d3.select(this).classed("dragging", false);
-    // }
-
     function drawSparkLine(chartData, appendToElement) {
 
         var data = chartData.allData;
@@ -581,8 +564,9 @@
             .attr("dy", "1em");
 
         var rect = container.append("rect")
-            .attr("width", width)
+            .attr("width", width * 2)
             .attr("height", height)
+            .attr("x", -width)
             .style("fill", "none")
             .style("pointer-events", "all"); 
 
@@ -593,25 +577,60 @@
             rect.on("mousemove", mousemove);
         }
 
+
+        svg.append("line")
+            .attr("class", "x")
+            .style("stroke", getColour(lineColour, 1))
+            .style("stroke-dasharray", "4,2")
+            .style("opacity", 0.5)
+            .style("stroke-width", 1)
+            .attr("x1", 250)
+            .attr("x2", 250)
+            .attr("y1", 0)
+            .attr("y2", height);
+
         // container.call(zoom);
+        // 
+        console.log(width, xMap(data[data.length-1]));
+
+        var max = xMap(data[data.length-1]);
+        var lastScale = 1;
+
+        console.log(width, max, width - max);
 
         // ToDo: refactor this so that this function doesn't depend on being declared after container
         function zoomed() {
-
+            
             var tx = d3.event.translate[0];
+
+            var doneZoom = false;
+            if (lastScale !== d3.event.scale) {
+                doneZoom = true;
+                max = xMap(data[data.length-1])-tx;
+            }
+
+            lastScale = d3.event.scale;
+            console.log(tx, width, max, width - max, Math.max(Math.min(tx, 0), (width - max)));
             var ty = d3.event.translate[1];
-            tx = Math.min(tx, 0);
+
+            tx = Math.min(tx, width);
+            tx = Math.max(tx, (width - max));
+            
+            if (!doneZoom) {
+                d3.event.target.translate([tx, ty]);
+            }
+
+
             // tx = Math.max(tx, -width);
             // 
             // d3.event.translate[0] = tx;
 
             // console.log(d3.event);
-            console.log('zoomed', d3.event.translate, d3.event.scale, tx, width);
-            
-            d3.event.target.translate([tx, ty]);
+            // console.log('zoomed', d3.event.translate, d3.event.scale, tx, width);
+            console.log(tx);
 
             container.attr("transform", "translate(" + tx + ",0)scale(" + d3.event.scale + ",1)");
-            
+
             // d3.event.transform(x);
             // svg.select(".y.axis").call(yAxis);
             if (tx !== 0)

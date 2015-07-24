@@ -312,10 +312,6 @@ if (offline) {
     // Get the ajax requests out of the way early because they
     // are typically longest to complete
 
-    if(!username){
-        getQSParam().user;
-    }
-
     var minStdDev = getQSParam().minStdDev;
     var maxStdDev = getQSParam().maxStdDev;
 
@@ -325,12 +321,11 @@ if (offline) {
 
     console.log('minStdDev',minStdDev);
 
-    if (!username) username = "ed";
 
-    var url = '/v1/users/';
+    var url = API_HOST + '/v1/users/';
     url += username + '/cards';
     url += '?extraFiltering=true';
-    url += minStdDev ? '&minStdDev=' + minStdDev : '?minStdDev=' + "2";
+    url += minStdDev ? '&minStdDev=' + minStdDev : '&minStdDev=' + "2";
     url += maxStdDev ? '&maxStdDev=' + maxStdDev : '';
 
     console.log(url);
@@ -603,7 +598,7 @@ $(function() {
     };
 
     var flipButtonTemplate = [
-        , '  <div class="avatar-button standard-shadow">'
+        , '  <div class="avatar-button standard-shadow" style="background-image:url({{userAvatarUrl}});"">'
         , '    <!--div class="icon-button"><i class="fa fa-share-alt fa-2x"></i></div-->'
         , '  </div>'
         , '  <div class="share-button standard-shadow" style="background-color: {{colour}};">'
@@ -670,7 +665,8 @@ $(function() {
             inputValue: encodeURIComponent(JSON.stringify(cardData)),
             cardNav: flipButtonTemplate.supplant({
                 colour: colour,
-                action: 'left'
+                action: 'left',
+                userAvatarUrl: userAvatarUrl
             })
         });
 
@@ -723,7 +719,8 @@ $(function() {
                     data: cardData.cardText || 'undefined',
                     flipButton: flipButtonTemplate.supplant({
                         colour: colour,
-                        action: "right"
+                        action: "right",
+                        userAvatarUrl: userAvatarUrl
                     }),
                     cardNavText: "",
                     colour: colour,
@@ -765,7 +762,7 @@ $(function() {
                 iFrameHtml += '&highlightCondition=' + cardData.type;
                 iFrameHtml += '&highlightDates=' + getHighlightDates(cardData);
                 iFrameHtml += '&doTransitions=true';
-                iFrameHtml += '&dataSrc=' + encodeURIComponent(cardData.chart) + '" ';
+                iFrameHtml += '&dataSrc=' + encodeURIComponent(API_HOST + cardData.chart) + '" ';
                 iFrameHtml += 'scrolling="no"></iframe>';
                 iFrameHtml += '<div class="clickable-overlay"></div>';
                 $cardMedia.append(iFrameHtml);
@@ -789,7 +786,7 @@ $(function() {
             iFrameHtml += '&vaxis=true&haxis=true';
             iFrameHtml += '&displayTooltips=true';
             iFrameHtml += '&doTransitions=false';
-            iFrameHtml += '&dataSrc=' + cardData.chart + '" ';
+            iFrameHtml += '&dataSrc=' + encodeURIComponent(API_HOST + cardData.chart) + '" ';
             iFrameHtml += 'scrolling="no"></iframe>';
             $cardMedia.append(iFrameHtml);
         }
