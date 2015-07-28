@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="110px" height="110px" viewBox="0 0 110 110" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.2.2 (9983) - http://www.bohemiancoding.com/sketch -->
+    <title>google git icon</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Mobile-Portrait-7" sketch:type="MSArtboardGroup" transform="translate(-661.000000, -444.000000)">
+            <g id="integrations" sketch:type="MSLayerGroup" transform="translate(101.000000, 443.000000)">
+                <g id="google-fit" transform="translate(560.000000, 1.000000)" sketch:type="MSShapeGroup">
+                    <g id="google-git-icon">
+                        <path d="M55,110 C85.3756612,110 110,85.3756612 110,55 C110,24.6243388 85.3756612,0 55,0 C24.6243388,0 0,24.6243388 0,55 C0,85.3756612 24.6243388,110 55,110 Z" id="Path-11" fill="#F7F7FA"></path>
+                        <g id="google-fit-logo" transform="translate(19.000000, 29.000000)">
+                            <path d="M51.2106934,1.25415039 C69.0239258,-0.587158196 78.4311523,18.1843263 67.0275879,30.8078613 C67.0275879,30.8078613 39.3806152,60.0292959 37.2709961,60.0292969 C39.1242676,53.4331045 49.3789062,7.65356445 51.2106934,1.25415039 Z" id="Path-33" fill="#860F4F"></path>
+                            <path d="M46.6757812,1.89233398 C63.7331543,-3.13867204 65.2487793,22.9052732 60.6394043,29.2253418 C57.4140625,35.0258805 37.109375,59.7053221 37.109375,60.1376953 C37.109375,60.1376953 46.1962891,4.81298828 46.6757812,1.89233398 Z" id="Path-32" fill="#C31361"></path>
+                            <path d="M36.5192871,11.2368161 C36.8811035,8.83911101 39.4990234,4.50976555 41.6225586,2.59814453 C49.6635742,-3.85449242 54.293457,11.8266598 54.293457,15.4638672 C54.293457,15.4638672 55.1645508,21.7580563 52.9433594,28.0419922 C52.9433594,28.0419922 37.1430664,63.9497067 36.5192871,59.7307126 L36.5192871,11.2368161 Z" id="Path-31" fill="#FF9304"></path>
+                            <path d="M36.6386713,60.0214844 C34.5361314,60.0214844 32.9213872,56.831543 14.9873051,40 C8.6342777,33.2573242 -7.69775436,21.1738288 6,6.35449219 C21.9360357,-8.62011765 34.545897,10.3203126 36.6386719,11.2207031 C36.6386719,11.2207031 36.6386704,48.1894531 36.6386713,60.0214844 Z" id="Path-30" fill="#DC493C"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
