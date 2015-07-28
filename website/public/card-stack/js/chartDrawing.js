@@ -45,8 +45,10 @@ function addXAxis(xAxis, appendTo, height, removeOverlaps, axisLabel, width, bot
 
 function addYAxis(yAxis, appendTo, width, leftMargin, axisLabel) {
 
-    console.log('ticks', yAxis.scale().ticks(yAxis.ticks()[0]));
-    console.log('ticks', yAxis.scale().ticks());
+    // console.log('ticks', yAxis.scale().ticks(yAxis.ticks()[0]));
+    // console.log('ticks', yAxis.scale().ticks());
+
+    var maxLabelLength = 0;
 
     // Add the Y Axis
     var gy = appendTo.append("g")
@@ -55,14 +57,17 @@ function addYAxis(yAxis, appendTo, width, leftMargin, axisLabel) {
         .selectAll('.tick')
         .each(function(data) {
             var tick = d3.select(this);
-            // console.log(tick, tick.text());
+            console.log(tick, tick.text());
+            console.log(tick.select('text')[0][0].getComputedTextLength());
+            if (tick.select('text')[0][0].getComputedTextLength() > maxLabelLength)
+                maxLabelLength = tick.select('text')[0][0].getComputedTextLength();
         });
 
     gy.selectAll("g").filter(function(d) { return d; })
         .classed("minor", true);
 
     gy.selectAll("text")
-        .attr("x", 4)
+        .attr("x", maxLabelLength - 6)
         .attr("dy", -4);
 
         // Add the text label for the Y axis

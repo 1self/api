@@ -98,214 +98,125 @@ var deferred = $.Deferred();
 var offline = false;
 
 if (offline) {
-    var data = [/*{
-        "id": "5584077cedd7cc047e86fe2e",
-        "type": "date",
-        "generatedDate": "2015-06-25T12:13:48.706Z"
-    }, */{
-        "id": "5584077dedd7cc047e86fe34",
-        "type": "top10",
-        "thumbnailMedia": "chart.html",
-        "startRange": "2015-06-25",
-        "endRange": "2015-06-25",
-        "objectTags": [
-            "music"
-        ],
-        "actionTags": [
-            "listen"
-        ],
-        "position": 0,
-        "properties": {
-            "sum": {
-                "album-name": {
-                    "The Inevitable End": {
-                        "__count__": 10
-                    }
-                }
-            }
-        },
-        "generatedDate": "2015-06-19T12:13:49.256Z",
-        "chart": "/v1/users/ed/rollups/day/music/listen/sum.album-name..__count__/.json"
-    }, {
-        "id": "5584077dedd7cc047e86fe30",
-        "type": "top10",
-        "thumbnailMedia": "chart.html",
-        "startRange": "2015-06-25",
-        "endRange": "2015-06-25",
-        "objectTags": [
-            "music"
-        ],
-        "actionTags": [
-            "listen"
-        ],
-        "position": 2,
-        "properties": {
-            "sum": {
-                "artist-name": {
-                    "Daft Punk": {
-                        "__count__": 1
-                    }
-                }
-            }
-        },
-        "generatedDate": "2015-06-19T12:13:49.017Z",
-        "chart": "/v1/users/ed/rollups/day/music/listen/sum.album-name..__count__/.json"
-    }, {
-        "id": "5584077dedd7cc047e86fe35",
-        "type": "bottom10",
-        "thumbnailMedia": "chart.html",
-        "startRange": "2015-06-25",
-        "endRange": "2015-06-25",
-        "objectTags": [
-            "computer",
-            "control",
-            "software",
-            "source"
-        ],
-        "actionTags": [
-            "github",
-            "push"
-        ],
-        "position": 28,
-        "properties": {
-            "sum": {
-                "commits": 5
-            }
-        },
-        "generatedDate": "2015-06-19T12:13:49.301Z",
-        "chart": "/v1/users/ed/rollups/day/computer,control,software,source/github,push/sum.commits/.json"
-    }, {
-        "id": "5584077dedd7cc047e86fe39",
-        "type": "top10",
-        "thumbnailMedia": "chart.html",
-        "startRange": "2015-06-25",
-        "endRange": "2015-06-25",
-        "objectTags": [
-            "computer",
-            "control",
-            "software",
-            "source"
-        ],
-        "actionTags": [
-            "commit"
-        ],
-        "position": 1,
-        "properties": {
-            "sum": {
-                "__count__": 5
-            }
-        },
-        "generatedDate": "2015-06-19T12:13:49.626Z",
-        "chart": "/v1/users/ed/rollups/day/computer,control,software,source/github,push/sum.__count__/.json"
-    }, {
-        "id": "5584077dedd7cc047e86fe3a",
-        "type": "bottom10",
-        "thumbnailMedia": "chart.html",
-        "startRange": "2015-06-25",
-        "endRange": "2015-06-25",
-        "objectTags": [
-            "computer",
-            "control",
-            "software",
-            "source"
-        ],
-        "actionTags": [
-            "github",
-            "push"
-        ],
-        "position": 0,
-        "properties": {
-            "sum": {
-                "repo": {
-                    "1self/api": {
-                        "__count__": 1
-                    }
-                }
-            }
-        },
-        "generatedDate": "2015-06-19T12:13:49.630Z",
-        "chart": "/v1/users/ed/rollups/day/computer,control,software,source/github,push/sum.repo.1self/api.__count__/.json"
-    }, {
-        "id": "5584077dedd7cc047e86fe32",
-        "type": "top10",
-        "thumbnailMedia": "chart.html",
-        "startRange": "2015-06-25",
-        "endRange": "2015-06-25",
-        "objectTags": [
-            "computer",
-            "control",
-            "software",
-            "source"
-        ],
-        "actionTags": [
-            "github",
-            "push"
-        ],
-        "position": 0,
-        "properties": {
-            "sum": {
-                "repo": {
-                    "1self/api": {
-                        "commits": 1
-                    }
-                }
-            }
-        },
-        "generatedDate": "2015-06-19T12:13:49.036Z",
-        "chart": "/v1/users/ed/rollups/day/computer,control,software,source/github,push/sum.repo.1self/api.commits/.json"
-    }, {
-        "id": "5584077dedd7cc047e86fe37",
-        "type": "bottom10",
-        "thumbnailMedia": "chart.html",
-        "startRange": "2015-06-25",
-        "endRange": "2015-06-25",
-        "objectTags": [
-            "computer",
-            "git",
-            "github",
-            "software",
-            "source control"
-        ],
-        "actionTags": [
-            "commit"
-        ],
-        "position": 8,
-        "properties": {
-            "sum": {
-                "__count__": 5
-            }
-        },
-        "generatedDate": "2015-06-19T12:13:49.528Z",
-        "chart": "/v1/users/ed/rollups/day/computer,git,github,software,source control/commit/sum.__count__/.json"
-    }, {
-        "id": "5584077dedd7cc047e86fe3c",
-        "type": "bottom10",
-        "thumbnailMedia": "chart.html",
-        "startRange": "2015-06-25",
-        "endRange": "2015-06-25",
-        "objectTags": [
-            "computer",
-            "git",
-            "github",
-            "software",
-            "source control"
-        ],
-        "actionTags": [
-            "commit"
-        ],
-        "position": 6,
-        "properties": {
-            "sum": {
-                "author-email": {
-                    "ed^sykes@gmail^com": {
-                        "__count__": 5
-                    }
-                }
-            }
-        },
-        "generatedDate": "2015-06-19T12:13:49.862Z",
-        "chart": "/v1/users/ed/rollups/day/computer,git,github,software,source control/commit/sum.author-email.ed^sykes@gmail^com.__count__/.json"
-    }];
+    var data = [{
+    "id": "55b5748cdc5ba2d0695ef487",
+    "type": "top10",
+    "outOf": 3,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-07-26",
+    "endRange": "2015-07-26",
+    "objectTags": [
+        "self"
+    ],
+    "actionTags": [
+        "exercise",
+        "walk"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "steps": 2609
+        }
+    },
+    "propertyName": "steps.sum",
+    "stdDev": 438.1781305292107,
+    "correctedStdDev": 657.2671957938161,
+    "sampleStdDev": 2.114056519011006,
+    "sampleCorrectedStdDev": 1.4093710126740038,
+    "mean": 1682.6666666666667,
+    "variance": 926.3333333333333,
+    "cardDate": "2015-07-26",
+    "generatedDate": "2015-07-27T00:00:12.043Z",
+    "chart": "/v1/users/m/rollups/day/self/exercise,walk/sum.steps/.json?to=2015-07-26"
+}, {
+    "id": "55b5748cdc5ba2d0695ef488",
+    "type": "top10",
+    "outOf": 3,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-07-26",
+    "endRange": "2015-07-26",
+    "objectTags": [
+        "self"
+    ],
+    "actionTags": [
+        "exercise",
+        "walk"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "__count__": 252
+        }
+    },
+    "propertyName": "__count__.sum",
+    "stdDev": 43.84822307308093,
+    "correctedStdDev": 65.7723346096214,
+    "sampleStdDev": 1.5508040060520993,
+    "sampleCorrectedStdDev": 1.0338693373680663,
+    "mean": 184,
+    "variance": 68,
+    "cardDate": "2015-07-26",
+    "generatedDate": "2015-07-27T00:00:12.880Z",
+    "chart": "/v1/users/m/rollups/day/self/exercise,walk/sum.__count__/.json?to=2015-07-26"
+}, {
+    "id": "55b5748ddc5ba2d0695ef489",
+    "type": "bottom10",
+    "outOf": 3,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-07-26",
+    "endRange": "2015-07-26",
+    "objectTags": [
+        "google"
+    ],
+    "actionTags": [
+        "browse"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "times-visited": 1
+        }
+    },
+    "propertyName": "times-visited.sum",
+    "stdDev": 3.5381518506868126,
+    "correctedStdDev": 5.307227776030219,
+    "sampleStdDev": 2.1668563109235808,
+    "sampleCorrectedStdDev": 1.4445708739490537,
+    "mean": 8.666666666666666,
+    "variance": -7.666666666666666,
+    "cardDate": "2015-07-26",
+    "generatedDate": "2015-07-27T00:00:13.442Z",
+    "chart": "/v1/users/m/rollups/day/google/browse/sum.times-visited/.json?to=2015-07-26"
+}, {
+    "id": "55b5748ddc5ba2d0695ef48a",
+    "type": "bottom10",
+    "outOf": 3,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-07-26",
+    "endRange": "2015-07-26",
+    "objectTags": [
+        "google"
+    ],
+    "actionTags": [
+        "browse"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "__count__": 1
+        }
+    },
+    "propertyName": "__count__.sum",
+    "stdDev": 3.5381518506868126,
+    "correctedStdDev": 5.307227776030219,
+    "sampleStdDev": 2.1668563109235808,
+    "sampleCorrectedStdDev": 1.4445708739490537,
+    "mean": 8.666666666666666,
+    "variance": -7.666666666666666,
+    "cardDate": "2015-07-26",
+    "generatedDate": "2015-07-27T00:00:13.805Z",
+    "chart": "/v1/users/m/rollups/day/google/browse/sum.__count__/.json?to=2015-07-26"
+}];
 
     deferred.resolve(data);
 } else {
@@ -465,6 +376,8 @@ $(function() {
             return propertyText.replace('percent', '').trim();
         else if (propertyText.indexOf('duration') >= 0)
             return propertyText.replace('duration', '').trim();
+        else if (propertyText.indexOf('times-visited') >= 0)
+            return propertyText.replace('times-visited', 'visits').trim();
         else
             return propertyText;
     };
@@ -520,7 +433,7 @@ $(function() {
             counter++;
         }
 
-        returnObj.propertiesText = returnString;
+        returnObj.propertiesText = returnString.trim();
 
         if (objectKey === "__count__") {
             returnObj.value = propertiesObject[objectKey];
@@ -540,17 +453,21 @@ $(function() {
     };
 
     var createCardText = function(cardData, colour) {
-        if (!cardData.cardText) {
+        // if (!cardData.cardText) {
             var cardText = '';
 
             if (cardData.type === "top10" || cardData.type === "bottom10") {
                 var template1 = '<b>{{eventDate}}</b><br>{{comparitor}} {{action_pl}} in {{eventPeriod}} {{comparisonPeriod}}'; // e.g. [Yesterday]: [6th] [fewest] [commit]s in [a day] [ever]
                 var template2 = '<b>{{eventDate}}</b><br>{{comparitor}} {{action_pp}} {{property}} in {{eventPeriod}} {{comparisonPeriod}}'; // [Yesterday]: [6th] [most] [commit]ted [file changes] in [a day] [ever]
                 var template3 = '<b>{{eventDate}}</b><br>{{comparitor}} {{objects}} {{action_pl}} in {{eventPeriod}} {{comparisonPeriod}}'; // [Yesterday]: [6th] [fewest] [music track] [listen]s in [a day] [ever]
-                var template4 = '<b>{{eventDate}}</b><br>{{comparitor}} {{action_pl}} to {{property}} in {{eventPeriod}} {{comparisonPeriod}}'; // [Yesterday]: [6th] [fewest] [listen]s [to Royksopp] in [a day] [ever]
-                var template5 = '<b>{{eventDate}}</b><br>{{comparitor}} {{objects}} {{property}} in {{eventPeriod}} {{comparisonPeriod}}'; // [Yesterday]: [6th] [fewest] [computer desktop] [all distracting percent] in [a day] [ever]
+                // var template4 = '<b>{{eventDate}}</b><br>{{comparitor}} {{action_pl}} to {{property}} in {{eventPeriod}} {{comparisonPeriod}}'; // [Yesterday]: [6th] [fewest] [listen]s [to Royksopp] in [a day] [ever]
+                // var template5 = '<b>{{eventDate}}</b><br>{{comparitor}} {{objects}} {{property}} in {{eventPeriod}} {{comparisonPeriod}}'; // [Yesterday]: [6th] [fewest] [computer desktop] [all distracting percent] in [a day] [ever]
                 var template6 = '<b>{{eventDate}}</b><br>{{value}} {{action_pl}} to {{property}}<br>Your {{comparitor}} in {{eventPeriod}} {{comparisonPeriod}}'; // [Yesterday]: [13] [listens] to [Four Tet]<br>Your [6th] [fewest] in [a day]
                 var template7 = '<b>{{eventDate}}</b><br>{{value}} {{property}} {{objects}}<br>Your {{comparitor}} in {{eventPeriod}} {{comparisonPeriod}}'; // [Yesterday]: [1.2] [RescueTime] [business percent]<br>Your [6th] [fewest] in [a day]
+                var template8 = '<b>{{eventDate}}</b><br>{{value}} {{property}}<br>Your {{comparitor}} in {{eventPeriod}} {{comparisonPeriod}}'; // [Yesterday]: [2609] [steps]<br>Your [6th] [fewest] in [a day]
+                var template9 = '<b>{{eventDate}}</b><br>{{value}} {{objects}} {{property}}<br>Your {{comparitor}} in {{eventPeriod}} {{comparisonPeriod}}'; // [Yesterday]: [34] [google] [visits]<br>Your [6th] [fewest] in [a day]
+
+                var templateDefault = '<b>{{eventDate}}</b><br>{{value}} {{{objects}}} {{{action_pp}}} {{{property}}}<br>Your {{comparitor}} in {{eventPeriod}} {{comparisonPeriod}}'; // [Yesterday]: [1.2] {objects} {actions} {properties}<br>Your [6th] [fewest] in [a day]
 
                 var supplantObject = {
                     eventDate: stripAtDetail(dateRangetext(cardData.startRange, cardData.endRange)),
@@ -566,35 +483,73 @@ $(function() {
                     if (cardData.properties.sum.__count__) {
                         supplantObject.action_pl = displayTags(pluralise(cardData.actionTags));
                         cardText = template1.supplant(supplantObject);
+                        console.log("template1");
                     } else {
                         supplantObject.action_pp = displayTags(pastParticiple(cardData.actionTags));
                         supplantObject.property = propertiesObj.propertiesText;
                         cardText = template2.supplant(supplantObject);
+                        console.log("template2", cardData.actionTags);
                     }
                 } else if (cardData.actionTags[0] === "listen") {
                     if (cardData.properties.sum.__count__) {
                         supplantObject.action_pl = displayTags(pluralise(cardData.actionTags));
                         supplantObject.objects = displayTags(cardData.objectTags);
                         cardText = template3.supplant(supplantObject);
+                        console.log("template3");
                     } else {
                         supplantObject.action_pl = displayTags(pluralise(cardData.actionTags));
                         supplantObject.property = propertiesObj.propertiesText;
                         supplantObject.value = propertiesObj.value;
                         cardText = template6.supplant(supplantObject);
+                        console.log("template6");
                     }
                 } else if (cardData.actionTags[0] === "use") {
-                    supplantObject.property = propertiesObj.propertiesText;
+                    supplantObject.property = "&quot;" + propertiesObj.propertiesText + "&quot;";
                     supplantObject.objects = customFormatObjTags(displayTags(cardData.objectTags));
                     supplantObject.value = propertiesObj.value;
                     cardText = template7.supplant(supplantObject);
+                    console.log("template7", cardData.actionTags);
+
+                } else if (cardData.actionTags[0] === "develop") {
+
+                    supplantObject.property = "coding";
+                    supplantObject.value = propertiesObj.value;
+                    cardText = template8.supplant(supplantObject);
+                    console.log("template8");
+
+                } else if (cardData.actionTags[0] === "exercise") {
+
+                    if (cardData.chart.indexOf('steps') > 0) {
+                        supplantObject.property = propertiesObj.propertiesText;
+                    } else {
+                        supplantObject.property = "walks";
+                    }
+                    supplantObject.value = propertiesObj.value;
+                    cardText = template8.supplant(supplantObject);
+                    console.log("template8");
+
+                } else if (cardData.actionTags[0] === "browse" && cardData.chart.indexOf('times-visited') > 0) {
+                    supplantObject.property = propertiesObj.propertiesText;
+                    supplantObject.value = propertiesObj.value;
+                    supplantObject.objects = customFormatObjTags(displayTags(cardData.objectTags));
+                    cardText = template9.supplant(supplantObject);
+                    console.log("template9");
                 }
 
-                cardText = cardText.supplant(supplantObject);
-            }
+                if (cardText === '') {
+                    supplantObject.property = propertiesObj.propertiesText;
+                    supplantObject.action_pp = displayTags(pastParticiple(cardData.actionTags));
+                    supplantObject.objects = displayTags(cardData.objectTags);
+                    supplantObject.value = propertiesObj.value;
+                    cardText = templateDefault.supplant(supplantObject);
+                    console.log("templateDefault");
+                } 
 
-            if (cardText === '') cardText = "Couldn't create friendly message";
-            cardData.cardText = cardText;
-        }
+                cardText = cardText.supplant(supplantObject);
+
+                cardData.cardText = cardText;
+            }
+        // }
     };
 
     var flipButtonTemplate = [
@@ -687,6 +642,14 @@ $(function() {
                 dataSourceIconUrl = 'img/rescuetimeicon.svg';
             else if (cardData.actionTags[0] === "listen")
                 dataSourceIconUrl = 'img/lastfm.svg';
+            else if (cardData.actionTags[0] === "exercise")
+                dataSourceIconUrl = 'img/googlefiticon.svg';
+            else if (cardData.actionTags[0] === "exercise")
+                dataSourceIconUrl = 'img/googlefiticon.svg';
+            else if (cardData.actionTags[0] === "browse")
+                dataSourceIconUrl = 'img/visit_counter.png';
+            else if (cardData.actionTags[0] === "develop")
+                dataSourceIconUrl = 'img/sublime.png';
             else
                 dataSourceIconUrl = 'img/githubicon.svg';
 
@@ -750,22 +713,26 @@ $(function() {
 
     var renderThumbnailMedia = function(cardLi) {
         if (cardLi) {
-            var cardData = $(cardLi).find('.cardData');
-            cardData = decodeURIComponent(cardData.val());
-            cardData = JSON.parse(cardData);
+            var $cardMedia = $(cardLi).find('.cardMedia');
+            console.log('$cardMedia.html()',$cardMedia.html());
 
-            if (cardData.thumbnailMedia) {
-                var $cardMedia = $(cardLi).find('.cardMedia');
-                $cardMedia.empty();
-                var iFrameHtml = '<iframe class="thumbnailFrame" src="' + cardData.thumbnailMedia;
-                iFrameHtml += '?lineColour=' + stripHash(getColour(cardData.colourIndex));
-                iFrameHtml += '&highlightCondition=' + cardData.type;
-                iFrameHtml += '&highlightDates=' + getHighlightDates(cardData);
-                iFrameHtml += '&doTransitions=true';
-                iFrameHtml += '&dataSrc=' + encodeURIComponent(API_HOST + cardData.chart) + '" ';
-                iFrameHtml += 'scrolling="no"></iframe>';
-                iFrameHtml += '<div class="clickable-overlay"></div>';
-                $cardMedia.append(iFrameHtml);
+            if ($cardMedia.html() === "") {
+                var cardData = $(cardLi).find('.cardData');
+                cardData = decodeURIComponent(cardData.val());
+                cardData = JSON.parse(cardData);
+
+                if (cardData.thumbnailMedia) {
+                    $cardMedia.empty();
+                    var iFrameHtml = '<iframe class="thumbnailFrame" src="' + cardData.thumbnailMedia;
+                    iFrameHtml += '?lineColour=' + stripHash(getColour(cardData.colourIndex));
+                    iFrameHtml += '&highlightCondition=' + cardData.type;
+                    iFrameHtml += '&highlightDates=' + getHighlightDates(cardData);
+                    iFrameHtml += '&doTransitions=true';
+                    iFrameHtml += '&dataSrc=' + encodeURIComponent(API_HOST + cardData.chart) + '" ';
+                    iFrameHtml += 'scrolling="no"></iframe>';
+                    iFrameHtml += '<div class="clickable-overlay"></div>';
+                    $cardMedia.append(iFrameHtml);
+                }
             }
         }
     };

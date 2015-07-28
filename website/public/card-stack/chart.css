@@ -64,6 +64,26 @@ path {
   display: none;
 }
 
+.highlight-text-div {
+  border-style: solid;
+  border-width: 1px;
+  position: absolute;
+  text-align: right;
+  padding: 3px;
+  background-color: rgba(255,255,255,0.7);
+}
+
+.highlight-pointer {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 4px 0 4px 6.9px;
+    content: "";
+    left: 100%;
+    position: absolute;
+    -webkit-transform:rotate(360deg) 
+}
+
 .axis text {
     fill: rgb(169, 178, 189);
 }

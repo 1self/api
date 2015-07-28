@@ -210,7 +210,8 @@
         // Parse the date / time
         var parseDate = d3.time.format("%Y-%m-%d").parse,
             formatDate = d3.time.format("%d-%b"),
-            bisectDate = d3.bisector(function(d) { return d.date; }).left;
+            bisectDate = d3.bisector(function(d) { return d.date; }).left,
+            formatHighlightDate =d3.time.format("%a %e %b");
 
         data.forEach(function(d) {
             d.date = parseDate(d.date);
@@ -266,7 +267,7 @@
                 highlightObj.newPsn = y(d.value);
                 highlightObj.highlight = d.highlight;
                 highlightTextElements.push(highlightObj);
-                return "highlight-text-active";
+                return doTransitions ? "highlight-text-active" : "highlight-text-hidden";
             } else {
                 return "highlight-text-hidden";
             }
@@ -307,6 +308,20 @@
                 }
             }
         };
+
+        var highlightTextDiv;
+        var highlightPointer;
+        if (!doTransitions) {
+            highlightTextDiv = d3.select(".mainContainer").append("div")
+                .attr("class", "highlight-text-div")
+                .style("top", "30px")
+                .style("border-color", getColour(lineColour, 1));
+
+            highlightPointer = d3.select(".mainContainer").append("div")
+                .attr("class", "highlight-pointer")
+                .style("top", "35px")
+                .style("border-color", "transparent transparent transparent " + getColour(lineColour, 1));
+        }
             
         // Adds the svg canvas
         var svg = d3.select(".mainContainer")
@@ -358,8 +373,8 @@
             .scale(y)
             .orient("left")
             .ticks(4)
-            .tickSize(-(width + margin.right - margin.left));
-            // .tickFormat(fnTickFormat);
+            .tickSize(-(width + margin.right - margin.left))
+            .tickFormat(fnTickFormat);
 
         if (vaxis) {
             addYAxis(yAxis, svg, width + margin.right - margin.left, margin.left, yAxisLabel);
@@ -377,62 +392,64 @@
             .attr("dy", "-.3em")
             .text(rankText);
 
-        // Update position of highlight labels if necessary
-        updateOverlaps();
-
-        // add highlight text (value)
-        container.selectAll(".highlight-text-selector")
-            .data(data)
-            .enter().append("text")
-            .attr("class", function(d) { return (d.highlight ? "highlight-text-active" : "highlight-text-hidden"); } )
-            .attr("rankAsc", function(d) { return d.rankAsc; } )
-            .attr("dx", width + 13)
-            .attr("dy", "1em")
-            .text(function(d) { return dataTextFormat(d.value, chartData.property); } );
-
-        // position labels as per updated position
-        container.selectAll(".highlight-text-active")
-            .each( function() { repositionLabel(this); } );
-
-        // add highlight main horizontal line
-        container.selectAll(".highlight-text-selector")
-            .data(highlightTextElements)
-            .enter().append("line")
-            .attr('class', "highlight-line")
-            .style("stroke", lineColour)
-            .style("stroke-dasharray", "4,2")
-            .style("stroke-width", 2)
-            .attr("x1", function(d) { return x(d.date); })
-            .attr("x2", function(d) { return d.psn === d.newPsn ? width + 10 : width + 6; } )
-            .attr("transform", function(d) { return "translate(0," + d.psn + ")"; } );
-
-
-        // add highlight final tick to label
-        container.selectAll(".highlight-text-selector")
-            .data(highlightTextElements)
-            .enter().append("line")
-            .attr('class', "highlight-line")
-            .style("stroke", lineColour)
-            // .style("stroke-dasharray", "4,2")
-            .style("stroke-width", 2)
-            .attr("x1", width + 6)
-            .attr("x2", width + 10 )
-            .attr("transform", function(d) { return "translate(0," + d.newPsn + ")"; } );
-
-        // add highlight vertical line to join main line to tick
-        container.selectAll(".highlight-text-selector")
-            .data(highlightTextElements)
-            .enter().append("line")
-            .attr('class', "highlight-line")
-            .style("stroke", lineColour)
-            .style("stroke-dasharray", "4,2")
-            .style("stroke-width", 2)
-            .attr("y1", function(d) { return d.newPsn; } )
-            .attr("y2", function(d) { return d.psn; } )
-            .attr("transform", "translate(" + (width + 6) + ",0)");
 
         if (doTransitions) {
-        // draw main highlight inner dot
+
+        // Update position of highlight labels if necessary
+            updateOverlaps();
+
+            // add highlight text (value)
+            container.selectAll(".highlight-text-selector")
+                .data(data)
+                .enter().append("text")
+                .attr("class", function(d) { return (d.highlight ? "highlight-text-active" : "highlight-text-hidden"); } )
+                .attr("rankAsc", function(d) { return d.rankAsc; } )
+                .attr("dx", width + 13)
+                .attr("dy", "1em")
+                .text(function(d) { return dataTextFormat(d.value, chartData.property); } );
+
+            // position labels as per updated position
+            container.selectAll(".highlight-text-active")
+                .each( function() { repositionLabel(this); } );
+
+            // add highlight main horizontal line
+            container.selectAll(".highlight-text-selector")
+                .data(highlightTextElements)
+                .enter().append("line")
+                .attr('class', "highlight-line")
+                .style("stroke", lineColour)
+                .style("stroke-dasharray", "4,2")
+                .style("stroke-width", 2)
+                .attr("x1", function(d) { return x(d.date); })
+                .attr("x2", function(d) { return d.psn === d.newPsn ? width + 10 : width + 6; } )
+                .attr("transform", function(d) { return "translate(0," + d.psn + ")"; } );
+
+
+            // add highlight final tick to label
+            container.selectAll(".highlight-text-selector")
+                .data(highlightTextElements)
+                .enter().append("line")
+                .attr('class', "highlight-line")
+                .style("stroke", lineColour)
+                // .style("stroke-dasharray", "4,2")
+                .style("stroke-width", 2)
+                .attr("x1", width + 6)
+                .attr("x2", width + 10 )
+                .attr("transform", function(d) { return "translate(0," + d.newPsn + ")"; } );
+
+            // add highlight vertical line to join main line to tick
+            container.selectAll(".highlight-text-selector")
+                .data(highlightTextElements)
+                .enter().append("line")
+                .attr('class', "highlight-line")
+                .style("stroke", lineColour)
+                .style("stroke-dasharray", "4,2")
+                .style("stroke-width", 2)
+                .attr("y1", function(d) { return d.newPsn; } )
+                .attr("y2", function(d) { return d.psn; } )
+                .attr("transform", "translate(" + (width + 6) + ",0)");
+
+            // draw main highlight inner dot
             container.selectAll(".highlight-text-selector")
                 .data(highlightTextElements)
                 .enter().append("ellipse")
@@ -577,26 +594,57 @@
             rect.on("mousemove", mousemove);
         }
 
+        var buildHighlightText = function (d) {
+            var returnString = "";
 
-        svg.append("line")
-            .attr("class", "x")
-            .style("stroke", getColour(lineColour, 1))
-            .style("stroke-dasharray", "4,2")
-            .style("opacity", 0.5)
-            .style("stroke-width", 1)
-            .attr("x1", 250)
-            .attr("x2", 250)
-            .attr("y1", 0)
-            .attr("y2", height);
+            returnString += rankText(d) + ' position of ' + data.length + '<br>';
+            returnString += dataTextFormat(d.value, chartData.property) + '<br>';
+            returnString += formatHighlightDate(d.date);
 
-        // container.call(zoom);
-        // 
-        console.log(width, xMap(data[data.length-1]));
+            return returnString;
+        };
+
+        var doHighlightTextOffset = function() {
+            var highlightOffset;
+            var offsetPadding = 10;
+
+            highlightOffset = +(highlightTextDiv.style("width").replace("px", ""));
+            highlightOffset += (+(highlightTextDiv.style("padding").replace("px", "")) * 2);
+            highlightOffset += offsetPadding;
+
+            highlightTextDiv.style("left", (width + margin.left - highlightOffset) + "px");
+
+            highlightPointer.style("left", (width + margin.left - offsetPadding + 2) + "px");         
+        };
+
+        if (!doTransitions) {
+            svg.append("line")
+                .attr("class", "main-highlight-line")
+                .style("stroke", getColour(lineColour, 1))
+                .style("stroke-dasharray", "4,2")
+                .style("opacity", 0.5)
+                .style("stroke-width", 1.5)
+                .attr("x1", width)
+                .attr("x2", width)
+                .attr("y1", 0)
+                .attr("y2", height);
+
+            svg.append("circle")
+                .attr("class", "main-highlight-circle")
+                .style("fill", "none")
+                .style("stroke", getColour(lineColour, 1))
+                .style("stroke-width", 2)
+                .attr("r", 4)
+                .attr("cx", x(data[data.length-1].date))
+                .attr("cy", y(data[data.length-1].value));
+
+            highlightTextDiv.html(buildHighlightText(data[data.length-1]));
+
+            doHighlightTextOffset();
+        }
 
         var max = xMap(data[data.length-1]);
         var lastScale = 1;
-
-        console.log(width, max, width - max);
 
         // ToDo: refactor this so that this function doesn't depend on being declared after container
         function zoomed() {
@@ -606,11 +654,11 @@
             var doneZoom = false;
             if (lastScale !== d3.event.scale) {
                 doneZoom = true;
-                max = xMap(data[data.length-1])-tx;
+                max = xMap(data[data.length-1]) - tx;
             }
 
             lastScale = d3.event.scale;
-            console.log(tx, width, max, width - max, Math.max(Math.min(tx, 0), (width - max)));
+            // console.log(tx, width, max, width - max, Math.max(Math.min(tx, 0), (width - max)));
             var ty = d3.event.translate[1];
 
             tx = Math.min(tx, width);
@@ -620,19 +668,8 @@
                 d3.event.target.translate([tx, ty]);
             }
 
-
-            // tx = Math.max(tx, -width);
-            // 
-            // d3.event.translate[0] = tx;
-
-            // console.log(d3.event);
-            // console.log('zoomed', d3.event.translate, d3.event.scale, tx, width);
-            console.log(tx);
-
             container.attr("transform", "translate(" + tx + ",0)scale(" + d3.event.scale + ",1)");
 
-            // d3.event.transform(x);
-            // svg.select(".y.axis").call(yAxis);
             if (tx !== 0)
                 svg.select(".x.axis").call(xAxis);
 
@@ -647,64 +684,23 @@
                 .style('stroke-width', 1 / d3.event.scale );
 
             container.selectAll('.highlight-line, .highlight-text-active')
-                .style('display', d3.event.scale === 1 ? 'block' : 'none');
+                .style('display', d3.event.scale === 1 && tx === 0 ? 'block' : 'none');
 
-            // console.log('ticks a', yAxis.scale().ticks(yAxis.ticks()[0]));
-            // console.log('ticks b', yAxis.scale().ticks());
-            // container.selectAll('.y')
-            //     .each( function() { console.log(this); this.setAttribute("transform", "translate(0,0)"); } );
-        }
-
-        function mousemove() {
-            var x0 = x.invert(d3.mouse(this)[0]),
+            var x0 = x.invert(width),
                 i = bisectDate(data, x0, 1),
                 d0 = data[i - 1],
                 d1 = data[i],
                 d = x0 - d0.date > d1.date - x0 ? d1 : d0;
 
-            focus.select("circle.y")
-                .attr("transform",
-                      "translate(" + x(d.date) + "," +
-                                     y(d.value) + ")");
+            svg.select("circle.main-highlight-circle")
+                .attr("cx", x(d.date))
+                .attr("cy", y(d.value));
 
-            focus.select("text.y1")
-                .attr("transform",
-                      "translate(" + x(d.date) + "," +
-                                     y(d.value) + ")")
-                .text(rankText(d));
 
-            focus.select("text.y2")
-                .attr("transform",
-                      "translate(" + x(d.date) + "," +
-                                     y(d.value) + ")")
-                .text(rankText(d));
+            highlightTextDiv.html(buildHighlightText(d));
 
-            focus.select("text.y3")
-                .attr("transform",
-                      "translate(" + x(d.date) + "," +
-                                     y(d.value) + ")")
-                .text(dataTextFormat(d.value, chartData.property));
-
-            focus.select("text.y4")
-                .attr("transform",
-                      "translate(" + x(d.date) + "," +
-                                     y(d.value) + ")")
-                .text(dataTextFormat(d.value, chartData.property));
-
-            focus.select(".x")
-                .attr("transform",
-                      "translate(" + x(d.date) + "," +
-                                     y(d.value) + ")")
-                           .attr("y2", height - y(d.value));
-
-            focus.select(".y")
-                .attr("transform",
-                      "translate(" + width * -1 + "," +
-                                     y(d.value) + ")")
-                           .attr("x2", width + width);
+            doHighlightTextOffset();
         }
-
- 
     }
 
 

@@ -20,12 +20,13 @@
 
     <script>
 
-
     var username = "{{username}}";
 
+    if (!username) username = getQSParam().user;
     if (!username) username = "ed";
 
     var API_HOST = '';
+    // var API_HOST = 'https://api.1self.co';
 
     var userAvatarUrl = "img/profilepic.jpg";
 
