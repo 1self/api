@@ -922,7 +922,7 @@ var doNotAuthorize = function(req, res, next){
 var getCards = function(req, res, next){
     util.findUser(req.params.username)
     .then(function(user){
-        req.user = user;
+        res.user = user;
         next();
     })
     .catch(function(err){
@@ -981,40 +981,48 @@ var filterCards = function(req, res, next){
     }
 
     if(filterFunc){
-        req.user.cards = _.filter(req.user.cards, filterFunc);
+        res.user.cards = _.filter(res.user.cards, filterFunc);
     }
 
     if(req.query.extraFiltering)
     {
-        var grouped = _(req.user.cards).groupBy(function(card){
+        var grouped = _(res.user.cards).groupBy(function(card){
+            var cardType = card.type === 'date' ? '_date' : card.type;
             return card.cardDate + '/' + card.type;
         });
 
         var cards = [];
         
         var groupedAndSorted = _(grouped).mapObject(function(value, key){
-            var sortedCardsForDay = _(value).reduce(function(memo, card){
-                if(card.propertyName !== undefined){
-                    _.deep(memo, card.propertyName + '.__card__', card);
+            if(key.split('/')[1] === 'date'){
+                if(!(value[0].read)){
+                    cards.push(value[0]);
                 }
+            }
+            else{
+                var sortedCardsForDay = _(value).reduce(function(memo, card){
+                    if(card.propertyName !== undefined){
+                        _.deep(memo, card.propertyName + '.__card__', card);
+                    }
 
-                return memo;
-            }, {})
+                    return memo;
+                }, {})
 
 
-            var addBranch = function(node){
-                var candidateCard = node['__card__'];
-                if(candidateCard !== undefined){
-                    cards.push(candidateCard);
-                }
-                else{
-                    _.each(_.keys(node), function(nodeKey){
-                        addBranch(node[nodeKey], cards);
-                    });
-                }
-            };
+                var addBranch = function(node){
+                    var candidateCard = node['__card__'];
+                    if(candidateCard !== undefined && !(candidateCard.read)){
+                        cards.push(candidateCard);
+                    }
+                    else{
+                        _.each(_.keys(node), function(nodeKey){
+                            addBranch(node[nodeKey], cards);
+                        });
+                    }
+                };
 
-            addBranch(sortedCardsForDay);
+                addBranch(sortedCardsForDay);
+            }
         });
 
         if(res.user === undefined){
@@ -1028,7 +1036,7 @@ var filterCards = function(req, res, next){
 };
 
 var sendCards = function(req, res, next) {
-    res.status(200).send(req.user.cards);
+    res.status(200).send(res.user.cards);
 }
 
 var sendCard = function(req, res, next) {
