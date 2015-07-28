@@ -84,7 +84,14 @@ function addYAxis(yAxis, appendTo, width, leftMargin, axisLabel) {
     }
 }
 
-function drawLollySticks(appendTo, data, height, width, xMap, yMap, lineColour, doTransitions) {
+function drawLollySticks(appendTo, data, height, width, xMap, yMap, lineColour, doTransitions, highlightCondition) {
+
+    var y1;
+    if (highlightCondition === "top10") {
+        y1 = height;
+    } else if (highlightCondition === "bottom10") {
+        y1 = 0;
+    }
 
     // add vertical lines down from scatter points
     if (doTransitions) {
@@ -93,8 +100,8 @@ function drawLollySticks(appendTo, data, height, width, xMap, yMap, lineColour, 
             .enter().append("line")
             .attr("class", "lolly-stick")
             .style("stroke", function(d) { return d.highlight ? lineColour : '#a9b2bd'; } )
-            .attr("y1", height)
-            .attr("y2", height)
+            .attr("y1", y1)
+            .attr("y2", y1)
             .attr("x1", xMap)
             .attr("x2", xMap)
             .transition()
@@ -110,7 +117,7 @@ function drawLollySticks(appendTo, data, height, width, xMap, yMap, lineColour, 
             .attr("rx", 3.5)
             .attr("ry", 3.5)
             .attr("cx", xMap)
-            .attr("cy", height)
+            .attr("cy", y1)
             .style("display", function(d) { return d.highlight === "date" ? "none" : "block" ; } )
             .style("fill", function(d) { return d.highlight ? lineColour : '#a9b2bd'; } )
             .transition()
@@ -124,7 +131,7 @@ function drawLollySticks(appendTo, data, height, width, xMap, yMap, lineColour, 
             .enter().append("line")
             .attr("class", "lolly-stick")
             .style("stroke", function(d) { return d.highlight ? lineColour : '#a9b2bd'; } )
-            .attr("y1", height)
+            .attr("y1", y1)
             .attr("y2", yMap)
             .attr("x1", xMap)
             .attr("x2", xMap);
