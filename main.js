@@ -56,7 +56,6 @@ app.engine('html', swig.renderFile);
 app.use(express.static(path.join(__dirname, 'website/public')));
 app.use('/card-stack', express.static('website/card-stack'));
 app.set('views', __dirname + '/website/views');
-app.set('card-stackViews', __dirname + '/website/card-stack');
 app.set('view engine', 'html');
 /* app.set('view cache', false);
  swig.setDefaults({
@@ -1018,7 +1017,11 @@ var filterCards = function(req, res, next){
             addBranch(sortedCardsForDay);
         });
 
-        req.user.cards = cards;
+        if(res.user === undefined){
+            res.user = {};
+        }
+        
+        res.user.cards = cards;
     }
 
     next();
@@ -1027,6 +1030,50 @@ var filterCards = function(req, res, next){
 var sendCards = function(req, res, next) {
     res.status(200).send(req.user.cards);
 }
+
+var sendCard = function(req, res, next) {
+    res.status(200).send(res.card);
+}
+
+var extractCardDetails = function(req, res, next){
+    req.card = req.body;
+    req.card.cardId = req.params.cardId;
+    next();
+}
+
+var updateCardInDb = function(req, res, next) {
+    util.setCardForUser(req.user, req.card)
+    .then(function(card){
+        res.card = card;
+        next();
+    })
+    .catch(function(error){
+        if(error === 'card id not found'){
+            res.status(404).send(error);
+        }
+        res.status(500).send(error);
+    })
+}
+
+var getUser = function(req, res, next){
+    util.findUser(req.params.username)
+    .then(function(user){
+        req.user = user;
+        next();
+    })
+    .catch(function(error){
+        res.status(500).send(error);
+    });
+}
+
+// /v1/users/:username/cards/:cardId/"
+app.patch('/v1/users/:username/cards/:cardId',
+    doNotAuthorize,
+    getUser,
+    extractCardDetails,
+    updateCardInDb,
+    sendCard);
+
 
 app.get('/v1/users/:username/cards',
     doNotAuthorize, // replace this with auth
@@ -1585,17 +1632,6 @@ var authorizeUser = function (req, res, next) {
         res.send(400, "bad request. either shareToken or autorization required.");
     }
 };
-
-var getUser = function(req, res, next){
-    util.findUser(req.params.username)
-    .then(function(user){
-        req.user = user;
-        next();
-    })
-    .catch(function(error){
-        res.status(500).send(error);
-    });
-}
 
 var getRollup = function(req, res, next){
     if(req.params.period === 'day'){

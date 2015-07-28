@@ -1,6 +1,7 @@
 var crypto = require('crypto');
 var mongoDbConnection = require('./lib/connection.js');
 var mongoRepository = require('./mongoRepository.js');
+var ObjectID = require('mongodb').ObjectID;
 var q = require('q');
 var _ = require("underscore")
 var moment = require("moment");
@@ -373,6 +374,32 @@ Util.prototype.generateToken = function () {
     
 };
 
+Util.prototype.setCardForUser = function(user, card){
+    var deferred = q.defer();
+    var query = {
+        username: user.username,
+        cards: {$elemMatch: {id: new ObjectID(card.cardId)}}
+    };
+    var update = {
+        $set: { "cards.$.read": card.read,
+                "cards.$.readInfo": card.readInfo}
+    }
+
+    mongoRepository.update('users', query, update)
+    .then(function(updateCount){
+        if(updateCount > 0){
+            deferred.resolve(true);
+        }
+        else {
+            deferred.reject('card id not found');
+        }
+
+    }, function (err) {
+        deferred.reject(err);
+    })
+
+    return deferred.promise;
+}
 
 
 module.exports = new Util();
