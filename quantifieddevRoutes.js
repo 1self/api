@@ -252,7 +252,8 @@ module.exports = function (app) {
 
     app.get("/card-stack", sessionManager.requiresSession, function (req, res) {
         res.render('card-stack/index.html', {
-            username: req.session.username
+            username: req.session.username,
+            avatarUrl: req.session.avatarUrl
         });
     });
     
