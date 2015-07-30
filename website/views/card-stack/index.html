@@ -20,6 +20,7 @@
 
     <script>
 
+
     var username = "{{username}}";
     if(!username) username = getQSParam().user;
 
@@ -29,6 +30,7 @@
     // var API_HOST = 'https://api.1self.co';
 
     var userAvatarUrl = "{{avatarUrl}}";
+
     </script>
 </head>
 
@@ -46,12 +48,11 @@
             <ul class="stack">
                 <div class="bottom-of-stack-container">
                     <div class="bottom-of-stack">
-                      <h1>Loading cards...</h1>
-                      <div class="loading">
-                      
-                      </div>
-                        
+                        <h1>Loading cards...</h1>
+                        <div class="getMoreCardsBtn standard-shadow" style="display:none;"><i class="fa fa-magic"></i>&nbsp;&nbsp;Show me more cards</div>
+                        <div class="loading"></div>
                         <p></p>
+                        <div class="tellMeAboutNewCardsBtn standard-shadow" style="display:none;"><i class="fa fa-envelope"></i>&nbsp;&nbsp;Tell me when I have more cards</div>
                     </div>
                 </div>
             </ul>

@@ -248,11 +248,11 @@
         var rankText = function(d) {
             var returnText;
             if (highlightCondition === "bottom10") {
-                returnText = d.rankAsc + 1;
+                returnText = d.rankAsc === 0 ? 'Fewest' : ordinal_suffix_of(d.rankAsc + 1);
             } else if (highlightCondition === "top10") {
-                returnText = d.rankDesc + 1;
+                returnText = d.rankDesc === 0 ? 'Most' : ordinal_suffix_of(d.rankDesc + 1);
             }
-            return ordinal_suffix_of(returnText);
+            return returnText;
         };
 
         var highlightTextElements = [];
