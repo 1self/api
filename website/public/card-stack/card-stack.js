@@ -101,128 +101,14 @@ function getCards() {
 
     deferred = $.Deferred();
 
-    if (offline) {
-        var data = [{
-        "id": "55b5748cdc5ba2d0695ef487",
-        "type": "top10",
-        "outOf": 3,
-        "thumbnailMedia": "chart.html",
-        "startRange": "2015-07-26",
-        "endRange": "2015-07-26",
-        "objectTags": [
-            "self"
-        ],
-        "actionTags": [
-            "exercise",
-            "walk"
-        ],
-        "position": 0,
-        "properties": {
-            "sum": {
-                "steps": 2609
-            }
-        },
-        "propertyName": "steps.sum",
-        "stdDev": 438.1781305292107,
-        "correctedStdDev": 657.2671957938161,
-        "sampleStdDev": 2.114056519011006,
-        "sampleCorrectedStdDev": 1.4093710126740038,
-        "mean": 1682.6666666666667,
-        "variance": 926.3333333333333,
-        "cardDate": "2015-07-26",
-        "generatedDate": "2015-07-27T00:00:12.043Z",
-        "chart": "/v1/users/m/rollups/day/self/exercise,walk/sum.steps/.json?to=2015-07-26"
-    }, {
-        "id": "55b5748cdc5ba2d0695ef488",
-        "type": "top10",
-        "outOf": 3,
-        "thumbnailMedia": "chart.html",
-        "startRange": "2015-07-26",
-        "endRange": "2015-07-26",
-        "objectTags": [
-            "self"
-        ],
-        "actionTags": [
-            "exercise",
-            "walk"
-        ],
-        "position": 0,
-        "properties": {
-            "sum": {
-                "__count__": 252
-            }
-        },
-        "propertyName": "__count__.sum",
-        "stdDev": 43.84822307308093,
-        "correctedStdDev": 65.7723346096214,
-        "sampleStdDev": 1.5508040060520993,
-        "sampleCorrectedStdDev": 1.0338693373680663,
-        "mean": 184,
-        "variance": 68,
-        "cardDate": "2015-07-26",
-        "generatedDate": "2015-07-27T00:00:12.880Z",
-        "chart": "/v1/users/m/rollups/day/self/exercise,walk/sum.__count__/.json?to=2015-07-26"
-    }, {
-        "id": "55b5748ddc5ba2d0695ef489",
-        "type": "bottom10",
-        "outOf": 3,
-        "thumbnailMedia": "chart.html",
-        "startRange": "2015-07-26",
-        "endRange": "2015-07-26",
-        "objectTags": [
-            "google"
-        ],
-        "actionTags": [
-            "browse"
-        ],
-        "position": 0,
-        "properties": {
-            "sum": {
-                "times-visited": 1
-            }
-        },
-        "propertyName": "times-visited.sum",
-        "stdDev": 3.5381518506868126,
-        "correctedStdDev": 5.307227776030219,
-        "sampleStdDev": 2.1668563109235808,
-        "sampleCorrectedStdDev": 1.4445708739490537,
-        "mean": 8.666666666666666,
-        "variance": -7.666666666666666,
-        "cardDate": "2015-07-26",
-        "generatedDate": "2015-07-27T00:00:13.442Z",
-        "chart": "/v1/users/m/rollups/day/google/browse/sum.times-visited/.json?to=2015-07-26"
-    }, {
-        "id": "55b5748ddc5ba2d0695ef48a",
-        "type": "bottom10",
-        "outOf": 3,
-        "thumbnailMedia": "chart.html",
-        "startRange": "2015-07-26",
-        "endRange": "2015-07-26",
-        "objectTags": [
-            "google"
-        ],
-        "actionTags": [
-            "browse"
-        ],
-        "position": 0,
-        "properties": {
-            "sum": {
-                "__count__": 1
-            }
-        },
-        "propertyName": "__count__.sum",
-        "stdDev": 3.5381518506868126,
-        "correctedStdDev": 5.307227776030219,
-        "sampleStdDev": 2.1668563109235808,
-        "sampleCorrectedStdDev": 1.4445708739490537,
-        "mean": 8.666666666666666,
-        "variance": -7.666666666666666,
-        "cardDate": "2015-07-26",
-        "generatedDate": "2015-07-27T00:00:13.805Z",
-        "chart": "/v1/users/m/rollups/day/google/browse/sum.__count__/.json?to=2015-07-26"
-    }];
+    var url;
 
-        deferred.resolve(data);
+    var sort_by_date = function(a, b) {
+        return new Date(b.cardDate).getTime() - new Date(a.cardDate).getTime();
+    };
+
+    if (offline) {
+        url = "offline_json/offline.json";
     } else {
         // Get the ajax requests out of the way early because they
         // are typically longest to complete
@@ -230,34 +116,30 @@ function getCards() {
         var minStdDev = getQSParam().minStdDev;
         var maxStdDev = getQSParam().maxStdDev;
 
-        var sort_by_date = function(a, b) {
-            return new Date(b.cardDate).getTime() - new Date(a.cardDate).getTime();
-        };
-
-        var url = API_HOST + '/v1/users/';
+        url = API_HOST + '/v1/users/';
         url += username + '/cards';
         url += '?extraFiltering=true';
-        url += minStdDev ? '&minStdDev=' + minStdDev : '&minStdDev=' + "2";
+        url += minStdDev ? '&minStdDev=' + minStdDev : '&minStdDev=' + "0.5";
         url += maxStdDev ? '&maxStdDev=' + maxStdDev : '';
-
-        console.log(url);
-
-        $.getJSON(url,
-                function() {
-                    console.log("accessed api for cards");
-                })
-            .done(function(data) {
-
-                data.sort(sort_by_date);
-                console.log('card data', data);
-                window.cardData = data;
-                deferred.resolve(data);
-            })
-            .fail(function(data) {
-                console.log('error getting cards', data);
-
-            });
     }
+
+    console.log(url);
+
+    $.getJSON(url,
+            function() {
+                console.log("accessed api for cards");
+            })
+        .done(function(data) {
+
+            data.sort(sort_by_date);
+            console.log('card data', data);
+            window.cardData = data;
+            deferred.resolve(data);
+        })
+        .fail(function(data) {
+            console.log('error getting cards', data);
+
+        });
 }
 
 $(function() {
@@ -534,13 +416,21 @@ $(function() {
 
                 } else if (cardData.actionTags[0] === "exercise") {
 
-                    if (cardData.chart.indexOf('steps') > 0) {
-                        supplantObject.property = propertiesObj.propertiesText;
-                    } else {
-                        supplantObject.property = "walks";
+                    if (cardData.actionTags[1] === "walk") {
+                        if (cardData.chart.indexOf('steps') > 0) {
+                            supplantObject.property = propertiesObj.propertiesText;
+                        } else {
+                            supplantObject.property = "walks";
+                        }
+                        supplantObject.value = propertiesObj.value;
+                        cardText = template8.supplant(supplantObject);
+                    } else if (cardData.actionTags[1] === "ride") {
+                        if (cardData.propertyName === "distance.sum") {
+                            supplantObject.property = "metres ridden";
+                            supplantObject.value = propertiesObj.value;
+                            cardText = template8.supplant(supplantObject);
+                        }
                     }
-                    supplantObject.value = propertiesObj.value;
-                    cardText = template8.supplant(supplantObject);
                     // console.log("template8");
 
                 } else if (cardData.actionTags[0] === "browse" && cardData.chart.indexOf('times-visited') > 0) {
@@ -859,18 +749,20 @@ $(function() {
 
         console.log('markCardRead url:', apiUrl, ", dataBody: ", dataBody);
 
-        $.ajax({
-                    url: apiUrl,
-                    data: JSON.stringify(dataBody),
-                    type: "PATCH",
-                    contentType: "application/json"
+        if (!offline) {
+            $.ajax({
+                        url: apiUrl,
+                        data: JSON.stringify(dataBody),
+                        type: "PATCH",
+                        contentType: "application/json"
 
-        }).done(function (data) {
-            console.log('markCardRead', username, cardId, data);
+            }).done(function (data) {
+                console.log('markCardRead', username, cardId, data);
 
-        }).fail(function (data) {
-            console.log('ERROR markCardRead', username, cardId, data);
-        });
+            }).fail(function (data) {
+                console.log('ERROR markCardRead', username, cardId, data);
+            });
+        }
     }
 
     var hideShareButtonsShowThanks = function() {

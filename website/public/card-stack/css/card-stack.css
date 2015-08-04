@@ -916,7 +916,7 @@ padding-right: 10px;
   left: 0px;
   bottom: 0px;
   display: table;
-  background-image: url(../img/profilepic.jpg);
+  background-color: white;
   background-size: 100%;
   background-repeat: no-repeat;
 }
