@@ -1011,8 +1011,10 @@ var filterCards = function(req, res, next){
 
                 var addBranch = function(node){
                     var candidateCard = node['__card__'];
-                    if(candidateCard !== undefined && !(candidateCard.read)){
-                        cards.push(candidateCard);
+                    if(candidateCard !== undefined){
+                        if(!(candidateCard.read)){
+                            cards.push(candidateCard);
+                        }
                     }
                     else{
                         _.each(_.keys(node), function(nodeKey){
