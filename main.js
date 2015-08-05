@@ -18,6 +18,7 @@ var fs = require('fs');
 var validateRequest = require("./validateRequest");
 var validator = require('validator');
 var mongoRepository = require('./mongoRepository.js');
+var eventRepository = require('./eventRepository.js');
 var platformService = require('./platformService.js');
 var CONTEXT_URI = process.env.CONTEXT_URI;
 
@@ -1304,13 +1305,26 @@ var getLatestSyncField = function (streamId) {
 
 var saveBatchEvents = function (myEvents, stream) {
     var deferred = q.defer();
-    var myEventsWithPayload = _.map(myEvents, function (myEvent) {
-        return {
-            'payload': myEvent
-        };
+    var myEventsWithPayload = _.map(myEvents, function (payload) {
+        var result = {};
+
+        payload.eventDateTime = new Date(payload.eventDateTime.$date);
+        payload.eventLocalDateTime = new Date(payload.eventLocalDateTime.$date);
+        payload.latestSyncField = new Date(payload.latestSyncField.$date);
+
+        result.event = {};
+        result.event.createdOn = new Date();
+        result.event.id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
+            return v.toString(16);
+        });
+
+        result.payload = payload;
+        return result;
     });
+
     var responseBody = undefined;
-    platformService.saveBatchEvents(myEventsWithPayload)
+    eventRepository.insert('oneself', myEventsWithPayload)
         .then(function (result) {
             responseBody = result;
             return getLatestSyncField(stream.streamid)
