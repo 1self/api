@@ -1269,6 +1269,7 @@ var formatEventDateTime = function (datetime) {
 };
 
 var getLatestSyncField = function (streamId) {
+    console.log(streamId + ": getting latest sync field");
     var deferred = q.defer();
     var filterSpec = {
         'payload.streamid': streamId
@@ -1286,6 +1287,7 @@ var getLatestSyncField = function (streamId) {
     };
     platformService.filter(query)
         .then(function (result) {
+            console.log([streamId, result[0].payload.latestSyncField].join(": "));
             deferred.resolve(result[0].payload.latestSyncField);
         }, function (err) {
             deferred.reject(err);
@@ -1294,6 +1296,7 @@ var getLatestSyncField = function (streamId) {
 };
 
 var saveBatchEvents = function (myEvents, stream) {
+    console.log(stream.streamid + ": saving batch events");
     var deferred = q.defer();
     var myEventsWithPayload = _.map(myEvents, function (myEvent) {
         return {
@@ -1303,6 +1306,7 @@ var saveBatchEvents = function (myEvents, stream) {
     var responseBody = undefined;
     platformService.saveBatchEvents(myEventsWithPayload)
         .then(function (result) {
+            console.log([stream.streamid, "batch events successfully sent to platform service"].join(": "));
             responseBody = result;
             return getLatestSyncField(stream.streamid)
                 .then(function (latestSyncField) {
@@ -1312,6 +1316,7 @@ var saveBatchEvents = function (myEvents, stream) {
         .then(function () {
             deferred.resolve(responseBody)
         }, function (err) {
+            console.log([stream.streamid, "batch event save failed", err].join(": "));
             deferred.reject(err);
         });
     return deferred.promise;
