@@ -11,7 +11,7 @@ var q = require('q');
 var util = require('./util');
 var redis = require('redis');
 var RedisStore = require('connect-redis')(session);
-var logger = require('morgan');
+var morgan = require('morgan');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var fs = require('fs');
@@ -21,9 +21,18 @@ var mongoRepository = require('./mongoRepository.js');
 var platformService = require('./platformService.js');
 var CONTEXT_URI = process.env.CONTEXT_URI;
 
-var app = express();
+var logger = require('winston');
+logger.add(logger.transports.File, { filename: 'webapp.log', level: 'debug', json: false });
+logger.error("Errors will be logged here");
+logger.warn("Warns will be logged here");
+logger.info("Info will be logged here");
+logger.debug("Debug will be logged here");
 
-app.use(logger());
+var app = express();
+app.use(morgan());
+
+logger.debug("event database is :", process.env.EVENTDBURI);
+
 app.use(cookieParser());
 var sessionSecret = process.env.SESSION_SECRET;
 var redisURL = url.parse(process.env.REDISCLOUD_URL);
