@@ -1327,7 +1327,11 @@ var saveBatchEvents = function (myEvents, stream) {
 
         payload.eventDateTime = new Date(payload.eventDateTime.$date);
         payload.eventLocalDateTime = new Date(payload.eventLocalDateTime.$date);
-        payload.latestSyncField = new Date(payload.latestSyncField.$date);
+        
+        // some integrations send up a numeric id rather than a date
+        if(payload.latestSyncField && payload.latestSyncField.$date){
+            payload.latestSyncField = new Date(payload.latestSyncField.$date);
+        }
 
         result.event = {};
         result.event.createdOn = new Date();
