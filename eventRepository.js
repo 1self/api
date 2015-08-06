@@ -44,17 +44,18 @@ var insert = function (collection, document) {
             else {
                 if(err && err.code === 11000){
                     console.log("batch included some duplicates");
-                    if(insertedRecords === null)
+                }
+
+                if(insertedRecords === null)
                     {
                         deferred.resolve();
                     }
-                    else if(insertedRecords.length){
+               else if(insertedRecords.length){
                         deferred.resolve(insertedRecords[0]);
                     }
-                    else{
+               else{
                         deferred.resolve(insertedRecords);   
                     }
-                }
             }
         });
     });
