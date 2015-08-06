@@ -191,7 +191,21 @@ var authenticateWriteToken = function (writeToken, id) {
 };
 
 var saveEvent = function (req, res) {
-        platformService.saveEvent(req.event)
+        var eventToInsert = {};
+        var payload = req.event;
+
+        payload.eventDateTime = new Date(payload.eventDateTime.$date);
+        payload.eventLocalDateTime = new Date(payload.eventLocalDateTime.$date);
+	
+        eventToInsert.event = {};
+        eventToInsert.event.createdOn = new Date();
+        eventToInsert.event.id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
+            return v.toString(16);
+        });
+
+        eventToInsert.payload = payload;
+        eventRepository.insert('oneself', [eventToInsert])
         .then(function (result) {
             res.send(result);
         }, function (err) {
