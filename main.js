@@ -1324,6 +1324,7 @@ var saveBatchEvents = function (myEvents, stream) {
     });
 
     var responseBody = undefined;
+    logger.debug([stream.streamid, "batch received, inserting into event repo"].join(":"));
     eventRepository.insert('oneself', myEventsWithPayload)
         .then(function (result) {
             responseBody = result;

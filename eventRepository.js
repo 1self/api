@@ -36,6 +36,7 @@ var insert = function (collection, document) {
         eventDb.collection(collection).insert(document, 
             {continueOnError: true},
             function (err, insertedRecords) {
+            console.log("response from event db: " + err);
             if (err && err.code !== 11000) {
                 console.err(err);
                 deferred.reject(err);
