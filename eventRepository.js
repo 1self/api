@@ -33,12 +33,28 @@ function defaultFor(arg, val) {
 var insert = function (collection, document) {
     var deferred = q.defer();
     eventDbConnection(function (eventDb) {
-        eventDb.collection(collection).insert(document, function (err, insertedRecords) {
-            if (err) {
+        eventDb.collection(collection).insert(document, 
+            {continueOnError: true},
+            function (err, insertedRecords) {
+            console.log("response from event db: " + err);
+            if (err && err.code !== 11000) {
                 console.err(err);
                 deferred.reject(err);
-            } else {
-                deferred.resolve(insertedRecords[0]);
+            } 
+            else {
+                if(err && err.code === 11000){
+                    console.log("batch included some duplicates");
+                    if(insertedRecords === null)
+                    {
+                        deferred.resolve();
+                    }
+                    else if(insertedRecords.length){
+                        deferred.resolve(insertedRecords[0]);
+                    }
+                    else{
+                        deferred.resolve(insertedRecords);   
+                    }
+                }
             }
         });
     });
