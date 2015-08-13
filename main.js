@@ -1001,12 +1001,17 @@ var filterCards = function(req, res, next){
             return card.cardDate + '/' + card.type;
         });
 
-        var cards = [];
+        var cards = {};
         
         var groupedAndSorted = _(grouped).mapObject(function(value, key){
-            if(key.split('/')[1] === 'date'){
+            var splits = key.split('/');
+            if(cards[splits[0]] === undefined){
+                cards[splits[0]] = []
+            }
+
+            if(splits[1] === 'date'){
                 if(!(value[0].read)){
-                    cards.push(value[0]);
+                    cards[splits[0]].push(value[0]);
                 }
             }
             else{
@@ -1018,12 +1023,11 @@ var filterCards = function(req, res, next){
                     return memo;
                 }, {})
 
-
                 var addBranch = function(node){
                     var candidateCard = node['__card__'];
                     if(candidateCard !== undefined){
                         if(!(candidateCard.read)){
-                            cards.push(candidateCard);
+                            cards[splits[0]].push(candidateCard);
                         }
                     }
                     else{
@@ -1041,7 +1045,27 @@ var filterCards = function(req, res, next){
             res.user = {};
         }
         
-        res.user.cards = cards;
+        var flattened = _.chain(cards).map(function(card){
+            try{
+                var result = card;
+                if(card.length === 0){
+                    result = null;
+                }
+                else if(card.length == 1 && card[0].type == 'date'){
+                    result = null;
+                }
+
+                return result;
+            }
+            catch(e){
+                console.log('error');
+            }
+        })
+        .filter(Boolean)
+        .flatten()
+        .value()
+
+        res.user.cards = flattened;
     }
 
     next();
