@@ -1016,6 +1016,20 @@ var filterCards = function(req, res, next){
         });
 
         var cards = {};
+        var positions = {};
+
+        var addToPositions = function(card){
+            var positionName = [card.type, card.objectTags.join(','), card.actionTags.join(','),card.propertyName].join('.');
+            if(positions[positionName] === undefined){
+                positions[positionName] = [];
+            }
+
+            if(positions[positionName][card.position] === undefined){
+                positions[positionName][card.position] = [];
+            }
+
+            positions[positionName][card.position].push(card);
+        }
         
         var groupedAndSorted = _(grouped).mapObject(function(value, key){
             var splits = key.split('/');
@@ -1037,23 +1051,49 @@ var filterCards = function(req, res, next){
                     return memo;
                 }, {})
 
-                var addBranch = function(node){
+                var addBranch = function(node, depth){
+                   
                     var candidateCard = node['__card__'];
                     if(candidateCard !== undefined){
-                        if(!(candidateCard.read)){
-                            cards[splits[0]].push(candidateCard);
-                        }
+                        candidateCard.depth = depth;
+                        
+                        addToPositions(candidateCard);
+                        cards[splits[0]].push(candidateCard);
                     }
                     else{
                         _.each(_.keys(node), function(nodeKey){
-                            addBranch(node[nodeKey], cards);
+                            addBranch(node[nodeKey], depth +1);
                         });
                     }
                 };
 
-                addBranch(sortedCardsForDay);
+                addBranch(sortedCardsForDay, 0);
             }
         });
+
+        var filteredPositions = _.chain(positions).map(function(v, k){
+            return _.chain(v)
+            .filter(Boolean)
+            .first()
+            .sort('date')
+            .value()[0];
+        })
+        .filter(function(card){
+            return card.read === undefined || card.read === false;
+        })
+        .sortBy('cardDate')
+        .groupBy(function(card){
+            return card.cardDate;
+            })
+        .map(function(value, key){
+            var dateCard = {
+                type: 'date',
+                cardDate: key
+            }
+            return [dateCard, value];
+        })
+        .flatten()
+        .value();
 
         if(res.user === undefined){
             res.user = {};
@@ -1079,7 +1119,7 @@ var filterCards = function(req, res, next){
         .flatten()
         .value()
 
-        res.user.cards = flattened;
+        res.user.cards = filteredPositions;
     }
 
     next();
