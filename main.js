@@ -29,6 +29,11 @@ logger.warn("Warns will be logged here");
 logger.info("Info will be logged here");
 logger.debug("Debug will be logged here");
 
+process.on('uncaughtException', function(err) {
+  winston.error('Caught exception: ' + err);
+  throw err;
+});
+
 var app = express();
 app.use(morgan());
 
@@ -1015,63 +1020,52 @@ var filterCards = function(req, res, next){
             return card.cardDate + '/' + card.type;
         });
 
-        var cards = {};
-        var positions = {};
+        var  cards = {};
 
-        var addToPositions = function(card){
+        var addToCards = function(card){
             var positionName = [card.type, card.objectTags.join(','), card.actionTags.join(','),card.propertyName].join('.');
-            if(positions[positionName] === undefined){
-                positions[positionName] = [];
+            if(cards[positionName] === undefined){
+                cards[positionName] = [];
             }
 
-            if(positions[positionName][card.position] === undefined){
-                positions[positionName][card.position] = [];
+            if(cards[positionName][card.position] === undefined){
+                cards[positionName][card.position] = [];
             }
 
-            positions[positionName][card.position].push(card);
+            cards[positionName][card.position].push(card);
         }
         
         var groupedAndSorted = _(grouped).mapObject(function(value, key){
             var splits = key.split('/');
-            if(cards[splits[0]] === undefined){
-                cards[splits[0]] = []
-            }
-
-            if(splits[1] === 'date'){
-                if(!(value[0].read)){
-                    cards[splits[0]].push(value[0]);
+            
+            var sortedCardsForDay = _(value).reduce(function(memo, card){
+                if(card.propertyName !== undefined){
+                    _.deep(memo, card.propertyName + '.__card__', card);
                 }
-            }
-            else{
-                var sortedCardsForDay = _(value).reduce(function(memo, card){
-                    if(card.propertyName !== undefined){
-                        _.deep(memo, card.propertyName + '.__card__', card);
-                    }
 
-                    return memo;
-                }, {})
+                return memo;
+            }, {})
 
-                var addBranch = function(node, depth){
-                   
-                    var candidateCard = node['__card__'];
-                    if(candidateCard !== undefined){
-                        candidateCard.depth = depth;
-                        
-                        addToPositions(candidateCard);
-                        cards[splits[0]].push(candidateCard);
-                    }
-                    else{
-                        _.each(_.keys(node), function(nodeKey){
-                            addBranch(node[nodeKey], depth +1);
-                        });
-                    }
-                };
+            var addBranch = function(node, depth){
+               
+                var candidateCard = node['__card__'];
+                if(candidateCard !== undefined){
+                    var daysDiff = (moment() - moment(candidateCard.cardDate)) / 1000 / 60 / 60 / 24;
+                    candidateCard.weight = (1.0/depth) * Math.pow(0.99,daysDiff);
+                    
+                    addToCards(candidateCard);
+                }
+                else{
+                    _.each(_.keys(node), function(nodeKey){
+                        addBranch(node[nodeKey], depth +1);
+                    });
+                }
+            };
 
-                addBranch(sortedCardsForDay, 0);
-            }
+            addBranch(sortedCardsForDay, 0);
         });
 
-        var filteredPositions = _.chain(positions).map(function(v, k){
+        var filteredPositions = _.chain(cards).map(function(v, k){
             return _.chain(v)
             .filter(Boolean)
             .first()
