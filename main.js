@@ -945,10 +945,12 @@ app.post('/v1/users/:username/streams', function (req, res) {
 });
 
 var doNotAuthorize = function(req, res, next){
+    logger.debug('do not authorise');
     next();
 }
 
 var getCards = function(req, res, next){
+    logger.debug('starting getCards');
     util.findUser(req.params.username)
     .then(function(user){
         res.user = user;
@@ -996,6 +998,8 @@ _.mixin({
 });
 
 var filterCards = function(req, res, next){
+    var username = req.user ? req.user.username : req.params.username;
+    logger.debug([username, "filtercards", "starting"].join(': '));
     var timingInfo = {};
     timingInfo.startMoment = moment();
     var stdDevFilter;
@@ -1153,7 +1157,7 @@ var filterCards = function(req, res, next){
     timingInfo.elapsed = (timingInfo.endMoment - timingInfo.startMoment) / 1000;
     delete timingInfo.startMoment;
     delete timingInfo.endMoment;
-    logger.debug([req.user.username, 'filterCards'].join(': '), 'timing info', timingInfo);
+    logger.debug([username, 'filterCards'].join(': '), 'timing info', timingInfo);
 
     next();
 };
