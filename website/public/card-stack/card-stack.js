@@ -119,7 +119,7 @@ function getCards() {
         url = API_HOST + '/v1/users/';
         url += username + '/cards';
         url += '?extraFiltering=true';
-        url += minStdDev ? '&minStdDev=' + minStdDev : '&minStdDev=' + "0.5";
+        url += minStdDev ? '&minStdDev=' + minStdDev : ''; //&minStdDev=' + "0.5";
         url += maxStdDev ? '&maxStdDev=' + maxStdDev : '';
     }
 
@@ -131,8 +131,9 @@ function getCards() {
             })
         .done(function(data) {
 
-            data.sort(sort_by_date);
+            // data.sort(sort_by_date);
             console.log('card data', data);
+            data = data.reverse();
             window.cardData = data;
             deferred.resolve(data);
         })
@@ -222,16 +223,19 @@ $(function() {
     };
 
     var pluralise = function(stringArray) {
-        var toReturn = [];
-        for (var i in stringArray) {
-            var plural;
-            if (stringArray[i] === "push")
-                plural = "es";
-            else
-                plural = "s";
-            toReturn.push(stringArray[i] + plural);
-        }
-        return toReturn;
+        var lastItem = stringArray[stringArray.length - 1];
+        
+        var plural;
+        if (lastItem === "push")
+            plural = "es";
+        else
+            plural = "s";
+
+        lastItem += plural;
+
+        stringArray[stringArray.length - 1] = lastItem;
+
+        return stringArray;
     };
 
     var pastParticiple = function(stringArray) {
@@ -556,7 +560,7 @@ $(function() {
                 dataSourceIconUrl = 'img/visit_counter.png';
             else if (cardData.actionTags[0] === "develop")
                 dataSourceIconUrl = 'img/sublime.png';
-            else if (cardData.objectTags.indexOf("github") >= 0)
+            else if (cardData.objectTags.indexOf("github") >= 0 || cardData.actionTags.indexOf("github") >= 0)
                 dataSourceIconUrl = 'img/githubicon.svg';
             else
                 dataSourceIconUrl = 'img/puzzlepiece.svg';
@@ -732,36 +736,38 @@ $(function() {
     function markCardRead(username, cardElem, cardReloadCount) {
 
         var cardId = cardElem.getAttribute('cardId');
-        var now = new Date();
+        if (cardId) {
+            var now = new Date();
 
-        var apiUrl = API_HOST + "/v1/users/" + username + "/cards/" + cardId;
+            var apiUrl = API_HOST + "/v1/users/" + username + "/cards/" + cardId;
 
-        var viewDuration = now.getTime() - cardElem.cardVisibleAt;
+            var viewDuration = now.getTime() - cardElem.cardVisibleAt;
 
-        var dataBody = {   "read" : true, 
-                            "readInfo" : 
-                                            { 
-                                                viewDuration:       viewDuration,
-                                                cardIndex:          +cardElem.getAttribute('cardIndex'),
-                                                cardReloadCount:    cardReloadCount
-                                            }
-                        };
+            var dataBody = {   "read" : true, 
+                                "readInfo" : 
+                                                { 
+                                                    viewDuration:       viewDuration,
+                                                    cardIndex:          +cardElem.getAttribute('cardIndex'),
+                                                    cardReloadCount:    cardReloadCount
+                                                }
+                            };
 
-        console.log('markCardRead url:', apiUrl, ", dataBody: ", dataBody);
+            console.log('markCardRead url:', apiUrl, ", dataBody: ", dataBody);
 
-        if (!offline) {
-            $.ajax({
-                        url: apiUrl,
-                        data: JSON.stringify(dataBody),
-                        type: "PATCH",
-                        contentType: "application/json"
+            if (!offline) {
+                $.ajax({
+                            url: apiUrl,
+                            data: JSON.stringify(dataBody),
+                            type: "PATCH",
+                            contentType: "application/json"
 
-            }).done(function (data) {
-                console.log('markCardRead', username, cardId, data);
+                }).done(function (data) {
+                    console.log('markCardRead', username, cardId, data);
 
-            }).fail(function (data) {
-                console.log('ERROR markCardRead', username, cardId, data);
-            });
+                }).fail(function (data) {
+                    console.log('ERROR markCardRead', username, cardId, data);
+                });
+            }
         }
     }
 
@@ -775,7 +781,7 @@ $(function() {
         }, 4000);
     };
 
-    var buildStack = function(stack) {
+    var buildStack = function(stack, firstTime) {
         var numberOfCardsToShow = 10;
         var skip = 0;
         deferred.done(function(cardsArray) {
@@ -801,151 +807,153 @@ $(function() {
             $cardList = $('.stack li');
             var $stack = $('.stack');
 
-            $stack.on('mouseup', 'li', function(e) {
-                var id = '#' + this.id;
-                var idx = discardPile.indexOf(id);
-                if (idx > -1) {
-                    moveToLast(discardPile, idx);
-                    markCardUnique($(id), 'topOfDiscard');
-                }
-            });
+            if (firstTime) {
+                $stack.on('mouseup', 'li', function(e) {
+                    var id = '#' + this.id;
+                    var idx = discardPile.indexOf(id);
+                    if (idx > -1) {
+                        moveToLast(discardPile, idx);
+                        markCardUnique($(id), 'topOfDiscard');
+                    }
+                });
 
-            $stack.on('mousedown', '.flip-toggle', function(e) {
-                $('.flip-toggle').removeClass('standard-shadow');
-            });
+                $stack.on('mousedown', '.flip-toggle', function(e) {
+                    $('.flip-toggle').removeClass('standard-shadow');
+                });
 
-            $stack.on('mouseup', '.flip-toggle', function(e) {
-                $('.flip-toggle').addClass('standard-shadow');
-            });
+                $stack.on('mouseup', '.flip-toggle', function(e) {
+                    $('.flip-toggle').addClass('standard-shadow');
+                });
 
-            $stack.on('mouseup', '.clickable-overlay, .flip-toggle', function(e) {
-                var $container = $(this).parents('.cardContainer');
-                var $li = $(this).parents('li');
+                $stack.on('mouseup', '.clickable-overlay, .flip-toggle', function(e) {
+                    var $container = $(this).parents('.cardContainer');
+                    var $li = $(this).parents('li');
 
-                if ($container.hasClass('flip')) {
-                    // flipped to front
-                    sendGAEvent('flipped-to-front-' + $li.attr('cardIndex'), $li.attr('cardId'), $li.attr('cardIndex'));
-                    $('#viewport').removeAttr('style');
-                    $('.body').removeAttr('style');
-                    // $('#viewport').css({"width": "90%", "height": "85%"});
-                    // $('.body').css("padding","10px 0 0 0");
-                } else {
-                    // flipped to back
-                    renderMainMedia($li);
-                    sendGAEvent('flipped-to-back-' + $li.attr('cardIndex'), $li.attr('cardId'), $li.attr('cardIndex'));
-                    $('#viewport').css({"width": "100%", "height": "100%"});
-                    $('.body').css("padding","0px");
-                }
+                    if ($container.hasClass('flip')) {
+                        // flipped to front
+                        sendGAEvent('flipped-to-front-' + $li.attr('cardIndex'), $li.attr('cardId'), $li.attr('cardIndex'));
+                        $('#viewport').removeAttr('style');
+                        $('.body').removeAttr('style');
+                        // $('#viewport').css({"width": "90%", "height": "85%"});
+                        // $('.body').css("padding","10px 0 0 0");
+                    } else {
+                        // flipped to back
+                        renderMainMedia($li);
+                        sendGAEvent('flipped-to-back-' + $li.attr('cardIndex'), $li.attr('cardId'), $li.attr('cardIndex'));
+                        $('#viewport').css({"width": "100%", "height": "100%"});
+                        $('.body').css("padding","0px");
+                    }
 
-                $container.toggleClass('flip');
-                $container.siblings().toggleClass('flip');
-            });
+                    $container.toggleClass('flip');
+                    $container.siblings().toggleClass('flip');
+                });
 
-            // $stack.on('click', '.infoLink', function(e) {
-            //     console.log(e.target);
-            // });
-            // 
-            console.log($stack.find('.infoLink'));
-            console.log($stack.find('.clickable-overlay'));
-            console.log($('.clickable-overlay'));
+                // $stack.on('click', '.infoLink', function(e) {
+                //     console.log(e.target);
+                // });
+                // 
+                console.log($stack.find('.infoLink'));
+                console.log($stack.find('.clickable-overlay'));
+                console.log($('.clickable-overlay'));
 
-            $stack.on('mousedown', '.share-button', function(e) {
-                $('.share-button').removeClass('standard-shadow');
-            });
+                $stack.on('mousedown', '.share-button', function(e) {
+                    $('.share-button').removeClass('standard-shadow');
+                });
 
-            $stack.on('mouseup', '.share-button', function(e) {
-                $('.share-button').addClass('standard-shadow');
-                var $container = $(this).parents('.cardContainer');
-                var $li = $(this).parents('li');
+                $stack.on('mouseup', '.share-button', function(e) {
+                    $('.share-button').addClass('standard-shadow');
+                    var $container = $(this).parents('.cardContainer');
+                    var $li = $(this).parents('li');
 
-                var sharePaneAction = ($container.find('.share-container').hasClass('hide') ? 'open' : 'close');
-                sharePaneAction += '-share-pane-';
-                sharePaneAction += ($container.hasClass('flip') ? 'back' : 'front');
-                sharePaneAction += '-' + $li.attr('cardIndex');
+                    var sharePaneAction = ($container.find('.share-container').hasClass('hide') ? 'open' : 'close');
+                    sharePaneAction += '-share-pane-';
+                    sharePaneAction += ($container.hasClass('flip') ? 'back' : 'front');
+                    sharePaneAction += '-' + $li.attr('cardIndex');
 
-                sendGAEvent(sharePaneAction, $li.attr('cardId'), $li.attr('cardIndex'));
-                
-                $container.find('.share-container').toggleClass('hide');
-            });
+                    sendGAEvent(sharePaneAction, $li.attr('cardId'), $li.attr('cardIndex'));
+                    
+                    $container.find('.share-container').toggleClass('hide');
+                });
 
-            $stack.on('mousedown', '#shareToTwitter', function(e) {
-                $('#shareToTwitter').parents('.social-share-button').removeClass('standard-shadow');
-            });
+                $stack.on('mousedown', '#shareToTwitter', function(e) {
+                    $('#shareToTwitter').parents('.social-share-button').removeClass('standard-shadow');
+                });
 
-            $stack.on('mouseup', '#shareToTwitter', function(e) {
-                $('#shareToTwitter').parents('.social-share-button').addClass('standard-shadow');
-                var $container = $(this).parents('.cardContainer');
-                var $li = $(this).parents('li');
+                $stack.on('mouseup', '#shareToTwitter', function(e) {
+                    $('#shareToTwitter').parents('.social-share-button').addClass('standard-shadow');
+                    var $container = $(this).parents('.cardContainer');
+                    var $li = $(this).parents('li');
 
-                var sharePaneAction = 'share-to-twitter-';
-                sharePaneAction += ($container.hasClass('flip') ? 'back' : 'front');
-                sharePaneAction += '-' + $li.attr('cardIndex');
+                    var sharePaneAction = 'share-to-twitter-';
+                    sharePaneAction += ($container.hasClass('flip') ? 'back' : 'front');
+                    sharePaneAction += '-' + $li.attr('cardIndex');
 
-                sendGAEvent(sharePaneAction, $li.attr('cardId'), $li.attr('cardIndex'));
+                    sendGAEvent(sharePaneAction, $li.attr('cardId'), $li.attr('cardIndex'));
 
-                hideShareButtonsShowThanks();
-                
-            });
- 
-            $stack.on('mousedown', '#shareToFacebook', function(e) {
-                console.log($('#shareToFacebook').parent().attr('class'));
-                $('#shareToFacebook').parent('div').toggleClass('standard-shadow');
-                console.log($('#shareToFacebook').parent().attr('class'));
-            });
+                    hideShareButtonsShowThanks();
+                    
+                });
+     
+                $stack.on('mousedown', '#shareToFacebook', function(e) {
+                    console.log($('#shareToFacebook').parent().attr('class'));
+                    $('#shareToFacebook').parent('div').toggleClass('standard-shadow');
+                    console.log($('#shareToFacebook').parent().attr('class'));
+                });
 
-            $stack.on('mouseup', '#shareToFacebook', function(e) {
-                $('#shareToFacebook').parent('div').addClass('standard-shadow');
-                var $container = $(this).parents('.cardContainer');
-                var $li = $(this).parents('li');
+                $stack.on('mouseup', '#shareToFacebook', function(e) {
+                    $('#shareToFacebook').parent('div').addClass('standard-shadow');
+                    var $container = $(this).parents('.cardContainer');
+                    var $li = $(this).parents('li');
 
-                var sharePaneAction = 'share-to-facebook-';
-                sharePaneAction += ($container.hasClass('flip') ? 'back' : 'front');
-                sharePaneAction += '-' + $li.attr('cardIndex');
+                    var sharePaneAction = 'share-to-facebook-';
+                    sharePaneAction += ($container.hasClass('flip') ? 'back' : 'front');
+                    sharePaneAction += '-' + $li.attr('cardIndex');
 
-                sendGAEvent(sharePaneAction, $li.attr('cardId'), $li.attr('cardIndex'));
+                    sendGAEvent(sharePaneAction, $li.attr('cardId'), $li.attr('cardIndex'));
 
-                hideShareButtonsShowThanks();
-                
-            });
+                    hideShareButtonsShowThanks();
+                    
+                });
 
-            $stack.on('mousedown', '#shareToLink', function(e) {
-                $('#shareToLink').parents('.social-share-button').removeClass('standard-shadow');
-            });
+                $stack.on('mousedown', '#shareToLink', function(e) {
+                    $('#shareToLink').parents('.social-share-button').removeClass('standard-shadow');
+                });
 
-            $stack.on('mouseup', '#shareToLink', function(e) {
-                $('#shareToLink').parents('.social-share-button').addClass('standard-shadow');
-                var $container = $(this).parents('.cardContainer');
-                var $li = $(this).parents('li');
+                $stack.on('mouseup', '#shareToLink', function(e) {
+                    $('#shareToLink').parents('.social-share-button').addClass('standard-shadow');
+                    var $container = $(this).parents('.cardContainer');
+                    var $li = $(this).parents('li');
 
-                var sharePaneAction = 'share-to-link-';
-                sharePaneAction += ($container.hasClass('flip') ? 'back' : 'front');
-                sharePaneAction += '-' + $li.attr('cardIndex');
+                    var sharePaneAction = 'share-to-link-';
+                    sharePaneAction += ($container.hasClass('flip') ? 'back' : 'front');
+                    sharePaneAction += '-' + $li.attr('cardIndex');
 
-                sendGAEvent(sharePaneAction, $li.attr('cardId'), $li.attr('cardIndex'));
+                    sendGAEvent(sharePaneAction, $li.attr('cardId'), $li.attr('cardIndex'));
 
-                hideShareButtonsShowThanks();
-                
-            });
+                    hideShareButtonsShowThanks();
+                    
+                });
 
-            $stack.on('mousedown', '.getMoreCardsBtn', function(e) {
-                $('.getMoreCardsBtn').removeClass('standard-shadow');
-            });
+                $stack.on('mousedown', '.getMoreCardsBtn', function(e) {
+                    $('.getMoreCardsBtn').removeClass('standard-shadow');
+                });
 
-            $stack.on('mouseup', '.getMoreCardsBtn', function(e) {
-                $('.nextButton').trigger('click');
-            });
+                $stack.on('mouseup', '.getMoreCardsBtn', function(e) {
+                    $('.nextButton').trigger('click');
+                });
 
-            $stack.on('mousedown', '.tellMeAboutNewCardsBtn', function(e) {
-                $('.getMoreCardsBtn').removeClass('standard-shadow');
-            });
+                $stack.on('mousedown', '.tellMeAboutNewCardsBtn', function(e) {
+                    $('.getMoreCardsBtn').removeClass('standard-shadow');
+                });
 
-            $stack.on('mouseup', '.tellMeAboutNewCardsBtn', function(e) {
-                sendGAEvent('request-new-card-notification', username);
-                $('.bottom-of-stack-container .tellMeAboutNewCardsBtn').hide();
-                $('.bottom-of-stack-container h1').text('You got it!').addClass("bottom-of-stack-large-text").show();
-                $('.bottom-of-stack-container p').html("We'll send you an email when you have new cards").show();
-                localStorage.requestedNotification = true;
-            });
+                $stack.on('mouseup', '.tellMeAboutNewCardsBtn', function(e) {
+                    sendGAEvent('request-new-card-notification', username);
+                    $('.bottom-of-stack-container .tellMeAboutNewCardsBtn').hide();
+                    $('.bottom-of-stack-container h1').text('You got it!').addClass("bottom-of-stack-large-text").show();
+                    $('.bottom-of-stack-container p').html("We'll send you an email when you have new cards").show();
+                    localStorage.requestedNotification = true;
+                });
+            }
 
             if (cardsArray.length > 0) {
                 $('.bottom-of-stack-container h1').text('All done').hide();
@@ -955,7 +963,7 @@ $(function() {
                 $('.getMoreCardsBtn').show();
             } else {
                 $('.bottom-of-stack-container h1').text('All done').addClass("bottom-of-stack-large-text").show();
-                $('.bottom-of-stack-container p').html('No more cards right now.<br>Come back for more later').show();
+                $('.bottom-of-stack-container p').html('That&apos;s all we&apos;ve got for you right now.<br><br>Thanks for looking!<br><br>New cards will be generated for you daily.').show();
                 $('.bottom-of-stack-container .loading').hide();
                 $('.getMoreCardsBtn').hide();
 
@@ -1050,7 +1058,7 @@ $(function() {
                 getCards();
                 cardReloadCount++;
                 setUpStack();
-                buildStack(stack);
+                buildStack(stack, false);
 
                 sendGAEvent('get-more-cards');
             }
@@ -1059,6 +1067,6 @@ $(function() {
     }
 
     setUpStack();
-    buildStack(stack);
+    buildStack(stack, true);
 
 });

@@ -32,16 +32,20 @@
 
     $('.mainContainer').ready(function () {
         getData(dataSrc, function (data) {
-          drawSparkLine(data, null);
+          drawChart(data);
         });
     });
 
+    function drawChart(data) {
+        // if (doTransitions) {
+        //     draw5Bars(data);
+        // } else {
+            drawSparkLine(data);
+        // }
+    }
+
     function stripNullValues(dataArray) {
         var updatedArray = [];
-        var lowestValue;
-        var lowestIndex = -1;
-        var highestValue;
-        var highestIndex = -1;
         var dataset = {};
 
         for (var i = 0; i < dataArray.length; i++) {
@@ -57,8 +61,31 @@
 
     function addRankings(dataset) {
 
+        // var sort_by_date = function(a, b) {
+        //     var dateDiff = new Date(a.cardDate).getTime() - new Date(b.cardDate).getTime();
+        //     if (dateDiff === 0) {
+        //         if (a.type === "date")
+        //             return 1;
+        //         else if (b.type === "date")
+        //             return -1;
+        //         else
+        //             return 0;
+        //     } else {
+        //         return dateDiff;    
+        //     }
+        // };
+
+        // 7 : 1 aug
+        // 6 : 2 aug
+        // 6 : 3 aug
+
         var ranking_sort = function(a, b) {
-            return a.value - b.value;
+            var diff = a.value - b.value;
+            if (diff === 0) {
+                return new Date(b.date).getTime() - new Date(a.date).getTime();
+            } else {
+                return diff;
+            }
         };
 
         dataset.sort(ranking_sort);
@@ -94,7 +121,6 @@
         }
 
     }
-
 
     function getData(dataSrc, callback) {
         var sort_by_date = function(a, b) {
@@ -189,7 +215,76 @@
         return "";
     }
 
-    function drawSparkLine(chartData, appendToElement) {
+    function get5(dataset, highlightCondition) {
+        var returnData = [];
+        var getQty = 5;
+        getQty = getQty > dataset.length ? dataset.length : getQty;
+
+        var ranking_asc = function(a, b) {
+            return a.rankAsc - b.rankAsc;
+        };
+
+        var ranking_desc = function(a, b) {
+            return a.rankDesc - b.rankDesc;
+        };
+
+        if (highlightCondition === "top10") {
+            dataset.sort(ranking_desc);
+        } else if (highlightCondition === "bottom10") {
+            dataset.sort(ranking_asc);
+        }
+
+        for (var i = 0; i < getQty; i++) {
+            returnData.push(dataset[i]);
+        }
+
+        return returnData;
+    }
+
+    function draw5Bars(chartData) {
+        var data = get5(chartData.allData, highlightCondition);
+
+        console.log(data);
+
+        var width = $('body').width();
+        var height = $('body').height();
+        var margin = {top: 20, right: 20, bottom: 20, left: 20};
+
+        var rank = function(d) {
+            return highlightCondition === "top10" ? d.rankDesc : d.rankAsc;
+        };
+
+        var x = d3.scale.linear()
+            .domain([0, d3.max(data, function(d) { return d.value; })])
+            .range([0, width]);
+
+        var y = d3.scale.linear()
+            .domain([0, d3.max(data, function(d) { return rank(d); })])
+            .range([0, height]);
+
+        var xMap = function(d) { return x(d.value); };
+        var yMap = function(d) { return y(rank(d)); };
+            
+        // Adds the svg canvas
+        var svg = d3.select(".mainContainer")
+            .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        svg.selectAll(".five-bar")
+            .data(data)
+            .enter().append("line")
+            .attr("class", "lolly-stick")
+            .style("stroke", lineColour )
+            .attr("y1", yMap)
+            .attr("y2", yMap)
+            .attr("x1", 0)
+            .attr("x2", xMap);
+    }
+
+    function drawSparkLine(chartData) {
 
         var data = chartData.allData;
 
@@ -245,12 +340,12 @@
         //     .on("drag", dragged)
         //     .on("dragend", dragended);
 
-        var rankText = function(d) {
+        var rankText = function(d, convertMostFewest) {
             var returnText;
             if (highlightCondition === "bottom10") {
-                returnText = d.rankAsc === 0 ? 'Fewest' : ordinal_suffix_of(d.rankAsc + 1);
+                returnText = (d.rankAsc === 0 && convertMostFewest) ? 'Fewest' : ordinal_suffix_of(d.rankAsc + 1);
             } else if (highlightCondition === "top10") {
-                returnText = d.rankDesc === 0 ? 'Most' : ordinal_suffix_of(d.rankDesc + 1);
+                returnText = (d.rankDesc === 0 && convertMostFewest) ? 'Most' : ordinal_suffix_of(d.rankDesc + 1);
             }
             return returnText;
         };
@@ -390,7 +485,7 @@
             .attr("rankAsc", function(d) { return d.rankAsc; } )
             .attr("dx", width + 13)
             .attr("dy", "-.3em")
-            .text(rankText);
+            .text(function(d) { return rankText(d, true); } );
 
 
         if (doTransitions) {
@@ -597,7 +692,7 @@
         var buildHighlightText = function (d) {
             var returnString = "";
 
-            returnString += rankText(d) + ' position of ' + data.length + '<br>';
+            returnString += rankText(d, false) + ' position of ' + data.length + '<br>';
             returnString += dataTextFormat(d.value, chartData.property) + '<br>';
             returnString += formatHighlightDate(d.date);
 

@@ -1,900 +1,10 @@
-[
-{
-"id": "55b8ddc1404b736f644c73d5",
+[{
+"id": "55c48c09b0c883c52ee69dd7",
 "type": "top10",
 "outOf": 10,
 "thumbnailMedia": "chart.html",
-"startRange": "2015-07-26",
-"endRange": "2015-07-26",
-"objectTags": [
-"computer",
-"desktop"
-],
-"actionTags": [
-"use"
-],
-"position": 0,
-"properties": {
-"sum": {
-"__count__": 1
-}
-},
-"propertyName": "__count__.sum",
-"stdDev": 0,
-"correctedStdDev": 0,
-"sampleStdDev": 0,
-"sampleCorrectedStdDev": 0,
-"mean": 1,
-"variance": 0,
-"cardDate": "2015-07-26",
-"generatedDate": "2015-07-29T14:05:53.545Z",
-"chart": "/v1/users/martin/rollups/day/computer,desktop/use/sum.__count__/.json?to=2015-07-26"
-},
-{
-"id": "55b8dd8c404b736f644c7378",
-"type": "top10",
-"outOf": 6,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-27",
-"endRange": "2015-07-27",
-"objectTags": [
-"music"
-],
-"actionTags": [
-"listen"
-],
-"position": 0,
-"properties": {
-"sum": {
-"track-name": {
-"Child": {
-"__count__": 1
-}
-}
-}
-},
-"propertyName": "__count__.sum.track-name.Child",
-"stdDev": 0,
-"correctedStdDev": 0,
-"sampleStdDev": 0,
-"sampleCorrectedStdDev": 0,
-"mean": 1,
-"variance": 0,
-"cardDate": "2015-07-27",
-"generatedDate": "2015-07-29T14:05:00.224Z",
-"chart": "/v1/users/martin/rollups/day/music/listen/sum.track-name.Child.__count__/.json?to=2015-07-27"
-},
-{
-"id": "55b8dd8c404b736f644c7387",
-"type": "top10",
-"outOf": 5,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-27",
-"endRange": "2015-07-27",
-"objectTags": [
-"music"
-],
-"actionTags": [
-"listen"
-],
-"position": 0,
-"properties": {
-"sum": {
-"track-name": {
-"Feel To Follow": {
-"__count__": 1
-}
-}
-}
-},
-"propertyName": "__count__.sum.track-name.Feel To Follow",
-"stdDev": 0,
-"correctedStdDev": 0,
-"sampleStdDev": 0,
-"sampleCorrectedStdDev": 0,
-"mean": 1,
-"variance": 0,
-"cardDate": "2015-07-27",
-"generatedDate": "2015-07-29T14:05:00.924Z",
-"chart": "/v1/users/martin/rollups/day/music/listen/sum.track-name.Feel%20To%20Follow.__count__/.json?to=2015-07-27"
-},
-{
-"id": "55b8dd8d404b736f644c7390",
-"type": "top10",
-"outOf": 6,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-27",
-"endRange": "2015-07-27",
-"objectTags": [
-"music"
-],
-"actionTags": [
-"listen"
-],
-"position": 0,
-"properties": {
-"sum": {
-"track-name": {
-"Ayla": {
-"__count__": 1
-}
-}
-}
-},
-"propertyName": "__count__.sum.track-name.Ayla",
-"stdDev": 0,
-"correctedStdDev": 0,
-"sampleStdDev": 0,
-"sampleCorrectedStdDev": 0,
-"mean": 1,
-"variance": 0,
-"cardDate": "2015-07-27",
-"generatedDate": "2015-07-29T14:05:01.338Z",
-"chart": "/v1/users/martin/rollups/day/music/listen/sum.track-name.Ayla.__count__/.json?to=2015-07-27"
-},
-{
-"id": "55b8dd8d404b736f644c7391",
-"type": "top10",
-"outOf": 6,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-27",
-"endRange": "2015-07-27",
-"objectTags": [
-"music"
-],
-"actionTags": [
-"listen"
-],
-"position": 0,
-"properties": {
-"sum": {
-"track-name": {
-"Glimmer": {
-"__count__": 1
-}
-}
-}
-},
-"propertyName": "__count__.sum.track-name.Glimmer",
-"stdDev": 0,
-"correctedStdDev": 0,
-"sampleStdDev": 0,
-"sampleCorrectedStdDev": 0,
-"mean": 1,
-"variance": 0,
-"cardDate": "2015-07-27",
-"generatedDate": "2015-07-29T14:05:01.350Z",
-"chart": "/v1/users/martin/rollups/day/music/listen/sum.track-name.Glimmer.__count__/.json?to=2015-07-27"
-},
-{
-"id": "55b8dd8d404b736f644c7399",
-"type": "top10",
-"outOf": 5,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-27",
-"endRange": "2015-07-27",
-"objectTags": [
-"music"
-],
-"actionTags": [
-"listen"
-],
-"position": 0,
-"properties": {
-"sum": {
-"track-name": {
-"Forever I've Known": {
-"__count__": 1
-}
-}
-}
-},
-"propertyName": "__count__.sum.track-name.Forever I've Known",
-"stdDev": 0,
-"correctedStdDev": 0,
-"sampleStdDev": 0,
-"sampleCorrectedStdDev": 0,
-"mean": 1,
-"variance": 0,
-"cardDate": "2015-07-27",
-"generatedDate": "2015-07-29T14:05:01.803Z",
-"chart": "/v1/users/martin/rollups/day/music/listen/sum.track-name.Forever%20I've%20Known.__count__/.json?to=2015-07-27"
-},
-{
-"id": "55b8dd8c404b736f644c7386",
-"type": "top10",
-"outOf": 7,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-27",
-"endRange": "2015-07-27",
-"objectTags": [
-"computer",
-"git",
-"github",
-"software",
-"source control"
-],
-"actionTags": [
-"commit"
-],
-"position": 0,
-"properties": {
-"sum": {
-"author-email": {
-"martinstrotton@gmail^com": {
-"file-types": {
-"png": {
-"line-additions": 0
-}
-}
-}
-}
-}
-},
-"propertyName": "line-additions.sum.author-email.martinstrotton@gmail^com.file-types.png",
-"stdDev": 0,
-"correctedStdDev": 0,
-"sampleStdDev": 0,
-"sampleCorrectedStdDev": 0,
-"mean": 0,
-"variance": 0,
-"cardDate": "2015-07-27",
-"generatedDate": "2015-07-29T14:05:00.896Z",
-"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.author-email.martinstrotton%40gmail%5Ecom.file-types.png.line-additions/.json?to=2015-07-27"
-},
-{
-"id": "55b8dd8f404b736f644c73af",
-"type": "top10",
-"outOf": 7,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-27",
-"endRange": "2015-07-27",
-"objectTags": [
-"computer",
-"git",
-"github",
-"software",
-"source control"
-],
-"actionTags": [
-"commit"
-],
-"position": 0,
-"properties": {
-"sum": {
-"author-name": {
-"Martin": {
-"file-types": {
-"png": {
-"line-additions": 0
-}
-}
-}
-}
-}
-},
-"propertyName": "line-additions.sum.author-name.Martin.file-types.png",
-"stdDev": 0,
-"correctedStdDev": 0,
-"sampleStdDev": 0,
-"sampleCorrectedStdDev": 0,
-"mean": 0,
-"variance": 0,
-"cardDate": "2015-07-27",
-"generatedDate": "2015-07-29T14:05:03.703Z",
-"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.author-name.Martin.file-types.png.line-additions/.json?to=2015-07-27"
-},
-{
-"id": "55b8dd8f404b736f644c73b2",
-"type": "top10",
-"outOf": 7,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-27",
-"endRange": "2015-07-27",
-"objectTags": [
-"computer",
-"git",
-"github",
-"software",
-"source control"
-],
-"actionTags": [
-"commit"
-],
-"position": 0,
-"properties": {
-"sum": {
-"file-types": {
-"png": {
-"line-additions": 0
-}
-}
-}
-},
-"propertyName": "line-additions.sum.file-types.png",
-"stdDev": 0,
-"correctedStdDev": 0,
-"sampleStdDev": 0,
-"sampleCorrectedStdDev": 0,
-"mean": 0,
-"variance": 0,
-"cardDate": "2015-07-27",
-"generatedDate": "2015-07-29T14:05:03.880Z",
-"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.file-types.png.line-additions/.json?to=2015-07-27"
-},
-{
-"id": "55b8dd91404b736f644c73be",
-"type": "top10",
-"outOf": 6,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-27",
-"endRange": "2015-07-27",
-"objectTags": [
-"computer",
-"git",
-"github",
-"software",
-"source control"
-],
-"actionTags": [
-"commit"
-],
-"position": 0,
-"properties": {
-"sum": {
-"repo": {
-"1self/website": {
-"file-types": {
-"png": {
-"line-additions": 0
-}
-}
-}
-}
-}
-},
-"propertyName": "line-additions.sum.repo.1self/website.file-types.png",
-"stdDev": 0,
-"correctedStdDev": 0,
-"sampleStdDev": 0,
-"sampleCorrectedStdDev": 0,
-"mean": 0,
-"variance": 0,
-"cardDate": "2015-07-27",
-"generatedDate": "2015-07-29T14:05:05.664Z",
-"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.repo.1self%2Fwebsite.file-types.png.line-additions/.json?to=2015-07-27"
-},
-{
-"id": "55b8dd8d404b736f644c7397",
-"type": "top10",
-"outOf": 7,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-27",
-"endRange": "2015-07-27",
-"objectTags": [
-"computer",
-"git",
-"github",
-"software",
-"source control"
-],
-"actionTags": [
-"commit"
-],
-"position": 0,
-"properties": {
-"sum": {
-"author-email": {
-"martinstrotton@gmail^com": {
-"file-types": {
-"png": {
-"line-changes": 0
-}
-}
-}
-}
-}
-},
-"propertyName": "line-changes.sum.author-email.martinstrotton@gmail^com.file-types.png",
-"stdDev": 0,
-"correctedStdDev": 0,
-"sampleStdDev": 0,
-"sampleCorrectedStdDev": 0,
-"mean": 0,
-"variance": 0,
-"cardDate": "2015-07-27",
-"generatedDate": "2015-07-29T14:05:01.735Z",
-"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.author-email.martinstrotton%40gmail%5Ecom.file-types.png.line-changes/.json?to=2015-07-27"
-},
-{
-"id": "55b8dd8e404b736f644c73a4",
-"type": "top10",
-"outOf": 7,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-27",
-"endRange": "2015-07-27",
-"objectTags": [
-"computer",
-"git",
-"github",
-"software",
-"source control"
-],
-"actionTags": [
-"commit"
-],
-"position": 0,
-"properties": {
-"sum": {
-"author-name": {
-"Martin": {
-"file-types": {
-"png": {
-"line-changes": 0
-}
-}
-}
-}
-}
-},
-"propertyName": "line-changes.sum.author-name.Martin.file-types.png",
-"stdDev": 0,
-"correctedStdDev": 0,
-"sampleStdDev": 0,
-"sampleCorrectedStdDev": 0,
-"mean": 0,
-"variance": 0,
-"cardDate": "2015-07-27",
-"generatedDate": "2015-07-29T14:05:02.470Z",
-"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.author-name.Martin.file-types.png.line-changes/.json?to=2015-07-27"
-},
-{
-"id": "55b8dd8e404b736f644c73a6",
-"type": "top10",
-"outOf": 7,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-27",
-"endRange": "2015-07-27",
-"objectTags": [
-"computer",
-"git",
-"github",
-"software",
-"source control"
-],
-"actionTags": [
-"commit"
-],
-"position": 0,
-"properties": {
-"sum": {
-"file-types": {
-"png": {
-"line-changes": 0
-}
-}
-}
-},
-"propertyName": "line-changes.sum.file-types.png",
-"stdDev": 0,
-"correctedStdDev": 0,
-"sampleStdDev": 0,
-"sampleCorrectedStdDev": 0,
-"mean": 0,
-"variance": 0,
-"cardDate": "2015-07-27",
-"generatedDate": "2015-07-29T14:05:02.681Z",
-"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.file-types.png.line-changes/.json?to=2015-07-27"
-},
-{
-"id": "55b8dd90404b736f644c73b7",
-"type": "top10",
-"outOf": 6,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-27",
-"endRange": "2015-07-27",
-"objectTags": [
-"computer",
-"git",
-"github",
-"software",
-"source control"
-],
-"actionTags": [
-"commit"
-],
-"position": 0,
-"properties": {
-"sum": {
-"repo": {
-"1self/website": {
-"file-types": {
-"png": {
-"line-changes": 0
-}
-}
-}
-}
-}
-},
-"propertyName": "line-changes.sum.repo.1self/website.file-types.png",
-"stdDev": 0,
-"correctedStdDev": 0,
-"sampleStdDev": 0,
-"sampleCorrectedStdDev": 0,
-"mean": 0,
-"variance": 0,
-"cardDate": "2015-07-27",
-"generatedDate": "2015-07-29T14:05:04.639Z",
-"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.repo.1self%2Fwebsite.file-types.png.line-changes/.json?to=2015-07-27"
-},
-{
-"id": "55b8dd8e404b736f644c73a2",
-"type": "top10",
-"outOf": 7,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-27",
-"endRange": "2015-07-27",
-"objectTags": [
-"computer",
-"git",
-"github",
-"software",
-"source control"
-],
-"actionTags": [
-"commit"
-],
-"position": 0,
-"properties": {
-"sum": {
-"author-email": {
-"martinstrotton@gmail^com": {
-"file-types": {
-"png": {
-"line-deletions": 0
-}
-}
-}
-}
-}
-},
-"propertyName": "line-deletions.sum.author-email.martinstrotton@gmail^com.file-types.png",
-"stdDev": 0,
-"correctedStdDev": 0,
-"sampleStdDev": 0,
-"sampleCorrectedStdDev": 0,
-"mean": 0,
-"variance": 0,
-"cardDate": "2015-07-27",
-"generatedDate": "2015-07-29T14:05:02.253Z",
-"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.author-email.martinstrotton%40gmail%5Ecom.file-types.png.line-deletions/.json?to=2015-07-27"
-},
-{
-"id": "55b8dd8e404b736f644c73a7",
-"type": "top10",
-"outOf": 3,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-27",
-"endRange": "2015-07-27",
-"objectTags": [
-"computer",
-"git",
-"github",
-"software",
-"source control"
-],
-"actionTags": [
-"commit"
-],
-"position": 0,
-"properties": {
-"sum": {
-"author-email": {
-"martinstrotton@gmail^com": {
-"file-types": {
-"svg": {
-"line-deletions": 0
-}
-}
-}
-}
-}
-},
-"propertyName": "line-deletions.sum.author-email.martinstrotton@gmail^com.file-types.svg",
-"stdDev": 0,
-"correctedStdDev": 0,
-"sampleStdDev": 0,
-"sampleCorrectedStdDev": 0,
-"mean": 0,
-"variance": 0,
-"cardDate": "2015-07-27",
-"generatedDate": "2015-07-29T14:05:02.699Z",
-"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.author-email.martinstrotton%40gmail%5Ecom.file-types.svg.line-deletions/.json?to=2015-07-27"
-},
-{
-"id": "55b8dd8f404b736f644c73ac",
-"type": "top10",
-"outOf": 7,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-27",
-"endRange": "2015-07-27",
-"objectTags": [
-"computer",
-"git",
-"github",
-"software",
-"source control"
-],
-"actionTags": [
-"commit"
-],
-"position": 0,
-"properties": {
-"sum": {
-"author-name": {
-"Martin": {
-"file-types": {
-"png": {
-"line-deletions": 0
-}
-}
-}
-}
-}
-},
-"propertyName": "line-deletions.sum.author-name.Martin.file-types.png",
-"stdDev": 0,
-"correctedStdDev": 0,
-"sampleStdDev": 0,
-"sampleCorrectedStdDev": 0,
-"mean": 0,
-"variance": 0,
-"cardDate": "2015-07-27",
-"generatedDate": "2015-07-29T14:05:03.412Z",
-"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.author-name.Martin.file-types.png.line-deletions/.json?to=2015-07-27"
-},
-{
-"id": "55b8dd8f404b736f644c73b0",
-"type": "top10",
-"outOf": 3,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-27",
-"endRange": "2015-07-27",
-"objectTags": [
-"computer",
-"git",
-"github",
-"software",
-"source control"
-],
-"actionTags": [
-"commit"
-],
-"position": 0,
-"properties": {
-"sum": {
-"author-name": {
-"Martin": {
-"file-types": {
-"svg": {
-"line-deletions": 0
-}
-}
-}
-}
-}
-},
-"propertyName": "line-deletions.sum.author-name.Martin.file-types.svg",
-"stdDev": 0,
-"correctedStdDev": 0,
-"sampleStdDev": 0,
-"sampleCorrectedStdDev": 0,
-"mean": 0,
-"variance": 0,
-"cardDate": "2015-07-27",
-"generatedDate": "2015-07-29T14:05:03.741Z",
-"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.author-name.Martin.file-types.svg.line-deletions/.json?to=2015-07-27"
-},
-{
-"id": "55b8dd8f404b736f644c73b3",
-"type": "top10",
-"outOf": 3,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-27",
-"endRange": "2015-07-27",
-"objectTags": [
-"computer",
-"git",
-"github",
-"software",
-"source control"
-],
-"actionTags": [
-"commit"
-],
-"position": 0,
-"properties": {
-"sum": {
-"file-types": {
-"svg": {
-"line-deletions": 0
-}
-}
-}
-},
-"propertyName": "line-deletions.sum.file-types.svg",
-"stdDev": 0,
-"correctedStdDev": 0,
-"sampleStdDev": 0,
-"sampleCorrectedStdDev": 0,
-"mean": 0,
-"variance": 0,
-"cardDate": "2015-07-27",
-"generatedDate": "2015-07-29T14:05:03.916Z",
-"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.file-types.svg.line-deletions/.json?to=2015-07-27"
-},
-{
-"id": "55b8dd91404b736f644c73bb",
-"type": "top10",
-"outOf": 7,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-27",
-"endRange": "2015-07-27",
-"objectTags": [
-"computer",
-"git",
-"github",
-"software",
-"source control"
-],
-"actionTags": [
-"commit"
-],
-"position": 0,
-"properties": {
-"sum": {
-"file-types": {
-"png": {
-"line-deletions": 0
-}
-}
-}
-},
-"propertyName": "line-deletions.sum.file-types.png",
-"stdDev": 0,
-"correctedStdDev": 0,
-"sampleStdDev": 0,
-"sampleCorrectedStdDev": 0,
-"mean": 0,
-"variance": 0,
-"cardDate": "2015-07-27",
-"generatedDate": "2015-07-29T14:05:05.085Z",
-"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.file-types.png.line-deletions/.json?to=2015-07-27"
-},
-{
-"id": "55b8dd91404b736f644c73bf",
-"type": "top10",
-"outOf": 3,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-27",
-"endRange": "2015-07-27",
-"objectTags": [
-"computer",
-"git",
-"github",
-"software",
-"source control"
-],
-"actionTags": [
-"commit"
-],
-"position": 0,
-"properties": {
-"sum": {
-"repo": {
-"1self/website": {
-"file-types": {
-"svg": {
-"line-deletions": 0
-}
-}
-}
-}
-}
-},
-"propertyName": "line-deletions.sum.repo.1self/website.file-types.svg",
-"stdDev": 0,
-"correctedStdDev": 0,
-"sampleStdDev": 0,
-"sampleCorrectedStdDev": 0,
-"mean": 0,
-"variance": 0,
-"cardDate": "2015-07-27",
-"generatedDate": "2015-07-29T14:05:05.692Z",
-"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.repo.1self%2Fwebsite.file-types.svg.line-deletions/.json?to=2015-07-27"
-},
-{
-"id": "55b8dd92404b736f644c73c1",
-"type": "top10",
-"outOf": 6,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-27",
-"endRange": "2015-07-27",
-"objectTags": [
-"computer",
-"git",
-"github",
-"software",
-"source control"
-],
-"actionTags": [
-"commit"
-],
-"position": 0,
-"properties": {
-"sum": {
-"repo": {
-"1self/website": {
-"file-types": {
-"png": {
-"line-deletions": 0
-}
-}
-}
-}
-}
-},
-"propertyName": "line-deletions.sum.repo.1self/website.file-types.png",
-"stdDev": 0,
-"correctedStdDev": 0,
-"sampleStdDev": 0,
-"sampleCorrectedStdDev": 0,
-"mean": 0,
-"variance": 0,
-"cardDate": "2015-07-27",
-"generatedDate": "2015-07-29T14:05:06.091Z",
-"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.repo.1self%2Fwebsite.file-types.png.line-deletions/.json?to=2015-07-27"
-},
-{
-"id": "55baf2c1644d12c87e297aa0",
-"type": "bottom10",
-"outOf": 9,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-30",
-"endRange": "2015-07-30",
-"objectTags": [
-"computer",
-"software"
-],
-"actionTags": [
-"develop"
-],
-"position": 2,
-"properties": {
-"sum": {
-"duration": 2823
-}
-},
-"propertyName": "duration.sum",
-"stdDev": 820.7385579593919,
-"correctedStdDev": 923.3308777043159,
-"sampleStdDev": 2.153615835900584,
-"sampleCorrectedStdDev": 1.9143251874671858,
-"mean": 4590.555555555556,
-"variance": -1767.5555555555557,
-"cardDate": "2015-07-30",
-"generatedDate": "2015-07-31T04:00:01.487Z",
-"chart": "/v1/users/martin/rollups/day/computer,software/develop/sum.duration/.json?to=2015-07-30",
-"cardText": "3rd lowest minutes of coding"
-},
-{
-"id": "55baf2c1644d12c87e297aa4",
-"type": "bottom10",
-"outOf": 9,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-30",
-"endRange": "2015-07-30",
+"startRange": "2015-07-31",
+"endRange": "2015-07-31",
 "objectTags": [
 "computer",
 "software"
@@ -905,55 +15,22 @@
 "position": 1,
 "properties": {
 "sum": {
-"__count__": 27
+"duration": 9046
 }
 },
-"propertyName": "__count__.sum",
-"stdDev": 7.114775290537448,
-"correctedStdDev": 8.00412220185463,
-"sampleStdDev": 2.1863734159312425,
-"sampleCorrectedStdDev": 1.9434430363833264,
-"mean": 42.55555555555556,
-"variance": -15.555555555555557,
-"cardDate": "2015-07-30",
-"generatedDate": "2015-07-31T04:00:01.574Z",
-"chart": "/v1/users/martin/rollups/day/computer,software/develop/sum.__count__/.json?to=2015-07-30",
-"cardText": "2nd lowest minutes of coding"
-},
-{
-"id": "55bc4441644d12c87e297ab0",
-"type": "bottom10",
-"outOf": 10,
-"thumbnailMedia": "chart.html",
-"startRange": "2015-07-31",
-"endRange": "2015-07-31",
-"objectTags": [
-"computer",
-"software"
-],
-"actionTags": [
-"develop"
-],
-"position": 3,
-"properties": {
-"sum": {
-"__count__": 33
-}
-},
-"propertyName": "__count__.sum",
-"stdDev": 6.467147748428205,
-"correctedStdDev": 7.185719720475784,
-"sampleStdDev": 1.3297979781102374,
-"sampleCorrectedStdDev": 1.1968181802992137,
-"mean": 41.6,
-"variance": -8.600000000000001,
+"propertyName": "duration.sum",
+"stdDev": 1235.2932935137308,
+"correctedStdDev": 1372.5481039041451,
+"sampleStdDev": 4.1652456360096055,
+"sampleCorrectedStdDev": 3.7487210724086455,
+"mean": 3900.7,
+"variance": 5145.3,
 "cardDate": "2015-07-31",
-"generatedDate": "2015-08-01T04:00:01.774Z",
-"chart": "/v1/users/martin/rollups/day/computer,software/develop/sum.__count__/.json?to=2015-07-31",
-"cardText": "4th lowest minutes of coding"
-},
-{
-"id": "55bc4441644d12c87e297aaf",
+"generatedDate": "2015-08-07T10:44:25.653Z",
+"chart": "/v1/users/komlev/rollups/day/computer,software/develop/sum.duration/.json?to=2015-07-31",
+"cardText": "2nd highest minutes of coding"
+},{
+"id": "55c48c09b0c883c52ee69ddc",
 "type": "top10",
 "outOf": 10,
 "thumbnailMedia": "chart.html",
@@ -966,29 +43,1022 @@
 "actionTags": [
 "develop"
 ],
-"position": 3,
+"position": 0,
 "properties": {
 "sum": {
-"duration": 4646
+"__count__": 91
 }
 },
-"propertyName": "duration.sum",
-"stdDev": 738.6834294878964,
-"correctedStdDev": 820.7593660976627,
-"sampleStdDev": 0.06755261862932754,
-"sampleCorrectedStdDev": 0.0607973567663948,
-"mean": 4596.1,
-"variance": 49.899999999999636,
+"propertyName": "__count__.sum",
+"stdDev": 8.588655308021156,
+"correctedStdDev": 9.54295034224573,
+"sampleStdDev": 6.345580075742603,
+"sampleCorrectedStdDev": 5.711022068168343,
+"mean": 36.5,
+"variance": 54.5,
 "cardDate": "2015-07-31",
-"generatedDate": "2015-08-01T04:00:01.759Z",
-"chart": "/v1/users/martin/rollups/day/computer,software/develop/sum.duration/.json?to=2015-07-31",
-"cardText": "4th highest minutes of coding"
-},
-{
-"id": "55c038c1644d12c87e297ac5",
-"type": "date",
-"cardDate": "2015-08-03",
-"generatedDate": "2015-08-04T04:00:01.801Z"
-}
-]
-
+"generatedDate": "2015-08-07T10:44:25.973Z",
+"chart": "/v1/users/komlev/rollups/day/computer,software/develop/sum.__count__/.json?to=2015-07-31",
+"cardText": "highest minutes of coding"
+},{
+    "id": "55c48c0bb0c883c52ee69ded",
+    "type": "date",
+    "cardDate": "2015-08-01",
+    "generatedDate": "2015-08-07T10:44:27.551Z"
+}, {
+    "id": "55c48c0db0c883c52ee69dee",
+    "type": "bottom10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-01",
+    "endRange": "2015-08-01",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "very-distracting-percent": 0
+        }
+    },
+    "propertyName": "very-distracting-percent.sum",
+    "stdDev": 2.879939235470082,
+    "correctedStdDev": 3.199932483855646,
+    "sampleStdDev": 3.107704457708506,
+    "sampleCorrectedStdDev": 2.7969340119376556,
+    "mean": 8.95,
+    "variance": -8.95,
+    "cardDate": "2015-08-01",
+    "generatedDate": "2015-08-07T10:44:29.974Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.very-distracting-percent/.json?to=2015-08-01"
+}, {
+    "id": "55c48c0eb0c883c52ee69def",
+    "type": "bottom10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-01",
+    "endRange": "2015-08-01",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "social-networking-percent": 0
+        }
+    },
+    "propertyName": "social-networking-percent.sum",
+    "stdDev": 0.3171119676076575,
+    "correctedStdDev": 0.35234663067517497,
+    "sampleStdDev": 2.5858374446925128,
+    "sampleCorrectedStdDev": 2.327253700223262,
+    "mean": 0.82,
+    "variance": -0.82,
+    "cardDate": "2015-08-01",
+    "generatedDate": "2015-08-07T10:44:30.595Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.social-networking-percent/.json?to=2015-08-01"
+}, {
+    "id": "55c48c0fb0c883c52ee69df0",
+    "type": "bottom10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-01",
+    "endRange": "2015-08-01",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "reference-and-learning-percent": 0
+        }
+    },
+    "propertyName": "reference-and-learning-percent.sum",
+    "stdDev": 0.10601886624558858,
+    "correctedStdDev": 0.1177987402728762,
+    "sampleStdDev": 2.263748033713635,
+    "sampleCorrectedStdDev": 2.0373732303422716,
+    "mean": 0.24000000000000005,
+    "variance": -0.24000000000000005,
+    "cardDate": "2015-08-01",
+    "generatedDate": "2015-08-07T10:44:31.448Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.reference-and-learning-percent/.json?to=2015-08-01"
+}, {
+    "id": "55c48c11b0c883c52ee69df4",
+    "type": "bottom10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-01",
+    "endRange": "2015-08-01",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "news-percent": 0
+        }
+    },
+    "propertyName": "news-percent.sum",
+    "stdDev": 0.034641016151377546,
+    "correctedStdDev": 0.03849001794597505,
+    "sampleStdDev": 2.8867513459481287,
+    "sampleCorrectedStdDev": 2.598076211353316,
+    "mean": 0.09999999999999999,
+    "variance": -0.09999999999999999,
+    "cardDate": "2015-08-01",
+    "generatedDate": "2015-08-07T10:44:33.228Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.news-percent/.json?to=2015-08-01"
+}, {
+    "id": "55c48c13b0c883c52ee69df8",
+    "type": "bottom10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-01",
+    "endRange": "2015-08-01",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "all-distracting-percent": 0
+        }
+    },
+    "propertyName": "all-distracting-percent.sum",
+    "stdDev": 5.049003862149443,
+    "correctedStdDev": 5.61000429127716,
+    "sampleStdDev": 3.19667016319709,
+    "sampleCorrectedStdDev": 2.877003146877381,
+    "mean": 16.14,
+    "variance": -16.14,
+    "cardDate": "2015-08-01",
+    "generatedDate": "2015-08-07T10:44:35.642Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.all-distracting-percent/.json?to=2015-08-01"
+}, {
+    "id": "55c48c13b0c883c52ee69df9",
+    "type": "bottom10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-01",
+    "endRange": "2015-08-01",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "entertainment-percent": 0
+        }
+    },
+    "propertyName": "entertainment-percent.sum",
+    "stdDev": 1.9215202314833952,
+    "correctedStdDev": 2.1350224794259947,
+    "sampleStdDev": 2.997626517600252,
+    "sampleCorrectedStdDev": 2.6978638658402265,
+    "mean": 5.76,
+    "variance": -5.76,
+    "cardDate": "2015-08-01",
+    "generatedDate": "2015-08-07T10:44:35.697Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.entertainment-percent/.json?to=2015-08-01"
+}, {
+    "id": "55c48c14b0c883c52ee69dfa",
+    "type": "bottom10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-01",
+    "endRange": "2015-08-01",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "communication-and-scheduling-percent": 0
+        }
+    },
+    "propertyName": "communication-and-scheduling-percent.sum",
+    "stdDev": 0.13960659010233006,
+    "correctedStdDev": 0.15511843344703338,
+    "sampleStdDev": 5.085719803625158,
+    "sampleCorrectedStdDev": 4.577147823262643,
+    "mean": 0.71,
+    "variance": -0.71,
+    "cardDate": "2015-08-01",
+    "generatedDate": "2015-08-07T10:44:36.590Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.communication-and-scheduling-percent/.json?to=2015-08-01"
+}, {
+    "id": "55c48c14b0c883c52ee69dfb",
+    "type": "bottom10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-01",
+    "endRange": "2015-08-01",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "productive-duration": 36
+        }
+    },
+    "propertyName": "productive-duration.sum",
+    "stdDev": 26.47897278974394,
+    "correctedStdDev": 29.421080877493264,
+    "sampleStdDev": 3.6708372629035035,
+    "sampleCorrectedStdDev": 3.3037535366131534,
+    "mean": 133.2,
+    "variance": -97.19999999999999,
+    "cardDate": "2015-08-01",
+    "generatedDate": "2015-08-07T10:44:36.686Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.productive-duration/.json?to=2015-08-01"
+}, {
+    "id": "55c48c10b0c883c52ee69df2",
+    "type": "top10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-01",
+    "endRange": "2015-08-01",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "very-productive-percent": 68.5
+        }
+    },
+    "propertyName": "very-productive-percent.sum",
+    "stdDev": 5.552733561049008,
+    "correctedStdDev": 6.16970395672112,
+    "sampleStdDev": 4.547309847013413,
+    "sampleCorrectedStdDev": 4.092578862312071,
+    "mean": 43.24999999999999,
+    "variance": 25.250000000000007,
+    "cardDate": "2015-08-01",
+    "generatedDate": "2015-08-07T10:44:32.276Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.very-productive-percent/.json?to=2015-08-01"
+}, {
+    "id": "55c48c10b0c883c52ee69df3",
+    "type": "top10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-01",
+    "endRange": "2015-08-01",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 1,
+    "properties": {
+        "sum": {
+            "all-productive-percent": 69.7
+        }
+    },
+    "propertyName": "all-productive-percent.sum",
+    "stdDev": 4.529349842968635,
+    "correctedStdDev": 5.032610936631817,
+    "sampleStdDev": 2.567697440738523,
+    "sampleCorrectedStdDev": 2.310927696664671,
+    "mean": 58.07000000000001,
+    "variance": 11.629999999999995,
+    "cardDate": "2015-08-01",
+    "generatedDate": "2015-08-07T10:44:32.663Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.all-productive-percent/.json?to=2015-08-01"
+}, {
+    "id": "55c48c13b0c883c52ee69df6",
+    "type": "top10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-01",
+    "endRange": "2015-08-01",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "software-development-percent": 68.5
+        }
+    },
+    "propertyName": "software-development-percent.sum",
+    "stdDev": 6.436947257823386,
+    "correctedStdDev": 7.152163619803762,
+    "sampleStdDev": 4.332799211008424,
+    "sampleCorrectedStdDev": 3.8995192899075812,
+    "mean": 40.61,
+    "variance": 27.89,
+    "cardDate": "2015-08-01",
+    "generatedDate": "2015-08-07T10:44:35.298Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.software-development-percent/.json?to=2015-08-01"
+}, {
+    "id": "55c48c13b0c883c52ee69df7",
+    "type": "top10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-01",
+    "endRange": "2015-08-01",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "productivity-pulse": 84
+        }
+    },
+    "propertyName": "productivity-pulse.sum",
+    "stdDev": 3.6206353033687337,
+    "correctedStdDev": 4.022928114854149,
+    "sampleStdDev": 5.275317285402608,
+    "sampleCorrectedStdDev": 4.747785556862347,
+    "mean": 64.9,
+    "variance": 19.099999999999994,
+    "cardDate": "2015-08-01",
+    "generatedDate": "2015-08-07T10:44:35.524Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.productivity-pulse/.json?to=2015-08-01"
+}, {
+    "id": "55c48c14b0c883c52ee69dfd",
+    "type": "date",
+    "cardDate": "2015-08-03",
+    "generatedDate": "2015-08-07T10:44:36.746Z"
+}, {
+    "id": "55c48c15b0c883c52ee69e02",
+    "type": "bottom10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-03",
+    "endRange": "2015-08-03",
+    "objectTags": [
+        "computer",
+        "software"
+    ],
+    "actionTags": [
+        "develop"
+    ],
+    "position": 2,
+    "properties": {
+        "sum": {
+            "__count__": 2
+        }
+    },
+    "propertyName": "__count__.sum",
+    "stdDev": 0.5621387729022078,
+    "correctedStdDev": 0.6245986365580087,
+    "sampleStdDev": 1.4231361339296398,
+    "sampleCorrectedStdDev": 1.2808225205366757,
+    "mean": 2.8,
+    "variance": -0.7999999999999998,
+    "cardDate": "2015-08-03",
+    "generatedDate": "2015-08-07T10:44:37.664Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,software/develop/sum.__count__/.json?to=2015-08-03",
+    "cardText": "3rd lowest minutes of coding"
+}, {
+    "id": "55c48c15b0c883c52ee69e06",
+    "type": "top10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-05",
+    "endRange": "2015-08-05",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 4,
+    "properties": {
+        "sum": {
+            "software-development-percent": 60.1
+        }
+    },
+    "propertyName": "software-development-percent.sum",
+    "stdDev": 5.708779203997997,
+    "correctedStdDev": 6.343088004442219,
+    "sampleStdDev": 1.327779500508891,
+    "sampleCorrectedStdDev": 1.195001550458002,
+    "mean": 52.519999999999996,
+    "variance": 7.580000000000005,
+    "cardDate": "2015-08-05",
+    "generatedDate": "2015-08-07T10:44:37.862Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.software-development-percent/.json?to=2015-08-05"
+}, {
+    "id": "55c48c15b0c883c52ee69e05",
+    "type": "top10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-05",
+    "endRange": "2015-08-05",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 1,
+    "properties": {
+        "sum": {
+            "design-and-composition-percent": 0.3
+        }
+    },
+    "propertyName": "design-and-composition-percent.sum",
+    "stdDev": 0.042426406871192854,
+    "correctedStdDev": 0.047140452079103175,
+    "sampleStdDev": 4.714045207910316,
+    "sampleCorrectedStdDev": 4.242640687119284,
+    "mean": 0.1,
+    "variance": 0.19999999999999998,
+    "cardDate": "2015-08-05",
+    "generatedDate": "2015-08-07T10:44:37.795Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.design-and-composition-percent/.json?to=2015-08-05"
+}, {
+    "id": "55c48c15b0c883c52ee69e03",
+    "type": "top10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-05",
+    "endRange": "2015-08-05",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 4,
+    "properties": {
+        "sum": {
+            "very-productive-percent": 60.4
+        }
+    },
+    "propertyName": "very-productive-percent.sum",
+    "stdDev": 5.381469130265452,
+    "correctedStdDev": 5.979410144739391,
+    "sampleStdDev": 1.3063347256724371,
+    "sampleCorrectedStdDev": 1.1757012531051936,
+    "mean": 53.36999999999999,
+    "variance": 7.030000000000008,
+    "cardDate": "2015-08-05",
+    "generatedDate": "2015-08-07T10:44:37.712Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.very-productive-percent/.json?to=2015-08-05"
+}, {
+    "id": "55c48c16b0c883c52ee69e08",
+    "type": "top10",
+    "outOf": 4,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-05",
+    "endRange": "2015-08-05",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "design-and-composition-duration": 72
+        }
+    },
+    "propertyName": "design-and-composition-duration.sum",
+    "stdDev": 9,
+    "correctedStdDev": 12,
+    "sampleStdDev": 2,
+    "sampleCorrectedStdDev": 1.5,
+    "mean": 54,
+    "variance": 18,
+    "cardDate": "2015-08-05",
+    "generatedDate": "2015-08-07T10:44:38.121Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.design-and-composition-duration/.json?to=2015-08-05"
+}, {
+    "id": "55c48c16b0c883c52ee69e09",
+    "type": "top10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-05",
+    "endRange": "2015-08-05",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 3,
+    "properties": {
+        "sum": {
+            "software-development-duration": 12780
+        }
+    },
+    "propertyName": "software-development-duration.sum",
+    "stdDev": 1557.5665327683434,
+    "correctedStdDev": 1730.629480853715,
+    "sampleStdDev": 2.5516726999366717,
+    "sampleCorrectedStdDev": 2.2965054299430046,
+    "mean": 8805.6,
+    "variance": 3974.3999999999996,
+    "cardDate": "2015-08-05",
+    "generatedDate": "2015-08-07T10:44:38.322Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.software-development-duration/.json?to=2015-08-05"
+}, {
+    "id": "55c48c17b0c883c52ee69e12",
+    "type": "top10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-05",
+    "endRange": "2015-08-05",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "utilities-duration": 936.0000000000001
+        }
+    },
+    "propertyName": "utilities-duration.sum",
+    "stdDev": 83.39180679179461,
+    "correctedStdDev": 92.65756310199401,
+    "sampleStdDev": 8.379240441984944,
+    "sampleCorrectedStdDev": 7.541316397786449,
+    "mean": 237.24,
+    "variance": 698.7600000000001,
+    "cardDate": "2015-08-05",
+    "generatedDate": "2015-08-07T10:44:39.106Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.utilities-duration/.json?to=2015-08-05"
+}, {
+    "id": "55c48c16b0c883c52ee69e0a",
+    "type": "bottom10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-05",
+    "endRange": "2015-08-05",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 5,
+    "properties": {
+        "sum": {
+            "entertainment-duration": 1224.0000000000002
+        }
+    },
+    "propertyName": "entertainment-duration.sum",
+    "stdDev": 297.50901835070476,
+    "correctedStdDev": 330.5655759452275,
+    "sampleStdDev": 1.5972625052993594,
+    "sampleCorrectedStdDev": 1.4375362547694235,
+    "mean": 1699.2,
+    "variance": -475.1999999999998,
+    "cardDate": "2015-08-05",
+    "generatedDate": "2015-08-07T10:44:38.484Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.entertainment-duration/.json?to=2015-08-05"
+}, {
+    "id": "55c48c16b0c883c52ee69e0b",
+    "type": "top10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-04",
+    "endRange": "2015-08-04",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "very-productive-percent": 83.1
+        }
+    },
+    "propertyName": "very-productive-percent.sum",
+    "stdDev": 5.856979597027805,
+    "correctedStdDev": 6.507755107808673,
+    "sampleStdDev": 5.646254942868808,
+    "sampleCorrectedStdDev": 5.081629448581927,
+    "mean": 50.029999999999994,
+    "variance": 33.07,
+    "cardDate": "2015-08-04",
+    "generatedDate": "2015-08-07T10:44:38.556Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.very-productive-percent/.json?to=2015-08-04"
+}, {
+    "id": "55c48c17b0c883c52ee69e11",
+    "type": "top10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-04",
+    "endRange": "2015-08-04",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "utilities-duration": 396
+        }
+    },
+    "propertyName": "utilities-duration.sum",
+    "stdDev": 40.45173123612882,
+    "correctedStdDev": 44.946368040143135,
+    "sampleStdDev": 6.113953406748388,
+    "sampleCorrectedStdDev": 5.502558066073549,
+    "mean": 148.68,
+    "variance": 247.32,
+    "cardDate": "2015-08-04",
+    "generatedDate": "2015-08-07T10:44:39.041Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.utilities-duration/.json?to=2015-08-04"
+}, {
+    "id": "55c48c17b0c883c52ee69e14",
+    "type": "top10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-04",
+    "endRange": "2015-08-04",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "software-development-percent": 83.1
+        }
+    },
+    "propertyName": "software-development-percent.sum",
+    "stdDev": 6.627775644965662,
+    "correctedStdDev": 7.364195161072958,
+    "sampleStdDev": 5.291368006193531,
+    "sampleCorrectedStdDev": 4.762231205574178,
+    "mean": 48.029999999999994,
+    "variance": 35.07,
+    "cardDate": "2015-08-04",
+    "generatedDate": "2015-08-07T10:44:39.666Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.software-development-percent/.json?to=2015-08-04"
+}, {
+    "id": "55c48c18b0c883c52ee69e19",
+    "type": "top10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-04",
+    "endRange": "2015-08-04",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 1,
+    "properties": {
+        "sum": {
+            "all-productive-percent": 85.2
+        }
+    },
+    "propertyName": "all-productive-percent.sum",
+    "stdDev": 4.417981439526427,
+    "correctedStdDev": 4.908868266140474,
+    "sampleStdDev": 4.984176665613237,
+    "sampleCorrectedStdDev": 4.485758999051914,
+    "mean": 63.18000000000001,
+    "variance": 22.019999999999996,
+    "cardDate": "2015-08-04",
+    "generatedDate": "2015-08-07T10:44:40.045Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.all-productive-percent/.json?to=2015-08-04"
+}, {
+    "id": "55c48c16b0c883c52ee69e0d",
+    "type": "bottom10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-04",
+    "endRange": "2015-08-04",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "very-distracting-percent": 0
+        }
+    },
+    "propertyName": "very-distracting-percent.sum",
+    "stdDev": 2.3643624933584104,
+    "correctedStdDev": 2.6270694370649004,
+    "sampleStdDev": 2.6941723267449835,
+    "sampleCorrectedStdDev": 2.4247550940704854,
+    "mean": 6.369999999999999,
+    "variance": -6.369999999999999,
+    "cardDate": "2015-08-04",
+    "generatedDate": "2015-08-07T10:44:38.781Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.very-distracting-percent/.json?to=2015-08-04"
+}, {
+    "id": "55c48c16b0c883c52ee69e0e",
+    "type": "bottom10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-04",
+    "endRange": "2015-08-04",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "social-networking-percent": 0
+        }
+    },
+    "propertyName": "social-networking-percent.sum",
+    "stdDev": 0.26983328186122624,
+    "correctedStdDev": 0.2998147576235847,
+    "sampleStdDev": 2.112415473985703,
+    "sampleCorrectedStdDev": 1.9011739265871328,
+    "mean": 0.5700000000000001,
+    "variance": -0.5700000000000001,
+    "cardDate": "2015-08-04",
+    "generatedDate": "2015-08-07T10:44:38.835Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.social-networking-percent/.json?to=2015-08-04"
+}, {
+    "id": "55c48c16b0c883c52ee69e0f",
+    "type": "bottom10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-04",
+    "endRange": "2015-08-04",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "reference-and-learning-percent": 0
+        }
+    },
+    "propertyName": "reference-and-learning-percent.sum",
+    "stdDev": 0.07099295739719538,
+    "correctedStdDev": 0.07888106377466154,
+    "sampleStdDev": 1.9720265943665392,
+    "sampleCorrectedStdDev": 1.774823934929885,
+    "mean": 0.14,
+    "variance": -0.14,
+    "cardDate": "2015-08-04",
+    "generatedDate": "2015-08-07T10:44:38.977Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.reference-and-learning-percent/.json?to=2015-08-04"
+}, {
+    "id": "55c48c17b0c883c52ee69e10",
+    "type": "bottom10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-04",
+    "endRange": "2015-08-04",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 2,
+    "properties": {
+        "sum": {
+            "neutral-duration": 360
+        }
+    },
+    "propertyName": "neutral-duration.sum",
+    "stdDev": 90.21574142022001,
+    "correctedStdDev": 100.23971268913334,
+    "sampleStdDev": 1.5961737689352442,
+    "sampleCorrectedStdDev": 1.43655639204172,
+    "mean": 504,
+    "variance": -144,
+    "cardDate": "2015-08-04",
+    "generatedDate": "2015-08-07T10:44:39.021Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.neutral-duration/.json?to=2015-08-04"
+}, {
+    "id": "55c48c17b0c883c52ee69e13",
+    "type": "bottom10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-04",
+    "endRange": "2015-08-04",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "productive-duration": 36
+        }
+    },
+    "propertyName": "productive-duration.sum",
+    "stdDev": 18.671475571041515,
+    "correctedStdDev": 20.746083967823907,
+    "sampleStdDev": 3.6633419645785703,
+    "sampleCorrectedStdDev": 3.297007768120713,
+    "mean": 104.4,
+    "variance": -68.4,
+    "cardDate": "2015-08-04",
+    "generatedDate": "2015-08-07T10:44:39.511Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.productive-duration/.json?to=2015-08-04"
+}, {
+    "id": "55c48c17b0c883c52ee69e15",
+    "type": "bottom10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-04",
+    "endRange": "2015-08-04",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "communication-and-scheduling-duration": 36
+        }
+    },
+    "propertyName": "communication-and-scheduling-duration.sum",
+    "stdDev": 10.739832400926934,
+    "correctedStdDev": 11.933147112141038,
+    "sampleStdDev": 3.01680685419296,
+    "sampleCorrectedStdDev": 2.7151261687736636,
+    "mean": 68.4,
+    "variance": -32.400000000000006,
+    "cardDate": "2015-08-04",
+    "generatedDate": "2015-08-07T10:44:39.702Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.communication-and-scheduling-duration/.json?to=2015-08-04"
+}, {
+    "id": "55c48c17b0c883c52ee69e17",
+    "type": "bottom10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-04",
+    "endRange": "2015-08-04",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "all-distracting-percent": 0
+        }
+    },
+    "propertyName": "all-distracting-percent.sum",
+    "stdDev": 4.7147311694305545,
+    "correctedStdDev": 5.238590188256172,
+    "sampleStdDev": 2.632175526881394,
+    "sampleCorrectedStdDev": 2.3689579741932545,
+    "mean": 12.41,
+    "variance": -12.41,
+    "cardDate": "2015-08-04",
+    "generatedDate": "2015-08-07T10:44:39.746Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.all-distracting-percent/.json?to=2015-08-04"
+}, {
+    "id": "55c48c17b0c883c52ee69e18",
+    "type": "bottom10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-04",
+    "endRange": "2015-08-04",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "entertainment-percent": 0
+        }
+    },
+    "propertyName": "entertainment-percent.sum",
+    "stdDev": 1.6418434760963059,
+    "correctedStdDev": 1.8242705289958954,
+    "sampleStdDev": 2.527646551221289,
+    "sampleCorrectedStdDev": 2.2748818960991604,
+    "mean": 4.15,
+    "variance": -4.15,
+    "cardDate": "2015-08-04",
+    "generatedDate": "2015-08-07T10:44:39.773Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.entertainment-percent/.json?to=2015-08-04"
+}, {
+    "id": "55c48c18b0c883c52ee69e1a",
+    "type": "bottom10",
+    "outOf": 10,
+    "thumbnailMedia": "chart.html",
+    "startRange": "2015-08-04",
+    "endRange": "2015-08-04",
+    "objectTags": [
+        "computer",
+        "desktop"
+    ],
+    "actionTags": [
+        "use"
+    ],
+    "position": 0,
+    "properties": {
+        "sum": {
+            "news-percent": 0
+        }
+    },
+    "propertyName": "news-percent.sum",
+    "stdDev": 0.028460498941515415,
+    "correctedStdDev": 0.0316227766016838,
+    "sampleStdDev": 2.459549291242073,
+    "sampleCorrectedStdDev": 2.2135943621178655,
+    "mean": 0.07,
+    "variance": -0.07,
+    "cardDate": "2015-08-04",
+    "generatedDate": "2015-08-07T10:44:40.269Z",
+    "chart": "/v1/users/komlev/rollups/day/computer,desktop/use/sum.news-percent/.json?to=2015-08-04"
+}]

@@ -996,22 +996,25 @@ _.mixin({
 });
 
 var filterCards = function(req, res, next){
-    var filterFunc;
+    var timingInfo = {};
+    timingInfo.startMoment = moment();
+    var stdDevFilter;
     if(req.query.minStdDev && req.query.maxStdDev){
-        filterFunc = function(card){
+        stdDevFilter = function(card){
             return card.type === 'date' || card.sampleCorrectedStdDev > req.query.minStdDev && card.sampleCorrectedStdDev < req.query.maxStdDev;
         }
     }
     else if(req.query.minStdDev)
     {
-        filterFunc = function(card){
+        stdDevFilter = function(card){
             return card.type === 'date' || card.sampleCorrectedStdDev > req.query.minStdDev;
         }   
     }
 
-    if(filterFunc){
-        res.user.cards = _.filter(res.user.cards, filterFunc);
-    }
+    // if(filterFunc){
+    //     res.user.cards = _.filter(res.user.cards, filterFunc);
+    // }
+    timingInfo.totalCards = res.user.cards.length;
 
     if(req.query.extraFiltering)
     {
@@ -1032,15 +1035,21 @@ var filterCards = function(req, res, next){
                 cards[positionName][card.position] = [];
             }
 
+            // if(positionName === 'bottom10.computer,git,github,software,source control.commit.line-changes.sum.file-types.dev'){
+            //     debugger;
+            // }
+
             cards[positionName][card.position].push(card);
         }
         
         var groupedAndSorted = _(grouped).mapObject(function(value, key){
             var splits = key.split('/');
-            
+            // if(key === "2015-07-25/bottom10"){
+            //     debugger;
+            // }
             var sortedCardsForDay = _(value).reduce(function(memo, card){
                 if(card.propertyName !== undefined){
-                    _.deep(memo, card.propertyName + '.__card__', card);
+                    _.deep(memo, [card.objectTags.join(','), card.actionTags.join(','), card.propertyName].join('/') + '.__card__', card);
                 }
 
                 return memo;
@@ -1052,8 +1061,16 @@ var filterCards = function(req, res, next){
                 if(candidateCard !== undefined){
                     var daysDiff = (moment() - moment(candidateCard.cardDate)) / 1000 / 60 / 60 / 24;
                     candidateCard.weight = (1.0/depth) * Math.pow(0.99,daysDiff);
+                    candidateCard.depth = depth;
                     
                     addToCards(candidateCard);
+                    var topLevelNode = candidateCard
+
+                    _.each(_.keys(node), function(nodeKey){
+                        if(nodeKey !== '__card__'){
+                            addBranch(node[nodeKey], depth +1);
+                        }
+                    });
                 }
                 else{
                     _.each(_.keys(node), function(nodeKey){
@@ -1065,20 +1082,54 @@ var filterCards = function(req, res, next){
             addBranch(sortedCardsForDay, 0);
         });
 
-        var filteredPositions = _.chain(cards).map(function(v, k){
+        var findFirstNode = function(node){
+            var result = [];
+
+            var candidateCard = node['__card__'];
+            if(candidateCard !== undefined){
+                result.push(candidateCard);
+            }
+            else{
+                _.each(_.keys(node), function(nodeKey){
+                    result.push(findFirstNode(node[nodeKey]));
+                });
+            }
+
+            return result;
+        };
+
+        var readCardsFilter = function(card){
+            return card.type !== 'date' && card.read === undefined || card.read === false;
+        };
+
+        var filteredPositions = _.chain(cards)
+        .map(function(v, k){
             return _.chain(v)
             .filter(Boolean)
             .first()
-            .sort('date')
+            .sortBy('cardDate')
+            .sortBy('sortingValue')
             .value()[0];
         })
-        .filter(function(card){
-            return card.read === undefined || card.read === false;
+        
+        .reduce(function(memo, card){
+                if(card.propertyName !== undefined){
+                    _.deep(memo, [card.type, card.objectTags.join(','), card.actionTags.join(','), card.propertyName].join('/') + '.__card__', card);
+                }
+
+                return memo;
+            }, {})
+        .map(function(cardBranch){
+            return findFirstNode(cardBranch);
         })
+        .flatten()
+        .filter(readCardsFilter)
+        //.filter(stdDevFilter)
         .sortBy('cardDate')
         .groupBy(function(card){
-            return card.cardDate;
-            })
+             return card.cardDate;
+             })
+        
         .map(function(value, key){
             var dateCard = {
                 type: 'date',
@@ -1087,34 +1138,22 @@ var filterCards = function(req, res, next){
             return [dateCard, value];
         })
         .flatten()
+        
         .value();
 
         if(res.user === undefined){
             res.user = {};
         }
-        
-        var flattened = _.chain(cards).map(function(card){
-            try{
-                var result = card;
-                if(card.length === 0){
-                    result = null;
-                }
-                else if(card.length == 1 && card[0].type == 'date'){
-                    result = null;
-                }
-
-                return result;
-            }
-            catch(e){
-                console.log('error');
-            }
-        })
-        .filter(Boolean)
-        .flatten()
-        .value()
 
         res.user.cards = filteredPositions;
+        timingInfo.filteredCards = res.user.cards.length;
     }
+
+    timingInfo.endMoment = moment();
+    timingInfo.elapsed = (timingInfo.endMoment - timingInfo.startMoment) / 1000;
+    delete timingInfo.startMoment;
+    delete timingInfo.endMoment;
+    logger.debug([req.user.username, 'filterCards'].join(': '), 'timing info', timingInfo);
 
     next();
 };
