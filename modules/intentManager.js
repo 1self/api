@@ -35,7 +35,10 @@ IntentManager.prototype.process = function (intent, req, res) {
             res.redirect(intentData.url);
         } else if (intentName === "session.redirect") {
             res.redirect(intentData.url);
+        } else if (intentName === "card-stack") {
+            res.redirect(intentData.url);
         }
+
         else {
             redirect("/integrations");
         }

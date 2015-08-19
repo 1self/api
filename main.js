@@ -30,7 +30,7 @@ logger.info("Info will be logged here");
 logger.debug("Debug will be logged here");
 
 process.on('uncaughtException', function(err) {
-  winston.error('Caught exception: ' + err);
+  logger.error('Caught exception: ' + err);
   throw err;
 });
 
@@ -949,6 +949,7 @@ var doNotAuthorize = function(req, res, next){
 }
 
 var getCards = function(req, res, next){
+
     util.findUser(req.params.username)
     .then(function(user){
         res.user = user;
@@ -996,6 +997,12 @@ _.mixin({
 });
 
 var filterCards = function(req, res, next){
+    if(req.user.cards === undefined){
+        res.user.cards = [];
+        next();
+        return;
+    }
+    
     var timingInfo = {};
     timingInfo.startMoment = moment();
     var stdDevFilter;

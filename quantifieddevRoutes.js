@@ -249,8 +249,29 @@ module.exports = function (app) {
                 });
         }
     });
+    
+    var createCardStackIntent = function(req, res, next){
+        req.session.redirectUrl = '/card-stack';
+        req.session.intent = {
+            name: 'card-stack',
+            data: {
+                url: '/card-stack'
+            }
+        }
 
-    app.get("/card-stack", sessionManager.requiresSession, function (req, res) {
+        next();
+    }
+
+    var satisfyCardStackIntent = function(req, res, next){
+        delete req.session.intent
+        next();
+    }
+
+    app.get("/card-stack", 
+        createCardStackIntent,
+        sessionManager.requiresSession, 
+        satisfyCardStackIntent,
+        function (req, res) {
         res.render('card-stack/index.html', {
             username: req.session.username,
             avatarUrl: req.session.avatarUrl
