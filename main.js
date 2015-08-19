@@ -998,7 +998,7 @@ _.mixin({
 });
 
 var filterCards = function(req, res, next){
-    if(req.user.cards === undefined){
+    if(res.user.cards === undefined){
         res.user.cards = [];
         next();
         return;
