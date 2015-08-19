@@ -61,41 +61,47 @@
 
     function addRankings(dataset) {
 
-        // var sort_by_date = function(a, b) {
-        //     var dateDiff = new Date(a.cardDate).getTime() - new Date(b.cardDate).getTime();
-        //     if (dateDiff === 0) {
-        //         if (a.type === "date")
-        //             return 1;
-        //         else if (b.type === "date")
-        //             return -1;
-        //         else
-        //             return 0;
-        //     } else {
-        //         return dateDiff;    
-        //     }
-        // };
-
-        // 7 : 1 aug
-        // 6 : 2 aug
-        // 6 : 3 aug
-
-        var ranking_sort = function(a, b) {
-            var diff = a.value - b.value;
+        // If compareFunction(a, b) is less than 0, sort a to a lower index than b, i.e. a comes first.
+        // 
+        var ranking_sort_desc = function(a, b) {
+            // sorting for "most" or "top"
+            // if a > b then it needs a lower index
+            var diff = b.value - a.value;
             if (diff === 0) {
-                return new Date(b.date).getTime() - new Date(a.date).getTime();
+                // if a is earlier than b then it needs a lower index
+                return new Date(a.date).getTime() - new Date(b.date).getTime();
             } else {
                 return diff;
             }
         };
 
-        dataset.sort(ranking_sort);
+        var ranking_sort_asc = function(a, b) {
+            // sorting for "fewest" or "bottom"
+            // if a < b then it needs a lower index
+            var diff = a.value - b.value;
+            if (diff === 0) {
+                // if a is earlier than b then it needs a lower index
+                diff = new Date(a.date).getTime() - new Date(b.date).getTime();
+            // } else {
+            //     return diff;
+            }
+            console.log(a.value, b.value, a.date, b.date, diff);
+            return diff;
+        };
+
+        dataset.sort(ranking_sort_asc);
 
         for (var i = 0; i < dataset.length; i++) {
             dataset[i].rankAsc = i;
-            dataset[i].rankDesc = dataset.length - 1 - i;
+        }
 
-            if (dataset[i].rankDesc === 0)
-                maxValue = dataset[i].value;
+        dataset.sort(ranking_sort_desc);
+
+        for (var j = 0; j < dataset.length; j++) {
+            dataset[j].rankDesc = j;
+
+            if (dataset[j].rankDesc === 0)
+                maxValue = dataset[j].value;
         }
     }
 

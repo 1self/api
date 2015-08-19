@@ -283,8 +283,17 @@ $(function() {
     var customFormatObjTags = function(objTagsString) {
         if (objTagsString === "computer desktop") 
             return "computer time";
+        else if (objTagsString === "music")
+            return "music tracks";
         else
             return objTagsString;
+    };
+
+    var customFormatActionTags = function(actionTagsString) {
+        if (actionTagsString === "listen") 
+            return "listened to";
+        else
+            return actionTagsString;
     };
 
     var setPrecision = function(numberToSet) {
@@ -312,7 +321,7 @@ $(function() {
 
             if (objectKey.indexOf('duration') >= 0) {
                 isDuration = true;
-            } else if (objectKey.indexOf('percent') >= 0) {
+            } else if (objectKey.indexOf('percent') >= 0 || objectKey.indexOf('productivity-pulse') >= 0) {
                 isPercent = true;
             }
 
@@ -390,8 +399,8 @@ $(function() {
                     }
                 } else if (cardData.actionTags[0] === "listen") {
                     if (cardData.properties.sum.__count__) {
-                        supplantObject.action_pl = displayTags(pluralise(cardData.actionTags));
-                        supplantObject.objects = displayTags(cardData.objectTags);
+                        supplantObject.action_pl = customFormatActionTags(displayTags(cardData.actionTags));
+                        supplantObject.objects = customFormatObjTags(displayTags(cardData.objectTags));
                         cardText = template3.supplant(supplantObject);
                         // console.log("template3");
                     } else {
@@ -568,7 +577,7 @@ $(function() {
             createCardText(cardData, colour);
 
             var headerText = cardData.type === "top10" ? "Top" : "Bottom";
-            headerText += ' 10: ' + createComparitorText(cardData.position, cardData.type) + ' of ' + cardData.outOf;
+            headerText += ' 5'; //: ' + createComparitorText(cardData.position, cardData.type) + ' of ' + cardData.outOf;
 
             var frontContent = [
                 , '<div class="cardHeader" style="background-color: {{colour}};">'
