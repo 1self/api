@@ -952,8 +952,9 @@ var doNotAuthorize = function(req, res, next){
 var getCards = function(req, res, next){
     logger.debug('starting getCards');
     util.findUser(req.params.username)
-    .then(function(user){
-        res.user = user;
+    .then(util.getCards)
+    .then(function(cards){
+        res.cards = cards;
         next();
     })
     .catch(function(err){
@@ -998,8 +999,8 @@ _.mixin({
 });
 
 var filterCards = function(req, res, next){
-    if(res.user.cards === undefined){
-        res.user.cards = [];
+    if(res.cards === undefined){
+        res.cards = [];
         next();
         return;
     }
@@ -1021,13 +1022,13 @@ var filterCards = function(req, res, next){
     }
 
     // if(filterFunc){
-    //     res.user.cards = _.filter(res.user.cards, filterFunc);
+    //     res.cards = _.filter(res.cards, filterFunc);
     // }
-    timingInfo.totalCards = res.user.cards.length;
+    timingInfo.totalCards = res.cards.length;
 
     if(req.query.extraFiltering)
     {
-        var grouped = _(res.user.cards).groupBy(function(card){
+        var grouped = _(res.cards).groupBy(function(card){
             var cardType = card.type === 'date' ? '_date' : card.type;
             return card.cardDate + '/' + card.type;
         });
@@ -1035,6 +1036,7 @@ var filterCards = function(req, res, next){
         var  cards = {};
 
         var addToCards = function(card){
+            card.id = card._id;
             var positionName = [card.type, card.objectTags.join(','), card.actionTags.join(','),card.propertyName].join('.');
             if(cards[positionName] === undefined){
                 cards[positionName] = [];
@@ -1154,8 +1156,8 @@ var filterCards = function(req, res, next){
             res.user = {};
         }
 
-        res.user.cards = filteredPositions;
-        timingInfo.filteredCards = res.user.cards.length;
+        res.cards = filteredPositions;
+        timingInfo.filteredCards = res.cards.length;
     }
 
     timingInfo.endMoment = moment();
@@ -1168,7 +1170,7 @@ var filterCards = function(req, res, next){
 };
 
 var sendCards = function(req, res, next) {
-    res.status(200).send(res.user.cards);
+    res.status(200).send(res.cards);
 }
 
 var sendCard = function(req, res, next) {
@@ -1177,12 +1179,12 @@ var sendCard = function(req, res, next) {
 
 var extractCardDetails = function(req, res, next){
     req.card = req.body;
-    req.card.cardId = req.params.cardId;
+    req.card._id = req.params.cardId;
     next();
 }
 
 var updateCardInDb = function(req, res, next) {
-    util.setCardForUser(req.user, req.card)
+    util.setCard(req.card)
     .then(function(card){
         res.card = card;
         next();
@@ -1209,7 +1211,6 @@ var getUser = function(req, res, next){
 // /v1/users/:username/cards/:cardId/"
 app.patch('/v1/users/:username/cards/:cardId',
     doNotAuthorize,
-    getUser,
     extractCardDetails,
     updateCardInDb,
     sendCard);

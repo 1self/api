@@ -226,6 +226,20 @@ Util.prototype.getStreamsForUser = function (oneselfUsername) {
     return deferred.promise;
 };
 
+Util.prototype.getCards = function(user) {
+    var byId = {
+        "userId": user._id
+    };
+    var deferred = q.defer();
+    mongoRepository.find('cards', byId)
+        .then(function (cards) {
+            deferred.resolve(cards);
+        }, function (err) {
+            deferred.reject(err);
+        });
+    return deferred.promise;
+};
+
 Util.prototype.findUser = function (oneselfUsername) {
     var byOneselfUsername = {
         "username": oneselfUsername.toLowerCase()
@@ -374,18 +388,17 @@ Util.prototype.generateToken = function () {
     
 };
 
-Util.prototype.setCardForUser = function(user, card){
+Util.prototype.setCard = function(card){
     var deferred = q.defer();
     var query = {
-        username: user.username,
-        cards: {$elemMatch: {id: new ObjectID(card.cardId)}}
+        _id: new ObjectID(card._id)
     };
     var update = {
-        $set: { "cards.$.read": card.read,
-                "cards.$.readInfo": card.readInfo}
+        $set: { "read": card.read,
+                "readInfo": card.readInfo}
     }
 
-    mongoRepository.update('users', query, update)
+    mongoRepository.update('cards', query, update)
     .then(function(updateCount){
         if(updateCount > 0){
             deferred.resolve(true);
