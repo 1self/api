@@ -277,6 +277,31 @@ module.exports = function (app) {
             avatarUrl: req.session.avatarUrl
         });
     });
+
+    var renderCardStack = function (req, res, next) {
+        var model = {};
+
+        if(req.params.username === "ed" || req.params.username === "m"){
+            model = {
+                username: req.params.username,
+                avatarUrl: null
+            };
+        }
+        else{
+            model = {
+                username: req.session.username,
+                avatarUrl: req.session.avatarUrl
+            };
+        }
+
+        res.render('card-stack/index.html', model);
+    };
+
+    app.get("/card-stack/:username", 
+        createCardStackIntent,
+        sessionManager.requiresSession, 
+        satisfyCardStackIntent,
+        renderCardStack);
     
 
     app.get("/claimUsername", sessionManager.requiresSession, function (req, res) {
