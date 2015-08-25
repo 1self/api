@@ -281,7 +281,9 @@ module.exports = function (app) {
     var renderCardStack = function (req, res, next) {
         var model = {};
 
-        if(req.params.username === "ed" || req.params.username === "m"){
+        if(req.params.username !== req.session.username
+            && (req.session.username === 'ed' || req.session.username === 'm')
+                ){
             model = {
                 username: req.params.username,
                 avatarUrl: null
