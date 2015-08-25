@@ -267,17 +267,6 @@ module.exports = function (app) {
         next();
     }
 
-    app.get("/card-stack", 
-        createCardStackIntent,
-        sessionManager.requiresSession, 
-        satisfyCardStackIntent,
-        function (req, res) {
-        res.render('card-stack/index.html', {
-            username: req.session.username,
-            avatarUrl: req.session.avatarUrl
-        });
-    });
-
     var renderCardStack = function (req, res, next) {
         var model = {};
 
@@ -298,6 +287,13 @@ module.exports = function (app) {
 
         res.render('card-stack/index.html', model);
     };
+
+    app.get("/card-stack", 
+        createCardStackIntent,
+        sessionManager.requiresSession, 
+        satisfyCardStackIntent,
+        renderCardStack
+    );
 
     app.get("/card-stack/:username", 
         createCardStackIntent,
