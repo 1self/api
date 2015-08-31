@@ -226,10 +226,18 @@ Util.prototype.getStreamsForUser = function (oneselfUsername) {
     return deferred.promise;
 };
 
-Util.prototype.getCards = function(user) {
+Util.prototype.getCards = function(user, from) {
     var byId = {
-        "userId": user._id
+        userId: user._id,
+        archive: {$ne: true}
     };
+
+    if(from){
+        byId.cardDate = {
+            $gt: from
+        }
+    }
+
     var deferred = q.defer();
     mongoRepository.find('cards', byId)
         .then(function (cards) {
@@ -410,6 +418,23 @@ Util.prototype.setCard = function(card){
     }, function (err) {
         deferred.reject(err);
     })
+
+    return deferred.promise;
+}
+
+Util.prototype.getAdminToken = function(token){
+    var deferred = q.defer();
+    var query = {
+        token: token
+    }
+    mongoRepository.findOne('adminTokens', query)
+    .then(function (token) {
+        deferred.resolve(token);
+    })
+    .catch(function (err) {
+        deferred.reject(err);
+    })
+    .done();
 
     return deferred.promise;
 }

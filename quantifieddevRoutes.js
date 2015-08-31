@@ -267,40 +267,71 @@ module.exports = function (app) {
         next();
     }
 
-    var renderCardStack = function (req, res, next) {
-        var model = {};
+    var selectUsername = function (req, res, next) {
+        res.model = {};
 
-        if(req.params.username !== req.session.username
-            && (req.session.username === 'ed' || req.session.username === 'm')
-                ){
-            model = {
-                username: req.params.username,
-                avatarUrl: null
-            };
-        }
-        else{
-            model = {
-                username: req.session.username,
-                avatarUrl: req.session.avatarUrl
-            };
-        }
+        res.model.username = req.session.username,
+        res.avatarUrl = req.session.avatarUrl;
 
-        res.render('card-stack/index.html', model);
+        next();
     };
+
+    var switchUsername = function (req, res, next) {
+        if(req.adminToken){
+            res.model.username = req.params.username;
+        }
+
+        next();
+    };
+
+    var renderCardStack = function (req, res, next) {
+        res.render('card-stack/index.html', res.model);
+    };
+
+    var checkAdminToken = function(req, res, next){
+        if(req.query.adminToken === undefined){
+            next();
+        }
+
+        util.getAdminToken(req.query.adminToken)
+        .then(function(token){
+            if(token !== null && (new RegExp(token.route).test(req.originalUrl))){
+                req.adminToken = token;
+                next();
+            }
+            else{
+                res.send(401);
+            }
+        })
+        .catch(function(e){
+            req.app.logger.error(e);
+            res.send(500);
+        })
+        .done();
+    }
 
     app.get("/card-stack", 
         createCardStackIntent,
         sessionManager.requiresSession, 
         satisfyCardStackIntent,
+        selectUsername,
         renderCardStack
     );
 
     app.get("/card-stack/:username", 
+        checkAdminToken,
         createCardStackIntent,
         sessionManager.requiresSession, 
         satisfyCardStackIntent,
+        selectUsername,
+        switchUsername,
         renderCardStack);
-    
+
+    app.get('/logout', function (req, res){
+        req.session.destroy(function (err) {
+        res.redirect('/'); //Inside a callback… bulletproof!
+        });
+    });
 
     app.get("/claimUsername", sessionManager.requiresSession, function (req, res) {
         if (req.query.username && _.isEmpty(req.session.username)) {

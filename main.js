@@ -57,6 +57,8 @@ app.use(session({
     }
 }));
 
+app.logger = logger;
+
 
 app.use(bodyParser.urlencoded({
     limit: '100mb',
@@ -952,7 +954,9 @@ var doNotAuthorize = function(req, res, next){
 var getCards = function(req, res, next){
     logger.debug('starting getCards');
     util.findUser(req.params.username)
-    .then(util.getCards)
+    .then(function(user){
+        return util.getCards(user, req.query.from);
+    })
     .then(function(cards){
         res.cards = cards;
         next();
@@ -1136,7 +1140,6 @@ var filterCards = function(req, res, next){
         .flatten()
         .filter(readCardsFilter)
         //.filter(stdDevFilter)
-        .sortBy('cardDate')
         .groupBy(function(card){
              return card.cardDate;
              })
@@ -1149,6 +1152,9 @@ var filterCards = function(req, res, next){
             return [dateCard, value];
         })
         .flatten()
+        .sortBy(function(card){
+            return card.cardDate;
+        })
         
         .value();
 
@@ -1208,16 +1214,27 @@ var getUser = function(req, res, next){
     });
 }
 
+var profileCardRead = function(req, res, next){
+    if(req.winstonProfile === undefined){
+        req.winstonProfile = 'cardRead' + req.params.cardId;
+    }
+
+    logger.profile(req.winstonProfile);
+    next();
+}
+
 // /v1/users/:username/cards/:cardId/"
 app.patch('/v1/users/:username/cards/:cardId',
+    profileCardRead,
     doNotAuthorize,
     extractCardDetails,
     updateCardInDb,
+    profileCardRead,
     sendCard);
 
 
 app.get('/v1/users/:username/cards',
-    doNotAuthorize, // replace this with auth
+    doNotAuthorize,
     getCards,
     filterCards,
     sendCards);
