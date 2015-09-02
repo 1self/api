@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="110px" height="110px" viewBox="0 0 110 110" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.2.2 (9983) - http://www.bohemiancoding.com/sketch -->
+    <title>hacknernews</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Mobile-Portrait-13" sketch:type="MSArtboardGroup" transform="translate(-803.000000, -584.000000)">
+            <g id="hacknernews" sketch:type="MSLayerGroup" transform="translate(803.000000, 584.000000)">
+                <path d="M55,110 C85.3756612,110 110,85.3756612 110,55 C110,24.6243388 85.3756612,0 55,0 C24.6243388,0 0,24.6243388 0,55 C0,85.3756612 24.6243388,110 55,110 Z" id="Path-4" fill="#F46507" sketch:type="MSShapeGroup"></path>
+                <path d="M33.1409903,26.3440899 L41.2179689,26.3440899 L55.3270086,54.6031568 L69.5220328,26.304439 L76.8590097,26.3440899 L58.5596712,61.095213 L58.5596712,83.695561 L52.1141714,83.695561 L52.1141714,61.095213 L33.1409903,26.3440899 Z" id="Path-31" fill="#FFFFFF" sketch:type="MSShapeGroup"></path>
+            </g>
+        </g>
+    </g>
+</svg>

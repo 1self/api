@@ -57,8 +57,8 @@ function addYAxis(yAxis, appendTo, width, leftMargin, axisLabel) {
         .selectAll('.tick')
         .each(function(data) {
             var tick = d3.select(this);
-            console.log(tick, tick.text());
-            console.log(tick.select('text')[0][0].getComputedTextLength());
+            // console.log(tick, tick.text());
+            // console.log(tick.select('text')[0][0].getComputedTextLength());
             if (tick.select('text')[0][0].getComputedTextLength() > maxLabelLength)
                 maxLabelLength = tick.select('text')[0][0].getComputedTextLength();
         });
@@ -99,7 +99,7 @@ function drawLollySticks(appendTo, data, height, width, xMap, yMap, lineColour, 
             .data(data)
             .enter().append("line")
             .attr("class", "lolly-stick")
-            .style("stroke", function(d) { return d.highlight ? lineColour : '#a9b2bd'; } )
+            .style("stroke", function(d) { return d.highlight ? lineColour : '#999999'; } ) //'#a9b2bd'
             .attr("y1", y1)
             .attr("y2", y1)
             .attr("x1", xMap)
@@ -119,7 +119,7 @@ function drawLollySticks(appendTo, data, height, width, xMap, yMap, lineColour, 
             .attr("cx", xMap)
             .attr("cy", y1)
             .style("display", function(d) { return d.highlight === "date" ? "none" : "block" ; } )
-            .style("fill", function(d) { return d.highlight ? lineColour : '#a9b2bd'; } )
+            .style("fill", function(d) { return d.highlight ? lineColour : '#999999'; } )
             .transition()
             .duration(1200)
             .ease('elastic')
@@ -130,7 +130,7 @@ function drawLollySticks(appendTo, data, height, width, xMap, yMap, lineColour, 
             .data(data)
             .enter().append("line")
             .attr("class", "lolly-stick")
-            .style("stroke", function(d) { return d.highlight ? lineColour : '#a9b2bd'; } )
+            .style("stroke", function(d) { return d.highlight ? lineColour : '#999999'; } )
             .attr("y1", y1)
             .attr("y2", yMap)
             .attr("x1", xMap)
@@ -146,6 +146,6 @@ function drawLollySticks(appendTo, data, height, width, xMap, yMap, lineColour, 
             .attr("cx", xMap)
             .attr("cy", yMap)
             .style("display", function(d) { return d.highlight === "date" ? "none" : "block" ; } )
-            .style("fill", function(d) { return d.highlight ? lineColour : '#a9b2bd'; } );
+            .style("fill", function(d) { return d.highlight ? lineColour : '#999999'; } );
     }
 }

@@ -1,0 +1,59 @@
+//**
+// Main Layout Styles
+//**
+* {
+    margin: 0;
+}
+
+html,
+body {
+    height: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    position: relative;
+    height: 100%;
+}
+
+body {
+    background: #dcdddc;
+    background: linear-gradient(to bottom, #dadada 0%, #ffffff 50%);
+    /* W3C */
+    // filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dadada', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
+}
+
+header {
+    height: 10%;
+    padding: 1.2em;
+}
+
+
+
+main {
+    height: 75%;
+    padding-top:4%;
+    z-index: 1;
+    position: relative;
+}
+
+.headline {
+    height: 40%;
+}
+
+.chart {    
+    height: 50%;
+}
+
+.card-menu {
+    height: 10%;
+}
+
+// Responsive styles if needed
+// @include responsive($big-break) {
+// }
+// @include responsive($small-break) {
+// }
+// Mobile first styles if needed
+// @include mobilefirst($big-break) {
+// }
+// @include mobilefirst($small-break) {
+// }

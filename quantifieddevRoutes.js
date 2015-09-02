@@ -319,7 +319,7 @@ module.exports = function (app) {
     );
 
     app.get("/card-stack/:username", 
-        checkAdminToken,
+        //checkAdminToken,
         createCardStackIntent,
         sessionManager.requiresSession, 
         satisfyCardStackIntent,

@@ -1,0 +1,175 @@
+// Card Stack
+.headline {
+    padding: 5%;
+    font-size: 150%;
+    color: #999999;
+    line-height: 100%;
+    // background:linear-gradient(to bottom, #31373d 0%, #58636e 100%);
+    font-weight:300;
+
+    &:before {
+    // background: url(../img/texture.svg);
+    content: "";
+    position: absolute;
+    background-size: contain;
+    opacity: 0.1;
+    width: 100%;
+    height: 50%;
+    left: 0;
+    top: 0;
+
+
+
+    // position: absolute;
+    // content: "";
+    // width: 150%;
+    // height: 250%;
+    // border-radius: 100%;
+    // overflow: hidden;
+    // top: -218%;
+    // left: -25%;
+    // right: 0;
+    // box-shadow: 0 4px 2px -2px rgba(0,0,0,0.75);
+    // z-index: 0;
+    // background: #dcdddc;
+    // background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
+    // background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, #fff 50%);
+
+  
+
+
+    }
+
+
+    b {
+        font-weight: normal;
+        font-size: 60%;
+        color: #bbb;
+    }
+
+    .event-date {
+        float:right;
+        margin-top:2%;
+    }
+
+
+    &.rescuetime {
+        border-top: 20px solid $rescuetime;
+        .service {
+            background: url(../img/service-rescue-time.svg);
+            width: 100%;
+            height: 30%;
+            z-index: 6;
+            display: block;
+            background-repeat: no-repeat;
+            background-size: contain;
+        }
+    }
+    &.sublime {
+        border-top: 15px solid $sublime;
+        .service {
+            background: url(../img/service-sublime.svg);
+            width: 100%;
+            height: 30%;
+            z-index: 6;
+            display: block;
+            background-repeat: no-repeat;
+            background-size: contain;
+            margin-top: 2%;
+        }
+    }
+    &.foursquare {
+        border-top: 10px solid $foursquare;
+    }
+}
+
+.chart {
+    background: #FFF;
+    border: 0px;
+}
+
+.card-menu {
+    .more {
+        float: right;
+        background: url(../img/more.svg);
+        width: 20%;
+        height: 100%;
+        background-repeat: no-repeat;
+        background-size: 50%;
+        background-position: center;
+        z-index: 6;
+        display: block;
+        span {
+            height: 100%;
+            width: 100%;
+            display: block;
+        }
+    }
+    .more-back {
+        float: right;
+        background: url(../img/back.svg);
+        width: 20%;
+        height: 100%;
+        background-repeat: no-repeat;
+        background-size: 50%;
+        background-position: center;
+        z-index: 0
+    }
+}
+
+// Card Stack Back
+.back {
+    .headline {
+        height: 30%;
+        padding: 5%;
+    }
+    .chart {
+        height: 50%;
+        // box-shadow: inset 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
+    }
+    .card-menu {
+        height: 20%;
+    }
+}
+
+.card-count {
+    width: auto;
+    height: auto;
+    position: relative;
+    z-index: -1;
+    float: right;
+    padding-right: 5%;
+    top: 2%;
+    font-size: 120%;
+    color: #333333;
+    font-family: Verdana;
+}
+
+.card-count sup {
+    color: #bbb;
+}
+
+.removed-from-deck {
+    animation: card-fade 0.5s ease-out 1 forwards;
+}
+
+@keyframes card-fade {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        display: none;
+    }
+}
+
+.card-hide {
+    display: none;
+}
+
+.chart-iframe {
+    width: 90%;
+    height: 100%;
+    margin:0 5% 0 5%;
+    border:1px solid #CCC;
+}

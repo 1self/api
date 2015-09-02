@@ -4,15 +4,23 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="chart.css">
+    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/d3/d3.min.js"></script>
     <script src="js/chartDrawing.js"></script>
-    <script src="utils.js"></script>
+    <script src="js/utils.js"></script>
 </head>
 
 <body>
     <div class="outerContainer">
-        <div class="mainContainer"></div>
+        <div class="mainContainer">
+            <div class="chart-loading">
+                <div class="chart-loading-inner">
+                    <div class="chart-loading-spinner"><i class="fa fa-4x fa-circle-o-notch fa-spin"></i></div>
+                    <div class="chart-loading-text">Chart loading...</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -31,16 +39,24 @@
     var maxValue; // this is set in fn addRankings;
 
     $('.mainContainer').ready(function () {
+
+        var width = $('body').width();
+        var height = $('body').height();
+
+        var $chartLoading = $('.chart-loading');
+        $chartLoading.height(height);
+        $chartLoading.css('color', lineColour);
+
         getData(dataSrc, function (data) {
-          drawChart(data);
+          drawChart(data, width, height);
         });
     });
 
-    function drawChart(data) {
+    function drawChart(data, width, height) {
         // if (doTransitions) {
         //     draw5Bars(data);
         // } else {
-            drawSparkLine(data);
+            drawSparkLine(data, width, height);
         // }
     }
 
@@ -85,7 +101,6 @@
             // } else {
             //     return diff;
             }
-            console.log(a.value, b.value, a.date, b.date, diff);
             return diff;
         };
 
@@ -113,11 +128,11 @@
         }
 
         for (var i = 0; i < dataArray.length; i++) {
-            if (highlightCondition === "bottom10" && dataArray[i].rankAsc === 0) {
-                dataArray[i].highlight = "bottom10";
-            } else if (highlightCondition === "top10" && dataArray[i].rankDesc === 0) {
-                dataArray[i].highlight = "top10";
-            }
+            // if (highlightCondition === "bottom10" && dataArray[i].rankAsc === 0) {
+            //     dataArray[i].highlight = "bottom10";
+            // } else if (highlightCondition === "top10" && dataArray[i].rankDesc === 0) {
+            //     dataArray[i].highlight = "top10";
+            // }
 
             for (var k = 0; k < highlightDatesArray.length; k++) {
                 if (highlightDatesArray[k] === dataArray[i].date) {
@@ -149,7 +164,7 @@
             // alert(apiURL);
             var jqxhr = $.getJSON(apiURL,
                     function() {
-                        // console.log("accessed api for chart data");
+                        
                     })
                 .done(function(data) {
 
@@ -247,13 +262,11 @@
         return returnData;
     }
 
-    function draw5Bars(chartData) {
+    function draw5Bars(chartData, width, height) {
         var data = get5(chartData.allData, highlightCondition);
 
         console.log(data);
 
-        var width = $('body').width();
-        var height = $('body').height();
         var margin = {top: 20, right: 20, bottom: 20, left: 20};
 
         var rank = function(d) {
@@ -290,19 +303,17 @@
             .attr("x2", xMap);
     }
 
-    function drawSparkLine(chartData) {
+    function drawSparkLine(chartData, width, height) {
 
         var data = chartData.allData;
 
-        // console.log(chartData);
-
-        var width = $('body').width();
-        var height = $('body').height();
+        // var width = $('body').width();
+        // var height = $('body').height();
 
         var yAxisLabel = formatYAxisLabel(chartData.property);
 
         // Set the dimensions of the canvas / graph
-        var margin = {top: 20, right: 70, bottom: 20, left: 20};
+        var margin = {top: 20, right: 20, bottom: 20, left: 20};
         if (vaxis) margin.left -= 0;
         
         width = width - margin.left - margin.right;
@@ -368,7 +379,8 @@
                 highlightObj.newPsn = y(d.value);
                 highlightObj.highlight = d.highlight;
                 highlightTextElements.push(highlightObj);
-                return doTransitions ? "highlight-text-active" : "highlight-text-hidden";
+                // return doTransitions ? "highlight-text-active" : "highlight-text-hidden";
+                return "highlight-text-hidden";
             } else {
                 return "highlight-text-hidden";
             }
@@ -409,6 +421,8 @@
                 }
             }
         };
+
+        $('.chart-loading').hide();
 
         var highlightTextDiv;
         var highlightPointer;
@@ -497,58 +511,58 @@
         if (doTransitions) {
 
         // Update position of highlight labels if necessary
-            updateOverlaps();
+            // updateOverlaps();
 
-            // add highlight text (value)
-            container.selectAll(".highlight-text-selector")
-                .data(data)
-                .enter().append("text")
-                .attr("class", function(d) { return (d.highlight ? "highlight-text-active" : "highlight-text-hidden"); } )
-                .attr("rankAsc", function(d) { return d.rankAsc; } )
-                .attr("dx", width + 13)
-                .attr("dy", "1em")
-                .text(function(d) { return dataTextFormat(d.value, chartData.property); } );
+            // // add highlight text (value)
+            // container.selectAll(".highlight-text-selector")
+            //     .data(data)
+            //     .enter().append("text")
+            //     .attr("class", function(d) { return (d.highlight ? "highlight-text-active" : "highlight-text-hidden"); } )
+            //     .attr("rankAsc", function(d) { return d.rankAsc; } )
+            //     .attr("dx", width + 13)
+            //     .attr("dy", "1em")
+            //     .text(function(d) { return dataTextFormat(d.value, chartData.property); } );
 
-            // position labels as per updated position
-            container.selectAll(".highlight-text-active")
-                .each( function() { repositionLabel(this); } );
+            // // position labels as per updated position
+            // container.selectAll(".highlight-text-active")
+            //     .each( function() { repositionLabel(this); } );
 
-            // add highlight main horizontal line
-            container.selectAll(".highlight-text-selector")
-                .data(highlightTextElements)
-                .enter().append("line")
-                .attr('class', "highlight-line")
-                .style("stroke", lineColour)
-                .style("stroke-dasharray", "4,2")
-                .style("stroke-width", 2)
-                .attr("x1", function(d) { return x(d.date); })
-                .attr("x2", function(d) { return d.psn === d.newPsn ? width + 10 : width + 6; } )
-                .attr("transform", function(d) { return "translate(0," + d.psn + ")"; } );
+            // // add highlight main horizontal line
+            // container.selectAll(".highlight-text-selector")
+            //     .data(highlightTextElements)
+            //     .enter().append("line")
+            //     .attr('class', "highlight-line")
+            //     .style("stroke", lineColour)
+            //     .style("stroke-dasharray", "4,2")
+            //     .style("stroke-width", 2)
+            //     .attr("x1", function(d) { return x(d.date); })
+            //     .attr("x2", function(d) { return d.psn === d.newPsn ? width + 10 : width + 6; } )
+            //     .attr("transform", function(d) { return "translate(0," + d.psn + ")"; } );
 
 
-            // add highlight final tick to label
-            container.selectAll(".highlight-text-selector")
-                .data(highlightTextElements)
-                .enter().append("line")
-                .attr('class', "highlight-line")
-                .style("stroke", lineColour)
-                // .style("stroke-dasharray", "4,2")
-                .style("stroke-width", 2)
-                .attr("x1", width + 6)
-                .attr("x2", width + 10 )
-                .attr("transform", function(d) { return "translate(0," + d.newPsn + ")"; } );
+            // // add highlight final tick to label
+            // container.selectAll(".highlight-text-selector")
+            //     .data(highlightTextElements)
+            //     .enter().append("line")
+            //     .attr('class', "highlight-line")
+            //     .style("stroke", lineColour)
+            //     // .style("stroke-dasharray", "4,2")
+            //     .style("stroke-width", 2)
+            //     .attr("x1", width + 6)
+            //     .attr("x2", width + 10 )
+            //     .attr("transform", function(d) { return "translate(0," + d.newPsn + ")"; } );
 
-            // add highlight vertical line to join main line to tick
-            container.selectAll(".highlight-text-selector")
-                .data(highlightTextElements)
-                .enter().append("line")
-                .attr('class', "highlight-line")
-                .style("stroke", lineColour)
-                .style("stroke-dasharray", "4,2")
-                .style("stroke-width", 2)
-                .attr("y1", function(d) { return d.newPsn; } )
-                .attr("y2", function(d) { return d.psn; } )
-                .attr("transform", "translate(" + (width + 6) + ",0)");
+            // // add highlight vertical line to join main line to tick
+            // container.selectAll(".highlight-text-selector")
+            //     .data(highlightTextElements)
+            //     .enter().append("line")
+            //     .attr('class', "highlight-line")
+            //     .style("stroke", lineColour)
+            //     .style("stroke-dasharray", "4,2")
+            //     .style("stroke-width", 2)
+            //     .attr("y1", function(d) { return d.newPsn; } )
+            //     .attr("y2", function(d) { return d.psn; } )
+            //     .attr("transform", "translate(" + (width + 6) + ",0)");
 
             // draw main highlight inner dot
             container.selectAll(".highlight-text-selector")
@@ -759,7 +773,6 @@
             }
 
             lastScale = d3.event.scale;
-            // console.log(tx, width, max, width - max, Math.max(Math.min(tx, 0), (width - max)));
             var ty = d3.event.translate[1];
 
             tx = Math.min(tx, width);

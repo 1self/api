@@ -14,6 +14,24 @@ path {
     stroke-width: 2;
     fill: none;
 }
+
+.chart-loading {
+  width: 100%;
+  height: 100%;
+  display: table;
+}
+
+.chart-loading-inner {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+}
+
+.chart-loading-spinner, .chart-loading-text {
+  padding: 5px;
+}
 /*
 .axis path,
 .axis line {

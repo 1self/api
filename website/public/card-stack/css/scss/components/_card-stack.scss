@@ -1,0 +1,87 @@
+#viewport {
+    width: 90%;
+    height: 95%;
+    position: relative;
+    margin: 0 auto;
+    max-width: 500px;
+    .stack {
+        width: 100%;
+        height: 100%;
+        padding:0;
+        background: url(../img/logo-background.svg);
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size:contain;
+    }
+    li {
+        width: 100%;
+        height: 100%;
+        list-style: none;
+        background: #fff;
+        position: absolute;
+        box-shadow: 3px 3px 3px rgba(0,0,0,0.2),1px 1px 1px rgba(0,0,0,0.2);
+        border:1px solid #ddd;
+        box-sizing: border-box;
+        &.in-deck {
+
+            &:nth-child(1) {
+                top: -20px;
+                width:90%;
+                margin:0 5% 0 5%;
+                // filter: grayscale(1);
+                // filter: blur(2px);
+                // transition: filter 1s;
+                }
+            &:nth-child(2) {
+                top: -10px;
+                width:95%;
+                margin:0 2.5% 0 2.5%;
+                // filter: grayscale(1);
+                // filter: blur(1px);
+                // transition: filter 1s;
+                }
+            &:nth-child(3) {
+                width:100%;
+                // margin:0 auto; 
+                // transition: filter 1s;
+            }
+
+        }
+    }
+    #control {
+        position: absolute;
+        bottom: 30px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 0;
+        button {
+            background: #FFFFFF;
+            color: #373737;
+            font-weight: bold;
+            border: none;
+            font: normal 18px/24px 'Helvetica Neue', Helvetica, Arial, freesans, sans-serif;
+            margin: 0 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            box-shadow: 0 2px 0 #63211F;
+            outline: none;
+            position: relative;
+            &:hover {}
+            &:active {
+                background: #63211F;
+                color: #FFFFFF;
+                bottom: -2px;
+                box-shadow: none;
+            }
+        }
+    }
+}
+
+#source {
+    width: 500px;
+    margin: 20px auto;
+    a {
+        color: #C7433E;
+    }
+}

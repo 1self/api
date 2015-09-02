@@ -1,0 +1,197 @@
+//**
+// Typography
+//**
+
+body {
+  font-family: 'Raleway', sans-serif;
+  font-size: 100%;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+blockquote {
+  border-left: 2px solid $primary-color;
+  font-family: 'Raleway', sans-serif;
+  font-size: 1.4em;
+  font-style: italic;
+  font-weight: 400;
+  margin: 0 0 $padding/2;
+  padding-left: 25px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: 'Raleway', sans-serif;
+}
+
+h1 {
+  font-size: 68px;
+  font-style: normal;
+  font-weight: 400;
+  margin: 0 0 25px;
+}
+
+h2 {
+  font-size: 42px;
+  font-style: normal;
+  font-weight: 400;
+  margin: 0 0 25px;
+}
+
+h3 {
+  font-size: 26px;
+  font-style: normal;
+  font-weight: 400;
+  margin: 0 0 25px;
+}
+
+h4 {
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  margin: 0 0 25px;
+}
+
+h5 {
+  font-size: 16px;
+  font-style: normal;
+  font-weight: normal;
+  margin: 0 0 25px;
+}
+
+p {
+  margin: 0 0 $padding/2;
+  font-family: 'Raleway', sans-serif;
+  font-size:1em;
+}
+
+pre {
+  background: #222;
+  color: #fff;
+  display: block;
+  font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+  font-size: 13px;
+  line-height: 20px;
+  margin: 0 0 $padding/2;
+  padding: 10px;
+  word-break: break-all;
+  word-wrap: break-word;
+}
+
+code {
+  border-radius: 5px;
+  background: #f5f5f5;
+  border: 1px solid rgba(0, 0, 0, .1);
+  font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+  font-size: 13px;
+  line-height: 20px;
+  padding: 2px 10px;
+  word-break: break-all;
+  word-wrap: break-word;
+}
+
+a {
+  color: $primary-color;
+
+  &:hover,
+  &:focus {
+    text-decoration: none;
+  }
+}
+
+
+
+
+
+//320px;
+
+// @include mobilefirst($x-small-break) {
+
+//    body {
+//     font-size: 12px;
+//   }
+
+//   h1,
+//   h2,
+//   h3,
+//   h4,
+//   h5 {
+//     margin-bottom: 8px;
+//   }
+
+//   h1 {
+//     font-size: 24px;
+//   }
+
+//   h2 {
+//     font-size: 16px;
+//   }
+
+//   h3 {
+//     font-size: 14px;
+//   }
+
+//   h4,
+//   h5,
+//   p,
+//   ul,
+//   ol {
+//     font-size: 12px;
+//   }
+
+// }
+
+
+//  @include mobilefirst($small-break) {
+//      body {
+//     font-size: 14px;
+//   }
+
+//   h1,
+//   h2,
+//   h3,
+//   h4,
+//   h5 {
+//     margin-bottom: 10px;
+//   }
+
+//   h1 {
+//     font-size: 26px;
+//   }
+
+//   h2 {
+//     font-size: 18px;
+//   }
+
+//   h3 {
+//     font-size: 16px;
+//   }
+
+//   h4,
+//   h5,
+//   p,
+//   ul,
+//   ol {
+//     font-size: 14px;
+//   }
+// }
+
+
+
+
+// @include mobilefirst($big-break) {
+
+
+// }
+
+
+
+// Mobile first styles if needed
+// @include mobilefirst($big-break) {
+// }
+// @include mobilefirst($small-break) {
+// }
