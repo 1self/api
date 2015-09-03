@@ -532,11 +532,8 @@ hr {
 .front {
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-/*    top: 0;
-    left: 0;*/
     width: 90%;
     height: 100%;
-/*    border-radius: 4px;*/
     z-index: 2;
     margin-left: auto;
     margin-right: auto;
@@ -556,7 +553,7 @@ hr {
     top: -40px;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.14);
     width: 100%;
-    height: 145%;
+    height: 100%;
     background-color: #fff;
 }
 
@@ -2224,8 +2221,9 @@ footer:before {
 }
 
 .removed-from-deck {
-    -webkit-animation: card-fade 0.5s ease-out 1 forwards;
-    animation: card-fade 0.5s ease-out 1 forwards
+/*    -webkit-animation: card-fade 0.5s ease-out 1 forwards;
+    animation: card-fade 0.5s ease-out 1 forwards*/
+/*    display: none;*/
 }
 
 @-webkit-keyframes card-fade {

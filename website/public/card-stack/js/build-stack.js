@@ -213,6 +213,9 @@ $(document).ready(function() {
         e.target.classList.add('removed-from-deck');
         discardPile.push(e.target);
 
+        var $target = $(e.target);
+        $target.fadeOut(2000, function() { $target.hide(); }); // fade it out and then ensure it's hidden so the DOM knows it doesn't need to render it
+
         markCardUnique(e.target, 'topOfDiscard');
         e.target.thrownX = 1;
         e.target.thrownY = 78;
@@ -233,7 +236,7 @@ $(document).ready(function() {
             renderMainMedia($newTop, cardData);
 
             var $cardNumText = $('.card-number-text');
-            $cardNumText.text(parseInt($cardNumText.text()) + 1);
+            $cardNumText.text(cardsOnDiscard + 1);
 
             showFlickButtons();
 
@@ -269,8 +272,9 @@ $(document).ready(function() {
             var cardsInDeck = $('.stack li.in-deck');
 
             if (cardsInDeck.length >= 0) {
+                var cardsOnDiscard = discardPile.length;
                 var $cardNumText = $('.card-number-text');
-                $cardNumText.text(parseInt($cardNumText.text()) - 1);
+                $cardNumText.text(cardsOnDiscard + 1);
             }
 
             if (cardsInDeck.length >= 3) {
@@ -286,7 +290,10 @@ $(document).ready(function() {
             cardsInDeck = $('.stack li.in-deck').detach();
             $('.stack').prepend(cardsInDeck);
 
-            $(e.target).show();
+            $target = $(e.target); 
+            $target.stop(true, false); // stop the fade out animation
+            $target.fadeIn(1); // fade it back in
+            $target.show(); // ensure it's visible
         
             e.target.classList.add('in-deck');
             e.target.classList.remove('removed-from-deck');
@@ -294,9 +301,15 @@ $(document).ready(function() {
             // bring the active card to the top in the li list so it can always be interacted with
             bringToTop(e.target);
 
-            $loadingDivTop = $('.loading-div-top').remove();
-            $noMoreCardsDiv = $('.no-more-cards-div-bottom').remove();
-            $('.no-more-cards-div-bottom').addClass('hide');
+            if ($('.loading-div-top').length > 0) {
+                $loadingDivTop = $('.loading-div-top').remove();
+            }
+
+            if ($('.no-more-cards-div-bottom').length > 0) {
+                $noMoreCardsDiv = $('.no-more-cards-div-bottom').remove();
+                $('.no-more-cards-div-bottom').addClass('hide');
+            }
+
             showFlickButtons();
             $('.card-count').show();
 
