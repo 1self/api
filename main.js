@@ -72,6 +72,7 @@ app.use(bodyParser.json({
 app.engine('html', swig.renderFile);
 app.use(express.static(path.join(__dirname, 'website/public')));
 app.use('/card-stack', express.static('website/card-stack'));
+app.use('/profile', express.static('website/profile'));
 app.set('views', __dirname + '/website/views');
 app.set('view engine', 'html');
 /* app.set('view cache', false);

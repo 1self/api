@@ -250,6 +250,23 @@ module.exports = function (app) {
         }
     });
     
+    var createProfileIntent = function(req, res, next){
+        req.session.redirectUrl = '/profile';
+        req.session.intent = {
+            name: 'profile',
+            data: {
+                url: '/profile'
+            }
+        }
+
+        next();
+    }
+
+    var satisfyProfileIntent = function(req, res, next){
+        delete req.session.intent
+        next();
+    }
+
     var createCardStackIntent = function(req, res, next){
         req.session.redirectUrl = '/card-stack';
         req.session.intent = {
@@ -316,6 +333,17 @@ module.exports = function (app) {
         satisfyCardStackIntent,
         selectUsername,
         renderCardStack
+    );
+
+    var renderProfile = function (req, res, next) {
+        res.render('profile/index.html', res.model);
+    };
+
+    app.get("/profile", 
+        createProfileIntent,
+        sessionManager.requiresSession, 
+        satisfyProfileIntent,
+        renderProfile
     );
 
     app.get("/card-stack/:username", 

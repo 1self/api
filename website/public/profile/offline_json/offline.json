@@ -1,0 +1,963 @@
+[
+{
+"id": "55baf2c1644d12c87e297aa0",
+"type": "bottom10",
+"outOf": 9,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-30",
+"endRange": "2015-07-30",
+"objectTags": [
+"computer",
+"software"
+],
+"actionTags": [
+"develop"
+],
+"position": 2,
+"properties": {
+"sum": {
+"duration": 2823
+}
+},
+"propertyName": "duration.sum",
+"stdDev": 820.7385579593919,
+"correctedStdDev": 923.3308777043159,
+"sampleStdDev": 2.153615835900584,
+"sampleCorrectedStdDev": 1.9143251874671858,
+"mean": 4590.555555555556,
+"variance": -1767.5555555555557,
+"cardDate": "2015-07-30",
+"generatedDate": "2015-07-31T04:00:01.487Z",
+"chart": "/v1/users/martin/rollups/day/computer,software/develop/sum.duration/.json?to=2015-07-30",
+"cardText": "3rd lowest minutes of coding"
+},
+{
+"id": "55b8dd8c404b736f644c7378",
+"type": "top10",
+"outOf": 6,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-27",
+"endRange": "2015-07-27",
+"objectTags": [
+"music"
+],
+"actionTags": [
+"listen"
+],
+"position": 0,
+"properties": {
+"sum": {
+"track-name": {
+"Child": {
+"__count__": 1
+}
+}
+}
+},
+"propertyName": "__count__.sum.track-name.Child",
+"stdDev": 0,
+"correctedStdDev": 0,
+"sampleStdDev": 0,
+"sampleCorrectedStdDev": 0,
+"mean": 1,
+"variance": 0,
+"cardDate": "2015-07-27",
+"generatedDate": "2015-07-29T14:05:00.224Z",
+"chart": "/v1/users/martin/rollups/day/music/listen/sum.track-name.Child.__count__/.json?to=2015-07-27"
+},
+{
+"id": "55b8dd8c404b736f644c7387",
+"type": "top10",
+"outOf": 5,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-27",
+"endRange": "2015-07-27",
+"objectTags": [
+"music"
+],
+"actionTags": [
+"listen"
+],
+"position": 0,
+"properties": {
+"sum": {
+"track-name": {
+"Feel To Follow": {
+"__count__": 1
+}
+}
+}
+},
+"propertyName": "__count__.sum.track-name.Feel To Follow",
+"stdDev": 0,
+"correctedStdDev": 0,
+"sampleStdDev": 0,
+"sampleCorrectedStdDev": 0,
+"mean": 1,
+"variance": 0,
+"cardDate": "2015-07-27",
+"generatedDate": "2015-07-29T14:05:00.924Z",
+"chart": "/v1/users/martin/rollups/day/music/listen/sum.track-name.Feel%20To%20Follow.__count__/.json?to=2015-07-27"
+},
+{
+"id": "55b8dd8d404b736f644c7390",
+"type": "top10",
+"outOf": 6,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-27",
+"endRange": "2015-07-27",
+"objectTags": [
+"music"
+],
+"actionTags": [
+"listen"
+],
+"position": 0,
+"properties": {
+"sum": {
+"track-name": {
+"Ayla": {
+"__count__": 1
+}
+}
+}
+},
+"propertyName": "__count__.sum.track-name.Ayla",
+"stdDev": 0,
+"correctedStdDev": 0,
+"sampleStdDev": 0,
+"sampleCorrectedStdDev": 0,
+"mean": 1,
+"variance": 0,
+"cardDate": "2015-07-27",
+"generatedDate": "2015-07-29T14:05:01.338Z",
+"chart": "/v1/users/martin/rollups/day/music/listen/sum.track-name.Ayla.__count__/.json?to=2015-07-27"
+},
+{
+"id": "55b8dd8d404b736f644c7391",
+"type": "top10",
+"outOf": 6,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-27",
+"endRange": "2015-07-27",
+"objectTags": [
+"music"
+],
+"actionTags": [
+"listen"
+],
+"position": 0,
+"properties": {
+"sum": {
+"track-name": {
+"Glimmer": {
+"__count__": 1
+}
+}
+}
+},
+"propertyName": "__count__.sum.track-name.Glimmer",
+"stdDev": 0,
+"correctedStdDev": 0,
+"sampleStdDev": 0,
+"sampleCorrectedStdDev": 0,
+"mean": 1,
+"variance": 0,
+"cardDate": "2015-07-27",
+"generatedDate": "2015-07-29T14:05:01.350Z",
+"chart": "/v1/users/martin/rollups/day/music/listen/sum.track-name.Glimmer.__count__/.json?to=2015-07-27"
+},
+{
+"id": "55b8dd8d404b736f644c7399",
+"type": "top10",
+"outOf": 5,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-27",
+"endRange": "2015-07-27",
+"objectTags": [
+"music"
+],
+"actionTags": [
+"listen"
+],
+"position": 0,
+"properties": {
+"sum": {
+"track-name": {
+"Forever I've Known": {
+"__count__": 1
+}
+}
+}
+},
+"propertyName": "__count__.sum.track-name.Forever I've Known",
+"stdDev": 0,
+"correctedStdDev": 0,
+"sampleStdDev": 0,
+"sampleCorrectedStdDev": 0,
+"mean": 1,
+"variance": 0,
+"cardDate": "2015-07-27",
+"generatedDate": "2015-07-29T14:05:01.803Z",
+"chart": "/v1/users/martin/rollups/day/music/listen/sum.track-name.Forever%20I've%20Known.__count__/.json?to=2015-07-27"
+},
+{
+"id": "55b8dd8c404b736f644c7386",
+"type": "top10",
+"outOf": 7,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-27",
+"endRange": "2015-07-27",
+"objectTags": [
+"computer",
+"git",
+"github",
+"software",
+"source control"
+],
+"actionTags": [
+"commit"
+],
+"position": 0,
+"properties": {
+"sum": {
+"author-email": {
+"martinstrotton@gmail^com": {
+"file-types": {
+"png": {
+"line-additions": 0
+}
+}
+}
+}
+}
+},
+"propertyName": "line-additions.sum.author-email.martinstrotton@gmail^com.file-types.png",
+"stdDev": 0,
+"correctedStdDev": 0,
+"sampleStdDev": 0,
+"sampleCorrectedStdDev": 0,
+"mean": 0,
+"variance": 0,
+"cardDate": "2015-07-27",
+"generatedDate": "2015-07-29T14:05:00.896Z",
+"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.author-email.martinstrotton%40gmail%5Ecom.file-types.png.line-additions/.json?to=2015-07-27"
+},
+{
+"id": "55b8dd8f404b736f644c73af",
+"type": "top10",
+"outOf": 7,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-27",
+"endRange": "2015-07-27",
+"objectTags": [
+"computer",
+"git",
+"github",
+"software",
+"source control"
+],
+"actionTags": [
+"commit"
+],
+"position": 0,
+"properties": {
+"sum": {
+"author-name": {
+"Martin": {
+"file-types": {
+"png": {
+"line-additions": 0
+}
+}
+}
+}
+}
+},
+"propertyName": "line-additions.sum.author-name.Martin.file-types.png",
+"stdDev": 0,
+"correctedStdDev": 0,
+"sampleStdDev": 0,
+"sampleCorrectedStdDev": 0,
+"mean": 0,
+"variance": 0,
+"cardDate": "2015-07-27",
+"generatedDate": "2015-07-29T14:05:03.703Z",
+"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.author-name.Martin.file-types.png.line-additions/.json?to=2015-07-27"
+},
+{
+"id": "55b8dd8f404b736f644c73b2",
+"type": "top10",
+"outOf": 7,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-27",
+"endRange": "2015-07-27",
+"objectTags": [
+"computer",
+"git",
+"github",
+"software",
+"source control"
+],
+"actionTags": [
+"commit"
+],
+"position": 0,
+"properties": {
+"sum": {
+"file-types": {
+"png": {
+"line-additions": 0
+}
+}
+}
+},
+"propertyName": "line-additions.sum.file-types.png",
+"stdDev": 0,
+"correctedStdDev": 0,
+"sampleStdDev": 0,
+"sampleCorrectedStdDev": 0,
+"mean": 0,
+"variance": 0,
+"cardDate": "2015-07-27",
+"generatedDate": "2015-07-29T14:05:03.880Z",
+"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.file-types.png.line-additions/.json?to=2015-07-27"
+},
+{
+"id": "55b8dd91404b736f644c73be",
+"type": "top10",
+"outOf": 6,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-27",
+"endRange": "2015-07-27",
+"objectTags": [
+"computer",
+"git",
+"github",
+"software",
+"source control"
+],
+"actionTags": [
+"commit"
+],
+"position": 0,
+"properties": {
+"sum": {
+"repo": {
+"1self/website": {
+"file-types": {
+"png": {
+"line-additions": 0
+}
+}
+}
+}
+}
+},
+"propertyName": "line-additions.sum.repo.1self/website.file-types.png",
+"stdDev": 0,
+"correctedStdDev": 0,
+"sampleStdDev": 0,
+"sampleCorrectedStdDev": 0,
+"mean": 0,
+"variance": 0,
+"cardDate": "2015-07-27",
+"generatedDate": "2015-07-29T14:05:05.664Z",
+"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.repo.1self%2Fwebsite.file-types.png.line-additions/.json?to=2015-07-27"
+},
+{
+"id": "55b8dd8d404b736f644c7397",
+"type": "top10",
+"outOf": 7,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-27",
+"endRange": "2015-07-27",
+"objectTags": [
+"computer",
+"git",
+"github",
+"software",
+"source control"
+],
+"actionTags": [
+"commit"
+],
+"position": 0,
+"properties": {
+"sum": {
+"author-email": {
+"martinstrotton@gmail^com": {
+"file-types": {
+"png": {
+"line-changes": 0
+}
+}
+}
+}
+}
+},
+"propertyName": "line-changes.sum.author-email.martinstrotton@gmail^com.file-types.png",
+"stdDev": 0,
+"correctedStdDev": 0,
+"sampleStdDev": 0,
+"sampleCorrectedStdDev": 0,
+"mean": 0,
+"variance": 0,
+"cardDate": "2015-07-27",
+"generatedDate": "2015-07-29T14:05:01.735Z",
+"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.author-email.martinstrotton%40gmail%5Ecom.file-types.png.line-changes/.json?to=2015-07-27"
+},
+{
+"id": "55b8dd8e404b736f644c73a4",
+"type": "top10",
+"outOf": 7,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-27",
+"endRange": "2015-07-27",
+"objectTags": [
+"computer",
+"git",
+"github",
+"software",
+"source control"
+],
+"actionTags": [
+"commit"
+],
+"position": 0,
+"properties": {
+"sum": {
+"author-name": {
+"Martin": {
+"file-types": {
+"png": {
+"line-changes": 0
+}
+}
+}
+}
+}
+},
+"propertyName": "line-changes.sum.author-name.Martin.file-types.png",
+"stdDev": 0,
+"correctedStdDev": 0,
+"sampleStdDev": 0,
+"sampleCorrectedStdDev": 0,
+"mean": 0,
+"variance": 0,
+"cardDate": "2015-07-27",
+"generatedDate": "2015-07-29T14:05:02.470Z",
+"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.author-name.Martin.file-types.png.line-changes/.json?to=2015-07-27"
+},
+{
+"id": "55b8dd8e404b736f644c73a6",
+"type": "top10",
+"outOf": 7,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-27",
+"endRange": "2015-07-27",
+"objectTags": [
+"computer",
+"git",
+"github",
+"software",
+"source control"
+],
+"actionTags": [
+"commit"
+],
+"position": 0,
+"properties": {
+"sum": {
+"file-types": {
+"png": {
+"line-changes": 0
+}
+}
+}
+},
+"propertyName": "line-changes.sum.file-types.png",
+"stdDev": 0,
+"correctedStdDev": 0,
+"sampleStdDev": 0,
+"sampleCorrectedStdDev": 0,
+"mean": 0,
+"variance": 0,
+"cardDate": "2015-07-27",
+"generatedDate": "2015-07-29T14:05:02.681Z",
+"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.file-types.png.line-changes/.json?to=2015-07-27"
+},
+{
+"id": "55b8dd90404b736f644c73b7",
+"type": "top10",
+"outOf": 6,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-27",
+"endRange": "2015-07-27",
+"objectTags": [
+"computer",
+"git",
+"github",
+"software",
+"source control"
+],
+"actionTags": [
+"commit"
+],
+"position": 0,
+"properties": {
+"sum": {
+"repo": {
+"1self/website": {
+"file-types": {
+"png": {
+"line-changes": 0
+}
+}
+}
+}
+}
+},
+"propertyName": "line-changes.sum.repo.1self/website.file-types.png",
+"stdDev": 0,
+"correctedStdDev": 0,
+"sampleStdDev": 0,
+"sampleCorrectedStdDev": 0,
+"mean": 0,
+"variance": 0,
+"cardDate": "2015-07-27",
+"generatedDate": "2015-07-29T14:05:04.639Z",
+"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.repo.1self%2Fwebsite.file-types.png.line-changes/.json?to=2015-07-27"
+},
+{
+"id": "55b8dd8e404b736f644c73a2",
+"type": "top10",
+"outOf": 7,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-27",
+"endRange": "2015-07-27",
+"objectTags": [
+"computer",
+"git",
+"github",
+"software",
+"source control"
+],
+"actionTags": [
+"commit"
+],
+"position": 0,
+"properties": {
+"sum": {
+"author-email": {
+"martinstrotton@gmail^com": {
+"file-types": {
+"png": {
+"line-deletions": 0
+}
+}
+}
+}
+}
+},
+"propertyName": "line-deletions.sum.author-email.martinstrotton@gmail^com.file-types.png",
+"stdDev": 0,
+"correctedStdDev": 0,
+"sampleStdDev": 0,
+"sampleCorrectedStdDev": 0,
+"mean": 0,
+"variance": 0,
+"cardDate": "2015-07-27",
+"generatedDate": "2015-07-29T14:05:02.253Z",
+"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.author-email.martinstrotton%40gmail%5Ecom.file-types.png.line-deletions/.json?to=2015-07-27"
+},
+{
+"id": "55b8dd8e404b736f644c73a7",
+"type": "top10",
+"outOf": 3,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-27",
+"endRange": "2015-07-27",
+"objectTags": [
+"computer",
+"git",
+"github",
+"software",
+"source control"
+],
+"actionTags": [
+"commit"
+],
+"position": 0,
+"properties": {
+"sum": {
+"author-email": {
+"martinstrotton@gmail^com": {
+"file-types": {
+"svg": {
+"line-deletions": 0
+}
+}
+}
+}
+}
+},
+"propertyName": "line-deletions.sum.author-email.martinstrotton@gmail^com.file-types.svg",
+"stdDev": 0,
+"correctedStdDev": 0,
+"sampleStdDev": 0,
+"sampleCorrectedStdDev": 0,
+"mean": 0,
+"variance": 0,
+"cardDate": "2015-07-27",
+"generatedDate": "2015-07-29T14:05:02.699Z",
+"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.author-email.martinstrotton%40gmail%5Ecom.file-types.svg.line-deletions/.json?to=2015-07-27"
+},
+{
+"id": "55b8dd8f404b736f644c73ac",
+"type": "top10",
+"outOf": 7,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-27",
+"endRange": "2015-07-27",
+"objectTags": [
+"computer",
+"git",
+"github",
+"software",
+"source control"
+],
+"actionTags": [
+"commit"
+],
+"position": 0,
+"properties": {
+"sum": {
+"author-name": {
+"Martin": {
+"file-types": {
+"png": {
+"line-deletions": 0
+}
+}
+}
+}
+}
+},
+"propertyName": "line-deletions.sum.author-name.Martin.file-types.png",
+"stdDev": 0,
+"correctedStdDev": 0,
+"sampleStdDev": 0,
+"sampleCorrectedStdDev": 0,
+"mean": 0,
+"variance": 0,
+"cardDate": "2015-07-27",
+"generatedDate": "2015-07-29T14:05:03.412Z",
+"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.author-name.Martin.file-types.png.line-deletions/.json?to=2015-07-27"
+},
+{
+"id": "55b8dd8f404b736f644c73b0",
+"type": "top10",
+"outOf": 3,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-27",
+"endRange": "2015-07-27",
+"objectTags": [
+"computer",
+"git",
+"github",
+"software",
+"source control"
+],
+"actionTags": [
+"commit"
+],
+"position": 0,
+"properties": {
+"sum": {
+"author-name": {
+"Martin": {
+"file-types": {
+"svg": {
+"line-deletions": 0
+}
+}
+}
+}
+}
+},
+"propertyName": "line-deletions.sum.author-name.Martin.file-types.svg",
+"stdDev": 0,
+"correctedStdDev": 0,
+"sampleStdDev": 0,
+"sampleCorrectedStdDev": 0,
+"mean": 0,
+"variance": 0,
+"cardDate": "2015-07-27",
+"generatedDate": "2015-07-29T14:05:03.741Z",
+"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.author-name.Martin.file-types.svg.line-deletions/.json?to=2015-07-27"
+},
+{
+"id": "55b8dd8f404b736f644c73b3",
+"type": "top10",
+"outOf": 3,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-27",
+"endRange": "2015-07-27",
+"objectTags": [
+"computer",
+"git",
+"github",
+"software",
+"source control"
+],
+"actionTags": [
+"commit"
+],
+"position": 0,
+"properties": {
+"sum": {
+"file-types": {
+"svg": {
+"line-deletions": 0
+}
+}
+}
+},
+"propertyName": "line-deletions.sum.file-types.svg",
+"stdDev": 0,
+"correctedStdDev": 0,
+"sampleStdDev": 0,
+"sampleCorrectedStdDev": 0,
+"mean": 0,
+"variance": 0,
+"cardDate": "2015-07-27",
+"generatedDate": "2015-07-29T14:05:03.916Z",
+"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.file-types.svg.line-deletions/.json?to=2015-07-27"
+},
+{
+"id": "55b8dd91404b736f644c73bb",
+"type": "top10",
+"outOf": 7,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-27",
+"endRange": "2015-07-27",
+"objectTags": [
+"computer",
+"git",
+"github",
+"software",
+"source control"
+],
+"actionTags": [
+"commit"
+],
+"position": 0,
+"properties": {
+"sum": {
+"file-types": {
+"png": {
+"line-deletions": 0
+}
+}
+}
+},
+"propertyName": "line-deletions.sum.file-types.png",
+"stdDev": 0,
+"correctedStdDev": 0,
+"sampleStdDev": 0,
+"sampleCorrectedStdDev": 0,
+"mean": 0,
+"variance": 0,
+"cardDate": "2015-07-27",
+"generatedDate": "2015-07-29T14:05:05.085Z",
+"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.file-types.png.line-deletions/.json?to=2015-07-27"
+},
+{
+"id": "55b8dd91404b736f644c73bf",
+"type": "top10",
+"outOf": 3,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-27",
+"endRange": "2015-07-27",
+"objectTags": [
+"computer",
+"git",
+"github",
+"software",
+"source control"
+],
+"actionTags": [
+"commit"
+],
+"position": 0,
+"properties": {
+"sum": {
+"repo": {
+"1self/website": {
+"file-types": {
+"svg": {
+"line-deletions": 0
+}
+}
+}
+}
+}
+},
+"propertyName": "line-deletions.sum.repo.1self/website.file-types.svg",
+"stdDev": 0,
+"correctedStdDev": 0,
+"sampleStdDev": 0,
+"sampleCorrectedStdDev": 0,
+"mean": 0,
+"variance": 0,
+"cardDate": "2015-07-27",
+"generatedDate": "2015-07-29T14:05:05.692Z",
+"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.repo.1self%2Fwebsite.file-types.svg.line-deletions/.json?to=2015-07-27"
+},
+{
+"id": "55b8dd92404b736f644c73c1",
+"type": "top10",
+"outOf": 6,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-27",
+"endRange": "2015-07-27",
+"objectTags": [
+"computer",
+"git",
+"github",
+"software",
+"source control"
+],
+"actionTags": [
+"commit"
+],
+"position": 0,
+"properties": {
+"sum": {
+"repo": {
+"1self/website": {
+"file-types": {
+"png": {
+"line-deletions": 0
+}
+}
+}
+}
+}
+},
+"propertyName": "line-deletions.sum.repo.1self/website.file-types.png",
+"stdDev": 0,
+"correctedStdDev": 0,
+"sampleStdDev": 0,
+"sampleCorrectedStdDev": 0,
+"mean": 0,
+"variance": 0,
+"cardDate": "2015-07-27",
+"generatedDate": "2015-07-29T14:05:06.091Z",
+"chart": "/v1/users/martin/rollups/day/computer,git,github,software,source control/commit/sum.repo.1self%2Fwebsite.file-types.png.line-deletions/.json?to=2015-07-27"
+},
+{
+"id": "55baf2c1644d12c87e297aa4",
+"type": "bottom10",
+"outOf": 9,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-30",
+"endRange": "2015-07-30",
+"objectTags": [
+"computer",
+"software"
+],
+"actionTags": [
+"develop"
+],
+"position": 1,
+"properties": {
+"sum": {
+"__count__": 27
+}
+},
+"propertyName": "__count__.sum",
+"stdDev": 7.114775290537448,
+"correctedStdDev": 8.00412220185463,
+"sampleStdDev": 2.1863734159312425,
+"sampleCorrectedStdDev": 1.9434430363833264,
+"mean": 42.55555555555556,
+"variance": -15.555555555555557,
+"cardDate": "2015-07-30",
+"generatedDate": "2015-07-31T04:00:01.574Z",
+"chart": "/v1/users/martin/rollups/day/computer,software/develop/sum.__count__/.json?to=2015-07-30",
+"cardText": "2nd lowest minutes of coding"
+},
+{
+"id": "55bc4441644d12c87e297ab0",
+"type": "bottom10",
+"outOf": 10,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-31",
+"endRange": "2015-07-31",
+"objectTags": [
+"computer",
+"software"
+],
+"actionTags": [
+"develop"
+],
+"position": 3,
+"properties": {
+"sum": {
+"__count__": 33
+}
+},
+"propertyName": "__count__.sum",
+"stdDev": 6.467147748428205,
+"correctedStdDev": 7.185719720475784,
+"sampleStdDev": 1.3297979781102374,
+"sampleCorrectedStdDev": 1.1968181802992137,
+"mean": 41.6,
+"variance": -8.600000000000001,
+"cardDate": "2015-07-31",
+"generatedDate": "2015-08-01T04:00:01.774Z",
+"chart": "/v1/users/martin/rollups/day/computer,software/develop/sum.__count__/.json?to=2015-07-31",
+"cardText": "4th lowest minutes of coding"
+},
+{
+"id": "55bc4441644d12c87e297aaf",
+"type": "top10",
+"outOf": 10,
+"thumbnailMedia": "chart.html",
+"startRange": "2015-07-31",
+"endRange": "2015-07-31",
+"objectTags": [
+"computer",
+"software"
+],
+"actionTags": [
+"develop"
+],
+"position": 3,
+"properties": {
+"sum": {
+"duration": 4646
+}
+},
+"propertyName": "duration.sum",
+"stdDev": 738.6834294878964,
+"correctedStdDev": 820.7593660976627,
+"sampleStdDev": 0.06755261862932754,
+"sampleCorrectedStdDev": 0.0607973567663948,
+"mean": 4596.1,
+"variance": 49.899999999999636,
+"cardDate": "2015-07-31",
+"generatedDate": "2015-08-01T04:00:01.759Z",
+"chart": "/v1/users/martin/rollups/day/computer,software/develop/sum.duration/.json?to=2015-07-31",
+"cardText": "4th highest minutes of coding"
+},
+{
+"id": "55c038c1644d12c87e297ac5",
+"type": "date",
+"cardDate": "2015-08-03",
+"generatedDate": "2015-08-04T04:00:01.801Z"
+}
+]
+

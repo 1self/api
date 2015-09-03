@@ -1,0 +1,53 @@
+// Reset default browser styles using Normalize
+@import "lib/normalize";
+
+// Import fonts from Google
+@import url(http://fonts.googleapis.com/css?family=Raleway:400,300,700,100);
+
+// Set variables and reusable mixins
+@import "base/config";
+@import "base/mixins";
+
+// Import typical layout styles
+// @import "base/grid";
+@import "base/type";
+
+// Import reusable modules
+// @import "components/media";
+// @import "components/buttons";
+// @import "components/tables";
+// @import "components/forms";
+// @import "components/alerts";
+// @import "components/nav";
+@import "components/other";
+@import "components/card-stack";
+@import "components/card-flip";
+@import "components/share-buttons";
+@import "components/settings-button";
+
+// Use Font Awesome for icons
+// @import "lib/icons";
+
+// Specific project styles, add any section specific sass modules here
+@import "pages/layout";
+@import "pages/home";
+
+// Import reusable modules
+@import "pages/top-share-menu";
+@import "pages/footer";
+@import "pages/menu";
+@import "pages/cards";
+@import "pages/settings";
+
+
+
+
+// Additional styles to think about
+@import "base/responsive";
+@import "base/print";
+
+// If IE support is needed
+@import "base/ie";
+
+// For anything quick and dirty that needs thrown in
+@import "base/shame";
