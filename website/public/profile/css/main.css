@@ -936,8 +936,6 @@ footer:before {
 
 .overlay.open {
     background: rgba(0, 0, 0, 0.5);
-    -webkit-transition: background 0.25s ease-in-out;
-    transition: background 0.25s ease-in-out;
     position: absolute;
     top: 0;
     left: 0;
