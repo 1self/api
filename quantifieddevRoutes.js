@@ -284,13 +284,20 @@ module.exports = function (app) {
         next();
     }
 
-    var selectUsername = function (req, res, next) {
+    var createModel = function (req, res, next) {
         res.model = {};
 
         res.model.username = req.session.username,
         res.avatarUrl = req.session.avatarUrl;
-
-        next();
+        util.findUser(res.model.username)
+        .then(function(user){
+            res.model.showCardsButton = user.cardCount > 0;
+            next();
+        })
+        .catch(function(error){
+            res.status(500).send();
+        })
+        .done();
     };
 
     var switchUsername = function (req, res, next) {
@@ -331,7 +338,7 @@ module.exports = function (app) {
         createCardStackIntent,
         sessionManager.requiresSession, 
         satisfyCardStackIntent,
-        selectUsername,
+        createModel,
         renderCardStack
     );
 
@@ -343,6 +350,7 @@ module.exports = function (app) {
         createProfileIntent,
         sessionManager.requiresSession, 
         satisfyProfileIntent,
+        createModel,
         renderProfile
     );
 
@@ -351,7 +359,7 @@ module.exports = function (app) {
         createCardStackIntent,
         sessionManager.requiresSession, 
         satisfyCardStackIntent,
-        selectUsername,
+        createModel,
         switchUsername,
         renderCardStack);
 

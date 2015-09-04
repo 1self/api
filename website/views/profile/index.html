@@ -55,7 +55,7 @@
     <!--[if lt IE 9]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-    <div class="overlay"></div>
+    
     <!--header role="banner">
         <div class="share-fav">
             <div class="share droppable">
@@ -110,7 +110,7 @@
                         <span></span>
                     </div>
                     <ul class="flyout flyout-init">
-                        <li><a href="/card-stack"><div><i class="fa fa-clone"></i></div></a></li>
+                        <li>{% if showCardsButton %}<a href="/card-stack"><div><i class="fa fa-clone"></i></div></a>{% endif %}</li>
                         <li><a href="/dashboard"><div><i class="fa fa-bar-chart"></i></div></a></li>
                         <li><a href="/timeline"><div><i class="fa fa-calendar"></i></div></a></li>
                         <li><a href="/integrations"><div><i class="fa fa-plug"></i></div></a></li>
