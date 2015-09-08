@@ -289,15 +289,7 @@ module.exports = function (app) {
 
         res.model.username = req.session.username,
         res.avatarUrl = req.session.avatarUrl;
-        util.findUser(res.model.username)
-        .then(function(user){
-            res.model.showCardsButton = user.cardCount > 0;
-            next();
-        })
-        .catch(function(error){
-            res.status(500).send();
-        })
-        .done();
+        next();
     };
 
     var switchUsername = function (req, res, next) {
