@@ -1,5 +1,5 @@
 {
-    watch: [
-        "website/views"
+    "watch": [
+        "website/views/*.html"
     ]
 }

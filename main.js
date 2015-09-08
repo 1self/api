@@ -144,6 +144,7 @@ var getStreamIdForUsername = function (encodedUsername, forUsername) {
             "encodedUsername": encodedUsername
         };
     }
+    
     var projection = {
         "streams": 1
     };
