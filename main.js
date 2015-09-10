@@ -144,7 +144,7 @@ var getStreamIdForUsername = function (encodedUsername, forUsername) {
             "encodedUsername": encodedUsername
         };
     }
-    
+
     var projection = {
         "streams": 1
     };
@@ -790,10 +790,30 @@ app.post('/v1/streams', function (req, res) {
         .then(function () {
             return util.createV1Stream(appId, callbackUrl);
         })
-        .then(function (data) {
-            delete data._id;
-            delete data.appId;
-            res.send(data);
+        .then(function (stream) {
+            return q.Promise(function(resolve, reject){
+                if(req.session.username){
+                    util.findUser(req.session.username)
+                    .then(function(user){
+                        return util.linkStreamToUser(user, stream.streamid);   
+                    })
+                    .then(function(){
+                        resolve(stream);
+                    })
+                    .catch(function(error){
+                        logger.error(appId + ': error while registering stream, error ' + error);
+                        reject(error);
+                    })
+                }
+                else{
+                    resolve(stream);
+                }
+            })
+        })
+        .then(function (stream) {
+            delete stream._id;
+            delete stream.appId;
+            res.send(stream);
         })
         .catch(function () {
             res.status(401).send("Unauthorized request. Invalid appId and appSecret");
