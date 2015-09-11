@@ -59,7 +59,6 @@ app.use(session({
 
 app.logger = logger;
 
-
 app.use(bodyParser.urlencoded({
     limit: '100mb',
     extended: true
@@ -83,7 +82,9 @@ app.set('view engine', 'html');
 require('./oAuth')(app);
 
 app.all('*', function (req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
+    var allowOrigin = req.headers.origin;
+    res.header('Access-Control-Allow-Credentials', true);
+    res.header('Access-Control-Allow-Origin', allowOrigin);
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS,PATCH');
     res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,accept,x-requested-with,x-withio-delay');
     if (req.headers["x-withio-delay"]) {
@@ -1550,6 +1551,9 @@ var publishBatch = function( req, res, next) {
         event.eventLocalDateTime = dateInfo.eventLocalDateTime;
         event.offset = dateInfo.offset;
 
+        if(event.properties === undefined){
+            event.properties = {};
+        }
         redisClient.publish("events", JSON.stringify(event));
     });
 
@@ -2055,7 +2059,8 @@ app.get('/v1/app', function (req, res) {
 });
 
 app.options('*', function (request, response) {
-    response.header('Access-Control-Allow-Origin', '*');
+    var allowOrigin = request.headers.origin;
+    response.header('Access-Control-Allow-Origin', allowOrigin);
     response.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH');
     response.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,accept,x-requested-with,x-withio-delay');
     response.send();
