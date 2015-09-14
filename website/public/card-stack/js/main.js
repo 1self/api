@@ -31,7 +31,7 @@
     // $(".flyout").find("a").removeClass();
     
     $li = $('.topOfMain');
-    sendGAEvent('menu-button-click-' + $li.attr('cardIndex'), $li.attr('cardId'), username);
+    sendGAEvent('menu-button-click', username + "#" + $li.attr('cardId'), $li.attr('cardIndex'));
 
     return $(".flyout").removeClass("flyout-init fade").toggleClass("expand");
   });

@@ -118,13 +118,13 @@ function assignCardHandlers ($li) {
     $li.find(".more-back").click(function() {
         showFlickButtons();
         $li.find(".front .chart-container").show();
-        sendGAEvent('flipped-to-front-' + $li.attr('cardIndex'), $li.attr('cardId'), username);
+        sendGAEvent('flipped-to-front', username + "#" + $li.attr('cardId'), $li.attr('cardIndex'));
      });
 
     $li.find(".more").click(function() {
         hideFlickButtons();
         $li.find(".front .chart-container").hide();
-        sendGAEvent('flipped-to-back-' + $li.attr('cardIndex'), $li.attr('cardId'), username);
+        sendGAEvent('flipped-to-back',  username + "#" + $li.attr('cardId'), $li.attr('cardIndex'));
      });
 }
 
@@ -249,7 +249,7 @@ $(document).ready(function() {
             hideFlickButtons('nextOnly');
         }
         
-        sendGAEvent('thrown-out-' + e.target.getAttribute('cardIndex'), e.target.getAttribute('cardId'), username);
+        sendGAEvent('thrown-out', username + "#" + e.target.getAttribute('cardId'), e.target.getAttribute('cardIndex'));
 
         var cardReloadCount = 0;
         markCardRead(username, e.target, cardReloadCount); // username is declared globally in index.html
@@ -317,7 +317,7 @@ $(document).ready(function() {
                 hideFlickButtons('previousOnly');
             }
 
-            sendGAEvent('thrown-in-' + e.target.getAttribute('cardIndex'), e.target.getAttribute('cardId'), username);
+            sendGAEvent('thrown-in', username + "#" + e.target.getAttribute('cardId'), e.target.getAttribute('cardIndex'));
         }
 
 // http://stackoverflow.com/questions/2087510/callback-on-css-transition
@@ -355,7 +355,7 @@ function throwInPrevious(stack){
 	if (cardLi) {
 		var card = stack.getCard(cardLi);
 		card.throwIn(cardLi.thrownX, cardLi.thrownY);
-        sendGAEvent('button-thrown-in-' + cardLi.getAttribute('cardIndex'), cardLi.getAttribute('cardId'), username); 
+        sendGAEvent('button-thrown-in', username + "#" + cardLi.getAttribute('cardId'), cardLi.getAttribute('cardIndex')); 
 	}
 }
 
@@ -368,20 +368,6 @@ function throwOutNext(stack){
 	    cardLi.thrownY = getRandomInt(-100, 100);
 	    cardLi.thrownX = 1;
 	    card.throwOut(cardLi.thrownX, cardLi.thrownY);
-	    sendGAEvent('button-thrown-out-' + cardLi.getAttribute('cardIndex'), cardLi.getAttribute('cardId'), username);            
-	// } else {
-	//     $('.getMoreCardsBtn').addClass('standard-shadow');
-	//     $('.getMoreCardsBtn').hide();
-	//     $('.bottom-of-stack-container .loading').show();
-	//     $('.bottom-of-stack-container h1').text('Loading cards...').removeClass("bottom-of-stack-large-text");
-	//     $('.bottom-of-stack-container p').hide();
-	//     $('.bottom-of-stack-container .tellMeAboutNewCardsBtn').hide();
-
-	//     getCards();
-	//     cardReloadCount++;
-	//     setUpStack();
-	//     buildStack(stack);
-
-	//     sendGAEvent('get-more-cards');
+	    sendGAEvent('button-thrown-out', username + "#" + cardLi.getAttribute('cardId'), cardLi.getAttribute('cardIndex'));            
 	}
 }
