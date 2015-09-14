@@ -9,6 +9,9 @@ var MAILCHIMP_API_KEY = process.env.MAILCHIMP_API_KEY;
 var MAILCHIMP_LIST_ID = process.env.MAILCHIMP_LIST_ID;
 var util = require('../util.js');
 var _ = require('underscore');
+var redis = require("redis");
+var redisPublish = redis.createClient();
+
 
 var SignupModule = function () {
 };
@@ -114,11 +117,9 @@ SignupModule.prototype.signup = function (user, req, res) {
         };
 
         var insertUser = function (userRecord) {
-            var deferred = q.defer();
-            mongoRepository.insert('users', userRecord);
-            deferred.resolve(userRecord);
-            return deferred.promise;
+            return mongoRepository.insert('users', userRecord);
         };
+
         var subscribeToMailChimp = function (user) {
             var deferred = q.defer();
             var email;
@@ -147,6 +148,7 @@ SignupModule.prototype.signup = function (user, req, res) {
             }
             return deferred.promise;
         };
+
         var creditUserSignup = function (userRecord) {
             var deferred = q.defer();
             CreditUserSignup.creditUserSignUpToApp(userRecord.oneselfUsername, req.session.redirectUrl).then(function () {
@@ -154,6 +156,7 @@ SignupModule.prototype.signup = function (user, req, res) {
             });
             return deferred.promise;
         };
+
         var createUser = function (encUserObj) {
             var userCreated = {
                 profile: user,
@@ -164,6 +167,7 @@ SignupModule.prototype.signup = function (user, req, res) {
             };
             return userCreated;
         };
+
         var generateRegistrationToken = function (userEntry) {
             return util.generateRegistrationToken()
                 .then(function (registrationToken) {
@@ -171,10 +175,25 @@ SignupModule.prototype.signup = function (user, req, res) {
                     return userEntry;
                 });
         };
+
         var byUsername = {
             serviceProfileId : user.id,
             username: req.session.oneselfUsername
         };
+
+        var sendNewUserEvent = function(userRecord){
+            var message = {
+                type: 'added',
+                username: userRecord.username,
+                _id: userRecord._id
+            };
+
+            // It's important that the publish of the event is done once the data has 
+            // been written: downstream processing uses this message to know to reload 
+            // the user. 
+            redisPublish.publish('users', JSON.stringify(message));
+            return userRecord;
+        }
         
         findUser(byUsername)
             .then(checkIfUsernameExists)
@@ -184,6 +203,7 @@ SignupModule.prototype.signup = function (user, req, res) {
             .then(insertUser)
             .then(subscribeToMailChimp)
             .then(creditUserSignup)
+            .then(sendNewUserEvent)
             .then(signupComplete)
             .catch(handleError);
     };
