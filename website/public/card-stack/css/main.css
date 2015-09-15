@@ -804,6 +804,8 @@ main {
 .front .card-menu {
     height: 10%;
     width: 100%;
+    padding-right: 10px;
+    padding-left: 10px;
 }
 
 .share-fav {
@@ -1999,8 +2001,9 @@ footer:before {
     background-size: contain;
 }
 
-.card-menu.foursquare .more div {
-    background-color: #fa4778;
+.card-menu.foursquare .more span {
+    border: solid 1px #fa4778;
+    color: #fa4778;
 }
 
 .headline.github {
@@ -2015,8 +2018,9 @@ footer:before {
     background-size: contain;
 }
 
-.card-menu.github .more div {
-    background-color: #000000;
+.card-menu.github .more span {
+    border: solid 1px #000000;
+    color: #000000;
 }
 
 .headline.googlefit {
@@ -2031,8 +2035,9 @@ footer:before {
     background-size: contain;
 }
 
-.card-menu.googlefit .more div {
-    background-color: #DC493C;
+.card-menu.googlefit .more span {
+    border: solid 1px #DC493C;
+    color: #DC493C;
 }
 
 .headline.hackernews {
@@ -2047,8 +2052,9 @@ footer:before {
     background-size: contain;
 }
 
-.card-menu.hackernews .more div {
-    background-color: rgb(244,101,7);
+.card-menu.hackernews .more span {
+    border: solid 1px rgb(244,101,7);
+    color: rgb(244,101,7);
 }
 
 .headline.instagram {
@@ -2063,8 +2069,9 @@ footer:before {
     background-size: contain;
 }
 
-.card-menu.instagram .more div {
-    background-color: rgb(23,90,131);
+.card-menu.instagram .more span {
+    border: solid 1px rgb(23,90,131);
+    color: rgb(23,90,131);
 }
 
 .headline.intellij {
@@ -2079,8 +2086,9 @@ footer:before {
     background-size: contain;
 }
 
-.card-menu.intellij .more div {
-    background-color: rgb(26,92,171);
+.card-menu.intellij .more span {
+    border: solid 1px rgb(26,92,171);
+    color: rgb(26,92,171);
 }
 
 .headline.lastfm {
@@ -2095,8 +2103,9 @@ footer:before {
     background-size: contain;
 }
 
-.card-menu.lastfm .more div {
-    background-color: rgb(221,38,73);
+.card-menu.lastfm .more span {
+    border: solid 1px rgb(221,38,73);
+    color: rgb(221,38,73);
 }
 
 .headline.rescuetime {
@@ -2111,8 +2120,9 @@ footer:before {
     background-size: contain;
 }
 
-.card-menu.rescuetime .more div {
-    background-color: #a52011;
+.card-menu.rescuetime .more span {
+    border: solid 1px #a52011;
+    color: #a52011;
 }
 
 .headline.stackoverflow {
@@ -2127,8 +2137,9 @@ footer:before {
     background-size: contain;
 }
 
-.card-menu.stackoverflow .more div {
-    background-color: rgb(244,121,32);
+.card-menu.stackoverflow .more span {
+    border: solid 1px rgb(244,121,32);
+    color: rgb(244,121,32);
 }
 
 .headline.strava {
@@ -2143,8 +2154,9 @@ footer:before {
     background-size: contain;
 }
 
-.card-menu.strava .more div {
-    background-color: rgb(242,97,34);
+.card-menu.strava .more span {
+    border: solid 1px rgb(242,97,34);
+    color: rgb(242,97,34);
 }
 
 .headline.sublime {
@@ -2159,8 +2171,9 @@ footer:before {
     background-size: contain;
 }
 
-.card-menu.sublime .more div {
-    background-color: #ff8100;
+.card-menu.sublime .more span {
+    border: solid 1px #ff8100;
+    color: #ff8100;
 }
 
 .headline.twitter {
@@ -2175,8 +2188,9 @@ footer:before {
     background-size: contain;
 }
 
-.card-menu.twitter .more div {
-    background-color: rgb(77,151,212);
+.card-menu.twitter .more span {
+    border: solid 1px rgb(77,151,212);
+    color: rgb(77,151,212);
 }
 
 .headline.visitcounter {
@@ -2191,8 +2205,9 @@ footer:before {
     background-size: contain;
 }
 
-.card-menu.visitcounter .more div {
-    background-color: rgb(14,182,234);
+.card-menu.visitcounter .more span {
+    border: solid 1px rgb(14,182,234);
+    color: rgb(14,182,234);
 }
 
 .headline.visualstudio {
@@ -2207,8 +2222,9 @@ footer:before {
     background-size: contain;
 }
 
-.card-menu.visualstudio .more div {
-    background-color: rgb(106,32,125);
+.card-menu.visualstudio .more span {
+    border: solid 1px rgb(106,32,125);
+    color: rgb(106,32,125);
 }
 
 .headline.unknown-data-source {
@@ -2223,8 +2239,9 @@ footer:before {
     background-size: contain;
 }
 
-.card-menu.unknown-data-source .more div {
-    background-color: #0097C4;
+.card-menu.unknown-data-source .more span {
+    border: solid 1px #0097C4;
+    color: #0097C4;
 }
 
 .chart {
@@ -2235,20 +2252,10 @@ footer:before {
 
 .card-menu .more {
     float: right;
-    /*background: url(../img/more.svg);*/
-    width: 26%;
     height: 100%;
-    background-repeat: no-repeat;
-    background-size: 50%;
-    background-position: center;
     z-index: 6;
-    display: block;
-    text-align: right;
-    padding-right: 15px;
     font-size: 0.7em;
     display: table;
-    padding-top: 7px;
-    padding-bottom: 7px;
 }
 
 .card-menu .more div {
@@ -2257,13 +2264,11 @@ footer:before {
     text-align: center;
     height: 100%;
     color: #ffffff;
-    border-radius: 15%;
 }
 
 .card-menu .more span {
-    height: 100%;
-    width: 100%;
-    display: block
+    padding: 5px;
+    border-radius: 10px;
 }
 
 .card-menu .more-back {
