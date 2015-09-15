@@ -49,22 +49,22 @@ function markCardRead(username, cardElem, cardReloadCount) {
 }
 
 function createCardText(cardData) {
-    var cardText = '';
-    var colour = getPrimaryColour(cardData.dataSource);
+    var cardText = {};
+    
 
     if (cardData.type === "top10" || cardData.type === "bottom10") {
 
-        var template1 = '{{value}} {{action_pl}}<br>Your {{comparitor}} in {{eventPeriod}} {{comparisonPeriod}}'; // e.g. [Yesterday]: [6th] [fewest] [commit]s in [a day] [ever]
-        var template2 = '{{value}} {{action_pp}} {{property}}<br>Your {{comparitor}} in {{eventPeriod}} {{comparisonPeriod}}'; // [Yesterday]: [6th] [most] [commit]ted [file changes] in [a day] [ever]
-        var template3 = '{{value}} {{objects}} {{action_pl}}<br>Your {{comparitor}} in {{eventPeriod}} {{comparisonPeriod}}'; // [Yesterday]: [6th] [fewest] [music track] [listen]s in [a day] [ever]
+        var template1 = '{{value}} {{action_pl}}'; // e.g. [Yesterday]: [6th] [fewest] [commit]s in [a day] [ever]
+        var template2 = '{{value}} {{action_pp}} {{property}}'; // [Yesterday]: [6th] [most] [commit]ted [file changes] in [a day] [ever]
+        var template3 = '{{value}} {{objects}} {{action_pl}}'; // [Yesterday]: [6th] [fewest] [music track] [listen]s in [a day] [ever]
         // var template4 = '{{comparitor}} {{action_pl}} to {{property}} in {{eventPeriod}} {{comparisonPeriod}}'; // [Yesterday]: [6th] [fewest] [listen]s [to Royksopp] in [a day] [ever]
         // var template5 = '{{comparitor}} {{objects}} {{property}} in {{eventPeriod}} {{comparisonPeriod}}'; // [Yesterday]: [6th] [fewest] [computer desktop] [all distracting percent] in [a day] [ever]
-        var template6 = '{{value}} {{action_pl}} to {{property}}<br>Your {{comparitor}} in {{eventPeriod}} {{comparisonPeriod}}'; // [Yesterday]: [13] [listens] to [Four Tet]<br>Your [6th] [fewest] in [a day]
-        var template7 = '{{value}} of your {{objects}} was {{property}}<br>Your {{comparitor}} in {{eventPeriod}} {{comparisonPeriod}}<br><span class="infoLink" style="color:{{colour}}"><i class="fa fa-info-circle"></i> <a style="color:{{colour}}" onclick="logInfoClick(this);" href="https://www.rescuetime.com/dashboard/for/the/day/of/{{cardDate}}" target="_blank">More info at RescueTime.com</a></span>'; // [Yesterday]: [1.2%] of your [computer use] was [business]<br>Your [6th] [fewest] in [a day]
-        var template8 = '{{value}} {{property}}<br>Your {{comparitor}} in {{eventPeriod}} {{comparisonPeriod}}'; // [Yesterday]: [2609] [steps]<br>Your [6th] [fewest] in [a day]
-        var template9 = '{{value}} {{objects}} {{property}}<br>Your {{comparitor}} in {{eventPeriod}} {{comparisonPeriod}}'; // [Yesterday]: [34] [google] [visits]<br>Your [6th] [fewest] in [a day]
+        var template6 = '{{value}} {{action_pl}} to {{property}}'; // [Yesterday]: [13] [listens] to [Four Tet]<br>Your [6th] [fewest] in [a day]
+        var template7 = '{{value}} of your {{objects}} was {{property}}'; // [Yesterday]: [1.2%] of your [computer use] was [business]<br>Your [6th] [fewest] in [a day]
+        var template8 = '{{value}} {{property}}'; // [Yesterday]: [2609] [steps]<br>Your [6th] [fewest] in [a day]
+        var template9 = '{{value}} {{objects}} {{property}}'; // [Yesterday]: [34] [google] [visits]<br>Your [6th] [fewest] in [a day]
 
-        var templateDefault = '{{value}} {{{objects}}} {{{action_pp}}} {{{property}}}<br>Your {{comparitor}} in {{eventPeriod}} {{comparisonPeriod}}'; // [Yesterday]: [1.2] {objects} {actions} {properties}<br>Your [6th] [fewest] in [a day]
+        var templateDefault = '{{value}} {{{objects}}} {{{action_pp}}} {{{property}}}'; // [Yesterday]: [1.2] {objects} {actions} {properties}<br>Your [6th] [fewest] in [a day]
 
 
         var propertiesObj = buildPropertiesTextAndGetValue(cardData.properties.sum);
@@ -74,39 +74,43 @@ function createCardText(cardData) {
             comparitor: createComparitorText(cardData.position, cardData.type),
             eventPeriod: "a day",
             comparisonPeriod: "",
-            colour: colour,
             value: propertiesObj.value
         };
 
+        cardText.comparitor = ("Your {{comparitor}} in {{eventPeriod}} {{comparisonPeriod}}").supplant(supplantObject);
 
         if (cardData.actionTags[0] === "commit" || cardData.actionTags[1] === "push") {
             if (cardData.properties.sum.__count__) {
                 supplantObject.action_pl = displayTags(pluralise(cardData.actionTags));
-                cardText = template1.supplant(supplantObject);
+                cardText.description = template1.supplant(supplantObject);
                 // console.log("template1");
             } else {
                 supplantObject.action_pp = displayTags(pastParticiple(cardData.actionTags));
                 supplantObject.property = propertiesObj.propertiesText;
-                cardText = template2.supplant(supplantObject);
+                cardText.description = template2.supplant(supplantObject);
                 // console.log("template2", cardData.actionTags);
             }
         } else if (cardData.actionTags[0] === "listen") {
             if (cardData.properties.sum.__count__) {
                 supplantObject.action_pl = customFormatActionTags(displayTags(cardData.actionTags));
                 supplantObject.objects = customFormatObjTags(displayTags(cardData.objectTags));
-                cardText = template3.supplant(supplantObject);
+                cardText.description = template3.supplant(supplantObject);
                 // console.log("template3");
             } else {
                 supplantObject.action_pl = displayTags(pluralise(cardData.actionTags));
                 supplantObject.property = propertiesObj.propertiesText;
-                cardText = template6.supplant(supplantObject);
+                cardText.description = template6.supplant(supplantObject);
                 // console.log("template6");
             }
         } else if (cardData.actionTags[0] === "use") {
             supplantObject.property = "&quot;" + propertiesObj.propertiesText + "&quot;";
             supplantObject.objects = customFormatObjTags(displayTags(cardData.objectTags));
             supplantObject.cardDate = cardData.cardDate;
-            cardText = template7.supplant(supplantObject);
+            cardText.description = template7.supplant(supplantObject);
+
+            cardText.extraInfo = {};
+            cardText.extraInfo.text = 'More info at RescueTime.com';
+            cardText.extraInfo.link = ("https://www.rescuetime.com/dashboard/for/the/day/of/{{cardDate}}").supplant(supplantObject);
             // console.log("template7", cardData.actionTags);
 
         } else if (cardData.actionTags[0] === "develop") {
@@ -115,7 +119,7 @@ function createCardText(cardData) {
             } else {
                 supplantObject.property = "coding sessions";
             }
-            cardText = template8.supplant(supplantObject);
+            cardText.description = template8.supplant(supplantObject);
 
         } else if (cardData.actionTags[0] === "exercise") {
 
@@ -125,11 +129,11 @@ function createCardText(cardData) {
                 } else {
                     supplantObject.property = "walks";
                 }
-                cardText = template8.supplant(supplantObject);
+                cardText.description = template8.supplant(supplantObject);
             } else if (cardData.actionTags[1] === "ride") {
                 if (cardData.propertyName === "distance.sum") {
                     supplantObject.property = "metres ridden";
-                    cardText = template8.supplant(supplantObject);
+                    cardText.description = template8.supplant(supplantObject);
                 }
             }
             // console.log("template8");
@@ -137,19 +141,19 @@ function createCardText(cardData) {
         } else if (cardData.actionTags[0] === "browse" && cardData.chart.indexOf('times-visited') > 0) {
             supplantObject.property = propertiesObj.propertiesText;
             supplantObject.objects = customFormatObjTags(displayTags(cardData.objectTags));
-            cardText = template9.supplant(supplantObject);
+            cardText.description = template9.supplant(supplantObject);
             // console.log("template9");
         }
 
-        if (cardText === '') {
+        if (!cardText.description) {
             supplantObject.property = propertiesObj.propertiesText;
             supplantObject.action_pp = displayTags(pastParticiple(cardData.actionTags));
             supplantObject.objects = displayTags(cardData.objectTags);
-            cardText = templateDefault.supplant(supplantObject);
+            cardText.description = templateDefault.supplant(supplantObject);
             // console.log("templateDefault");
         } 
 
-        cardText = cardText.supplant(supplantObject);
+        // cardText = cardText.supplant(supplantObject);
 
         cardData.cardText = cardText;
     }
@@ -199,12 +203,17 @@ function buildPropertiesTextAndGetValue (propertiesObject) {
     }
 
     if (isDuration)
-        if (returnObj.value < 60)
-            returnObj.value = setPrecision(returnObj.value) + " seconds";
-        else
-            returnObj.value = moment.duration(returnObj.value, "seconds").humanize();
+        if (returnObj.value <= 60) {
+            returnObj.value = Math.round(returnObj.value) + "s";
+        } else if (returnObj.value > 60 && returnObj.value <= 3600) {
+            returnObj.value = Math.floor(returnObj.value / 60) + 'm ' + Math.round(returnObj.value % 60) + 's';
+        } else {
+            returnObj.value = Math.floor(returnObj.value / 3600) + 'h ' + Math.round((returnObj.value % 3600) / 60) + 'm';
+        }
     else if (isPercent)
-        returnObj.value = setPrecision(returnObj.value) + '%';
+        returnObj.value = setPrecision(returnObj.value, 3) + '%';
+    else
+        returnObj.value = setPrecision(returnObj.value, 4);
 
     return returnObj;
 }
@@ -308,12 +317,13 @@ function customFormatActionTags(actionTagsString) {
         return actionTagsString;
 }
 
-function setPrecision(numberToSet) {
-    var returnString = numberToSet.toPrecision(3) + '';
-    while (returnString.indexOf('.') >= 0 && (returnString.charAt(returnString.length - 1) === '0' || returnString.charAt(returnString.length - 1) === '.')) {
-        returnString = returnString.substring(0, returnString.length - 1);
-    }
-    return returnString;
+function setPrecision(numberToSet, precision) {
+    // var returnString = numberToSet.toPrecision(precision) + '';
+    // while (returnString.indexOf('.') >= 0 && (returnString.charAt(returnString.length - 1) === '0' || returnString.charAt(returnString.length - 1) === '.')) {
+    //     returnString = returnString.substring(0, returnString.length - 1);
+    // }
+    // return returnString;
+    return sigFigs(numberToSet, precision);
 }
 
 function stripAtDetail(stringToStrip) {

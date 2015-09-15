@@ -1,0 +1,39 @@
+
+.calendar-render main {
+    padding-top: 0px;
+}
+
+#calendar {
+  width: 90%;
+  height: 85%;
+/*  border-collapse: collapse;*/
+  font-size: 10px;
+  font-family: Helvetica, Arial, sans;
+  background-color: transparent;
+  margin: 0 auto;
+}
+
+#calendar tbody td {
+  border: 1px solid #999999;
+  text-align: right;
+  vertical-align: top;
+  width: 14%;
+  padding: 3px;
+}
+
+#calendar .calendar-day {
+  border: 1px solid #999999;
+  width: 14%;
+  height: 20%;
+  float: left;
+  position: relative;
+}
+
+#calendar .calendar-day.empty {
+  border: 0px solid black;
+}
+
+#calendar .calendar-day.is-today {
+  border: 1px solid red;
+}
+

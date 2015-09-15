@@ -8,6 +8,10 @@ function getDataSource (cardData) {
         else if (cardData.actionTags[0] === "listen") {
             return 'lastfm';
         }
+
+        else if (cardData.actionTags[1] === "ride") {
+        	return 'strava';
+        }
             
         else if (cardData.actionTags[0] === "exercise") {
             return 'googlefit';

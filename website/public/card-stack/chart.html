@@ -227,7 +227,7 @@
         } else if (dataFormat.isPercentage) {
             returnString = data + "%";
         } else {
-            returnString = data + '';
+            returnString = sigFigs(data, 4) + '';
         }
         return returnString;
     }

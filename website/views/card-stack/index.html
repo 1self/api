@@ -107,7 +107,7 @@
                     <span>No cards right now</span>
                 </div>
                 <div class="no-more-cards-div-bottom hide">
-                    <i class="fa fa-flag-checkered"></i><br><span>That's it! No more cards right now.<br>Great flipping effort!</span>
+                    <i class="fa fa-flag-checkered"></i><br><span><large>Great flipping effort!</large><br>You've finished all of your cards.<br>Why not <a href="/integrations">add more integrations</a> for more cards next time?</span>
                 </div>
             </ul>
         </div>
@@ -159,17 +159,13 @@
     <div class="card-template card top-ten-card bottom-ten-card card-hide">
         <div class="front">
             <div class="headline">
-                <div class="headline-row headline-row-top">
-                    <div class="headline-top">
-                        <div class="event-date"></div>
-                        <div class="service-container">
-                            <div class="service"></div>
-                        </div>
-                    </div>
+                <div class="service-container">
+                    <div class="service"></div>
                 </div>
-                <div class="headline-row headline-row-bottom">
-                    <div class="headline-text"></div>
-                </div>
+                <p class="event-date"></p>
+                <p class="headline-description"></p>
+                <p class="headline-comparitor"></p>
+                <br style="clear: both;" />
             </div>
             <div class="chart-container">
                 <div class="chart">
@@ -178,22 +174,21 @@
                 <div class="chart-overlay"></div>
             </div>
             <div class="card-menu">
-                <div class="more"></div>
+                <div class="more"><div>More info</div></div>
             </div>
         </div>
         <div class="back">
             <div class="headline">
-                <div class="headline-row headline-row-top">
-                    <div class="headline-top">
-                        <div class="event-date"></div>
-                        <div class="service-container">
-                            <div class="service"></div>
-                        </div>
-                    </div>
+                <div class="service-container">
+                    <div class="service"></div>
                 </div>
-                <div class="headline-row headline-row-bottom">
-                    <div class="headline-text"></div>
-                </div>
+                <p class="event-date"></p>
+                <p class="headline-description"></p>
+                <p class="headline-comparitor"></p>
+                <p class="headline-info">
+                    <i class="fa fa-info-circle"></i> <a class="infoLink" target="_blank"></a>
+                </p>
+                <br style="clear: both;" />
             </div>
             <div class="chart">
                 <iframe src="" scrolling="no" frameBorder="0" class="chart-iframe"></iframe>

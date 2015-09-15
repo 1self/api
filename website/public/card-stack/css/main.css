@@ -289,7 +289,7 @@ h5 {
 }
 
 p {
-    margin: 0 0 20px;
+    margin: 0 0 10px;
     font-family: 'Raleway', sans-serif;
     font-size: 1em
 }
@@ -1938,13 +1938,30 @@ footer:before {
     vertical-align: bottom;
 }
 
+.headline-description {
+    font-size: 3.3vh;
+    line-height: 3.3vh;
+    font-family: sans-serif;
+/*    float: left;*/
+}
+
 .headline-text .infoLink {
     font-size: 0.7em;
 }
 
 .headline .event-date {
-    float: left;
-    width: 80%;
+/*    float: left;
+    width: 80%;*/
+    font-size: 2.5vh;
+}
+
+.headline-comparitor {
+    font-size: 2.5vh;
+/*    float: left;*/
+}
+
+.headline-info {
+    font-size: 2.5vh;
 }
 
 .date-card .event-date {
@@ -1982,6 +1999,10 @@ footer:before {
     background-size: contain;
 }
 
+.card-menu.foursquare .more div {
+    background-color: #fa4778;
+}
+
 .headline.github {
     border-top-style: solid;
     border-color: #000000;
@@ -1992,6 +2013,10 @@ footer:before {
     background: url(../img/service-github.svg);
     background-repeat: no-repeat;
     background-size: contain;
+}
+
+.card-menu.github .more div {
+    background-color: #000000;
 }
 
 .headline.googlefit {
@@ -2006,6 +2031,10 @@ footer:before {
     background-size: contain;
 }
 
+.card-menu.googlefit .more div {
+    background-color: #DC493C;
+}
+
 .headline.hackernews {
     border-top-style: solid;
     border-color: rgb(244,101,7);
@@ -2016,6 +2045,10 @@ footer:before {
     background: url(../img/service-hackernews.svg);
     background-repeat: no-repeat;
     background-size: contain;
+}
+
+.card-menu.hackernews .more div {
+    background-color: rgb(244,101,7);
 }
 
 .headline.instagram {
@@ -2030,6 +2063,10 @@ footer:before {
     background-size: contain;
 }
 
+.card-menu.instagram .more div {
+    background-color: rgb(23,90,131);
+}
+
 .headline.intellij {
     border-top-style: solid;
     border-color: rgb(26,92,171);
@@ -2040,6 +2077,10 @@ footer:before {
     background: url(../img/service-intellij.svg);
     background-repeat: no-repeat;
     background-size: contain;
+}
+
+.card-menu.intellij .more div {
+    background-color: rgb(26,92,171);
 }
 
 .headline.lastfm {
@@ -2054,6 +2095,10 @@ footer:before {
     background-size: contain;
 }
 
+.card-menu.lastfm .more div {
+    background-color: rgb(221,38,73);
+}
+
 .headline.rescuetime {
     border-top-style: solid;
     border-color: #a52011;
@@ -2064,6 +2109,10 @@ footer:before {
     background: url(../img/service-rescuetime.svg);
     background-repeat: no-repeat;
     background-size: contain;
+}
+
+.card-menu.rescuetime .more div {
+    background-color: #a52011;
 }
 
 .headline.stackoverflow {
@@ -2078,6 +2127,10 @@ footer:before {
     background-size: contain;
 }
 
+.card-menu.stackoverflow .more div {
+    background-color: rgb(244,121,32);
+}
+
 .headline.strava {
     border-top-style: solid;
     border-color: rgb(242,97,34);
@@ -2088,6 +2141,10 @@ footer:before {
     background: url(../img/service-strava.svg);
     background-repeat: no-repeat;
     background-size: contain;
+}
+
+.card-menu.strava .more div {
+    background-color: rgb(242,97,34);
 }
 
 .headline.sublime {
@@ -2102,6 +2159,10 @@ footer:before {
     background-size: contain;
 }
 
+.card-menu.sublime .more div {
+    background-color: #ff8100;
+}
+
 .headline.twitter {
     border-top-style: solid;
     border-color: rgb(77,151,212);
@@ -2112,6 +2173,10 @@ footer:before {
     background: url(../img/service-twitter.svg);
     background-repeat: no-repeat;
     background-size: contain;
+}
+
+.card-menu.twitter .more div {
+    background-color: rgb(77,151,212);
 }
 
 .headline.visitcounter {
@@ -2126,6 +2191,10 @@ footer:before {
     background-size: contain;
 }
 
+.card-menu.visitcounter .more div {
+    background-color: rgb(14,182,234);
+}
+
 .headline.visualstudio {
     border-top-style: solid;
     border-color: rgb(106,32,125);
@@ -2136,6 +2205,10 @@ footer:before {
     background: url(../img/service-visualstudio.svg);
     background-repeat: no-repeat;
     background-size: contain;
+}
+
+.card-menu.visualstudio .more div {
+    background-color: rgb(106,32,125);
 }
 
 .headline.unknown-data-source {
@@ -2150,6 +2223,10 @@ footer:before {
     background-size: contain;
 }
 
+.card-menu.unknown-data-source .more div {
+    background-color: #0097C4;
+}
+
 .chart {
     background: #FFF;
     border: 0px;
@@ -2158,14 +2235,29 @@ footer:before {
 
 .card-menu .more {
     float: right;
-    background: url(../img/more.svg);
-    width: 20%;
+    /*background: url(../img/more.svg);*/
+    width: 26%;
     height: 100%;
     background-repeat: no-repeat;
     background-size: 50%;
     background-position: center;
     z-index: 6;
-    display: block
+    display: block;
+    text-align: right;
+    padding-right: 15px;
+    font-size: 0.7em;
+    display: table;
+    padding-top: 7px;
+    padding-bottom: 7px;
+}
+
+.card-menu .more div {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    height: 100%;
+    color: #ffffff;
+    border-radius: 15%;
 }
 
 .card-menu .more span {

@@ -105,3 +105,12 @@ function ordinal_suffix_of(i, superscriptSuffixInHtml) {
     }
     return i + (superscriptSuffixInHtml ? '<span class="ordinal-suffix">th</span>' : "th");
 }
+
+function sigFigs(n, sig) {
+    if (n === 0) {
+        return 0;
+    } else {
+        var mult = Math.pow(10, sig - Math.floor(Math.log(n) / Math.LN10) - 1);
+        return Math.round(n * mult) / mult;        
+    }
+}

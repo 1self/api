@@ -151,16 +151,38 @@ function showFlickButtons(oneOnly) {
 }
 
 function injectCardData (cardData, $card) {
+    var colour = getPrimaryColour(cardData.dataSource);
+
 	createCardText(cardData);
 
-    var $headlineText = $card.find(".headline-text");
-    $headlineText.prepend(cardData.cardText);
+    // var $headlineText = $card.find(".headline-text");
+    // $headlineText.prepend(cardData.cardText);
+
+    $card.find(".headline-comparitor").append(cardData.cardText.comparitor);
+    $card.find(".headline-description").append(cardData.cardText.description);
+    
+    var $headlineInfo = $card.find(".headline-info");
+    if (cardData.cardText.extraInfo) {
+        var $infoLink = $card.find(".headline-info a");
+        $infoLink.text(cardData.cardText.extraInfo.text);
+        $infoLink.attr('href', cardData.cardText.extraInfo.link);
+        $infoLink.css("color", colour);
+
+        $headlineInfo.css("color", colour);
+        $headlineInfo.show();
+                // <span class="infoLink" style="color:{{colour}}"><i class="fa fa-info-circle"></i> <a style="color:{{colour}}" onclick="logInfoClick(this);" href="https://www.rescuetime.com/dashboard/for/the/day/of/{{cardDate}}" target="_blank"></a></span>
+    } else {
+        $headlineInfo.hide();
+    }
 
     var $eventDate = $card.find(".event-date");
     $eventDate.text(stripAtDetail(dateRangetext(cardData.startRange, cardData.endRange)));
 
     var $headline = $card.find(".headline");
 	$headline.addClass(cardData.dataSource);
+
+    var $cardMenu = $card.find(".card-menu");
+    $cardMenu.addClass(cardData.dataSource);
 
 }
 
