@@ -121,3 +121,4 @@ exports.findOne = findOne;
 exports.update = update;
 exports.count = count;
 exports.remove = remove;
+exports.findAndRemove = findAndRemove;
