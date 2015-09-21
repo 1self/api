@@ -54,6 +54,20 @@ var findOne = function (collection, query, projection) {
     return deferred.promise;
 };
 
+var findAndRemove = function (collection, query, projection) {
+    var deferred = q.defer();
+    mongoDbConnection(function (qdDb) {
+        qdDb.collection(collection).findAndRemove(query, projection, function (err, document) {
+            if (err) {
+                deferred.reject(err);
+            } else {
+                deferred.resolve(document);
+            }
+        });
+    });
+    return deferred.promise;
+};
+
 var count = function (collection, query) {
     var deferred = q.defer();
     mongoDbConnection(function (qdDb) {

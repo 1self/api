@@ -7,6 +7,7 @@ var encoder = require("./encoder");
 var sessionManager = require("./sessionManagement");
 var _ = require("underscore");
 var q = require("q");
+var crypto = require('crypto');
 
 var SignupModule = require("./modules/signupModule.js");
 var LoginModule = require("./modules/loginModule.js");
@@ -14,7 +15,32 @@ var IntentManager = require('./modules/intentManager.js');
 var mongoRepository = require('./mongoRepository.js');
 var CONTEXT_URI = process.env.CONTEXT_URI;
 
+generateToken = function (size) {
+    return q.Promise(function(resolve, reject){
+        crypto.randomBytes(size, function (ex, buf) {
+            if(ex){
+                reject(ex);
+            }
+
+            var token = buf.toString('hex');
+            resolve(token);
+        });
+    });
+    
+};
+
 module.exports = function (app) {
+    var l = function(req){
+        return {
+            debug: function(message, data){
+                req.logger.debug(req.client_id + ': ' + message, data ? data : '')
+            },
+
+            error: function(message, data){
+                req.logger.error(req.client_id + ': ' + message, data ? data : '')
+            }
+        }
+    }
     var githubOAuth = oAuthConfig.getGithubOAuthConfig();
     var facebookOAuth = oAuthConfig.getFacebookOAuthConfig();
 
@@ -206,7 +232,157 @@ module.exports = function (app) {
             scope: 'user:email'
         })(req, res, next);
     });
+
     app.get('/auth/github/callback', passport.authenticate('github', {
         failureRedirect: CONTEXT_URI + '/signup'
     }), handleGithubCallback);
+
+    app.get('/auth/login', function(req, res){
+        // store that token auth is the intent
+        // redirect to login page
+    });
+
+    app.get('/auth/authorize', function(req, res){
+        var logger = l(req);
+
+        if(req.query.response_type === undefined || req.query.response_type !== 'code'){
+            res.status(400).send('response_type queryeter must be set to \'code\'');
+            return;
+        }
+
+        if(req.query.client_id === undefined){
+            res.status(400).send('client_id isnt set');
+            return;
+        }
+
+        if(req.query.redirect_uri === undefined){
+            res.status(400).send('redirect_uri isnt set');
+            return;
+        }
+
+        
+        if(req.session.username === undefined){
+            IntentManager.setOauthAuthAsIntent(req, res);
+            res.redirect('/login');
+            return;
+        }
+
+        // store the app redirect page in the intent
+        // if not logged in, redirect to login page
+
+        generateToken(16)
+        .then(function(authcode){
+            var doc = {
+                userId: req.session.id,
+                authcode: authcode,
+                clientId: req.query.client_id,
+                date: new Date()
+            };
+
+            return mongoRepository.insert('authcodes', doc)
+        })
+        .then(function(insertedDoc){
+            var url = req.query.redirect_uri + '?code=' + insertedDoc.authcode;
+            return res.redirect(url);
+        }, function(error){
+            return q.Promise.reject({
+                code: 500,
+                message: error
+            });
+        })
+        .catch(function(error){
+            logger.error(error.message);
+            if(error.code !== undefined && error.code === 500){
+                res.status(500).send('internal server error');
+            }
+        })
+        .done();
+    });
+
+    app.post('/auth/token', function(req, res){
+        var logger = logger(req);
+        // findanddelete the auth_code from the database
+        var query = {
+            clientId: req.query.client_id,
+            clientSecret: req.Authorization
+        }
+
+        mongoRepository.find('ouathClients', query)
+        .then(function(error, client){
+            if(error){
+
+                throw {
+                    code: 500,
+                    message: error
+                };
+            }
+
+            if(client === null){
+                throw {
+                    code: 401,
+                    message: 'invalid client'
+                };
+            }
+            var query = {
+                authCode: req.params.code,
+                clientId: req.params.client_id
+            };
+
+            return mongoRepository.findAndDelete('authcodes', query);
+        })
+        .then(function(error, authcode){
+            if(error){
+                throw {
+                    code: 500,
+                    message: error
+                };
+            }
+
+            if(authcode === null){
+                throw {
+                    code: 401,
+                    message: 'invalid auth code'
+                };
+            }
+
+            var dateDiff = authcode.date - new Date();
+            if(dateDiff / 1000 / 60 > 10){
+                throw {
+                    code: 401,
+                    message: 'auth code expired'
+                };
+            }
+
+            return authcode;
+        })
+        .then(function(authcode){
+            var accessToken = {
+                userId: authcode.userId,
+                clientId: authcode.clientId
+            }
+
+            return mongoRepository.insert(accessToken);
+        })
+        .then(function(error, result){
+            if(error){
+                throw {
+                    code: 500,
+                    message: 'error occurred inserting access token'
+                };
+            }
+
+            logger.debug('access token created');
+        })
+        .catch(function(error){
+            if(error.code === 401){
+                res.status(error.code).send(error.message);
+            }
+        })
+        .done();
+    });
+
+    // app.delete('auth/token', function(req, res){
+
+    // })
+
 };

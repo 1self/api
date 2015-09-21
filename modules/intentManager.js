@@ -39,6 +39,9 @@ IntentManager.prototype.process = function (intent, req, res) {
             res.redirect(intentData.url);
         } else if (intentName === "profile") {
             res.redirect(intentData.url);
+        } else if (intentName === "oauth_authorize") {
+            res.redirect(intentData.url);
+            delete req.session.intent;
         }
 
         else {
@@ -46,6 +49,16 @@ IntentManager.prototype.process = function (intent, req, res) {
         }
     }
 };
+
+IntentManager.prototype.setOauthAuthAsIntent = function(req, res){
+    req.session.intent = {
+        name: 'oauth_authorize',
+        data: {
+            url: req.originalUrl,
+            redirect_uri: req.params.redirect_uri
+        }
+    };
+}
 
 IntentManager.prototype.handleError = function (errorCode, req, res) {
     if (errorCode === "invalid_username") {
