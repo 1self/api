@@ -17,7 +17,7 @@ exports.requiresSession = function (req, res, next) {
 };
 
 exports.setSession = function (req, res, user) {
-    req.session.id = user._id;
+    req.session.userId = user._id;
     req.session.username = user.username.toLowerCase();
     req.session.encodedUsername = user.encodedUsername;
     req.session.registrationToken = user.registrationToken;
@@ -36,5 +36,5 @@ exports.resetSession = function (req) {
     req.session.username = null;
     req.session.githubUsername = null;
     req.session.avatarUrl = null;
-    req.session.id = null;
+    req.session.userId = null;
 };

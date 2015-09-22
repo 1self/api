@@ -9,6 +9,7 @@ var _ = require("underscore");
 var q = require("q");
 var crypto = require('crypto');
 var basicAuth = require('basic-auth');
+var ObjectID = require('mongodb').ObjectID;
 
 var SignupModule = require("./modules/signupModule.js");
 var LoginModule = require("./modules/loginModule.js");
@@ -273,8 +274,10 @@ module.exports = function (app) {
 
         generateToken(16)
         .then(function(authcode){
+            var userIdObjectId = ObjectID(req.session.userId);
+
             var doc = {
-                userId: req.session.id,
+                userId: userIdObjectId,
                 authcode: authcode,
                 clientId: req.query.client_id,
                 date: new Date(),

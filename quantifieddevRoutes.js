@@ -35,6 +35,26 @@ var emailConfigOptions = {
 
 var encryptedPassword = PasswordEncrypt.encryptPassword(sharedSecret);
 
+var scopeLogger = function(scope, logger){
+    return {
+        debug: function(message, data){
+            logger.debug(scope + ': ' + message, data);
+        },
+        info: function(message, data){
+            logger.info(scope + ': ' + message, data);
+        },
+        warning: function(message, data){
+            logger.warning(scope + ': ' + message, data);
+        },
+        silly: function(message, data){
+            logger.silly(scope + ': ' + message, data);
+        },
+        error: function(message, data){
+            logger.error(scope + ': ' + message, data);
+        }
+    };
+}
+
 module.exports = function (app) {
 
     var getFilterValuesForCountry = function (req) {
@@ -1520,6 +1540,93 @@ module.exports = function (app) {
             });
         return deferred.promise;
     };
+
+    var validateOAuthToken = function(req, res, next){
+        
+        if (req.headers && req.headers.authorization) {
+            var parts = req.headers.authorization.split(' ');
+            var token = '';
+            if (parts.length == 2) {
+              var scheme = parts[0]
+                , credentials = parts[1];
+                
+              if (/^Bearer$/i.test(scheme)) {
+                token = credentials;
+              }
+            } 
+        }
+        
+        logger = scopeLogger(token.substring(0, 6), req.app.logger);
+
+        if(token === ''){
+            var bearerError = 'invalid bearer token: pass it in the Authorization header';
+            res.status(401).send(bearerError);
+            logger.debug(bearerError);
+            return;
+        }
+
+        var tokenQuery = {
+            token: token
+        };
+
+        mongoRepository.findOne('accessTokens', tokenQuery)
+        .then(function(tokenDoc){
+            if(tokenDoc === null){
+                var rejectResult = {
+                    code: 401,
+                    message: 'invalid token',
+                    privateMessage: 'token not found in database'
+                };
+
+                return Q.Promise.reject(rejectResult);
+            }
+
+            return mongoRepository.findOne('users', tokenDoc.userId);
+        })
+        .then(function(userDoc){
+            if(userDoc === null){
+                var rejectResult = {
+                    code: 401,
+                    message: 'invalid token',
+                    privateMessage: 'user attached to token not found in the database'
+                }
+
+                return Q.Promise.reject(rejectResult);
+            }
+
+            var result = {
+                username: userDoc.username
+            };
+
+            req.validatedAuthTokenUser = result;
+            next();
+        })
+        .catch(function(error){
+            if(error.message){
+                logger.error(error.message);
+            }
+            
+            if(error.privateMessage){
+                logger.debug(error.privateMessage);
+            }
+
+            if(error.code === 401){
+                res.status(401).send(error.message);
+                return;
+            }
+
+            res.status(500).send('internal server error');
+        })
+        .done();
+    }
+
+    var getProfile = function(req, res){
+        res.status(200).send(req.validatedAuthTokenUser);
+    };
+
+    app.get('/v1/me/profile'
+        , validateOAuthToken
+        , getProfile);
 
     //v1/users/{{edsykes}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
     app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/:renderType", validateShareToken, function (req, res) {
