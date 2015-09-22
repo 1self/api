@@ -288,6 +288,7 @@ module.exports = function (app) {
         })
         .then(function(insertedDoc){
             var url = req.query.redirect_uri + '?code=' + insertedDoc.authcode;
+            url += '&state=' + req.query.state;
             return res.redirect(url);
         }, function(error){
             return q.Promise.reject({
@@ -305,14 +306,19 @@ module.exports = function (app) {
     });
 
     app.post('/auth/token', function(req, res){
-        debugger;
         var logger = l(req);
 
         var user = basicAuth(req);
         if(user === undefined){
-            res.send('client_id and client_secret must be provided using basic auth', 401);
-            return;
+            user = {};
+            user.name = req.body.client_id;
+            user.pass = req.body.client_secret;
+            if(user.name === undefined || user.pass === undefined){
+                res.send('client_id and client_secret must be provided using basic auth', 401);
+                return;
+            }
         }
+
         // findanddelete the auth_code from the database
         var query = {
             clientId: user.name,
