@@ -27,6 +27,7 @@ var eventRepository = require('./eventRepository.js');
 var SignupModule = require('./modules/signupModule.js');
 var imageCapture = require('./imageCapture.js');
 var eventRepository = require('./eventRepository.js');
+var scopedLogger = require('./scopedLogger.js')
 
 var emailConfigOptions = {
     root: path.join(__dirname, "/website/public/email_templates")
@@ -35,25 +36,7 @@ var emailConfigOptions = {
 
 var encryptedPassword = PasswordEncrypt.encryptPassword(sharedSecret);
 
-var scopeLogger = function(scope, logger){
-    return {
-        debug: function(message, data){
-            logger.debug(scope + ': ' + message, data);
-        },
-        info: function(message, data){
-            logger.info(scope + ': ' + message, data);
-        },
-        warning: function(message, data){
-            logger.warning(scope + ': ' + message, data);
-        },
-        silly: function(message, data){
-            logger.silly(scope + ': ' + message, data);
-        },
-        error: function(message, data){
-            logger.error(scope + ': ' + message, data);
-        }
-    };
-}
+
 
 module.exports = function (app) {
 
@@ -1556,7 +1539,7 @@ module.exports = function (app) {
             } 
         }
         
-        logger = scopeLogger(token.substring(0, 6), req.app.logger);
+        logger = scopedLogger(token.substring(0, 6), req.app.logger);
 
         if(token === ''){
             var bearerError = 'invalid bearer token: pass it in the Authorization header';

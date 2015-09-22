@@ -10,6 +10,8 @@ var q = require("q");
 var crypto = require('crypto');
 var basicAuth = require('basic-auth');
 var ObjectID = require('mongodb').ObjectID;
+var scopedLogger = require('./scopedLogger');
+var conceal = require('concealotron');
 
 var SignupModule = require("./modules/signupModule.js");
 var LoginModule = require("./modules/loginModule.js");
@@ -245,19 +247,23 @@ module.exports = function (app) {
     });
 
     app.get('/auth/authorize', function(req, res){
-        var logger = l(req);
+        var clientLogger = scopedLogger.logger(req.query.client_id, req.app.logger);
+        var sessionLogger = scopedLogger.logger(conceal(req.session.id), clientLogger);
 
         if(req.query.response_type === undefined || req.query.response_type !== 'code'){
-            res.status(400).send('response_type queryeter must be set to \'code\'');
+            sessionLogger.debug('response_type parameter must be set to \'code\'')
+            res.status(400).send('response_type parameter must be set to \'code\'');
             return;
         }
 
         if(req.query.client_id === undefined){
+            sessionLogger.debug('client_id isnt set');
             res.status(400).send('client_id isnt set');
             return;
         }
 
         if(req.query.redirect_uri === undefined){
+            sessionLogger.debug('redirect_uri isnt set');
             res.status(400).send('redirect_uri isnt set');
             return;
         }
@@ -265,6 +271,7 @@ module.exports = function (app) {
         
         if(req.session.username === undefined){
             IntentManager.setOauthAuthAsIntent(req, res);
+            sessionLogger.debug('user isnt logged in, redirecting');
             res.redirect('/login');
             return;
         }
@@ -272,8 +279,11 @@ module.exports = function (app) {
         // store the app redirect page in the intent
         // if not logged in, redirect to login page
 
+        var userLogger = scopedLogger.logger(req.session.username, sessionLogger);
+
         generateToken(16)
         .then(function(authcode){
+            userLogger.debug('auth code created, ', conceal(authcode));
             var userIdObjectId = ObjectID(req.session.userId);
 
             var doc = {
@@ -284,11 +294,13 @@ module.exports = function (app) {
                 redirectUri: req.query.redirect_uri
             };
 
+            userLogger.silly('inserting doc, ', conceal(doc));
             return mongoRepository.insert('authcodes', doc);
         })
         .then(function(insertedDoc){
             var url = req.query.redirect_uri + '?code=' + insertedDoc.authcode;
             url += '&state=' + req.query.state;
+            userLogger.debug('redirecting', url);
             return res.redirect(url);
         }, function(error){
             return q.Promise.reject({
@@ -297,7 +309,7 @@ module.exports = function (app) {
             });
         })
         .catch(function(error){
-            logger.error(error.message);
+            userLogger.error(error.message);
             if(error.code !== undefined && error.code === 500){
                 res.status(500).send('internal server error');
             }
@@ -306,8 +318,7 @@ module.exports = function (app) {
     });
 
     app.post('/auth/token', function(req, res){
-        var logger = l(req);
-
+        
         var user = basicAuth(req);
         if(user === undefined){
             user = {};
@@ -325,6 +336,11 @@ module.exports = function (app) {
             clientSecret: user.pass
         }
 
+        var clientLogger = scopedLogger.logger(conceal(query.clientId), req.app.logger);
+        var userLogger = {};
+        
+        clientLogger.debug('querying the db', conceal(query));
+
         mongoRepository.findOne('oauthClients', query)
         .then(function(client){
             if(client === null){
@@ -339,9 +355,11 @@ module.exports = function (app) {
                 clientId: user.name
             };
 
+            clientLogger.debug('querying authcode, query', conceal(query));
             return mongoRepository.findAndRemove('authcodes', query);
         })
         .then(function(authcode){
+            clientLogger.silly('checking auth code is valid', conceal(authcode));
             if(authcode === null){
                 return q.Promise.reject({
                     code: 401,
@@ -364,9 +382,12 @@ module.exports = function (app) {
                 });
             }
 
+            clientLogger.debug('auth code is valid, authcode', conceal(authcode));
+
             return authcode;
         })  
         .then(function(authcode){
+            userLogger = scopedLogger.logger(conceal(authcode.userId.toString()), clientLogger);
             var accessToken = {
                 userId: authcode.userId,
                 clientId: authcode.clientId
@@ -374,11 +395,12 @@ module.exports = function (app) {
 
             return generateToken(32).then(function(token){
                 accessToken.token = token;
+                userLogger.debug('inserting access token, token', conceal(accessToken));
                 return mongoRepository.insert('accessTokens', accessToken);
             });
         })
         .then(function(insertedToken){
-            logger.debug('access token created');
+            userLogger.info('access token created, accessToken', conceal(insertedToken));
             var result = {
                 access_token: insertedToken.token,
                 token_type: 'Bearer'
@@ -386,7 +408,7 @@ module.exports = function (app) {
             res.status(200).send(result);
         })
         .catch(function(error){
-            logger.error(error.message);
+            clientLogger.error(error.code === undefined ? error.message : error.code + ': ' + error.message);
             if(error.code === 401){
                 res.status(error.code).send(error.message);
             }
