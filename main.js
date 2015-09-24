@@ -1306,6 +1306,16 @@ app.get('/v1/me/cards',
     filterCards,
     sendCards);
 
+// var getIntegrations = function(req, res, next){
+    
+// }
+
+// app.get('/v1/me/integrations'){
+//     requireToken,
+//     getIntegrations,
+//     sendIntegrations);
+// }
+
 // TODO: remove this once all existing github integration users are migrated
 app.post('/v1/users/:username/link', function (req, res) {
     var streamId = req.body.streamId;
