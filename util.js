@@ -262,6 +262,20 @@ Util.prototype.findUser = function (oneselfUsername) {
     return deferred.promise;
 };
 
+Util.prototype.findUserById = function (userId) {
+    var byId = {
+        _id: userId
+    };
+    var deferred = q.defer();
+    mongoRepository.findOne('users', byId)
+        .then(function (user) {
+            deferred.resolve(user);
+        }, function (err) {
+            deferred.reject(err);
+        });
+    return deferred.promise;
+};
+
 
 function getDescendantProp(obj, desc) {
     var arr = desc.split(".");

@@ -989,6 +989,21 @@ var getCards = function(req, res, next){
     });
 }
 
+var getCardsByUserId = function(req, res, next){
+    logger.debug('starting getCardsByUserId');
+    util.findUserById(req.token.userId)
+    .then(function(user){
+        return util.getCards(user, req.query.from);
+    })
+    .then(function(cards){
+        res.cards = cards;
+        next();
+    })
+    .catch(function(err){
+        res.status(500).send(err);
+    });
+}
+
 _.mixin({
 
   // Get/set the value of a nested property
@@ -1259,6 +1274,35 @@ app.patch('/v1/users/:username/cards/:cardId',
 app.get('/v1/users/:username/cards',
     doNotAuthorize,
     getCards,
+    filterCards,
+    sendCards);
+
+var requireToken = function(req, res, next){
+    var token = req.headers.authorization.split(' ')[1];
+    if(token === undefined){
+        res.status(401).send('token must be bearer (Bearer abcde...xyz)');
+        return;
+    } 
+
+    var query ={
+        token: token
+    };
+
+    mongoRepository.findOne('accessTokens', query)
+    .then(function(tokenDoc){
+        if(tokenDoc === null){
+            res.status(401).send('invalid token');
+            return;
+        }
+
+        req.token = tokenDoc;
+        next();
+    })
+}
+
+app.get('/v1/me/cards',
+    requireToken,
+    getCardsByUserId,
     filterCards,
     sendCards);
 

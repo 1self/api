@@ -34,6 +34,8 @@ generateToken = function (size) {
 };
 
 module.exports = function (app) {
+    
+
     var l = function(req){
         return {
             debug: function(message, data){
