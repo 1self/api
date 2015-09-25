@@ -21,6 +21,8 @@ var mongoRepository = require('./mongoRepository.js');
 var eventRepository = require('./eventRepository.js');
 var platformService = require('./platformService.js');
 var CONTEXT_URI = process.env.CONTEXT_URI;
+var scopedLogger = require('./scopedLogger');
+var conceal = require('concealotron');
 
 var logger = require('winston');
 logger.add(logger.transports.File, { filename: 'webapp.log', level: 'debug', json: false });
@@ -1306,28 +1308,72 @@ app.get('/v1/me/cards',
     filterCards,
     sendCards);
 
+var getIntegrationAction = function(type){
+    var result = '';
+    if(type === 'hosted'){
+        result = 'connect';
+    }
+    else if(type === 'downloadable-extension'){
+        result = 'download';
+    }
+    else{
+        result = 'error';
+    }
+
+    return result;
+}
+
+var convertDbFields = function(user){
+    return function(integration){
+        var result = {
+            serviceName: integration.title,
+            identifier: integration.urlName,
+            categories: integration.categories,
+            shortDescription: integration.shortDesc,
+            longDescription: integration.longDesc,
+            instructions: integration.instructions,
+            integrationAction: getIntegrationAction(integration.type),
+            integrationUrl: integration.integrationUrl,
+
+            hasConnected: user.integrationMap[integration.appId] !== undefined
+        };
+
+        return result;
+    };
+}
+
+var mapCategory = function(i) {
+    return i.categories.map(function(c){
+        var result = {};
+        result.category = c;
+        result.integrations = i;
+        return result;
+    });
+}
+
+var convertCategoryArrayToMap = function(user){
+    user.integrationMap = {};
+    user.integrations.forEach(function(i){
+        user.integrationMap[i] = true;
+    });
+};
+
 var getIntegrations = function(req, res, next){
-    var query = {
+    var logger = scopedLogger.logger(conceal(req.token.userId.toString()), req.app.logger);
+    logger.silly('getting integrations');
+
+    var getIntegrationsFromDb = function(){
+        var query = {
             approved: true
         };
 
-    var getIntegrationAction = function(type){
-        var result = '';
-        if(type === 'hosted'){
-            result = 'connect';
-        }
-        else if(type === 'downloadable-extension'){
-            result = 'download';
-        }
-        else{
-            result = 'error';
-        }
-
-        return result;
+        logger.silly('getting integrations, ', query);
+        return mongoRepository.find('registeredApps', query);
     }
 
-    mongoRepository.find('registeredApps', query)
-    .then(function (integrations) {
+    
+
+    var getUser = function(integrations) {
         var userQuery = {
             _id: req.token.userId
         };
@@ -1336,54 +1382,50 @@ var getIntegrations = function(req, res, next){
             integrations: true
         };
 
+        logger.silly('getting user, ', userQuery);
+
         return mongoRepository.findOne('users', userQuery, projection)
         .then(function(userDoc){
+            logger.silly('got db user', conceal(userDoc));
             userDoc.allIntegrations = integrations;
             return userDoc;
         });
-    })
-    .then(function(user, integrations){
-        user.integrationMap = {};
-        user.integrations.forEach(function(i){
-            user.integrationMap[i] = true;
-        });
+    };
 
-        var userIntegrations = 
-        _.chain(user.allIntegrations)
-        .map(function(integration){
-            var result = {
-                serviceName: integration.title,
-                identifier: integration.urlName,
-                categories: integration.categories,
-                shortDescription: integration.shortDesc,
-                longDescription: integration.longDesc,
-                instructions: integration.instructions,
-                integrationAction: getIntegrationAction(integration.type),
-                integrationUrl: integration.integrationUrl,
+    var joinUserToIntegrations = function(user){
+        convertCategoryArrayToMap(user);
 
-                hasConnected: user.integrationMap[integration.appId] !== undefined
-            };
+        logger.silly('joining user to integrations, ', user);
 
-            return result;
-        })
-        .map(function(i) {
-            return i.categories.map(function(c){
-                var result = {};
-                result.category = c;
-                result.integrations = i;
-                return result;
-            });
-        })
+        var result = _.chain(user.allIntegrations)
+        .map(convertDbFields(user))
+        .map(mapCategory)
         .flatten()
         .groupBy('category')
         .value();
 
+        return result;
+    };
+
+    var addUserIntegrationsToResponse = function(userIntegrations){
         res.userIntegrations = userIntegrations;
+        logger.silly('adding userIntegrations to response, ', res.userIntegrations);
         next();
+    }
+    
+    getIntegrationsFromDb()
+    .then(getUser)
+    .then(joinUserToIntegrations)
+    .then(addUserIntegrationsToResponse)
+    .catch(function(error){
+        logger.error('error occurred', error);
     })
+    .done();
 }
 
 var sendIntegrations = function(req, res, next){
+    var logger = scopedLogger.logger(conceal(req.token.userId.toString()), req.app.logger);
+    logger.debug('retrieved user integrations, length', res.userIntegrations.length);
     res.status(200).send(res.userIntegrations);
 }
 
