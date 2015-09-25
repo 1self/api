@@ -1331,10 +1331,12 @@ var convertDbFields = function(user){
             categories: integration.categories,
             shortDescription: integration.shortDesc,
             longDescription: integration.longDesc,
-            instructions: integration.instructions,
             integrationAction: getIntegrationAction(integration.type),
             integrationUrl: integration.integrationUrl,
-
+            integrationType: integration.type,
+            foregroundColor: integration.fgColor,
+            backgroundColor: integration.bgColor,
+            iconUrl: integration.iconUrl,
             hasConnected: user.integrationMap[integration.appId] !== undefined
         };
 
