@@ -1432,7 +1432,11 @@ var sendIntegrations = function(req, res, next){
 }
 
 var timeUserIntegrationsPerformance = function(req, res, next){
-    req.app.logger.profile('userIntegrationApi');
+    if(req.profile === undefined){
+        req.profile = 'userIntegrations' + new Date().toISOString();
+    }
+
+    req.app.logger.profile(req.profile);
     next();
 };
 
