@@ -1432,11 +1432,15 @@ var sendIntegrations = function(req, res, next){
 }
 
 var timeUserIntegrationsPerformance = function(req, res, next){
-    if(req.profile === undefined){
-        req.profile = 'userIntegrations' + new Date().toISOString();
+    if(req.performanceProfile === undefined){
+        req.performanceProfile = ('userIntegrations' + new Date().toISOString());
+        logger.debug('starting timing, ', req.performanceProfile)
+    }
+    else{
+        logger.debug('stopping timing, ', req.performanceProfile)   
     }
 
-    req.app.logger.profile(req.profile);
+    req.app.logger.profile(req.performanceProfile);
     next();
 };
 
@@ -1444,8 +1448,8 @@ app.get('/v1/me/integrations',
     timeUserIntegrationsPerformance,
     requireToken,
     getIntegrations,
-    sendIntegrations,
-    timeUserIntegrationsPerformance);
+    timeUserIntegrationsPerformance,
+    sendIntegrations);
 
 // TODO: remove this once all existing github integration users are migrated
 app.post('/v1/users/:username/link', function (req, res) {
