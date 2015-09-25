@@ -1306,15 +1306,98 @@ app.get('/v1/me/cards',
     filterCards,
     sendCards);
 
-// var getIntegrations = function(req, res, next){
-    
-// }
+var getIntegrations = function(req, res, next){
+    var query = {
+            approved: true
+        };
 
-// app.get('/v1/me/integrations'){
-//     requireToken,
-//     getIntegrations,
-//     sendIntegrations);
-// }
+    var getIntegrationAction = function(type){
+        var result = '';
+        if(type === 'hosted'){
+            result = 'connect';
+        }
+        else if(type === 'downloadable-extension'){
+            result = 'download';
+        }
+        else{
+            result = 'error';
+        }
+
+        return result;
+    }
+
+    mongoRepository.find('registeredApps', query)
+    .then(function (integrations) {
+        var userQuery = {
+            _id: req.token.userId
+        };
+
+        var projection = {
+            integrations: true
+        };
+
+        return mongoRepository.findOne('users', userQuery, projection)
+        .then(function(userDoc){
+            userDoc.allIntegrations = integrations;
+            return userDoc;
+        });
+    })
+    .then(function(user, integrations){
+        user.integrationMap = {};
+        user.integrations.forEach(function(i){
+            user.integrationMap[i] = true;
+        });
+
+        var userIntegrations = 
+        _.chain(user.allIntegrations)
+        .map(function(integration){
+            var result = {
+                serviceName: integration.title,
+                identifier: integration.urlName,
+                categories: integration.categories,
+                shortDescription: integration.shortDesc,
+                longDescription: integration.longDesc,
+                instructions: integration.instructions,
+                integrationAction: getIntegrationAction(integration.type),
+                integrationUrl: integration.integrationUrl,
+
+                hasConnected: user.integrationMap[integration.appId] !== undefined
+            };
+
+            return result;
+        })
+        .map(function(i) {
+            return i.categories.map(function(c){
+                var result = {};
+                result.category = c;
+                result.integrations = i;
+                return result;
+            });
+        })
+        .flatten()
+        .groupBy('category')
+        .value();
+
+        res.userIntegrations = userIntegrations;
+        next();
+    })
+}
+
+var sendIntegrations = function(req, res, next){
+    res.status(200).send(res.userIntegrations);
+}
+
+var timeUserIntegrationsPerformance = function(req, res, next){
+    req.app.logger.profile('userIntegrationApi');
+    next();
+};
+
+app.get('/v1/me/integrations',
+    timeUserIntegrationsPerformance,
+    requireToken,
+    getIntegrations,
+    sendIntegrations,
+    timeUserIntegrationsPerformance);
 
 // TODO: remove this once all existing github integration users are migrated
 app.post('/v1/users/:username/link', function (req, res) {
