@@ -248,6 +248,93 @@ module.exports = function (app) {
         // redirect to login page
     });
 
+    app.get('/auth/authorize/signup', function(req, res, next){
+        var clientLogger = scopedLogger.logger(req.query.client_id, req.app.logger);
+        var sessionLogger = scopedLogger.logger(conceal(req.session.id), clientLogger);
+
+        if(req.query.username === undefined){
+            sessionLogger.debug('username isnt set')
+            res.status(400).send('username isnt set');
+            return;
+        }
+
+        if(req.query.service === undefined){
+            sessionLogger.debug('service isnt set')
+            res.status(400).send('service isnt set');
+            return;
+        }
+
+        if(req.query.response_type === undefined || req.query.response_type !== 'code'){
+            sessionLogger.debug('response_type parameter must be set to \'code\'')
+            res.status(400).send('response_type parameter must be set to \'code\'');
+            return;
+        }
+
+        if(req.query.client_id === undefined){
+            sessionLogger.debug('client_id isnt set');
+            res.status(400).send('client_id isnt set');
+            return;
+        }
+
+        if(req.query.redirect_uri === undefined){
+            sessionLogger.debug('redirect_uri isnt set');
+            res.status(400).send('redirect_uri isnt set');
+            return;
+        }
+
+        
+        if(req.session.username === undefined){
+            var url = '/signup'
+            + '?username=' + req.query.username
+            + '&service=' + req.query.service;
+
+            IntentManager.setOauthAuthAsIntent(req, res);
+            sessionLogger.debug('user isnt logged in, redirecting');
+            res.redirect(url);
+            return;
+        }
+
+        // store the app redirect page in the intent
+        // if not logged in, redirect to login page
+
+        var userLogger = scopedLogger.logger(req.session.username, sessionLogger);
+
+        generateToken(16)
+        .then(function(authcode){
+            userLogger.debug('auth code created, ', conceal(authcode));
+            var userIdObjectId = ObjectID(req.session.userId);
+
+            var doc = {
+                userId: userIdObjectId,
+                authcode: authcode,
+                clientId: req.query.client_id,
+                date: new Date(),
+                redirectUri: req.query.redirect_uri
+            };
+
+            userLogger.silly('inserting doc, ', conceal(doc));
+            return mongoRepository.insert('authcodes', doc);
+        })
+        .then(function(insertedDoc){
+            var url = req.query.redirect_uri + '?code=' + insertedDoc.authcode;
+            url += '&state=' + req.query.state;
+            userLogger.debug('redirecting', url);
+            return res.redirect(url);
+        }, function(error){
+            return q.Promise.reject({
+                code: 500,
+                message: error
+            });
+        })
+        .catch(function(error){
+            userLogger.error(error.message);
+            if(error.code !== undefined && error.code === 500){
+                res.status(500).send('internal server error');
+            }
+        })
+        .done();
+    })
+
     app.get('/auth/authorize', function(req, res){
         var clientLogger = scopedLogger.logger(req.query.client_id, req.app.logger);
         var sessionLogger = scopedLogger.logger(conceal(req.session.id), clientLogger);
