@@ -1359,6 +1359,10 @@ var mapCategory = function(i) {
 
 var convertCategoryArrayToMap = function(user){
     user.integrationMap = {};
+    if(user.integrations === undefined){
+        return;
+    }
+    
     user.integrations.forEach(function(i){
         user.integrationMap[i] = true;
     });
