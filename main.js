@@ -1404,6 +1404,13 @@ var getIntegrations = function(req, res, next){
         .map(mapCategory)
         .flatten()
         .groupBy('category')
+        .mapObject(function(val, key){
+            return {
+                categoryName: key,
+                integrations: val
+            };
+        })
+        .values()
         .value();
 
         return result;
