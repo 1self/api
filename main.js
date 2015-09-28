@@ -20,12 +20,15 @@ var validator = require('validator');
 var mongoRepository = require('./mongoRepository.js');
 var eventRepository = require('./eventRepository.js');
 var platformService = require('./platformService.js');
-var CONTEXT_URI = process.env.CONTEXT_URI;
 var scopedLogger = require('./scopedLogger');
 var conceal = require('concealotron');
 
+var CONTEXT_URI = process.env.CONTEXT_URI;
+var LOGGING_DIR = process.env.LOGGINGDIR;
+
+var filename = LOGGING_DIR + 'webapp.log';
 var logger = require('winston');
-logger.add(logger.transports.File, { filename: 'webapp.log', level: 'debug', json: false });
+logger.add(logger.transports.File, { filename: filename, level: 'debug', json: false });
 logger.error("Errors will be logged here");
 logger.warn("Warns will be logged here");
 logger.info("Info will be logged here");
@@ -1330,13 +1333,14 @@ var convertDbFields = function(user){
             identifier: integration.urlName,
             categories: integration.categories,
             shortDescription: integration.shortDesc,
-            longDescription: integration.longDesc,
+            longDescription: integration.longDesc2,
             integrationAction: getIntegrationAction(integration.type),
             integrationUrl: integration.integrationUrl,
             integrationType: integration.type,
             foregroundColor: integration.fgColor,
             backgroundColor: integration.bgColor,
             iconUrl: integration.iconUrl,
+            instructions: integration.instructions2,
             hasConnected: user.integrationMap[integration.appId] !== undefined
         };
 
@@ -1366,7 +1370,8 @@ var getIntegrations = function(req, res, next){
 
     var getIntegrationsFromDb = function(){
         var query = {
-            approved: true
+            approved: true,
+            active: true
         };
 
         logger.silly('getting integrations, ', query);
@@ -1403,14 +1408,23 @@ var getIntegrations = function(req, res, next){
         .map(convertDbFields(user))
         .map(mapCategory)
         .flatten()
-        .groupBy('category')
+        .reduce(function(memo, integration){
+            if(memo[integration.category] === undefined){
+                memo[integration.category] = [];
+            }
+
+            memo[integration.category].push(integration.integrations);
+            return memo;
+        }, {})
+        //.groupBy('category')
         .mapObject(function(val, key){
-            return {
+             return {
                 categoryName: key,
                 integrations: val
             };
         })
         .values()
+        //.keys(function())
         .value();
 
         return result;
