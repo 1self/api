@@ -1314,17 +1314,17 @@ app.get('/v1/me/cards',
 var getIntegrationAction = function(type){
     var result = '';
     if(type === 'hosted'){
-        result = 'connect';
+        result = 'Connect';
     }
     else if(type === 'downloadable-extension'){
-        result = 'download';
+        result = 'Download';
     }
     else{
         result = 'error';
     }
 
     return result;
-}
+};
 
 var convertDbFields = function(user){
     return function(integration){
@@ -1346,7 +1346,7 @@ var convertDbFields = function(user){
 
         return result;
     };
-}
+};
 
 var mapCategory = function(i) {
     return i.categories.map(function(c){
@@ -1355,7 +1355,7 @@ var mapCategory = function(i) {
         result.integrations = i;
         return result;
     });
-}
+};
 
 var convertCategoryArrayToMap = function(user){
     user.integrationMap = {};
@@ -1380,7 +1380,7 @@ var getIntegrations = function(req, res, next){
 
         logger.silly('getting integrations, ', query);
         return mongoRepository.find('registeredApps', query);
-    }
+    };
 
     
 
