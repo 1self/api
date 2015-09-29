@@ -1526,12 +1526,11 @@ module.exports = function (app) {
 
     var validateOAuthToken = function(req, res, next){
         
+        var token = '';
         if (req.headers && req.headers.authorization) {
             var parts = req.headers.authorization.split(' ');
-            var token = '';
             if (parts.length == 2) {
-              var scheme = parts[0]
-                , credentials = parts[1];
+              var scheme = parts[0], credentials = parts[1];
                 
               if (/^Bearer$/i.test(scheme)) {
                 token = credentials;
@@ -1539,7 +1538,7 @@ module.exports = function (app) {
             } 
         }
         
-        logger = scopedLogger(token.substring(0, 6), req.app.logger);
+        logger = scopedLogger.logger(token.substring(0, 6), req.app.logger);
 
         if(token === ''){
             var bearerError = 'invalid bearer token: pass it in the Authorization header';
@@ -1572,13 +1571,15 @@ module.exports = function (app) {
                     code: 401,
                     message: 'invalid token',
                     privateMessage: 'user attached to token not found in the database'
-                }
+                };
 
                 return Q.Promise.reject(rejectResult);
             }
 
             var result = {
-                username: userDoc.username
+                username: userDoc.username,
+                avatarUrl: userDoc.profile.avatarUrl,
+                displayName: userDoc.profile.displayName
             };
 
             req.validatedAuthTokenUser = result;
