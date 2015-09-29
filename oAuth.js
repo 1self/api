@@ -406,6 +406,42 @@ module.exports = function (app) {
         .done();
     });
 
+    app.delete('/auth/token', function(req, res){
+        var splits = req.headers.authorization.split(' ');
+        if(splits[0] !== 'Bearer'){
+            res.status(404).send('token format must be \'Bearer token\'');
+            req.app.logger.debug('token format must be \'Bearer token\'');
+            return;
+        }
+
+        var token = splits[1];
+
+        if(token === undefined){
+            res.status(404).send('token must be sent in authorization header');
+            return;
+        }
+
+        var tokenLogger = scopedLogger.logger(conceal(token), req.app.logger);
+
+        var query = {
+            token: token
+        };
+
+        mongoRepository.findAndRemove('accessTokens', query)
+        .then(function(accessTokenDoc){
+            if(accessTokenDoc === null){
+                res.status(404).send('invalid token');
+                return;
+            }
+
+            res.status(200).send('token deleted');
+        })
+        .catch(function(error){
+            res.status(500).send(error);
+        })
+        .done();
+    });
+
     app.post('/auth/token', function(req, res){
         
         var user = basicAuth(req);

@@ -1476,6 +1476,27 @@ app.get('/v1/me/integrations',
     timeUserIntegrationsPerformance,
     sendIntegrations);
 
+var endSession = function(req, res, next){
+    var logger = scopedLogger.logger(req.session.username, req.app.logger);
+    if(req.query.redirect_uri === undefined){
+        res.status(404).send('you must send a rediect_uri');
+        logger.debug('end session was not supplied a redirect_uri');
+        return;
+    }
+
+    req.session.destroy(function (err) {
+        if(err){
+            logger.error(err);
+        }
+        else{
+            res.redirect(req.query.redirect_uri);
+        }            
+    });
+};
+
+app.get('/v1/me/logout',
+    endSession);
+
 // TODO: remove this once all existing github integration users are migrated
 app.post('/v1/users/:username/link', function (req, res) {
     var streamId = req.body.streamId;
