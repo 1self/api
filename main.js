@@ -1220,17 +1220,22 @@ var filterCards = function(req, res, next){
 
 var sendCards = function(req, res, next) {
     res.status(200).send(res.cards);
-}
+};
 
 var sendCard = function(req, res, next) {
     res.status(200).send(res.card);
-}
+};
 
 var extractCardDetails = function(req, res, next){
     req.card = req.body;
     req.card._id = req.params.cardId;
     next();
-}
+};
+
+var addUserIdToCard = function(req, res, next){
+    req.card.userId = req.token.userId;
+    next();
+};
 
 var updateCardInDb = function(req, res, next) {
     util.setCard(req.card)
@@ -1243,8 +1248,8 @@ var updateCardInDb = function(req, res, next) {
             res.status(404).send(error);
         }
         res.status(500).send(error);
-    })
-}
+    });
+};
 
 var getUser = function(req, res, next){
     util.findUser(req.params.username)
@@ -1255,7 +1260,7 @@ var getUser = function(req, res, next){
     .catch(function(error){
         res.status(500).send(error);
     });
-}
+};
 
 var profileCardRead = function(req, res, next){
     if(req.winstonProfile === undefined){
@@ -1264,7 +1269,7 @@ var profileCardRead = function(req, res, next){
 
     logger.profile(req.winstonProfile);
     next();
-}
+};
 
 // /v1/users/:username/cards/:cardId/"
 app.patch('/v1/users/:username/cards/:cardId',
@@ -1282,31 +1287,17 @@ app.get('/v1/users/:username/cards',
     filterCards,
     sendCards);
 
-var requireToken = function(req, res, next){
-    var token = req.headers.authorization.split(' ')[1];
-    if(token === undefined){
-        res.status(401).send('token must be bearer (Bearer abcde...xyz)');
-        return;
-    } 
-
-    var query ={
-        token: token
-    };
-
-    mongoRepository.findOne('accessTokens', query)
-    .then(function(tokenDoc){
-        if(tokenDoc === null){
-            res.status(401).send('invalid token');
-            return;
-        }
-
-        req.token = tokenDoc;
-        next();
-    })
-}
+app.patch('/v1/me/cards/:cardId',
+    app.locals.requireToken,
+    profileCardRead,
+    extractCardDetails,
+    addUserIdToCard,
+    updateCardInDb,
+    profileCardRead,
+    sendCard);
 
 app.get('/v1/me/cards',
-    requireToken,
+    app.locals.requireToken,
     getCardsByUserId,
     filterCards,
     sendCards);
@@ -1459,10 +1450,10 @@ var sendIntegrations = function(req, res, next){
 var timeUserIntegrationsPerformance = function(req, res, next){
     if(req.performanceProfile === undefined){
         req.performanceProfile = ('userIntegrations' + new Date().toISOString());
-        logger.debug('starting timing, ', req.performanceProfile)
+        logger.debug('starting timing, ', req.performanceProfile);
     }
     else{
-        logger.debug('stopping timing, ', req.performanceProfile)   
+        logger.debug('stopping timing, ', req.performanceProfile);   
     }
 
     req.app.logger.profile(req.performanceProfile);
@@ -1471,7 +1462,7 @@ var timeUserIntegrationsPerformance = function(req, res, next){
 
 app.get('/v1/me/integrations',
     timeUserIntegrationsPerformance,
-    requireToken,
+    app.locals.requireToken,
     getIntegrations,
     timeUserIntegrationsPerformance,
     sendIntegrations);
@@ -2103,9 +2094,10 @@ var addUnit = function(req, res, next){
         req.rollups.unit = 's';
     }
     next();
-}
+};
+
 app.get("/v1/users/:username/rollups/:period/:objectTags/:actionTags/:property/.json"
-    , doNotAuthorize // authorize before putting onto production!
+    , app.locals.requireToken // authorize before putting onto production!
     , getUser
     , getRollup
     , addUnit

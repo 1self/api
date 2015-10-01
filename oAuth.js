@@ -516,7 +516,7 @@ module.exports = function (app) {
             var accessToken = {
                 userId: authcode.userId,
                 clientId: authcode.clientId
-            }
+            };
 
             return generateToken(32).then(function(token){
                 accessToken.token = token;
@@ -529,7 +529,7 @@ module.exports = function (app) {
             var result = {
                 access_token: insertedToken.token,
                 token_type: 'Bearer'
-            }
+            };
             res.status(200).send(result);
         })
         .catch(function(error){
@@ -544,6 +544,29 @@ module.exports = function (app) {
         })
         .done();
     });
+
+    app.locals.requireToken = function(req, res, next){
+        var token = req.headers.authorization.split(' ')[1];
+        if(token === undefined){
+            res.status(401).send('token must be bearer (Bearer abcde...xyz)');
+            return;
+        } 
+
+        var query ={
+            token: token
+        };
+
+        mongoRepository.findOne('accessTokens', query)
+        .then(function(tokenDoc){
+            if(tokenDoc === null){
+                res.status(401).send('invalid token');
+                return;
+            }
+
+            req.token = tokenDoc;
+            next();
+        });
+    };
 
     // app.delete('auth/token', function(req, res){
 

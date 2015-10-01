@@ -415,10 +415,15 @@ Util.prototype.setCard = function(card){
     var query = {
         _id: new ObjectID(card._id)
     };
+
+    if(card.userId){
+        query.userId = card.userId;
+    }
+
     var update = {
         $set: { "read": card.read,
                 "readInfo": card.readInfo}
-    }
+    };
 
     mongoRepository.update('cards', query, update)
     .then(function(updateCount){
@@ -431,16 +436,16 @@ Util.prototype.setCard = function(card){
 
     }, function (err) {
         deferred.reject(err);
-    })
+    });
 
     return deferred.promise;
-}
+};
 
 Util.prototype.getAdminToken = function(token){
     var deferred = q.defer();
     var query = {
         token: token
-    }
+    };
     mongoRepository.findOne('adminTokens', query)
     .then(function (token) {
         deferred.resolve(token);
