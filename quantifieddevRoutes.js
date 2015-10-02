@@ -1579,7 +1579,8 @@ module.exports = function (app) {
             var result = {
                 username: userDoc.username,
                 avatarUrl: userDoc.profile.avatarUrl,
-                displayName: userDoc.profile.displayName
+                displayName: userDoc.profile.displayName,
+                registrationToken: userDoc.registrationToken
             };
 
             req.validatedAuthTokenUser = result;
@@ -1602,15 +1603,15 @@ module.exports = function (app) {
             res.status(500).send('internal server error');
         })
         .done();
-    }
+    };
 
     var getProfile = function(req, res){
         res.status(200).send(req.validatedAuthTokenUser);
     };
 
-    app.get('/v1/me/profile'
-        , validateOAuthToken
-        , getProfile);
+    app.get('/v1/me/profile',
+        validateOAuthToken,
+        getProfile);
 
     //v1/users/{{edsykes}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
     app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/:renderType", validateShareToken, function (req, res) {
