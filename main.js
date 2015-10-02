@@ -780,6 +780,40 @@ app.post('/stream', function (req, res) {
     });
 });
 
+var getIntegration = function(req, res, next){
+    var query = {
+        urlName: req.params.name
+    };
+
+    mongoRepository.findOne('registeredApps', query)
+    .then(function(integrationDoc){
+        if(integrationDoc){
+            delete integrationDoc._id;
+            delete integrationDoc['app-id'];
+            delete integrationDoc['app-secret'];
+            req.integration = integrationDoc;
+            next();
+        }
+        else{
+            logger.debug('no integration with that name');
+            res.status(404).send('no integration with that name');
+        }
+    })
+    .catch(function(error){
+        logger.debug('error trying to get integration, ', [req.params.name, error]);
+        res.status(500).send(error);
+    })
+    .done();
+};
+
+var sendIntegration = function(req, res, next){
+    res.status(200).send(req.integration);
+};
+
+app.get('/v1/integrations/:name', 
+    getIntegration, 
+    sendIntegration);
+
 app.post('/v1/streams', function (req, res) {
     var auth = req.headers.authorization;
     var callbackUrl = req.body.callbackUrl;
