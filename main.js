@@ -759,12 +759,20 @@ var validateClient = function (appId, appSecret) {
     mongoRepository.findOne('registeredApps', query)
         .then(function (result) {
             if (!result) {
-                deferred.reject();
+                deferred.reject(
+                    {
+                        error: 401,
+                        message: 'unauthorized app'
+                    });
             } else {
                 deferred.resolve();
             }
         }, function (err) {
-            deferred.reject(err);
+            deferred.reject(
+                {
+                    error: 500,
+                    messages: err
+                });
         });
     return deferred.promise;
 };
@@ -985,27 +993,32 @@ app.post('/v1/users/:username/streams', function (req, res) {
     var streamData;
 
     validateClient(appId, appSecret)
-        .then(function () {
-            return findUser(username, registrationToken);
-        })
-        .then(function (user) {
-            return util.createV1Stream(appId, callbackUrl)
-                .then(function (stream) {
-                    streamData = stream;
-                    return util.linkStreamToUser(user, stream.streamid);
-                })
-                .then(function () {
-                    return util.linkIntegrationAppToUser(user, appId)
-                })
-                .then(function () {
-                    delete streamData._id;
-                    delete streamData.appId;
-                    res.status(200).send(streamData);
-                });
-        })
-        .catch(function (err) {
-            res.status(400).send("invalid request");
-        });
+    .then(function () {
+        return findUser(username, registrationToken);
+    })
+    .then(function (user) {
+        return util.createV1Stream(appId, callbackUrl)
+            .then(function (stream) {
+                streamData = stream;
+                return util.linkStreamToUser(user, stream.streamid);
+            })
+            .then(function () {
+                return util.linkIntegrationAppToUser(user, appId)
+            })
+            .then(function () {
+                delete streamData._id;
+                delete streamData.appId;
+                res.status(200).send(streamData);
+            });
+    })
+    .catch(function (err) {
+        if(err.error){
+            res.status(err.error).send(err.message);
+        }
+        else{
+            res.status(400).send(err);
+        }
+    });
 });
 
 var doNotAuthorize = function(req, res, next){
