@@ -18,8 +18,8 @@ var assert = function(expected, actual, message){
 };
 
 var testRedirectUri = function(){
-	var expected = 'http://int.example.com?redirect_uri=http%3A%2F%2Fcontext.example.com%2Fintegrations';
-	var actual = helpers.createIntegrationUriWithRedirect('http://int.example.com', 'http://context.example.com');
+	var expected = 'http://int.example.com?redirect_uri=http%3A%2F%2Fcontext.example.com%2Fintegrations&username=testuser&token=abcdef';
+	var actual = helpers.createIntegrationUriWithRedirect('http://int.example.com', 'http://context.example.com', 'testuser', 'abcdef');
 	assert(expected, actual, 'create redirect');
 };
 

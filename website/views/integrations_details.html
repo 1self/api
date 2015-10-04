@@ -31,7 +31,7 @@
         {% if !alreadyIntegrated %}
         <div class="connect-now-btn-container">
             {% if type === "hosted" %}
-            <a class="custom-button connect-now-btn absolute left-aligned small-btn connect" href="{{integrationUrl}}?username={{username}}&token={{registrationToken}}" >Connect Now</a>
+            <a class="custom-button connect-now-btn absolute left-aligned small-btn connect" href="{{integrationUrl}}" >Connect Now</a>
             {% else %}
             <a class="custom-button connect-now-btn absolute left-aligned small-btn connect" href="{{downloadLink}}" >Download Now</a>
             {% endif %}
@@ -57,7 +57,7 @@
     </P>
     {% if !alreadyIntegrated %}
         {% if type === "hosted" %}
-            <a class="custom-button connect-now-btn absolute left-aligned small-btn connect" href="{{integrationUrl}}?username={{username}}&token={{registrationToken}}" >Connect</a>
+            <a class="custom-button connect-now-btn absolute left-aligned small-btn connect" href="{{integrationUrl}}" >Connect</a>
         {% else %}
             <a class="custom-button connect-now-btn absolute left-aligned small-btn connect" href="{{downloadLink}}">Download</a>
         {% endif %}

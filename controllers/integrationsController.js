@@ -137,7 +137,7 @@ module.exports = function (app) {
                     });
             })
             .then(function (int) {
-                var integrationUri = helpers.createIntegrationUriWithRedirect(int.integrationUrl, req.app.locals.contextUri);
+                var integrationUri = helpers.createIntegrationUriWithRedirect(int.integrationUrl, req.app.locals.contextUri, req.session.username, req.session.registrationToken);
                 res.render('integrations_details', {
                     title: int.title,
                     iconUrl: int.iconUrl,
@@ -148,8 +148,6 @@ module.exports = function (app) {
                     downloadLink: int.downloadLink,
                     integrationUrl: integrationUri,
                     alreadyIntegrated: int.alreadyIntegrated,
-                    username: req.session.username,
-                    registrationToken: req.session.registrationToken,
                     type: int.type,
                     instructions: int.instructions
                 });
