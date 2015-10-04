@@ -42,6 +42,9 @@ process.on('uncaughtException', function(err) {
 var app = express();
 app.use(morgan());
 
+// local variables to be used by requests etc.
+app.locals.contextUri = process.env.CONTEXT_URI;
+
 logger.debug("event database is :", process.env.EVENTDBURI);
 
 app.use(cookieParser());

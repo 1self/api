@@ -2,6 +2,7 @@ var mongoRepository = require('../mongoRepository.js');
 var Q = require('q');
 var _ = require("underscore");
 var sessionManager = require("./../sessionManagement");
+var helpers = require('./helpers.js');
 
 module.exports = function (app) {
 
@@ -77,52 +78,52 @@ module.exports = function (app) {
     app.get("/integrations", sessionManager.requiresSession, function (req, res) {
         var totalIntegrationsIntegrated = 0;
         getActiveIntegrations()
-            .then(function (integrations) {
-                return _.collect(integrations, function (int) {
-                    return {
-                        title: int.title,
-                        integrationId: int.urlName,
-                        iconUrl: int.iconUrl,
-                        bgColor: int.bgColor,
-                        fgColor: int.fgColor,
-                        appId: int.appId,
-                        type: int.type
-                    }
-                })
-            }).then(function (integrations) {
-                var username = req.session.username;
-                return getAlreadyIntegratedIntegrationsForUser(username)
-                    .then(function (integrationsOfUser) {
-                        return _.forEach(integrations, function (integration) {
-                            integration.alreadyIntegrated = _.contains(integrationsOfUser, integration.appId);
-                            if (integration.alreadyIntegrated) {
-                                totalIntegrationsIntegrated++;
-                            }
-                        })
-                    });
-            }).then(function (integrations) {
-                var separatedIntegrations = separateIntegrationsAndApps(integrations);
-                var infoForIntegrations = {
-                    integrations: separatedIntegrations.integrations,
-                    apps: separatedIntegrations.apps,
-                    totalIntegrationsIntegrated: totalIntegrationsIntegrated,
-                    avatarUrl: req.session.avatarUrl,
-                    username: req.session.username
-                };
-                if (totalIntegrationsIntegrated === 0) {
-                    res.render("integrations", infoForIntegrations);
+        .then(function (integrations) {
+            return _.collect(integrations, function (int) {
+                return {
+                    title: int.title,
+                    integrationId: int.urlName,
+                    iconUrl: int.iconUrl,
+                    bgColor: int.bgColor,
+                    fgColor: int.fgColor,
+                    appId: int.appId,
+                    type: int.type
                 }
-                else if (totalIntegrationsIntegrated > 0 && totalIntegrationsIntegrated < 3) {
-                    res.render("integrationsWithDriveIntoLink", infoForIntegrations);
-                }
-                else {
-                    res.render("integrationWithDriveIntoBtn", infoForIntegrations);
-                }
-
-            }).catch(function (err) {
-                console.log("Error is", err);
-                res.send("Integrations not found.");
             });
+        }).then(function (integrations) {
+            var username = req.session.username;
+            return getAlreadyIntegratedIntegrationsForUser(username)
+                .then(function (integrationsOfUser) {
+                    return _.forEach(integrations, function (integration) {
+                        integration.alreadyIntegrated = _.contains(integrationsOfUser, integration.appId);
+                        if (integration.alreadyIntegrated) {
+                            totalIntegrationsIntegrated++;
+                        }
+                    });
+                });
+        }).then(function (integrations) {
+            var separatedIntegrations = separateIntegrationsAndApps(integrations);
+            var infoForIntegrations = {
+                integrations: separatedIntegrations.integrations,
+                apps: separatedIntegrations.apps,
+                totalIntegrationsIntegrated: totalIntegrationsIntegrated,
+                avatarUrl: req.session.avatarUrl,
+                username: req.session.username
+            };
+            if (totalIntegrationsIntegrated === 0) {
+                res.render("integrations", infoForIntegrations);
+            }
+            else if (totalIntegrationsIntegrated > 0 && totalIntegrationsIntegrated < 3) {
+                res.render("integrationsWithDriveIntoLink", infoForIntegrations);
+            }
+            else {
+                res.render("integrationWithDriveIntoBtn", infoForIntegrations);
+            }
+
+        }).catch(function (err) {
+            console.log("Error is", err);
+            res.send("Integrations not found.");
+        });
     });
 
     app.get("/integrations/:integrationId", sessionManager.requiresSession, function (req, res) {
@@ -133,9 +134,10 @@ module.exports = function (app) {
                     .then(function (integrationsOfUser) {
                         int.alreadyIntegrated = _.contains(integrationsOfUser, int.appId);
                         return int;
-                    })
+                    });
             })
             .then(function (int) {
+                var integrationUri = helpers.createIntegrationUriWithRedirect(int.integrationUrl, req.app.locals.contextUri);
                 res.render('integrations_details', {
                     title: int.title,
                     iconUrl: int.iconUrl,
@@ -144,7 +146,7 @@ module.exports = function (app) {
                     creatorName: int.creatorName,
                     supportLink: int.supportLink,
                     downloadLink: int.downloadLink,
-                    integrationUrl: int.integrationUrl,
+                    integrationUrl: integrationUri,
                     alreadyIntegrated: int.alreadyIntegrated,
                     username: req.session.username,
                     registrationToken: req.session.registrationToken,
