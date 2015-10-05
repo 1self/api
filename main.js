@@ -2144,7 +2144,7 @@ var addUnit = function(req, res, next){
 };
 
 app.get("/v1/users/:username/rollups/:period/:objectTags/:actionTags/:property/.json"
-    , app.locals.requireToken // authorize before putting onto production!
+    , doNotAuthorize // authorize before putting onto production!
     , getUser
     , getRollup
     , addUnit
