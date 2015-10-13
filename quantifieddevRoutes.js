@@ -27,7 +27,8 @@ var eventRepository = require('./eventRepository.js');
 var SignupModule = require('./modules/signupModule.js');
 var imageCapture = require('./imageCapture.js');
 var eventRepository = require('./eventRepository.js');
-var scopedLogger = require('./scopedLogger.js')
+var scopedLogger = require('./scopedLogger.js');
+var conceal = require('concealotron');
 
 var emailConfigOptions = {
     root: path.join(__dirname, "/website/public/email_templates")
@@ -207,31 +208,32 @@ module.exports = function (app) {
         var readToken = req.query.readToken ? req.query.readToken : "";
         if (streamId && readToken) {
             util.streamExists(streamId, readToken)
-                .then(function (exists) {
-                    if (exists) {
-                        getStreamsForUser(req.session.username)
-                            .then(function (user) {
-                                return util.linkStreamToUser(user, streamId);
-                            })
-                            .then(function (isStreamLinked) {
-                                res.render('dashboard', {
-                                    streamLinked: (isStreamLinked ? "yes" : ""),
-                                    username: req.session.username,
-                                    avatarUrl: req.session.avatarUrl
-                                });
-                            }).catch(function (err) {
-                                console.log("Error is", err);
-                            });
-                    } else {
-                        console.log("error during linking stream to user ");
+            .then(function (exists) {
+                if (exists) {
+                    getStreamsForUser(req.session.username)
+                    .then(function (user) {
+                        return util.linkStreamToUser(user, streamId);
+                    })
+                    .then(function (isStreamLinked) {
                         res.render('dashboard', {
-                            streamLinked: "no",
+                            streamLinked: (isStreamLinked ? "yes" : ""),
                             username: req.session.username,
                             avatarUrl: req.session.avatarUrl
                         });
+                    })
+                    .catch(function (err) {
+                        console.log("Error is", err);
+                    });
+                } else {
+                    console.log("error during linking stream to user ");
+                    res.render('dashboard', {
+                        streamLinked: "no",
+                        username: req.session.username,
+                        avatarUrl: req.session.avatarUrl
+                    });
 
-                    }
-                });
+                }
+            });
 
         } else {
 
@@ -1524,7 +1526,7 @@ module.exports = function (app) {
         return deferred.promise;
     };
 
-    var validateOAuthToken = function(req, res, next){
+    var validateOAuthTokenAndAddUser = function(req, res, next){
         
         var token = '';
         if (req.headers && req.headers.authorization) {
@@ -1580,7 +1582,9 @@ module.exports = function (app) {
                 username: userDoc.username,
                 avatarUrl: userDoc.profile.avatarUrl,
                 displayName: userDoc.profile.displayName,
-                registrationToken: userDoc.registrationToken
+                registrationToken: userDoc.registrationToken,
+                registeredOn: userDoc.registeredOn,
+                cardCount: userDoc.cardCount
             };
 
             req.validatedAuthTokenUser = result;
@@ -1610,8 +1614,57 @@ module.exports = function (app) {
     };
 
     app.get('/v1/me/profile',
-        validateOAuthToken,
+        validateOAuthTokenAndAddUser,
         getProfile);
+
+    var validateReadToken = function(req, res, next){
+        logger = scopedLogger.logger(req.body.streamId, req.app.logger);
+
+        util.streamExists(req.body.streamId, req.query.readToken)
+        .then(function (exists) {
+            logger.silly("received stream exists response: ", exists);
+            if (exists) {
+                logger.debug("validated read token and stream, readToken: ", conceal(req.query.readToken));
+                next();
+            }
+            else {
+                logger.error("read token is not authorized for this stream id, readToken: ", conceal(req.query.readToken));
+                res.status(404).send('the readToken is not authorized for the streamId');
+            }
+        })
+        .catch(function(error){
+            res.status(500).send('internal server error ');
+        })
+        .done();
+    };
+
+    var registerStream = function(req, res, next){
+        var userLogger = scopedLogger.logger(req.validatedAuthTokenUser.username, req.app.logger);
+        userLogger.silly('registerStream: looking up user');
+        util.findUser(req.validatedAuthTokenUser.username)
+        .then(function(user){
+            userLogger.silly('registerStream: got user');
+            return util.linkStreamToUser(user, req.body.streamId);   
+        })
+        .then(function(linked){
+            if(linked){
+                userLogger.info("registerStream: user linked to ", req.body.streamId);
+                res.send(true);
+            } else {
+                userLogger.info("registerStream: attempted to link stream that has already been linked: ", req.body.streamId);
+                res.send(true);
+            }
+        })
+        .catch(function(error){
+            userLogger.error("registerStream: error occurred: ", error);
+        })
+        .done();
+    };
+
+    app.post('/v1/me/streams',
+        validateOAuthTokenAndAddUser,
+        validateReadToken,
+        registerStream);
 
     //v1/users/{{edsykes}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}/dba/daily/{{barchart/json}}
     app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/:renderType", validateShareToken, function (req, res) {
