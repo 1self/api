@@ -72,59 +72,63 @@ module.exports = function (app) {
         return {
             integrations: ints,
             apps: apps
-        }
+        };
     };
 
     app.get("/integrations", sessionManager.requiresSession, function (req, res) {
-        var totalIntegrationsIntegrated = 0;
-        getActiveIntegrations()
-        .then(function (integrations) {
-            return _.collect(integrations, function (int) {
-                return {
-                    title: int.title,
-                    integrationId: int.urlName,
-                    iconUrl: int.iconUrl,
-                    bgColor: int.bgColor,
-                    fgColor: int.fgColor,
-                    appId: int.appId,
-                    type: int.type
-                }
-            });
-        }).then(function (integrations) {
-            var username = req.session.username;
-            return getAlreadyIntegratedIntegrationsForUser(username)
-                .then(function (integrationsOfUser) {
-                    return _.forEach(integrations, function (integration) {
-                        integration.alreadyIntegrated = _.contains(integrationsOfUser, integration.appId);
-                        if (integration.alreadyIntegrated) {
-                            totalIntegrationsIntegrated++;
-                        }
-                    });
-                });
-        }).then(function (integrations) {
-            var separatedIntegrations = separateIntegrationsAndApps(integrations);
-            var infoForIntegrations = {
-                integrations: separatedIntegrations.integrations,
-                apps: separatedIntegrations.apps,
-                totalIntegrationsIntegrated: totalIntegrationsIntegrated,
-                avatarUrl: req.session.avatarUrl,
-                username: req.session.username
-            };
-            if (totalIntegrationsIntegrated === 0) {
-                res.render("integrations", infoForIntegrations);
-            }
-            else if (totalIntegrationsIntegrated > 0 && totalIntegrationsIntegrated < 3) {
-                res.render("integrationsWithDriveIntoLink", infoForIntegrations);
-            }
-            else {
-                res.render("integrationWithDriveIntoBtn", infoForIntegrations);
-            }
-
-        }).catch(function (err) {
-            console.log("Error is", err);
-            res.send("Integrations not found.");
-        });
+        res.redirect(req.app.locals.CARD_APP + "/integrations");
     });
+
+    // app.get("/integrations", sessionManager.requiresSession, function (req, res) {
+    //     var totalIntegrationsIntegrated = 0;
+    //     getActiveIntegrations()
+    //     .then(function (integrations) {
+    //         return _.collect(integrations, function (int) {
+    //             return {
+    //                 title: int.title,
+    //                 integrationId: int.urlName,
+    //                 iconUrl: int.iconUrl,
+    //                 bgColor: int.bgColor,
+    //                 fgColor: int.fgColor,
+    //                 appId: int.appId,
+    //                 type: int.type
+    //             }
+    //         });
+    //     }).then(function (integrations) {
+    //         var username = req.session.username;
+    //         return getAlreadyIntegratedIntegrationsForUser(username)
+    //             .then(function (integrationsOfUser) {
+    //                 return _.forEach(integrations, function (integration) {
+    //                     integration.alreadyIntegrated = _.contains(integrationsOfUser, integration.appId);
+    //                     if (integration.alreadyIntegrated) {
+    //                         totalIntegrationsIntegrated++;
+    //                     }
+    //                 });
+    //             });
+    //     }).then(function (integrations) {
+    //         var separatedIntegrations = separateIntegrationsAndApps(integrations);
+    //         var infoForIntegrations = {
+    //             integrations: separatedIntegrations.integrations,
+    //             apps: separatedIntegrations.apps,
+    //             totalIntegrationsIntegrated: totalIntegrationsIntegrated,
+    //             avatarUrl: req.session.avatarUrl,
+    //             username: req.session.username
+    //         };
+    //         if (totalIntegrationsIntegrated === 0) {
+    //             res.render("integrations", infoForIntegrations);
+    //         }
+    //         else if (totalIntegrationsIntegrated > 0 && totalIntegrationsIntegrated < 3) {
+    //             res.render("integrationsWithDriveIntoLink", infoForIntegrations);
+    //         }
+    //         else {
+    //             res.render("integrationWithDriveIntoBtn", infoForIntegrations);
+    //         }
+
+    //     }).catch(function (err) {
+    //         console.log("Error is", err);
+    //         res.send("Integrations not found.");
+    //     });
+    // });
 
     app.get("/integrations/:integrationId", sessionManager.requiresSession, function (req, res) {
         var integrationId = req.param("integrationId");

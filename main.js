@@ -40,6 +40,9 @@ process.on('uncaughtException', function(err) {
 });
 
 var app = express();
+app.locals.CARD_APP = process.env.CARD_APP;
+logger.info("card app is :", process.env.CARD_APP);
+
 app.use(morgan());
 
 // local variables to be used by requests etc.

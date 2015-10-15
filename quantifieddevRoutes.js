@@ -280,10 +280,10 @@ module.exports = function (app) {
             data: {
                 url: '/card-stack'
             }
-        }
+        };
 
         next();
-    }
+    };
 
     var satisfyCardStackIntent = function(req, res, next){
         delete req.session.intent
@@ -330,18 +330,26 @@ module.exports = function (app) {
             res.send(500);
         })
         .done();
-    }
+    };
+
+    var redirectToCardAppCards = function(req, res, next){
+        res.redirect(req.app.locals.CARD_APP + "/card-stack");
+    };
 
     app.get("/card-stack", 
         createCardStackIntent,
         sessionManager.requiresSession, 
         satisfyCardStackIntent,
         createModel,
-        renderCardStack
+        redirectToCardAppCards
     );
 
     var renderProfile = function (req, res, next) {
         res.render('profile/index.html', res.model);
+    };
+
+    var redirectToCardAppProfile = function(req, res, next){
+        res.redirect(req.app.locals.CARD_APP + "/profile");
     };
 
     app.get("/profile", 
@@ -349,17 +357,8 @@ module.exports = function (app) {
         sessionManager.requiresSession, 
         satisfyProfileIntent,
         createModel,
-        renderProfile
+        redirectToCardAppProfile
     );
-
-    app.get("/card-stack/:username", 
-        //checkAdminToken,
-        createCardStackIntent,
-        sessionManager.requiresSession, 
-        satisfyCardStackIntent,
-        createModel,
-        switchUsername,
-        renderCardStack);
 
     app.get('/logout', function (req, res){
         req.session.destroy(function (err) {
