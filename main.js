@@ -1089,7 +1089,7 @@ _.mixin({
 
     // Get deep value
     } else {
-      while ((obj = obj[keys[i++]]) != null && i < n) {};
+      while ((obj = obj[keys[i++]]) !== null && i < n) {}
       value = i < n ? void 0 : obj;
     }
 
@@ -1112,13 +1112,13 @@ var filterCards = function(req, res, next){
     if(req.query.minStdDev && req.query.maxStdDev){
         stdDevFilter = function(card){
             return card.type === 'date' || card.sampleCorrectedStdDev > req.query.minStdDev && card.sampleCorrectedStdDev < req.query.maxStdDev;
-        }
+        };
     }
     else if(req.query.minStdDev)
     {
         stdDevFilter = function(card){
             return card.type === 'date' || card.sampleCorrectedStdDev > req.query.minStdDev;
-        }   
+        };   
     }
 
     // if(filterFunc){
@@ -1151,7 +1151,7 @@ var filterCards = function(req, res, next){
             // }
 
             cards[positionName][card.position].push(card);
-        }
+        };
         
         var groupedAndSorted = _(grouped).mapObject(function(value, key){
             var splits = key.split('/');
@@ -1164,7 +1164,7 @@ var filterCards = function(req, res, next){
                 }
 
                 return memo;
-            }, {})
+            }, {});
 
             var addBranch = function(node, depth){
                
@@ -1235,7 +1235,6 @@ var filterCards = function(req, res, next){
         })
         .flatten()
         .filter(readCardsFilter)
-        //.filter(stdDevFilter)
         .groupBy(function(card){
              return card.cardDate;
              })
@@ -1244,7 +1243,7 @@ var filterCards = function(req, res, next){
             var dateCard = {
                 type: 'date',
                 cardDate: key
-            }
+            };
             return [dateCard, value];
         })
         .flatten()
