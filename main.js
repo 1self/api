@@ -1128,12 +1128,21 @@ var filterCards = function(req, res, next){
 
     if(req.query.extraFiltering)
     {
+        var  cards = {};
+        var syncingGeneratingCards = [];
+        _.each(res.cards, function(card){
+            if(card.type === 'datasyncing' || card.type === 'cardsgenerating'){
+                syncingGeneratingCards.push(card);
+            }
+        });
+
         var grouped = _(res.cards).groupBy(function(card){
             var cardType = card.type === 'date' ? '_date' : card.type;
             return card.cardDate + '/' + card.type;
         });
 
-        var  cards = {};
+        
+
 
         var addToCards = function(card){
             card.id = card._id;
@@ -1154,7 +1163,6 @@ var filterCards = function(req, res, next){
         };
         
         var groupedAndSorted = _(grouped).mapObject(function(value, key){
-            var splits = key.split('/');
             // if(key === "2015-07-25/bottom10"){
             //     debugger;
             // }
@@ -1247,6 +1255,7 @@ var filterCards = function(req, res, next){
             return [dateCard, value];
         })
         .flatten()
+        .union(syncingGeneratingCards)
         .sortBy(function(card){
             return card.cardDate;
         })
