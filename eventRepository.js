@@ -79,6 +79,22 @@ var find = function (collection, query, projection) {
     return deferred.promise;
 };
 
+var findLimit = function (collection, query, projection, limit) {
+    var deferred = q.defer();
+    projection = defaultFor(projection, {});
+    eventDbConnection(function (eventDb) {
+        eventDb.collection(collection).find(query, projection).limit(limit).toArray(function (err, documents) {
+            if (err) {
+                console.error(err);
+                deferred.reject(err);
+            } else {
+                deferred.resolve(documents);
+            }
+        });
+    });
+    return deferred.promise;
+};
+
 var findOne = function (collection, query, projection) {
     var deferred = q.defer();
     projection = defaultFor(projection, {});
@@ -161,6 +177,7 @@ var aggregate = function (collection, pipeline, options) {
 exports.aggregate = aggregate;
 exports.insert = insert;
 exports.find = find;
+exports.findLimit = findLimit;
 exports.findOne = findOne;
 exports.update = update;
 exports.count = count;

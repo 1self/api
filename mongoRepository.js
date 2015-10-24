@@ -38,6 +38,22 @@ var find = function (collection, query, projection) {
     return deferred.promise;
 };
 
+var findLimit = function (collection, query, projection, limit) {
+    var deferred = q.defer();
+    projection = defaultFor(projection, {});
+    mongoDbConnection(function (qdDb) {
+        qdDb.collection(collection).find(query, projection).limit(limit).toArray(function (err, documents) {
+            if (err) {
+                console.error(err);
+                deferred.reject(err);
+            } else {
+                deferred.resolve(documents);
+            }
+        });
+    });
+    return deferred.promise;
+};
+
 var findOne = function (collection, query, projection) {
     var deferred = q.defer();
     projection = defaultFor(projection, {});
@@ -122,3 +138,4 @@ exports.update = update;
 exports.count = count;
 exports.remove = remove;
 exports.findAndRemove = findAndRemove;
+exports.findLimit = findLimit;

@@ -1726,32 +1726,62 @@ var formatEventDateTime = function (datetime) {
     }
 };
 
-var getLatestSyncField = function (streamId) {
-    console.log(streamId + ": getting latest sync field");
+var getLatestSyncField = function (streamId, latestSyncField) {
     var deferred = q.defer();
-    var filterSpec = {
-        'payload.streamid': streamId
+    var condition = {
+        $query: {
+            "payload.streamid": streamId
+        },
+        $orderby: {
+            "payload.latestSyncField": -1
+        }
     };
-    var orderSpec = {
-        "payload.latestSyncField": -1
-    };
-    var options = {
-        "limit": 1
-    };
-    var query = {
-        'filterSpec': JSON.stringify(filterSpec),
-        'orderSpec': JSON.stringify(orderSpec),
-        'options': JSON.stringify(options)
-    };
-    platformService.filter(query)
+
+    eventRepository.findLimit('oneself', condition, {}, 1)
         .then(function (result) {
-            console.log([streamId, result[0].payload.latestSyncField].join(": "));
-            deferred.resolve(result[0].payload.latestSyncField);
+
+            if(result.length > 0){
+                console.log([streamId, result[0].payload.latestSyncField].join(": "));
+                deferred.resolve(result[0].payload.latestSyncField);
+            }
+            else{
+                deferred.resolve(null);   
+            }
         }, function (err) {
             deferred.reject(err);
         });
     return deferred.promise;
 };
+
+// var getLatestSyncField = function (streamId) {
+
+
+
+//     console.log(streamId + ": getting latest sync field");
+//     var deferred = q.defer();
+//     var filterSpec = {
+//         'payload.streamid': streamId
+//     };
+//     var orderSpec = {
+//         "payload.latestSyncField": -1
+//     };
+//     var options = {
+//         "limit": 1
+//     };
+//     var query = {
+//         'filterSpec': JSON.stringify(filterSpec),
+//         'orderSpec': JSON.stringify(orderSpec),
+//         'options': JSON.stringify(options)
+//     };
+//     platformService.filter(query)
+//         .then(function (result) {
+//             console.log([streamId, result[0].payload.latestSyncField].join(": "));
+//             deferred.resolve(result[0].payload.latestSyncField);
+//         }, function (err) {
+//             deferred.reject(err);
+//         });
+//     return deferred.promise;
+// };
 
 var saveBatchEvents = function (myEvents, stream) {
     console.log(stream.streamid + ": saving batch events");
@@ -1778,7 +1808,7 @@ var saveBatchEvents = function (myEvents, stream) {
         return result;
     });
 
-    var responseBody = undefined;
+    var responseBody = undefined;   
     logger.debug([stream.streamid, "batch received, inserting into event repo"].join(":"));
     eventRepository.insert('oneself', myEventsWithPayload)
         .then(function (result) {
