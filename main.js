@@ -1834,10 +1834,13 @@ var updateLatestSyncField = function (streamId, latestSyncField) {
     var updateObject = {
         $set: {"latestSyncField": latestSyncField}
     };
+    logger.debug([streamId, 'setting latest sync field', latestSyncField].join(": "));
     mongoRepository.update('stream', query, updateObject)
         .then(function () {
+            logger.debug([streamId, 'updated latest sync field', JSON.stringify(updateObject)].join(": "));
             deferred.resolve(updateObject);
         }, function (err) {
+            logger.debug([streamId, 'error occurred updating latest sync field', err].join(": "));
             deferred.reject(err);
         });
     return deferred.promise;
