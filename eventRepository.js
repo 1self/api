@@ -37,7 +37,7 @@ var insert = function (collection, document) {
             {continueOnError: true},
             function (err, insertedRecords) {
             if (err && err.code !== 11000) {
-                console.err(err);
+                console.error(err);
                 deferred.reject(err);
             } 
             else {
