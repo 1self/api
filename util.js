@@ -229,7 +229,8 @@ Util.prototype.getStreamsForUser = function (oneselfUsername) {
 Util.prototype.getCards = function(user, from) {
     var byId = {
         userId: user._id,
-        archive: {$ne: true}
+        archive: {$ne: true},
+        published: true
     };
 
     if(from){
