@@ -26,7 +26,7 @@ var conceal = require('concealotron');
 var CONTEXT_URI = process.env.CONTEXT_URI;
 var LOGGING_DIR = process.env.LOGGINGDIR;
 
-var filename = LOGGING_DIR + 'webapp.log';
+var filename = LOGGING_DIR + '/webapp.log';
 var logger = require('winston');
 logger.add(logger.transports.File, { filename: filename, level: 'debug', json: false });
 logger.error("Errors will be logged here");
