@@ -1030,7 +1030,7 @@ app.post('/v1/users/:username/streams', function (req, res) {
 var doNotAuthorize = function(req, res, next){
     logger.debug('do not authorise');
     next();
-}
+};
 
 var getCards = function(req, res, next){
     logger.debug('starting getCards');
@@ -1045,7 +1045,7 @@ var getCards = function(req, res, next){
     .catch(function(err){
         res.status(500).send(err);
     });
-}
+};
 
 var getCardsByUserId = function(req, res, next){
     logger.debug('starting getCardsByUserId');
@@ -1131,6 +1131,8 @@ var filterCards = function(req, res, next){
         var  cards = {};
         var syncingGeneratingCards = [];
         _.each(res.cards, function(card){
+            card.id = card._id;
+            delete card._id;
             if(card.type === 'datasyncing' || card.type === 'cardsgenerating'){
                 syncingGeneratingCards.push(card);
             }
@@ -1145,7 +1147,6 @@ var filterCards = function(req, res, next){
 
 
         var addToCards = function(card){
-            card.id = card._id;
             var positionName = [card.type, card.objectTags.join(','), card.actionTags.join(','),card.propertyName].join('.');
             if(cards[positionName] === undefined){
                 cards[positionName] = [];
