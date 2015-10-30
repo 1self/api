@@ -1131,9 +1131,10 @@ var filterCards = function(req, res, next){
         var  cards = {};
         var syncingGeneratingCards = [];
         _.each(res.cards, function(card){
-            card.id = card._id;
-            delete card._id;
-            if(card.type === 'datasyncing' || card.type === 'cardsgenerating'){
+
+            if(!card.read && (card.type === 'datasyncing' || card.type === 'cardsgenerating')){
+                card.id = card._id;
+                delete card._id;
                 syncingGeneratingCards.push(card);
             }
         });
@@ -1143,10 +1144,9 @@ var filterCards = function(req, res, next){
             return card.cardDate + '/' + card.type;
         });
 
-        
-
-
         var addToCards = function(card){
+            card.id = card._id;
+            delete card._id;
             var positionName = [card.type, card.objectTags.join(','), card.actionTags.join(','),card.propertyName].join('.');
             if(cards[positionName] === undefined){
                 cards[positionName] = [];
