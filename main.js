@@ -2116,12 +2116,14 @@ app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period
         console.log("validating");
 
         var query = getQueryForVisualizationAPI([req.params.streamId], req.params, req.query.from, req.query.to);
+        logger.debug("query for the platform is, ", query);
         platformService
             .aggregate({
                 spec: JSON.stringify(query)
             })
             .then(function (response) {
-                console.log("trying to transform events");
+                logger.info("trying to transform events");
+                logger.debug("events from the platform are", response[0]);
                 res.send(transformPlatformDataToQDEvents(response[0]));
             }).catch(function (error) {
                 console.log("an error occurred retrieving events: " + error);
