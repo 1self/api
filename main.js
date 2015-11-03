@@ -22,6 +22,7 @@ var eventRepository = require('./eventRepository.js');
 var platformService = require('./platformService.js');
 var scopedLogger = require('./scopedLogger');
 var conceal = require('concealotron');
+var cardFilters = require('./cardFilters.js');
 
 var CONTEXT_URI = process.env.CONTEXT_URI;
 var LOGGING_DIR = process.env.LOGGINGDIR;
@@ -1218,9 +1219,7 @@ var filterCards = function(req, res, next){
             return result;
         };
 
-        var readCardsFilter = function(card){
-            return card.type !== 'date' && card.read === undefined || card.read === false;
-        };
+        
 
         var filteredPositions = _.chain(cards)
         .map(function(v, k){
@@ -1243,7 +1242,7 @@ var filterCards = function(req, res, next){
             return findFirstNode(cardBranch);
         })
         .flatten()
-        .filter(readCardsFilter)
+        .filter(cardFilters.toDisplay)
         .groupBy(function(card){
              return card.cardDate;
              })
