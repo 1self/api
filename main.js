@@ -850,7 +850,7 @@ app.post('/v1/streams', function (req, res) {
                 if(req.session.username){
                     util.findUser(req.session.username)
                     .then(function(user){
-                        return util.linkStreamToUser(user, stream.streamid);   
+                        return q.all([util.linkStreamToUser(user, stream.streamid), util.linkIntegrationAppToUser(user, appId)]);
                     })
                     .then(function(){
                         resolve(stream);
@@ -1010,7 +1010,7 @@ app.post('/v1/users/:username/streams', function (req, res) {
                 return util.linkStreamToUser(user, stream.streamid);
             })
             .then(function () {
-                return util.linkIntegrationAppToUser(user, appId)
+                return util.linkIntegrationAppToUser(user, appId);
             })
             .then(function () {
                 delete streamData._id;
