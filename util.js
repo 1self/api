@@ -3,7 +3,7 @@ var mongoDbConnection = require('./lib/connection.js');
 var mongoRepository = require('./mongoRepository.js');
 var ObjectID = require('mongodb').ObjectID;
 var q = require('q');
-var _ = require("underscore")
+var _ = require("underscore");
 var moment = require("moment");
 var redis = require("redis");
 
@@ -227,20 +227,25 @@ Util.prototype.getStreamsForUser = function (oneselfUsername) {
 };
 
 Util.prototype.getCards = function(user, from) {
-    var byId = {
+    var query = {};
+    query.$query = {
         userId: user._id,
         archive: {$ne: true},
         published: true
     };
 
     if(from){
-        byId.cardDate = {
+        query.$query.cardDate = {
             $gt: from
-        }
+        };
     }
 
+    query.$sort = {
+        cardDate: 1
+    };
+
     var deferred = q.defer();
-    mongoRepository.find('cards', byId)
+    mongoRepository.find('cards', query)
         .then(function (cards) {
             deferred.resolve(cards);
         }, function (err) {
@@ -293,10 +298,10 @@ Util.prototype.getRollupByDay = function (userId, objectTags, actionTags, operat
 
     var options = {
         sort: "date"
-    }
+    };
 
     if(to !== undefined){
-        condition.date = {$lte: to}
+        condition.date = {$lte: to};
     }
 
     var deferred = q.defer();
@@ -328,7 +333,7 @@ var checkGraphAlreadyShared = function (graphShareObject) {
     return deferred.promise;
 };
 
-Util.prototype.checkGraphAlreadyShared = checkGraphAlreadyShared
+Util.prototype.checkGraphAlreadyShared = checkGraphAlreadyShared;
 
 Util.prototype.validateShareTokenAndGraphUrl = function (shareToken, graphUrl) {
     var deferred = q.defer();
@@ -442,6 +447,35 @@ Util.prototype.setCard = function(card){
     return deferred.promise;
 };
 
+Util.prototype.replayCards = function(replayRequest){
+    var deferred = q.defer();
+    var query = {
+        archive: {$ne: true},
+        read: true
+    };
+
+    if(replayRequest.userId === undefined){
+        throw 'user id must be specified when requesting a change to card read status';
+    }
+
+    if(replayRequest.userId){
+        query.userId = replayRequest.userId;
+    }
+
+    var update = {
+        $set: { "read": false}
+    };
+
+    mongoRepository.update('cards', query, update, {multi: true})
+    .then(function(updateCount){
+        deferred.resolve(updateCount);
+    }, function (err) {
+        deferred.reject(err);
+    }); 
+
+    return deferred.promise;
+};
+
 Util.prototype.getAdminToken = function(token){
     var deferred = q.defer();
     var query = {
@@ -457,7 +491,7 @@ Util.prototype.getAdminToken = function(token){
     .done();
 
     return deferred.promise;
-}
+};
 
 
 module.exports = new Util();

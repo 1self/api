@@ -186,7 +186,7 @@ var authenthicateWriteTokenMiddleware = function (req, res, next) {
     mongoRepository.findOne('stream', query)
         .then(function (stream) {
             if (stream === null || stream.writeToken !== writeToken) {
-                res.status(401).send()
+                res.status(401).send();
             } else {
                 next();
             }
@@ -732,7 +732,7 @@ app.get('/health', function (request, response) {
 app.get('/users_count', function (req, res) {
     mongoRepository.count('users', {}).then(function (count) {
         if (!count) {
-            res.send(400, "Error")
+            res.send(400, "Error");
         } else {
             res.send({
                 count: count
@@ -858,12 +858,12 @@ app.post('/v1/streams', function (req, res) {
                     .catch(function(error){
                         logger.error(appId + ': error while registering stream, error ' + error);
                         reject(error);
-                    })
+                    });
                 }
                 else{
                     resolve(stream);
                 }
-            })
+            });
         })
         .then(function (stream) {
             delete stream._id;
@@ -938,7 +938,7 @@ app.get('/v1/users/:username/events', function (req, res) {
             var fetchIconUrlFromApp = function (streamId) {
                 return mongoRepository.findOne('stream', {streamid: streamId}, {appId: 1})
                     .then(function (stream) {
-                        return mongoRepository.findOne('registeredApps', {appId: stream.appId}, {iconUrl: 1})
+                        return mongoRepository.findOne('registeredApps', {appId: stream.appId}, {iconUrl: 1});
                     })
                     .then(function (registeredApp) {
                         if (registeredApp) {
@@ -946,7 +946,7 @@ app.get('/v1/users/:username/events', function (req, res) {
                         } else {
                             return {streamid: streamId, iconUrl: CONTEXT_URI + "/img/noimage.png"};
                         }
-                    })
+                    });
             };
             var iconPromises = streamIds.map(fetchIconUrlFromApp);
 
@@ -1061,7 +1061,7 @@ var getCardsByUserId = function(req, res, next){
     .catch(function(err){
         res.status(500).send(err);
     });
-}
+};
 
 _.mixin({
 
@@ -1178,14 +1178,14 @@ var filterCards = function(req, res, next){
 
             var addBranch = function(node, depth){
                
-                var candidateCard = node['__card__'];
+                var candidateCard = node.__card__;
                 if(candidateCard !== undefined){
                     var daysDiff = (moment() - moment(candidateCard.cardDate)) / 1000 / 60 / 60 / 24;
                     candidateCard.weight = (1.0/depth) * Math.pow(0.99,daysDiff);
                     candidateCard.depth = depth;
                     
                     addToCards(candidateCard);
-                    var topLevelNode = candidateCard
+                    var topLevelNode = candidateCard;
 
                     _.each(_.keys(node), function(nodeKey){
                         if(nodeKey !== '__card__'){
@@ -1206,7 +1206,7 @@ var filterCards = function(req, res, next){
         var findFirstNode = function(node){
             var result = [];
 
-            var candidateCard = node['__card__'];
+            var candidateCard = node.__card__;
             if(candidateCard !== undefined){
                 result.push(candidateCard);
             }
@@ -1341,7 +1341,6 @@ app.patch('/v1/users/:username/cards/:cardId',
     profileCardRead,
     sendCard);
 
-
 app.get('/v1/users/:username/cards',
     doNotAuthorize,
     getCards,
@@ -1356,6 +1355,41 @@ app.patch('/v1/me/cards/:cardId',
     updateCardInDb,
     profileCardRead,
     sendCard);
+
+var extractReadRequestDetails = function(req, res, next){
+    req.readRequest = req.body;
+    next();
+};
+
+var addUserIdToRequest = function(req, res, next){
+    req.readRequest.userId = req.token.userId;
+    next();
+};
+
+var replayCards = function(req, res, next){
+    util.replayCards(req.readRequest)
+    .then(function(readRequestResponse){
+        res.readResponse = {
+            numberOfCardsUpdated: readRequestResponse
+        };
+
+        next();
+    })
+    .catch(function(error){
+        res.status(500).send(error);
+    });
+};
+
+var sendReadResponse = function(req, res, next){
+    res.send(res.readResponse);
+};
+
+app.post('/v1/me/cards/replay',
+    app.locals.requireToken,
+    extractReadRequestDetails,
+    addUserIdToRequest,
+    replayCards,
+    sendReadResponse);
 
 app.get('/v1/me/cards',
     app.locals.requireToken,
@@ -1490,7 +1524,7 @@ var getIntegrations = function(req, res, next){
         res.userIntegrations = userIntegrations;
         logger.silly('adding userIntegrations to response, ', res.userIntegrations);
         next();
-    }
+    };
     
     getIntegrationsFromDb()
     .then(getUser)
@@ -1500,13 +1534,13 @@ var getIntegrations = function(req, res, next){
         logger.error('error occurred', error);
     })
     .done();
-}
+};
 
 var sendIntegrations = function(req, res, next){
     var logger = scopedLogger.logger(conceal(req.token.userId.toString()), req.app.logger);
     logger.debug('retrieved user integrations, length', res.userIntegrations.length);
     res.status(200).send(res.userIntegrations);
-}
+};
 
 var timeUserIntegrationsPerformance = function(req, res, next){
     if(req.performanceProfile === undefined){
@@ -1565,7 +1599,7 @@ app.post('/v1/users/:username/link', function (req, res) {
             .catch(function (err) {
                 console.log("Error: ", err);
                 res.status(500).send(err);
-            })
+            });
     } else {
         res.status(400).send("invalid streamId and appId");
     }
@@ -1584,7 +1618,7 @@ app.get('/eventsCount', function (req, res) {
 var publishEvent = function(req, res, next){
     redisClient.publish("events", JSON.stringify(req.event));
     next();
-}
+};
 
 var addDateTime = function(req, res, next){
     var dateInfo = formatEventDateTime(req.event.dateTime);
@@ -1592,17 +1626,17 @@ var addDateTime = function(req, res, next){
     req.event.eventLocalDateTime = dateInfo.eventLocalDateTime;
     req.event.offset = dateInfo.offset;
     next();
-}
+};
 
 var addStreamId = function(req,res, next){
     req.event.streamid = req.params.streamid;
     next();
-}
+};
 
 var extractEvent = function(req, res, next){
     req.event = req.body;
     next(); 
-}
+};
 
 app.post('/stream/:streamid/event', 
     extractEvent,
@@ -1639,7 +1673,7 @@ var authenticateReadToken = function(req, res, next){
     .catch(function(){
         res.status(401).send('authorization is invalid for this stream');
     });
-}
+};
 
 var createScopedToken = function(req, res, next){
     util.generateToken()
@@ -1658,7 +1692,7 @@ var createScopedToken = function(req, res, next){
     .catch(function(error){
         res.status(500).send('An error occurred generating the token');
     });
-}
+};
 
 var persistScopedToken = function(req, res, next){
     mongoRepository.insert('streamscopedreadtoken', res.token)
@@ -1669,18 +1703,18 @@ var persistScopedToken = function(req, res, next){
     .catch(function (error) {
         res.status(500).send('couldnt save the token to the database');
     });
-}
+};
 
 var serveScopedToken = function(req, res, next){
     res.status(200).send(res.token);
-}
+};
 
 parseTokenFromAuthorization = function (req, res, next) {
     var token = req.query.token;
 
     if (token === undefined) {
         var auth = req.headers.authorization;
-        var auth = auth.split("Basic ");
+        auth = auth.split("Basic ");
         if (auth[0] === "") {
             token = auth[1];
         } else {
@@ -1723,7 +1757,7 @@ var formatEventDateTime = function (datetime) {
         eventDateTime: {"$date": utcDate},
         eventLocalDateTime: {"$date": localISODate},
         offset: offset
-    }
+    };
 };
 
 var getLatestSyncField = function (streamId, latestSyncField) {
@@ -1808,7 +1842,7 @@ var saveBatchEvents = function (myEvents, stream) {
         return result;
     });
 
-    var responseBody = undefined;   
+    var responseBody;   
     logger.debug([stream.streamid, "batch received, inserting into event repo"].join(":"));
     eventRepository.insert('oneself', myEventsWithPayload)
         .then(function (result) {
@@ -1820,7 +1854,7 @@ var saveBatchEvents = function (myEvents, stream) {
                 });
         })
         .then(function () {
-            deferred.resolve(responseBody)
+            deferred.resolve(responseBody);
         }, function (err) {
             console.log([stream.streamid, "batch event save failed", err].join(": "));
             deferred.reject(err);
@@ -1878,15 +1912,15 @@ var publishBatch = function( req, res, next) {
     });
 
     next();
-}
-app.post('/stream/:streamid/batch'
-    , publishBatch
-    , saveBatch);
+};
+app.post('/stream/:streamid/batch',
+    publishBatch,
+    saveBatch);
 
-app.post('/v1/streams/:streamid/events/batch'
-    , validateRequest.validate
-    , publishBatch
-    , saveBatch);
+app.post('/v1/streams/:streamid/events/batch',
+    validateRequest.validate,
+    publishBatch,
+    saveBatch);
 
 app.get('/live/devbuild/:durationMins', function (req, res) {
     var durationMins = req.params.durationMins;
@@ -1925,7 +1959,7 @@ app.get('/quantifieddev/mydev', function (req, res) {
     var forUsername = req.query.forUsername;
     validateEncodedUsername(encodedUsername)
         .then(function () {
-            return getStreamIdForUsername(encodedUsername, forUsername)
+            return getStreamIdForUsername(encodedUsername, forUsername);
         })
         .then(getBuildEventsFromPlatform)
         .then(function (response) {
@@ -1956,7 +1990,7 @@ app.get('/quantifieddev/compare/ideActivity', function (req, res) {
     var forUsername = req.query.forUsername;
     validateEncodedUsername(encodedUsername)
         .then(function () {
-            return getStreamIdForUsername(encodedUsername, forUsername)
+            return getStreamIdForUsername(encodedUsername, forUsername);
         }).then(getTotalUsersOfQd)
         .then(getIdeActivityDurationForCompare)
         .then(function (response) {
@@ -2094,14 +2128,14 @@ var getQueryForVisualizationAPI = function (streamIds, params, fromDate, toDate,
     //Todo: FIXME(in platform), ordering of the hash matters :(
     if ("count" !== operation) {
         var operation_field = operation_string[1].slice(0, -1);
-        query["$" + operation]["field"] = {
+        query["$" + operation].field = {
             "name": "properties." + operation_field
         };
     }
 
-    query["$" + operation]["data"] = groupQuery;
-    query["$" + operation]["filterSpec"] = {};
-    query["$" + operation]["projectionSpec"] = {
+    query["$" + operation].data = groupQuery;
+    query["$" + operation].filterSpec = {};
+    query["$" + operation].projectionSpec = {
         "resultField": resultField
     };
 
@@ -2109,10 +2143,10 @@ var getQueryForVisualizationAPI = function (streamIds, params, fromDate, toDate,
 };
 
 //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}({{:property}})/daily/{{barchart/json}}
-app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/type/json"
-    , validateRequest.validateDateRange
-    , validateRequest.validateStreamIdAndReadToken
-    , function (req, res) {
+app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/type/json",
+    validateRequest.validateDateRange,
+    validateRequest.validateStreamIdAndReadToken,
+    function (req, res) {
         console.log("validating");
 
         var query = getQueryForVisualizationAPI([req.params.streamId], req.params, req.query.from, req.query.to);
@@ -2179,11 +2213,11 @@ var getRollup = function(req, res, next){
         req.rollups = [];
         next();
     }
-}
+};
 
 var sendRollup = function(req, res, next){
     res.status(200).send(req.rollups);
-}
+};
 
 var addUnit = function(req, res, next){
     if(req.rollups.property === 'duration'){
@@ -2192,17 +2226,17 @@ var addUnit = function(req, res, next){
     next();
 };
 
-app.get("/v1/users/:username/rollups/:period/:objectTags/:actionTags/:property/.json"
-    , doNotAuthorize // authorize before putting onto production!
-    , getUser
-    , getRollup
-    , addUnit
-    , sendRollup);
+app.get("/v1/users/:username/rollups/:period/:objectTags/:actionTags/:property/.json",
+    doNotAuthorize, 
+    getUser,
+    getRollup,
+    addUnit,
+    sendRollup);
 
-app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/type/json"
-    , authorizeUser
-    , validateRequest.validateDateRange
-    , function (req, res) {
+app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/type/json",
+    authorizeUser,
+    validateRequest.validateDateRange,
+    function (req, res) {
         getStreamIdForUsername(req.headers.authorization, req.forUsername)
             .then(function (streams) {
                 var streamIds = _.map(streams, function (stream) {
@@ -2211,7 +2245,7 @@ app.get("/v1/users/:username/events/:objectTags/:actionTags/:operation/:period/t
                 var query = getQueryForVisualizationAPI(streamIds, req.params, req.query.from, req.query.to);
                 return {
                     spec: JSON.stringify(query)
-                }
+                };
             })
             .then(platformService.aggregate)
             .then(function (response) {
@@ -2290,9 +2324,9 @@ var getCommentsForChart = function (graph, dateRange) {
 
 // Get comments for the graph url
 // /v1/comments?username=:username&objectTags=:objectTags&actionTags=:actionTags&operation=:operation&period=:period&renderType=:renderType&from=:from&to=:to
-app.get("/v1/comments"
-    , validateRequest.validateDateRange
-    , function (req, res) {
+app.get("/v1/comments",
+    validateRequest.validateDateRange,
+    function (req, res) {
         var graph = {
             username: req.query.username,
             objectTags: req.query.objectTags,
@@ -2363,9 +2397,9 @@ app.get("/v1/helptext/:topic", function (req, res) {
 
     fs.readFile(filepath, 'utf8', function (err, data) {
         if (err) {
-            res.send(400, "Error occurred")
+            res.send(400, "Error occurred");
         }
-        res.send({helptext: data})
+        res.send({helptext: data});
     });
 });
 
