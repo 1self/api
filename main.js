@@ -182,12 +182,20 @@ var authenthicateWriteTokenMiddleware = function (req, res, next) {
     var query = {
         streamid: req.params.streamid
     };
+
+    var projection = {
+        streamid: true,
+        appDbId: true,
+        writeToken: true,
+        _id: false
+    };
     
-    mongoRepository.findOne('stream', query)
+    mongoRepository.findOne('stream', query, projection)
         .then(function (stream) {
             if (stream === null || stream.writeToken !== writeToken) {
                 res.status(401).send();
             } else {
+                req.stream = stream;
                 next();
             }
         });
@@ -198,14 +206,20 @@ var authenticateWriteToken = function (writeToken, id) {
     var query = {
         streamid: id
     };
-    mongoRepository.findOne('stream', query)
+
+    var projection = {
+        streamid: true,
+        appDbId: true,
+        writeToken: true,
+        _id: false
+    };
+
+    mongoRepository.findOne('stream', query, projection)
         .then(function (stream) {
             if (stream === null || stream.writeToken !== writeToken) {
                 deferred.reject();
             } else {
-                deferred.resolve({
-                    streamid: stream.streamid
-                });
+                deferred.resolve(stream);
             }
         });
 
@@ -227,6 +241,8 @@ var saveEvent = function (req, res) {
         });
 
         eventToInsert.payload = payload;
+        //eventToInsert.status = 'queued';
+
         eventRepository.insert('oneself', [eventToInsert])
         .then(function (result) {
             res.send(result);
@@ -772,7 +788,7 @@ var validateClient = function (appId, appSecret) {
                         message: 'unauthorized app'
                     });
             } else {
-                deferred.resolve();
+                deferred.resolve(result);
             }
         }, function (err) {
             deferred.reject(
@@ -829,6 +845,13 @@ app.get('/v1/integrations/:name',
     getIntegration, 
     sendIntegration);
 
+var cleanUpStream = function(stream){
+    delete stream._id;
+    delete stream.appId;
+    delete stream.appDbId;
+    return stream;
+};
+
 app.post('/v1/streams', function (req, res) {
     var auth = req.headers.authorization;
     var callbackUrl = req.body.callbackUrl;
@@ -842,21 +865,21 @@ app.post('/v1/streams', function (req, res) {
     var appSecret = auth.split(":")[1];
 
     validateClient(appId, appSecret)
-        .then(function () {
-            return util.createV1Stream(appId, callbackUrl);
+        .then(function (appDbEntry) {
+            return util.createV1Stream(appDbEntry, callbackUrl);
         })
         .then(function (stream) {
             return q.Promise(function(resolve, reject){
                 if(req.session.username){
                     util.findUser(req.session.username)
                     .then(function(user){
-                        return q.all([util.linkStreamToUser(user, stream.streamid), util.linkIntegrationAppToUser(user, appId)]);
+                        return q.all([util.linkStreamToUser(user, stream.streamid), util.linkIntegrationAppToUser(user, stream.appDbId)]);
                     })
                     .then(function(){
                         resolve(stream);
                     })
                     .catch(function(error){
-                        logger.error(appId + ': error while registering stream, error ' + error);
+                        logger.error(appDbEntry.appId + ': error while registering stream, error ' + error);
                         reject(error);
                     });
                 }
@@ -866,9 +889,7 @@ app.post('/v1/streams', function (req, res) {
             });
         })
         .then(function (stream) {
-            delete stream._id;
-            delete stream.appId;
-            res.send(stream);
+            res.send(cleanUpStream(stream));
         })
         .catch(function () {
             res.status(401).send("Unauthorized request. Invalid appId and appSecret");
@@ -991,31 +1012,29 @@ app.post('/v1/users/:username/streams', function (req, res) {
         res.send(401, "Unauthorized request. Please pass valid appId and appSecret");
         return;
     }
-    if (contentType !== "application/json") {
-        res.send(400, "Please use application/json as content-type");
-        return;
-    }
+
     var appId = auth.split(":")[0];
     var appSecret = auth.split(":")[1];
     var streamData;
 
+    var streamApp;
     validateClient(appId, appSecret)
-    .then(function () {
+    .then(function (app) {
+        streamApp = app;
         return findUser(username, registrationToken);
     })
     .then(function (user) {
-        return util.createV1Stream(appId, callbackUrl)
+        return util.createV1Stream(streamApp, callbackUrl)
             .then(function (stream) {
                 streamData = stream;
                 return util.linkStreamToUser(user, stream.streamid);
             })
             .then(function () {
-                return util.linkIntegrationAppToUser(user, appId);
+                return util.linkIntegrationAppToUser(user, streamApp.appId);
             })
             .then(function () {
-                delete streamData._id;
-                delete streamData.appId;
-                res.status(200).send(streamData);
+                
+                res.status(200).send(cleanUpStream(streamData));
             });
     })
     .catch(function (err) {
@@ -1633,6 +1652,18 @@ var addStreamId = function(req,res, next){
     next();
 };
 
+var addAppId = function(req,res, next){
+    req.event.appDbId = req.stream.appDbId;
+    next();
+};
+
+var deleteSource = function(req,res, next){
+    if(req.event.source){
+        delete req.event.source;
+    }
+    next();
+};
+
 var extractEvent = function(req, res, next){
     req.event = req.body;
     next(); 
@@ -1642,6 +1673,8 @@ app.post('/stream/:streamid/event',
     extractEvent,
     authenthicateWriteTokenMiddleware,
     addStreamId,
+    addAppId,
+    deleteSource,
     addDateTime,
     publishEvent,
     saveEvent);
@@ -1651,6 +1684,8 @@ app.post('/v1/streams/:streamid/events',
     extractEvent,
     authenthicateWriteTokenMiddleware,
     addStreamId,
+    addAppId,
+    deleteSource,
     addDateTime,
     publishEvent,
     saveEvent);
@@ -1837,6 +1872,14 @@ var saveBatchEvents = function (myEvents, stream) {
             var r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
             return v.toString(16);
         });
+
+        //result.status = 'queued';
+
+        if(payload.source){
+            delete payload.source;
+        }
+
+        payload.appDbId = stream.appDbId;
 
         result.payload = payload;
         return result;

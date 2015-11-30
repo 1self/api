@@ -86,9 +86,10 @@ Util.prototype.generateRegistrationToken = function () {
     });
     return deferred.promise;
 };
-Util.prototype.createV1Stream = function (appId, callbackUrl) {
-    return generateStream(appId, callbackUrl)
+Util.prototype.createV1Stream = function (app, callbackUrl) {
+    return generateStream(app.appId, callbackUrl)
         .then(function (stream) {
+            stream.appDbId = app._id;
             return mongoRepository.insert('stream', stream);
         });
 };

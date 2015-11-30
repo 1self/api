@@ -15,7 +15,7 @@ var eventDbConnection = function(callback) {
     }
 
     mongoClient.connect(eventDbUri, function(err, databaseConnection) {
-        console.log("mongoc: " + err + " " + databaseConnection)
+        console.log("mongoc: " + err + " " + databaseConnection);
         if (err) {
             console.log(err);
         } else {
@@ -73,6 +73,23 @@ var find = function (collection, query, projection) {
                 documents.toArray(function (err, docs) {
                     deferred.resolve(docs);
                 });
+            }
+        });
+    });
+    return deferred.promise;
+};
+
+// this is untested at the moment
+var findCursor = function (collection, query, projection) {
+    var deferred = q.defer();
+    projection = defaultFor(projection, {});
+    eventDbConnection(function (eventDb) {
+        eventDb.collection(collection).find(query, projection, function (err, cursor) {
+            if (err) {
+                console.err(err);
+                deferred.reject(err);
+            } else {
+                deferred.resolve(cursor);
             }
         });
     });
