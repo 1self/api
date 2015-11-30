@@ -83,7 +83,8 @@ var liveworld = function (dataUrl) {
             console.log('page is hidden, not getting data');
         }
 
-        d3.json(dataUrl, function (error, events) {
+        var page = 0;
+        var getData = function (error, events) {
             var data = events;
             transformedEvents = [];
 
@@ -107,7 +108,19 @@ var liveworld = function (dataUrl) {
             if(callback !== undefined){
                 callback();
             }
-        })
+
+            if(events.length === 100){
+                page += 1;
+            
+                if(page < 20){
+                    setTimeout(function(){
+                        d3.json(dataUrl + '&page=' + page, getData);
+                    }, 10000);
+                }
+            }
+        };
+
+        d3.json(dataUrl + '&page=' + page, getData);
     };
 
     var animate = function(){
@@ -115,7 +128,6 @@ var liveworld = function (dataUrl) {
     };
 
     loadData(animate);
-    setInterval(loadData, 60000 * 5);
 
     var CircleSize = function (transformedEvent) {
         var now = new Date();
@@ -196,7 +208,7 @@ var liveworld = function (dataUrl) {
 
                 context.beginPath();
                 path(grid);
-                context.lineWidth = .5;
+                context.lineWidth = 0.5;
                 context.strokeStyle = "rgba(255,255,255,0.1)";
                 context.stroke();
 
@@ -205,7 +217,7 @@ var liveworld = function (dataUrl) {
 
                 context.beginPath();
                 path(grid);
-                context.lineWidth = .5;
+                context.lineWidth = 0.5;
                 context.strokeStyle = "rgba(255,255,255,0.1)";
                 context.stroke();
 
@@ -213,11 +225,11 @@ var liveworld = function (dataUrl) {
                 path(land);
                 context.fillStyle = "rgba(255,255,255,1)";
                 context.fill();
-                context.lineWidth = .5;
+                context.lineWidth = 0.5;
                 context.strokeStyle = "rgba(255,255,255,1";
                 context.stroke();
 
-                if (eventsToDraw != undefined) {
+                if (eventsToDraw !== undefined) {
                     var sparseDraw = eventsToDraw.length / 50;
                     eventsToDraw.forEach(function (drawCompile, i) {
                         drawCompile(context);
@@ -258,7 +270,7 @@ var liveworld = function (dataUrl) {
                     }
                     animationOn = true;
                 }
-            }
+            };
 
             document.addEventListener(visibilityChange, handleVisibilityChangeForAnimation, false);
 
@@ -267,7 +279,7 @@ var liveworld = function (dataUrl) {
                 animationScheduled = true;
             }
         });
-    }
+    };
 
 };
 

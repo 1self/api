@@ -29,6 +29,7 @@ var imageCapture = require('./imageCapture.js');
 var eventRepository = require('./eventRepository.js');
 var scopedLogger = require('./scopedLogger.js');
 var conceal = require('concealotron');
+var redis = require('redis').createClient();
 
 var emailConfigOptions = {
     root: path.join(__dirname, "/website/public/email_templates")
@@ -122,7 +123,7 @@ module.exports = function (app) {
             req.session.intent.data = {
                 url: req.query.redirectUrl
             };
-            console.log("INTENT DATA: ")
+            console.log("INTENT DATA: ");
             console.log(req.session.intent.data);
         }
 
@@ -263,15 +264,15 @@ module.exports = function (app) {
             data: {
                 url: '/profile'
             }
-        }
+        };
 
         next();
-    }
+    };
 
     var satisfyProfileIntent = function(req, res, next){
-        delete req.session.intent
+        delete req.session.intent;
         next();
-    }
+    };
 
     var createCardStackIntent = function(req, res, next){
         req.session.redirectUrl = '/card-stack';
@@ -286,14 +287,14 @@ module.exports = function (app) {
     };
 
     var satisfyCardStackIntent = function(req, res, next){
-        delete req.session.intent
+        delete req.session.intent;
         next();
-    }
+    };
 
     var createModel = function (req, res, next) {
         res.model = {};
 
-        res.model.username = req.session.username,
+        res.model.username = req.session.username;
         res.avatarUrl = req.session.avatarUrl;
         next();
     };
@@ -435,7 +436,7 @@ module.exports = function (app) {
         var isUsernameAvailable = function (oneselfUsername) {
             var deferred = Q.defer();
             if (!isUsernameValid(oneselfUsername)) {
-                deferred.reject("Username invalid. Username can contain only letters, numbers and _")
+                deferred.reject("Username invalid. Username can contain only letters, numbers and _");
             }
             var byOneselfUsername = {
                 "username": oneselfUsername.toLowerCase()
@@ -479,7 +480,7 @@ module.exports = function (app) {
         };
         mongoRepository.findOne('users', user)
             .then(function (user) {
-                deferred.resolve(user["_id"]);
+                deferred.resolve(user._id);
             }, function (err) {
                 deferred.reject(err);
             });
@@ -964,7 +965,7 @@ module.exports = function (app) {
             "bgColor=" + graphShareObject.bgColor,
             "from=" + graphShareObject.fromDate,
             "to=" + graphShareObject.toDate
-        ]
+        ];
 
         result += params.join("&");
         return result;
@@ -1087,9 +1088,9 @@ module.exports = function (app) {
         }
         util.registerApp(appEmail)
             .then(function (data) {
-                return sendAppDetailsByEmail(data.appId, data.appSecret, data.appEmail)
+                return sendAppDetailsByEmail(data.appId, data.appSecret, data.appEmail);
             }, function (err) {
-                res.status(500).send("Database error." + err)
+                res.status(500).send("Database error." + err);
             })
             .then(function () {
                 res.send("We have sent email containing your api key to '" + appEmail + "'. Thank You.");
@@ -1177,7 +1178,7 @@ module.exports = function (app) {
                 $in: streamIds
             }
         };
-        return mongoRepository.find('stream', query)
+        return mongoRepository.find('stream', query);
     };
 
     var request = function (url, writeToken) {
@@ -1293,7 +1294,7 @@ module.exports = function (app) {
         return {
             'to': max,
             'from': min
-        }
+        };
     };
 
     var lookupScopedReadToken = function(req, res, next){
@@ -1304,14 +1305,14 @@ module.exports = function (app) {
         mongoRepository.findOne('streamscopedreadtoken', query)
         .then(function (token) {
             if (token === null) {
-                res.status(401).send("Couldn't athenticate, the stream token is unknown.")
+                res.status(401).send("Couldn't athenticate, the stream token is unknown.");
             }
             else{
                 req.token = token;
                 next();
             }
         }, function (err) {
-            res.status(500).send("Server error while looking up token.")
+            res.status(500).send("Server error while looking up token.");
         });
     };
     
@@ -1344,7 +1345,7 @@ module.exports = function (app) {
 
         req.validatedToken = req.token;
         next();
-    }
+    };
 
     var getEventData = function() { 
         var result = [];
@@ -1358,7 +1359,7 @@ module.exports = function (app) {
         //  });
         // };
         
-    }
+    };
 
     var renderStreamVisualization = function(req, res, next){
         if(req.params.representation === 'json'){
@@ -1377,7 +1378,7 @@ module.exports = function (app) {
                 {
                     "_id": 0
                 }
-            }
+            };
 
             for (var key in req.token.scope.properties) {
                 var propertyFilter = {};
@@ -1416,14 +1417,14 @@ module.exports = function (app) {
 
             res.render('barchart-ordinal', model);
         }
-    }
+    };
 
     var parseTokenFromAuthorization = function (req, res, next) {
         var token = req.query.token;
 
         if (token === undefined) {
             var auth = req.headers.authorization;
-            var auth = auth.split("Basic ");
+            auth = auth.split("Basic ");
             if (auth[0] === "") {
                 token = auth[1];
             } else {
@@ -1454,8 +1455,7 @@ module.exports = function (app) {
             }
             var redirectUrl = "/v1/users/" + req.session.username + "/events/" +
                 req.param("objectTags") + "/" + req.param("actionTags") + "/" +
-                req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType") + "?streamId=" + req.param("streamId") + "&readToken=" + req.query.readToken + bgColorQueryParam + '&to=' + dateRange.to;
-            +'&from=' + dateRange.from;
+                req.param("operation") + "/" + req.param("period") + "/" + req.param("renderType") + "?streamId=" + req.param("streamId") + "&readToken=" + req.query.readToken + bgColorQueryParam + '&to=' + dateRange.to +'&from=' + dateRange.from;
             res.redirect(redirectUrl);
         } else {
             var queryString;
@@ -1500,7 +1500,7 @@ module.exports = function (app) {
             console.log("Valid share token!");
             next();
         }).catch(function () {
-            console.log("Invalid share token - checking signed in")
+            console.log("Invalid share token - checking signed in");
             if (req.session.username && req.session.username === username) {
                 next();
                 //sessionManager.requiresSession(req, res, next);
@@ -1683,7 +1683,7 @@ module.exports = function (app) {
             .catch(function(err){
                 console.log("Error resolving image " + err);
                 res.status(500).send(err);
-            })
+            });
         };
 
         var renderChart = function (graphOwnerAvatarUrl) {
@@ -1693,7 +1693,7 @@ module.exports = function (app) {
                 .catch(function(err){
                     console.log("Error image not available");
                     res.status(404).send("Image not available");
-                })
+                });
             } else {
             
             var graphTitle = getGraphTitle(req.param("objectTags"), req.param("actionTags"));
@@ -1782,11 +1782,12 @@ module.exports = function (app) {
 
     var verifyAppCredentials = function (req, res, next) {
         var auth = req.headers.authorization;
-        var auth = auth.split('Basic ');
+        auth = auth.split('Basic ');
         var appId = '';
         var appSecret = '';
-        if (auth[0] = 'Basic') {
-            var authParts = auth[1].split(':');
+        var authParts;
+        if (auth[0] === '') {
+            authParts = auth[1].split(':');
             appId = authParts[0];
             appSecret = authParts[1];
         } else {
@@ -1826,7 +1827,7 @@ module.exports = function (app) {
                         token: permission.token,
                         appId: permission.appId,
                         scope: permission.scope
-                    }
+                    };
                     res.status(200).send(result);
                 }, function (err) {
                     res.status(500).send(err);
@@ -1835,9 +1836,9 @@ module.exports = function (app) {
 
     };
 
-    app.post("/v1/apps/:appId/token"
-        , verifyAppCredentials
-        , createAppToken);
+    app.post("/v1/apps/:appId/token", 
+        verifyAppCredentials, 
+        createAppToken);
 
     var lookupAppToken = function (req, res, next) {
 
@@ -1849,11 +1850,11 @@ module.exports = function (app) {
             .then(function (permission) {
                 req.permission = permission;
                 if (permission === null) {
-                    res.status(401).send("Couldn't athenticate, the application token is unknown.")
+                    res.status(401).send("Couldn't athenticate, the application token is unknown.");
                 }
                 next();
             }, function (err) {
-                res.status(500).send("Server error while looking up token.")
+                res.status(500).send("Server error while looking up token.");
             });
     };
 
@@ -1868,10 +1869,10 @@ module.exports = function (app) {
         var result = false;
 
         var requestPermissionMismatch =
-            objectTags.length !== req.permission.scope.objectTags.length
-            || actionTags.length !== req.permission.scope.actionTags.length
-            || differentTags(objectTags, req.permission.scope.objectTags)
-            || differentTags(actionTags, req.permission.scope.actionTags);
+            objectTags.length !== req.permission.scope.objectTags.length || 
+            actionTags.length !== req.permission.scope.actionTags.length || 
+            differentTags(objectTags, req.permission.scope.objectTags) || 
+            differentTags(actionTags, req.permission.scope.actionTags);
 
         if (requestPermissionMismatch) {
             res.status(401).send("Couldn't authenticate, the object tags or action tags in the request don't match those granted to the token");
@@ -1908,9 +1909,7 @@ module.exports = function (app) {
     var getEvents = function (req, res, next) {
         var query = {
             "payload.location.lat": {$ne: ""},
-            "payload.streamid": {
-                "$in": req.streams
-            },
+            "payload.appDbId": req.permission.appDbId,
 
             "payload.objectTags": {
                 "$all": req.permission.scope.objectTags
@@ -1925,7 +1924,7 @@ module.exports = function (app) {
         var projection = {
             "_id": 0,
             "emptyProjection": 1,
-	    "payload.dateTime": "dateTime",
+	        "payload.dateTime": "dateTime",
             "payload.eventDateTime": true
         };
 
@@ -1933,24 +1932,24 @@ module.exports = function (app) {
             projection["payload.location"] = "location";
         }
 	
-	console.log(req.permission.scope);
-	console.log(req.permission.scope['ultraviolet-index']);
-	if(req.permission.scope['ultraviolet-index'] === true) {
-	    console.log("ultraviolet scope found");
-	    projection["payload.properties.ultraviolet-index"] = true;
+	    console.log(req.permission.scope);
+	    console.log(req.permission.scope['ultraviolet-index']);
+	    if(req.permission.scope['ultraviolet-index'] === true) {
+	       console.log("ultraviolet scope found");
+	       projection["payload.properties.ultraviolet-index"] = true;
         }
 
-	if(req.permission.scope['humidity-percent'] === true) {
+	    if(req.permission.scope['humidity-percent'] === true) {
             projection["payload.properties.humidity-percent"] = true;
         }
 
 
-        if(req.permission.scope['lux'] === true) {
+        if(req.permission.scope.lux === true) {
             projection["payload.properties.lux"] = true;
         }
 
 
-        if(req.permission.scope['celsius'] === true) {
+        if(req.permission.scope.celsius === true) {
             projection["payload.properties.celsius"] = true;
         }
 
@@ -1962,89 +1961,123 @@ module.exports = function (app) {
             return event.payload;
         };
 
-        var addEventsToRequest = function (events) {
-            events = _.map(events, removePayload);
-            req.resultDataset = events;
-            if (req.resultDataset === null) {
-                req.resultDataset = [];
+        eventRepository.findCursor("oneself", query, projection).then(
+            function(cursor){
+                res.cursor = cursor;
+                next();
             }
-
-            next();
-        };
-
-        eventRepository.find("oneself", query, projection).then(
-            addEventsToRequest
         );
     };
 
-    var convertToRepresentation = function (req, res, next) {
-        if (req.params.representation === "json") {
-            res.status(200).send(req.resultDataset);
+    var sendCursorResults = function(req, res, next){
+        var cache = [];
+        res.status(200);
+        res.write('[');
+        var first = true;
+        var page = req.query.page;
+        if(page === undefined){
+            page = 0;
         }
-        else if (req.params.representation === "animatedglobe") {
-            var dataUrlComponents = [
-                "/v1/apps",
-                req.params.appId,
-                "events",
-                req.params.objectTags,
-                req.params.actionTags,
-                ".json"
-            ];
 
-            var representationUrlComponents = [
-                CONTEXT_URI,
-                "v1/apps",
-                req.params.appId,
-                "events",
-                req.params.objectTags,
-                req.params.actionTags,
-                "." + req.params.representation
-            ];
-
-            var resizerUrlComponents = [
-                CONTEXT_URI,
-                "js/iframeResizer.min.js"
-            ];
-
-            var dataUrl = dataUrlComponents.join("/") + "?token=" + req.authToken;
-            var representationUrl = representationUrlComponents.join("/") + "?token=" + req.authToken;
-            var resizerUrl = resizerUrlComponents.join("/");
-
-            var circleColor = "red"; // default circle color if none specified
-            if (req.query.circleColor) {
-                circleColor = req.query.circleColor;
-            }
-            var frameBodyColor = "lightgray"; // default frame body color if none specified
-            if (req.query.frameBodyColor) {
-                frameBodyColor = req.query.frameBodyColor;
+        var skip = (page * 100);
+        res.cursor.skip(skip).limit(100).each(function(err, event){
+            if(event === null){
+                res.write(']');
+                res.end();
+                var expire = 8 * 60 * 60; // 8 hours
+                redis.set(req.url, JSON.stringify(cache), 'NX', 'EX', expire);
+                return;
             }
 
-            var model = {
-                dataUrl: dataUrl,
-                representationUrl: representationUrl,
-                resizerUrl: resizerUrl,
-                circleColor: circleColor,
-                frameBodyColor: frameBodyColor
-            };
+            if(!first){
+                res.write(',');
+            }
+            else{
+                first = false;
+            }
 
-            res.render('animatedGlobe', model);
-        }
-        else {
-            var knownRepresentations = [
-                ".json",
-                ".animatedglobe"
-            ];
-            res.status(404).send("You requested an unknown representation. Known representations are: \r\n" + knownRepresentations.join("\r\n"));
-        }
+            res.write(JSON.stringify(event.payload));
+            cache.push(event.payload);
+        });
     };
 
-    app.get("/v1/apps/:appId/events/:objectTags/:actionTags/.:representation"
-        , parseTokenFromAuthorization
-        , lookupAppToken
-        , verifyTokenPermission
-        , getStreams
-        , getEvents
-        , convertToRepresentation);
+    var jsonRepresentation = function (req, res, next) {
+            sendCursorResults(req, res, next);
+    };
+
+    var animatedGlobeRepresentation = function (req, res, next) {
+        var dataUrlComponents = [
+            "/v1/apps",
+            req.params.appId,
+            "events",
+            req.params.objectTags,
+            req.params.actionTags,
+            ".json"
+        ];
+
+        var representationUrlComponents = [
+            CONTEXT_URI,
+            "v1/apps",
+            req.params.appId,
+            "events",
+            req.params.objectTags,
+            req.params.actionTags,
+            "." + req.params.representation
+        ];
+
+        var resizerUrlComponents = [
+            CONTEXT_URI,
+            "js/iframeResizer.min.js"
+        ];
+
+        var dataUrl = dataUrlComponents.join("/") + "?token=" + req.authToken;
+        var representationUrl = representationUrlComponents.join("/") + "?token=" + req.authToken;
+        var resizerUrl = resizerUrlComponents.join("/");
+
+        var circleColor = "red"; // default circle color if none specified
+        if (req.query.circleColor) {
+            circleColor = req.query.circleColor;
+        }
+        var frameBodyColor = "lightgray"; // default frame body color if none specified
+        if (req.query.frameBodyColor) {
+            frameBodyColor = req.query.frameBodyColor;
+        }
+
+        var model = {
+            dataUrl: dataUrl,
+            representationUrl: representationUrl,
+            resizerUrl: resizerUrl,
+            circleColor: circleColor,
+            frameBodyColor: frameBodyColor
+        };
+
+        res.render('animatedGlobe', model);
+    };
+
+    app.get("/v1/apps/:appId/events/:objectTags/:actionTags/.animatedglobe", 
+        parseTokenFromAuthorization, 
+        lookupAppToken, 
+        verifyTokenPermission, 
+        animatedGlobeRepresentation);
+
+    var getFromCacheIfAvailable = function(req, res, next){
+        redis.get(req.url, function(error, response) {
+            if(response){
+                res.status(200).send(response);
+            }
+            else{
+                next();
+            }
+        });
+    };
+
+    app.get("/v1/apps/:appId/events/:objectTags/:actionTags/.json", 
+        parseTokenFromAuthorization, 
+        lookupAppToken, 
+        verifyTokenPermission, 
+        getFromCacheIfAvailable,
+        getEvents, 
+        jsonRepresentation);
 
     app.get("/timeline", sessionManager.requiresSession, function (req, res) {
         res.render('timeline', {

@@ -235,10 +235,6 @@ var saveEvent = function (req, res) {
 	
         eventToInsert.event = {};
         eventToInsert.event.createdOn = new Date();
-        eventToInsert.event.id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            var r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
-            return v.toString(16);
-        });
 
         eventToInsert.payload = payload;
         //eventToInsert.status = 'queued';
@@ -1868,10 +1864,6 @@ var saveBatchEvents = function (myEvents, stream) {
 
         result.event = {};
         result.event.createdOn = new Date();
-        result.event.id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            var r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
-            return v.toString(16);
-        });
 
         //result.status = 'queued';
 
