@@ -1926,7 +1926,7 @@ module.exports = function (app) {
         var projection = {
             "_id": 0,
             "emptyProjection": 1,
-	        "payload.dateTime": "dateTime",
+	        "payload.dateTime": true,
             "payload.eventDateTime": true
         };
 
