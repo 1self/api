@@ -1818,6 +1818,7 @@ module.exports = function (app) {
             var permission = {
                 token: token,
                 appId: app.appId,
+                appDbId: app._id,
                 scope: scope
             };
 
@@ -1907,6 +1908,7 @@ module.exports = function (app) {
     };
 
     var getEvents = function (req, res, next) {
+        logger = scopedLogger.logger(req.permission.appDbId, req.app.logger);
         var query = {
             "payload.location.lat": {$ne: ""},
             "payload.appDbId": req.permission.appDbId,
@@ -1932,10 +1934,10 @@ module.exports = function (app) {
             projection["payload.location"] = "location";
         }
 	
-	    console.log(req.permission.scope);
-	    console.log(req.permission.scope['ultraviolet-index']);
+	    logger.debug(req.permission.scope);
+	    logger.debug(req.permission.scope['ultraviolet-index']);
 	    if(req.permission.scope['ultraviolet-index'] === true) {
-	       console.log("ultraviolet scope found");
+	       logger.debug("ultraviolet scope found");
 	       projection["payload.properties.ultraviolet-index"] = true;
         }
 
@@ -1960,6 +1962,8 @@ module.exports = function (app) {
 		
             return event.payload;
         };
+
+        logger.debug('finding in database', {query: query, projection: projection});
 
         eventRepository.findCursor("oneself", query, projection).then(
             function(cursor){
@@ -1986,6 +1990,7 @@ module.exports = function (app) {
                 res.end();
                 var expire = 8 * 60 * 60; // 8 hours
                 redis.set(req.url, JSON.stringify(cache), 'NX', 'EX', expire);
+                logger.debug(req.permission.appDbId, 'finished iterating cursor: ', {cache: cache});
                 return;
             }
 
