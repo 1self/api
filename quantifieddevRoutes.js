@@ -1958,6 +1958,7 @@ module.exports = function (app) {
 
         eventRepository.findCursor("oneself", query, projection).then(
             function(cursor){
+                cursor.sort({_id: -1})
                 res.cursor = cursor;
                 next();
             }
