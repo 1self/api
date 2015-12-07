@@ -1925,7 +1925,7 @@ module.exports = function (app) {
 
         var projection = {
             "_id": 0,
-	        "payload.eventdateTime": true
+	        "payload.eventDateTime": true
         };
 
         if (req.permission.scope.location === true) {
