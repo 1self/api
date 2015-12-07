@@ -1925,9 +1925,7 @@ module.exports = function (app) {
 
         var projection = {
             "_id": 0,
-            "emptyProjection": 1,
-	        "payload.dateTime": true,
-            "payload.eventDateTime": true
+	        "payload.eventdateTime": true
         };
 
         if (req.permission.scope.location === true) {
@@ -1955,14 +1953,7 @@ module.exports = function (app) {
             projection["payload.properties.celsius"] = true;
         }
 
-        var removePayload = function (event) {
-            if(event.payload.dateTime === undefined){
-                event.payload.dateTime = event.payload.eventDateTime.toISOString();
-            }
-		
-            return event.payload;
-        };
-
+        
         logger.debug('finding in database', {query: query, projection: projection});
 
         eventRepository.findCursor("oneself", query, projection).then(
@@ -1994,6 +1985,10 @@ module.exports = function (app) {
                 return;
             }
 
+            if(event.payload.dateTime === undefined){
+                event.payload.dateTime = event.payload.eventDateTime;
+            }
+            
             if(!first){
                 res.write(',');
             }
