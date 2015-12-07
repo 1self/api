@@ -79,6 +79,7 @@ var liveworld = function (dataUrl) {
         .context(context);
 
     var loadData = function (callback) {
+        transformedEvents = [];
         if(pageIsHidden){
             console.log('page is hidden, not getting data');
         }
@@ -86,8 +87,7 @@ var liveworld = function (dataUrl) {
         var page = 0;
         var getData = function (error, events) {
             var data = events;
-            transformedEvents = [];
-
+            
             for (var i = events.length - 1; i >= 0; i--) {
                 var eventFromServer = events[i];
                 if (eventFromServer.location === undefined || eventFromServer.dateTime === undefined) {
