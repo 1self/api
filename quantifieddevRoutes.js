@@ -66,7 +66,7 @@ module.exports = function (app) {
             return;
         }
 
-        if ("sandbox" == process.env.NODE_ENV) {
+        if ("sandbox" === process.env.NODE_ENV) {
             res.status(404).send("*** This environment does not support this feature ***");
             return;
         }
@@ -170,7 +170,9 @@ module.exports = function (app) {
             res.redirect("/signup/github");
         } else if (req.body.service === "facebook") {
             res.redirect("/signup/facebook");
-        } else res.status(404).send("unknown auth service");
+        } else {
+            res.status(404).send("unknown auth service");
+        }
     });
 
     app.get("/signup_complete", function (req, res) {
@@ -299,41 +301,7 @@ module.exports = function (app) {
         next();
     };
 
-    var switchUsername = function (req, res, next) {
-        if(req.adminToken){
-            res.model.username = req.params.username;
-        }
-
-        next();
-    };
-
-    var renderCardStack = function (req, res, next) {
-        res.render('card-stack/index.html', res.model);
-    };
-
-    var checkAdminToken = function(req, res, next){
-        if(req.query.adminToken === undefined){
-            next();
-        }
-
-        util.getAdminToken(req.query.adminToken)
-        .then(function(token){
-            if(token !== null && (new RegExp(token.route).test(req.originalUrl))){
-                req.adminToken = token;
-                next();
-            }
-            else{
-                res.send(401);
-            }
-        })
-        .catch(function(e){
-            req.app.logger.error(e);
-            res.send(500);
-        })
-        .done();
-    };
-
-    var redirectToCardAppCards = function(req, res, next){
+    var redirectToCardAppCards = function(req, res){
         res.redirect(req.app.locals.CARD_APP + "/card-stack");
     };
 
@@ -345,11 +313,7 @@ module.exports = function (app) {
         redirectToCardAppCards
     );
 
-    var renderProfile = function (req, res, next) {
-        res.render('profile/index.html', res.model);
-    };
-
-    var redirectToCardAppProfile = function(req, res, next){
+    var redirectToCardAppProfile = function(req, res){
         res.redirect(req.app.locals.CARD_APP + "/profile");
     };
 
@@ -362,7 +326,7 @@ module.exports = function (app) {
     );
 
     app.get('/logout', function (req, res){
-        req.session.destroy(function (err) {
+        req.session.destroy(function () {
             res.redirect('/'); 
         });
     });
@@ -490,10 +454,10 @@ module.exports = function (app) {
     var createFriendship = function (userId1, userId2) {
         var deferred = Q.defer();
         var findUserByEun = {
-            "_id": ObjectID(userId1)
+            "_id": new ObjectID(userId1)
         };
         var friend = {
-            "friends": ObjectID(userId2)
+            "friends": new ObjectID(userId2)
         };
         var updateObject = {
             $addToSet: friend
@@ -649,13 +613,13 @@ module.exports = function (app) {
                     toUserFullName: toUserFullName,
                     toUsername: toUsername
                 };
-                emailRender('acceptCompareRequest.eml.html', context, function (err, html, text) {
+                emailRender('acceptCompareRequest.eml.html', context, function (err, html) {
                     sendgrid.send({
                         to: userInviteEntry.fromEmailId,
                         from: QD_EMAIL,
                         subject: toUserFullName + " accepted, it’s time to compare!",
                         html: html
-                    }, function (err, json) {
+                    }, function (err) {
                         if (err) {
                             console.error("can't send accept comparison request email ", err);
                             deferred.reject(err);
@@ -733,7 +697,6 @@ module.exports = function (app) {
 
     var filterPrimaryEmailId = function (githubEmails) {
         var emails = githubEmails.githubUser.emails;
-        var primaryEmail;
         var primaryEmailObject = _.find(emails, function (emailObj) {
             return emailObj.primary === true;
         });
@@ -841,13 +804,13 @@ module.exports = function (app) {
                     fromUserFullName: fromUserFullName,
                     toUserEmailId: toEmailId
                 };
-                emailRender('rejectCompareRequest.eml.html', context, function (err, html, text) {
+                emailRender('rejectCompareRequest.eml.html', context, function (err, html) {
                     sendgrid.send({
                         to: userInviteEntry.fromEmailId,
                         from: QD_EMAIL,
                         subject: toEmailId + " declined, try someone else",
                         html: html
-                    }, function (err, json) {
+                    }, function (err) {
                         if (err) {
                             console.error("can't send reject comparison request email ", err);
                             deferred.reject(err);
@@ -892,13 +855,13 @@ module.exports = function (app) {
                 fromUserFullName: fromUserFullName,
                 fromEmailId: userInviteEntry.fromEmailId
             };
-            emailRender('invite.eml.html', context, function (err, html, text) {
+            emailRender('invite.eml.html', context, function (err, html) {
                 sendgrid.send({
                     to: userInviteEntry.toEmailId,
                     from: QD_EMAIL,
                     subject: fromUserFullName + ' wants to share their data',
                     html: html
-                }, function (err, json) {
+                }, function (err) {
                     if (err) {
                         console.error(err);
                         deferred.reject(err);
@@ -934,6 +897,7 @@ module.exports = function (app) {
                 res.send(200, "success");
             })
             .catch(function (error) {
+                req.app.logger.debug(req.session.username, 'email service unavailable', error);
                 res.status(400).send("Email service unavailable");
             });
     });
@@ -1037,7 +1001,7 @@ module.exports = function (app) {
             
             var updateDatabase = function () {
                 util.addSharedGraphImagePath(graphShareObject, imageName)
-                .then(function (done) {
+                .then(function () {
                     sendResponse();
                 })
                 .catch(sendError);
@@ -1133,7 +1097,7 @@ module.exports = function (app) {
                 method: 'GET'
             };
             var handleResponse = function (error, response, body) {
-                if (!error && response.statusCode == 200) {
+                if (!error && response.statusCode === 200) {
                     var result = JSON.parse(body);
                     console.log("streams from plaform : " + result.streams);
                     deferred.resolve(result.streams);
@@ -1222,13 +1186,13 @@ module.exports = function (app) {
                 appId: appId,
                 appSecret: appSecret
             };
-            emailRender('appDetails.eml.html', context, function (err, html, text) {
+            emailRender('appDetails.eml.html', context, function (err, html) {
                 sendgrid.send({
                     to: toEmailId,
                     from: ONESELF_EMAIL,
                     subject: '[1self] Developer Application Details',
                     html: html
-                }, function (err, json) {
+                }, function (err) {
                     if (err) {
                         console.error(err);
                         deferred.reject(err);
@@ -1263,13 +1227,13 @@ module.exports = function (app) {
                 graphUrl: graphUrl,
                 fromEmailId: fromEmailId
             };
-            emailRender('graphShare.eml.html', context, function (err, html, text) {
+            emailRender('graphShare.eml.html', context, function (err, html) {
                 sendgrid.send({
                     to: toEmailId,
                     from: ONESELF_EMAIL,
                     subject: fromEmailId + ' wants to share 1self activity',
                     html: html
-                }, function (err, json) {
+                }, function (err) {
                     if (err) {
                         console.error(err);
                         deferred.reject(err);
@@ -1312,6 +1276,7 @@ module.exports = function (app) {
                 next();
             }
         }, function (err) {
+            req.app.logger.error(conceal(req.authToken), 'Server error while looking up token', err);
             res.status(500).send("Server error while looking up token.");
         });
     };
@@ -1347,21 +1312,7 @@ module.exports = function (app) {
         next();
     };
 
-    var getEventData = function() { 
-        var result = [];
-        // for (var i = -16; i < 0; i++) {
-        //  result.push({
-        //      fromDate: new Date(moment().add("days", i).format("MM/DD/YYYY")),
-        //      toDate: new Date(moment().add("days", i + 1).format("MM/DD/YYYY")),
-                
-        //      value: (100 + (Math.random()*100)),
-        //      color: Math.random() > 0.5 ? "#FF5555" : (Math.random() > 0.5 ? "#33FF33": "#FFC72F")
-        //  });
-        // };
-        
-    };
-
-    var renderStreamVisualization = function(req, res, next){
+    var renderStreamVisualization = function(req, res){
         if(req.params.representation === 'json'){
             var matchStreamId = {
                 $match: {"payload.streamid":req.token.streamId}
@@ -1390,13 +1341,12 @@ module.exports = function (app) {
                 projectProperties.$project[key] = '$' + fullyQualifiedKey;
             }
 
-            var match = {};
-
             eventRepository.aggregate("oneself", [matchStreamId, matchProperties, projectProperties])
             .then(function(events){
                 res.send(events);
             })
             .catch(function(error){
+                req.app.logger.error(req.token.streamid, 'database error while renderStreamVisualization', error);
                 res.status(500).send('database error');
             });
         }        
@@ -1530,7 +1480,7 @@ module.exports = function (app) {
         var token = '';
         if (req.headers && req.headers.authorization) {
             var parts = req.headers.authorization.split(' ');
-            if (parts.length == 2) {
+            if (parts.length === 2) {
               var scheme = parts[0], credentials = parts[1];
                 
               if (/^Bearer$/i.test(scheme)) {
@@ -1539,7 +1489,7 @@ module.exports = function (app) {
             } 
         }
         
-        logger = scopedLogger.logger(token.substring(0, 6), req.app.logger);
+        var logger = scopedLogger.logger(token.substring(0, 6), req.app.logger);
 
         if(token === ''){
             var bearerError = 'invalid bearer token: pass it in the Authorization header';
@@ -1617,7 +1567,7 @@ module.exports = function (app) {
         getProfile);
 
     var validateReadToken = function(req, res, next){
-        logger = scopedLogger.logger(req.body.streamId, req.app.logger);
+        var logger = scopedLogger.logger(req.body.streamId, req.app.logger);
 
         util.streamExists(req.body.streamId, req.query.readToken)
         .then(function (exists) {
@@ -1632,12 +1582,13 @@ module.exports = function (app) {
             }
         })
         .catch(function(error){
+            logger.error('error while validateReadToken', error);
             res.status(500).send('internal server error ');
         })
         .done();
     };
 
-    var registerStream = function(req, res, next){
+    var registerStream = function(req, res){
         var userLogger = scopedLogger.logger(req.validatedAuthTokenUser.username, req.app.logger);
         userLogger.silly('registerStream: looking up user');
         util.findUser(req.validatedAuthTokenUser.username)
@@ -1691,7 +1642,7 @@ module.exports = function (app) {
                 util.checkImageExists(req.query.shareToken)
                 .then(serveImage)
                 .catch(function(err){
-                    console.log("Error image not available");
+                    req.app.logger.error('error while rendering png chart, image not available', err);
                     res.status(404).send("Image not available");
                 });
             } else {
@@ -1753,7 +1704,6 @@ module.exports = function (app) {
     app.get("/v1/users/:username/correlate/:period/:renderType", sessionManager.requiresSession, function (req, res) {
         var username = req.params.username;
         var period = req.params.period;
-        var renderType = req.params.renderType;
         var firstEvent = req.query.firstEvent;
         var secondEvent = req.query.secondEvent;
         var fromDate = req.query.from;
@@ -1806,11 +1756,12 @@ module.exports = function (app) {
                 req.app1self = app;
                 next();
             }, function (err) {
+                req.app.logger.error(appId, 'error verifying app credentials', err);
                 res.send(500);
             });
     };
 
-    var createAppToken = function (req, res, next) {
+    var createAppToken = function (req, res) {
         generateToken()
         .then(function (token) {
             var scope = req.body;
@@ -1855,6 +1806,7 @@ module.exports = function (app) {
                 }
                 next();
             }, function (err) {
+                req.app.logger.error(conceal(req.authToken, 'Server error while looking up app token in lookupAppToken'), err);
                 res.status(500).send("Server error while looking up token.");
             });
     };
@@ -1866,8 +1818,6 @@ module.exports = function (app) {
     var verifyTokenPermission = function (req, res, next) {
         var objectTags = req.params.objectTags.split(",");
         var actionTags = req.params.actionTags.split(",");
-
-        var result = false;
 
         var requestPermissionMismatch =
             objectTags.length !== req.permission.scope.objectTags.length || 
@@ -1882,33 +1832,8 @@ module.exports = function (app) {
         next();
     };
 
-    var getStreams = function (req, res, next) {
-        var query = {
-            appId: req.permission.appId
-        };
-
-        var projection = {
-            streamid: 1
-        };
-
-        var mapStreamObjectsToArray = function (streamObject) {
-            return streamObject.streamid;
-        };
-
-        mongoRepository.find("stream", query, projection).then(
-            function (streams) {
-                if (streams === null) {
-                    streams = [];
-                }
-
-                streams = _.map(streams, mapStreamObjectsToArray);
-                req.streams = streams;
-                next();
-            });
-    };
-
     var getEvents = function (req, res, next) {
-        logger = scopedLogger.logger(req.permission.appDbId, req.app.logger);
+        var logger = scopedLogger.logger(req.permission.appDbId, req.app.logger);
         var query = {
             "payload.location.lat": {$ne: ""},
             "payload.appDbId": req.permission.appDbId,
@@ -1958,14 +1883,14 @@ module.exports = function (app) {
 
         eventRepository.findCursor("oneself", query, projection).then(
             function(cursor){
-                cursor.sort({_id: -1})
+                cursor.sort({_id: -1});
                 res.cursor = cursor;
                 next();
             }
         );
     };
 
-    var sendCursorResults = function(req, res, next){
+    var sendCursorResults = function(req, res){
         var cache = [];
         res.status(200);
         res.write('[');
@@ -1982,7 +1907,7 @@ module.exports = function (app) {
                 res.end();
                 var expire = 8 * 60 * 60; // 8 hours
                 redis.set(req.url, JSON.stringify(cache), 'NX', 'EX', expire);
-                logger.debug(req.permission.appDbId, 'finished iterating cursor: ', {cache: cache});
+                req.app.logger.debug(req.permission.appDbId, 'finished iterating cursor: ', {cache: cache});
                 return;
             }
 
@@ -2006,7 +1931,7 @@ module.exports = function (app) {
             sendCursorResults(req, res, next);
     };
 
-    var animatedGlobeRepresentation = function (req, res, next) {
+    var animatedGlobeRepresentation = function (req, res) {
         var dataUrlComponents = [
             "/v1/apps",
             req.params.appId,
