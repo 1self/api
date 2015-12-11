@@ -1,9 +1,6 @@
-var request = require("request");
-var passport = require('passport');
 var q = require('q');
 var mongoRepository = require('../mongoRepository.js');
 var encoder = require("../encoder");
-var githubService = require("../services/githubService.js");
 var CreditUserSignup = require('./creditUserSignup.js');
 var MAILCHIMP_API_KEY = process.env.MAILCHIMP_API_KEY;
 var MAILCHIMP_LIST_ID = process.env.MAILCHIMP_LIST_ID;
@@ -19,7 +16,7 @@ var SignupModule = function () {
 SignupModule.prototype.startSignup = function(session){
         session.service = undefined;
         session.auth = 'signup';
-    }
+    };
 
 SignupModule.prototype.signingUpWithGithub = function(session) {
         session.service = 'github';
@@ -29,7 +26,7 @@ SignupModule.prototype.signingUpWithGithub = function(session) {
         // back to the signup page doesn't make a request to the server
         // which means session.auth ends up not being set.
         session.auth = 'signup';
-    }
+    };
 
 SignupModule.prototype.signingUpWithFacebook = function(session) {
         session.service = 'facebook';
@@ -39,7 +36,7 @@ SignupModule.prototype.signingUpWithFacebook = function(session) {
         // back to the signup page doesn't make a request to the server
         // which means session.auth ends up not being set.
         session.auth = 'signup';
-    }
+    };
 
 SignupModule.prototype.getAuthService = function(session) {
         var result = '';
@@ -51,7 +48,7 @@ SignupModule.prototype.getAuthService = function(session) {
         }
 
         return result;
-    }
+    };
 
 SignupModule.prototype.getAuthServiceUrl = function(session) {
         var result = '';
@@ -63,7 +60,7 @@ SignupModule.prototype.getAuthServiceUrl = function(session) {
         }
 
         return result;
-    }
+    };
 
 SignupModule.prototype.signup = function (user, req, res) {
     var deferredOuter = q.defer();
@@ -76,20 +73,17 @@ SignupModule.prototype.signup = function (user, req, res) {
         var deferred = q.defer();
         var by1selfUsername = {
             "username": data.username
-        }
+        };
         mongoRepository.findOne('users', by1selfUsername)
             .then(function (user) {
                 data.user = user;
                 deferred.resolve(data);
             });
         return deferred.promise;
-    }
+    };
 
     var doSignup = function () {
         var oneselfUsername = req.session.oneselfUsername;
-        var isNewUser = function (user) {
-            return !user;
-        };
         var handleError = function (error) {
             if(error === "user_exists"){
                 res.redirect("/signupErrorUserExists");
@@ -136,7 +130,7 @@ SignupModule.prototype.signup = function (user, req, res) {
                     "email": {email: email},
                     "double_optin": false
                 };
-                api.lists_subscribe(data, function (err, result) {
+                api.lists_subscribe(data, function (err) {
                     if (err) {
                         console.log("Error is", err);
                     }
@@ -144,7 +138,7 @@ SignupModule.prototype.signup = function (user, req, res) {
                 });
             } catch (error) {
                 console.log("Error occurred", error);
-                deferred.reject(error)
+                deferred.reject(error);
             }
             return deferred.promise;
         };
@@ -163,7 +157,12 @@ SignupModule.prototype.signup = function (user, req, res) {
                 registeredOn: new Date(),
                 username: oneselfUsername.toLowerCase(),
                 encodedUsername: encUserObj.encodedUsername,
-                salt: encUserObj.salt
+                salt: encUserObj.salt,
+                emailSettings: {
+                    cards: {
+                        frequency: 'weekly'
+                    }
+                }
             };
             return userCreated;
         };
@@ -193,7 +192,7 @@ SignupModule.prototype.signup = function (user, req, res) {
             // the user. 
             redisPublish.publish('users', JSON.stringify(message));
             return userRecord;
-        }
+        };
         
         findUser(byUsername)
             .then(checkIfUsernameExists)
