@@ -128,7 +128,8 @@ module.exports = function (app) {
         }
 
         res.render('login', {
-            authExists: authExists
+            authExists: authExists,
+            trackingId: req.session.trackingId
         });
     });
 
@@ -1533,7 +1534,8 @@ module.exports = function (app) {
                 displayName: userDoc.profile.displayName,
                 registrationToken: userDoc.registrationToken,
                 registeredOn: userDoc.registeredOn,
-                cardCount: userDoc.cardCount
+                cardCount: userDoc.cardCount,
+                encodedUsername: userDoc.encodedUsername
             };
 
             req.validatedAuthTokenUser = result;

@@ -361,7 +361,9 @@ module.exports = function (app) {
         if(req.session.username === undefined){
             IntentManager.setOauthAuthAsIntent(req, res);
             sessionLogger.debug('user isnt logged in, redirecting');
-            res.redirect('/login');
+            var loginUrl = '/login';
+            req.session.trackingId = req.query.trackingId;
+            res.redirect(loginUrl);
             return;
         }
 
@@ -459,7 +461,7 @@ module.exports = function (app) {
         var query = {
             clientId: user.name,
             clientSecret: user.pass
-        }
+        };
 
         var clientLogger = scopedLogger.logger(conceal(query.clientId), req.app.logger);
         var userLogger = {};
