@@ -37,6 +37,22 @@ describe('cardfilters toDisplay', function () {
     var result = cardFilters.toDisplay({type: 'top10', read: true});
     assert(result === false);
   });
+
+  it('filters out stack-overflow questions', function () {
+    var result = cardFilters.toDisplay({
+        type: "top10",
+        objectTags: ["internet", "questions", "social-network", "stackoverflow"]
+    });
+    assert(result === false);
+  });
+
+  it('filters out stack-overflow reputation', function () {
+    var result = cardFilters.toDisplay({
+        type: "top10",
+        objectTags: ["internet", "reputation", "social-network", "stackoverflow"]
+    });
+    assert(result === false);
+  });
 });
 
 describe('cardfilters cardFilter', function () {

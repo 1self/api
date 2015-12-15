@@ -44,6 +44,8 @@ exports.toDisplay = function(card){
     }
     return card.type !== 'date' && 
     card.type !== 'bottom10' && 
+    _.isEqual(card.objectTags, ["internet", "questions", "social-network", "stackoverflow"]) === false &&
+    _.isEqual(card.objectTags, ["internet", "reputation", "social-network", "stackoverflow"]) === false &&
     card.read === undefined || card.read === false;
 };
 
