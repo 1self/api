@@ -1161,6 +1161,19 @@ app.patch('/v1/me/cards/:cardId',
     profileCardRead,
     sendCard);
 
+var addActivity = function(req, res){
+    var activity = req.body;
+    activity.userId = req.token.userId;
+    mongoRepository.insert('userActivity', activity)
+    .then(function(){
+        res.send(200);
+    });
+};
+
+app.post('/v1/me/activity',
+    app.locals.requireToken,
+    addActivity);
+
 var extractReadRequestDetails = function(req, res, next){
     req.readRequest = req.body;
     next();
