@@ -1163,7 +1163,7 @@ app.patch('/v1/me/cards/:cardId',
 
 var addActivity = function(req, res){
     var activity = req.body;
-    activity.userId = req.token.userId;
+    activity.userId = req.token ? req.token.userId : '';
     mongoRepository.insert('userActivity', activity)
     .then(function(){
         res.send(200);
@@ -1172,6 +1172,9 @@ var addActivity = function(req, res){
 
 app.post('/v1/me/activity',
     app.locals.requireToken,
+    addActivity);
+
+app.post('/v1/anonymous/activity',
     addActivity);
 
 var extractReadRequestDetails = function(req, res, next){

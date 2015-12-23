@@ -35,10 +35,7 @@ var emailConfigOptions = {
     root: path.join(__dirname, "/website/public/email_templates")
 };
 
-
 var encryptedPassword = PasswordEncrypt.encryptPassword(sharedSecret);
-
-
 
 module.exports = function (app) {
 
