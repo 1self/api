@@ -1082,7 +1082,14 @@ var filterCards = function(req, res, next){
         return;
     }
 
-    res.cards = cardFilters.filterCards(logger, req.user, req.params.username, req.query.minStdDev, req.query.maxStdDev, res.cards, req.query.extraFiltering);
+    res.cards = cardFilters.filterCards(logger, 
+        req.user, 
+        req.params.username, 
+        req.query.minStdDev, 
+        req.query.maxStdDev, 
+        res.cards, 
+        req.query.extraFiltering,
+        res.locals.integrations);
     next();
 };
 
@@ -1148,9 +1155,18 @@ app.patch('/v1/users/:username/cards/:cardId',
     profileCardRead,
     sendCard);
 
+var getIntegrations = function(req, res, next){
+    integrations.getIntegrations(redisClient, mongoRepository, logger).
+    then(function(ints){
+        res.locals.integrations = ints;
+        next();
+    });
+};
+
 app.get('/v1/users/:username/cards',
     doNotAuthorize,
     getCards,
+    getIntegrations,
     filterCards,
     sendCards);
 
@@ -1217,6 +1233,7 @@ app.post('/v1/me/cards/replay',
 app.get('/v1/me/cards',
     app.locals.requireToken,
     getCardsByUserId,
+    getIntegrations,
     filterCards,
     sendCards);
 

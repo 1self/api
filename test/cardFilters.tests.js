@@ -308,5 +308,91 @@ it('all cards are returned without filtering', function () {
     assert.equal(filtered[1].position, 1);
   });
 
-  
+  it('sets identifier and service name on syncing cards', function () {
+    var cards = [
+      { 
+        "_id" : new ObjectId("565c89a1915fac784cbb8b06"), 
+        "userId" : new ObjectId("5630e6db66bc05e1cd61f85b"), 
+        "type" : "datasyncing", 
+        "appDbId": "appDbId",
+        "thumbnailMedia" : "chart.html", 
+        "cardDate" : "2015-03-27", 
+        "generatedDate" : "2015-11-30T17:38:41.952Z", 
+        "published" : true
+      }
+    ];
+
+    var username = 'test';
+    var user = {
+      username: username
+    };
+
+    var integrations = {
+        appDbId: {
+            title: 'Service Name',
+            urlName: 'identifier'
+        }
+    };
+
+    var filtered = cardFilters.filterCards(logger, user, username, 0.5, undefined, cards, true, integrations);
+    assert.equal(filtered[0].identifier, 'identifier');
+    assert.equal(filtered[0].serviceName, 'Service Name');
+  });
+
+  it('sets identifier and service name on syncing cards without appDbId', function () {
+    var cards = [
+      { 
+        "_id" : new ObjectId("565c89a1915fac784cbb8b06"), 
+        "userId" : new ObjectId("5630e6db66bc05e1cd61f85b"), 
+        "type" : "datasyncing", 
+        "thumbnailMedia" : "chart.html", 
+        "cardDate" : "2015-03-27", 
+        "generatedDate" : "2015-11-30T17:38:41.952Z", 
+        "published" : true
+      }
+    ];
+
+    var username = 'test';
+    var user = {
+      username: username
+    };
+
+    var integrations = {
+        appDbId: {
+            title: 'Service Name',
+            urlName: 'identifier'
+        }
+    };
+
+    var filtered = cardFilters.filterCards(logger, user, username, 0.5, undefined, cards, true, integrations);
+    assert.equal(filtered[0].identifier, '');
+    assert.equal(filtered[0].serviceName, '');
+  });
+
+  it('sets identifier and service name on syncing cards without matching integration', function () {
+    var cards = [
+      { 
+        "_id" : new ObjectId("565c89a1915fac784cbb8b06"), 
+        "userId" : new ObjectId("5630e6db66bc05e1cd61f85b"), 
+        "type" : "datasyncing", 
+        "appDbId": "appDbId",
+        "thumbnailMedia" : "chart.html", 
+        "cardDate" : "2015-03-27", 
+        "generatedDate" : "2015-11-30T17:38:41.952Z", 
+        "published" : true
+      }
+    ];
+
+    var username = 'test';
+    var user = {
+      username: username
+    };
+
+    var integrations = {
+    };
+
+    var filtered = cardFilters.filterCards(logger, user, username, 0.5, undefined, cards, true, integrations);
+    assert.equal(filtered[0].identifier, '');
+    assert.equal(filtered[0].serviceName, '');
+  });
 });

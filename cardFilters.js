@@ -55,7 +55,8 @@ exports.filterCards = function(logger,
     minStdDev, 
     maxStdDev, 
     unfilteredCards,
-    extraFiltering){
+    extraFiltering,
+    integrations){
     
     username = user ? user.username : username;
     logger.debug([username, "filtercards", "starting"].join(': '));
@@ -88,6 +89,8 @@ exports.filterCards = function(logger,
 
             if(!card.read && (card.type === 'datasyncing' || card.type === 'cardsgenerating')){
                 card.id = card._id;
+                card.serviceName = card.appDbId && integrations[card.appDbId] ? integrations[card.appDbId].title : '';
+                card.identifier = card.appDbId && integrations[card.appDbId] ? integrations[card.appDbId].urlName : '';
                 delete card._id;
                 syncingGeneratingCards.push(card);
             }
@@ -219,12 +222,6 @@ exports.filterCards = function(logger,
 
         result = filteredPositions;
     }
-
-    timingInfo.endMoment = moment();
-    timingInfo.elapsed = (timingInfo.endMoment - timingInfo.startMoment) / 1000;
-    delete timingInfo.startMoment;
-    delete timingInfo.endMoment;
-    logger.debug([username, 'filterCards'].join(': '), 'timing info', timingInfo);
 
     return result;
 };
