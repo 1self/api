@@ -1,5 +1,6 @@
 'use strict';
 var q = require('q');
+var _ = require('lodash');
 
 var hitDatabaseAndCache = function(redis, mongo, logger){
 	var query = {
@@ -7,18 +8,24 @@ var hitDatabaseAndCache = function(redis, mongo, logger){
         active: true
     };
 
-	mongo.find('registeredApps', query)
+	return mongo.find('registeredApps', query)
     .then(function(apps){
     	// caches integrations for 24 hours
     	logger.silly('getting integrations from database, ', query);
-    	redis.set('integrations', JSON.stringify(apps), 'NX', 'EX', 60 * 60 * 24 * 7);
+    	var integrationsDict = {};
+
+    	_.forEach(apps, function(app){
+    		integrationsDict[app._id] = app;
+    	});
+    	redis.set('integrations', JSON.stringify(integrationsDict), 'NX', 'EX', 60 * 60 * 24 * 7);
+    	return integrationsDict;
     });
 };
 
 var getIntegrations = function(redis, mongo, logger){
-	var redisClientGet = q.nbind(redis.get, redis);
+	var getFromCache = q.nbind(redis.get, redis);
 
-	return redisClientGet('integrations')
+	return getFromCache('integrations')
 	.then(function(response){
 		if(!response){
 			return hitDatabaseAndCache(redis, mongo, logger);

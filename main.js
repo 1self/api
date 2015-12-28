@@ -23,6 +23,7 @@ var platformService = require('./platformService.js');
 var scopedLogger = require('./scopedLogger');
 var conceal = require('concealotron');
 var cardFilters = require('./cardFilters.js');
+var integrations = require('./integrations.js');
 
 var CONTEXT_URI = process.env.CONTEXT_URI;
 var LOGGING_DIR = process.env.LOGGINGDIR;
@@ -1009,6 +1010,7 @@ var doNotAuthorize = function(req, res, next){
 
 var getCards = function(req, res, next){
     logger.debug('starting getCards');
+
     util.findUser(req.params.username)
     .then(function(user){
         return util.getCards(user, req.query.from);
@@ -1279,15 +1281,7 @@ var getIntegrations = function(req, res, next){
     var logger = scopedLogger.logger(conceal(req.token.userId.toString()), req.app.logger);
     logger.silly('getting integrations');
 
-    var getIntegrationsFromDb = function(){
-        var query = {
-            approved: true,
-            active: true
-        };
-
-        logger.silly('getting integrations, ', query);
-        return mongoRepository.find('registeredApps', query);
-    };
+    
 
     
 
@@ -1305,7 +1299,7 @@ var getIntegrations = function(req, res, next){
         return mongoRepository.findOne('users', userQuery, projection)
         .then(function(userDoc){
             logger.silly('got db user', conceal(userDoc));
-            userDoc.allIntegrations = integrations;
+            userDoc.allIntegrations = _.values(integrations);
             return userDoc;
         });
     };
@@ -1347,7 +1341,7 @@ var getIntegrations = function(req, res, next){
         next();
     };
     
-    getIntegrationsFromDb()
+    integrations.getIntegrations(redisClient, mongoRepository, logger)
     .then(getUser)
     .then(joinUserToIntegrations)
     .then(addUserIntegrationsToResponse)

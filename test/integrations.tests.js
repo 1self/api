@@ -7,32 +7,38 @@ var q = require('q');
 
 describe('integrations', function() {
     it('empty cache hits the database and caches the results', function() {
-
+        // note that the cache isn't a straight replication of whats in the
+        // database, it's transformed into a dictionary for easy access.
         var cacheHit = false;
         var cacheUpdated = false;
-        var redis = {
-            get: function(key, callback){
+        var redis = {};
+
+        redis.get = function(key, callback){
                 cacheHit = true;
                 callback(null, null); // no error but the cached object isn't there either
-            },
-            set: function(){
+            };
+
+        redis.set = function(){
                 cacheUpdated = true;
-            }   
-        };
+            };
 
         var mongoCalled = false;
         var mongo = {
             find: function(){
                 mongoCalled = true;
-                return q();
+                return q([{
+                    _id: 1234,
+                    test: true
+                }]);
             }
         };
         
         return integrations.getIntegrations(redis, mongo, logger)
-        .then(function(){
-            assert(mongoCalled, 'mongo called');
+        .then(function(integrations){
+            assert.equal(integrations['1234'].test, true);
+            assert(mongoCalled, 'mongo not called');
             assert(cacheHit, 'cache hit');
-            assert(cacheUpdated, 'cache updated');    
+            assert(cacheUpdated, 'cache not updated');    
         });
     });
 
