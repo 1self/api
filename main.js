@@ -1686,8 +1686,16 @@ var updateLatestSyncField = function (streamId, latestSyncField) {
 };
 
 var saveBatchEvents = function (myEvents, stream) {
-    console.log(stream.streamid + ": saving batch events");
     var deferred = q.defer();
+    logger.debug(stream.streamid + ": saving batch events");
+
+    if(myEvents.length === 0){
+        logger.warn(stream.streamid + ': ignoring batch with no events');
+        deferred.resolve({});
+        return;
+    }
+
+    
     var myEventsWithPayload = _.map(myEvents, function (payload) {
         var result = {};
 
