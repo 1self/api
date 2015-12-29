@@ -857,35 +857,24 @@ var getEventsForStreams = function (streams, skipCount, limitCount) {
     var streamids = _.map(streams, function (stream) {
         return stream.streamid;
     });
-    var filterSpec = {
-        'payload.streamid': {
-            "$operator": {
-                "in": streamids
+    
+    var condition = {
+        $query: {
+            "payload.streamid": {
+                $in: streamids
             }
+        },
+        $orderby: {
+            "payload.eventDateTime": -1
         }
     };
-    var orderSpec = {
-        "payload.eventDateTime": -1
-    };
-    var projectionSpec = {
-        "payload": 1
-    };
-    var options = {
-        "skip": skipCount,
-        "limit": limitCount
-    };
-    var query = {
-        'filterSpec': JSON.stringify(filterSpec),
-        'orderSpec': JSON.stringify(orderSpec),
-        'projectionSpec': JSON.stringify(projectionSpec),
-        'options': JSON.stringify(options)
-    };
-    platformService.filter(query)
-        .then(function (result) {
-            deferred.resolve(result);
-        }, function (err) {
-            deferred.reject(err);
-        });
+
+    eventRepository.findLimit('oneself', condition, {}, limitCount, skipCount)
+    .then(function (result) {
+        deferred.resolve(result);
+    }, function (err) {
+        deferred.reject(err);
+    });
     return deferred.promise;
 };
 
@@ -1622,18 +1611,18 @@ var getLatestSyncField = function (streamId) {
     };
 
     eventRepository.findLimit('oneself', condition, {}, 1)
-        .then(function (result) {
+    .then(function (result) {
 
-            if(result.length > 0){
-                console.log([streamId, result[0].payload.latestSyncField].join(": "));
-                deferred.resolve(result[0].payload.latestSyncField);
-            }
-            else{
-                deferred.resolve(null);   
-            }
-        }, function (err) {
-            deferred.reject(err);
-        });
+        if(result.length > 0){
+            console.log([streamId, result[0].payload.latestSyncField].join(": "));
+            deferred.resolve(result[0].payload.latestSyncField);
+        }
+        else{
+            deferred.resolve(null);   
+        }
+    }, function (err) {
+        deferred.reject(err);
+    });
     return deferred.promise;
 };
 

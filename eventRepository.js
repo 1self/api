@@ -96,11 +96,16 @@ var findCursor = function (collection, query, projection) {
     return deferred.promise;
 };
 
-var findLimit = function (collection, query, projection, limit) {
+var findLimit = function (collection, query, projection, limit ,skip) {
     var deferred = q.defer();
     projection = defaultFor(projection, {});
     eventDbConnection(function (eventDb) {
-        eventDb.collection(collection).find(query, projection).limit(limit).toArray(function (err, documents) {
+        var cursor = eventDb.collection(collection).find(query, projection);
+        if(skip){
+            cursor.skip(skip);
+        }
+
+        cursor.limit(limit).toArray(function (err, documents) {
             if (err) {
                 console.error(err);
                 deferred.reject(err);
