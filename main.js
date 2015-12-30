@@ -1677,6 +1677,7 @@ var updateLatestSyncField = function (streamId, latestSyncField) {
 var saveBatchEvents = function (myEvents, stream) {
     var deferred = q.defer();
     logger.debug(stream.streamid + ": saving batch events");
+    logger.debug(stream.streamid + "stream is", stream);
 
     if(myEvents.length === 0){
         logger.warn(stream.streamid + ': ignoring batch with no events');
