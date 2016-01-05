@@ -1700,14 +1700,6 @@ var saveBatchEvents = function (myEvents, stream) {
         result.event = {};
         result.event.createdOn = new Date();
 
-        //result.status = 'queued';
-
-        if(payload.source){
-            delete payload.source;
-        }
-
-        payload.appDbId = stream.appDbId;
-
         result.payload = payload;
         return result;
     });
@@ -1736,6 +1728,7 @@ var saveBatch = function (req, res) {
     var writeToken = req.headers.authorization;
     authenticateWriteToken(writeToken, req.params.streamid)
         .then(function (stream) {
+            res.locals.stream = stream;
             return saveBatchEvents(req.body, stream);
         },
         function () {
@@ -1757,21 +1750,35 @@ var publishBatch = function( req, res, next) {
         event.eventDateTime = dateInfo.eventDateTime;
         event.eventLocalDateTime = dateInfo.eventLocalDateTime;
         event.offset = dateInfo.offset;
+        event.appDbId = res.locals.stream.appDbId;
+        if(event.source){
+            delete event.source;
+        }
 
         if(event.properties === undefined){
             event.properties = {};
         }
+
         redisClient.publish("events", JSON.stringify(event));
     });
 
     next();
 };
-app.post('/stream/:streamid/batch',
-    publishBatch,
-    saveBatch);
+
+var validateBatchCredentials = function(req, res, next){
+    var writeToken = req.headers.authorization;
+    authenticateWriteToken(writeToken, req.params.streamid)
+    .then(function (stream) {
+        res.locals.stream = stream;
+        next();
+    }, function () {
+        res.status(404).send("stream not found");
+    });
+};
 
 app.post('/v1/streams/:streamid/events/batch',
     validateRequest.validate,
+    validateBatchCredentials,
     publishBatch,
     saveBatch);
 
