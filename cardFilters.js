@@ -202,10 +202,13 @@ exports.filterCards = function(logger,
         .flatten()
         .filter(exports.toDisplay)
         .groupBy(function(card){
-             return [card.type, card.objectTags.join(','), card.actionTags.join(',')].join('/');
+             return [card.type, card.cardDate, card.objectTags.join(','), card.actionTags.join(',')].join('/');
              })    
         .map(function(cardsOfSameTypeSameDay){
             var sorted = _.chain(cardsOfSameTypeSameDay)
+            .sortBy(function(c){
+                return c.position;
+            })
             .sortBy(function(c){
                 return 0 - c.sampleCorrectedStdDev; 
             }).value();
