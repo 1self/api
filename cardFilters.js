@@ -202,9 +202,21 @@ exports.filterCards = function(logger,
         .flatten()
         .filter(exports.toDisplay)
         .groupBy(function(card){
-             return card.cardDate;
-             })
-        
+             return [card.type, card.objectTags.join(','), card.actionTags.join(',')].join('/');
+             })    
+        .map(function(cardsOfSameTypeSameDay){
+            var sorted = _.chain(cardsOfSameTypeSameDay)
+            .sortBy(function(c){
+                return 0 - c.sampleCorrectedStdDev; 
+            }).value();
+            var result = _.chain(sorted)
+            .first()
+            .value();
+            return result;
+        })   
+        .groupBy(function(card){
+            return card.cardDate;
+        }) 
         .map(function(value, key){
             var dateCard = {
                 type: 'date',

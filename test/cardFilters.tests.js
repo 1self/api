@@ -395,4 +395,105 @@ it('all cards are returned without filtering', function () {
     assert.equal(filtered[0].identifier, '');
     assert.equal(filtered[0].serviceName, '');
   });
+
+  it('most interesting card filtered for two cards of the same type on the same day ', function () {
+    var cards = [
+      { 
+        "_id" : new ObjectId("565c89a1915fac784cbb8b06"), 
+        "userId" : new ObjectId("5630e6db66bc05e1cd61f85b"), 
+        "type" : "top10", 
+        "outOf" : 1, 
+        "thumbnailMedia" : "chart.html", 
+        "startRange" : "2015-03-27", 
+        "endRange" : "2015-03-27", 
+        "objectTags" : [
+            "computer", 
+            "git", 
+            "github", 
+            "software", 
+            "source-control"
+        ], 
+        "actionTags" : [
+            "merge"
+        ], 
+        "position" : 0, 
+        "properties" : {
+            "sum" : {
+                "repo" : {
+                    "1self/strava_1self" : {
+                        "line-deletions" : 1
+                    }
+                }
+            }
+        }, 
+        "propertyName" : "line-deletions.sum.repo.1self/strava_1self", 
+        "stdDev" : 2.8284271247461903, 
+        "correctedStdDev" : 2.8284271247461903, 
+        "sampleStdDev" : 0.7071067811865475, 
+        "sampleCorrectedStdDev" : 0.7071067811865475, 
+        "mean" : 3, 
+        "variance" : -2, 
+        "value" : 1, 
+        "sortingValue" : 1, 
+        "cardDate" : "2015-03-27", 
+        "generatedDate" : "2015-11-30T17:38:41.952Z", 
+        "chart" : "/v1/users/edf/rollups/day/computer,git,github,software,source-control/merge/sum.repo.1self%2Fstrava_1self.line-deletions/.json", 
+        "published" : true
+      },
+      { 
+        "_id" : new ObjectId("565c89a1915fac784cbb8b06"), 
+        "userId" : new ObjectId("5630e6db66bc05e1cd61f85b"), 
+        "type" : "top10", 
+        "outOf" : 1, 
+        "thumbnailMedia" : "chart.html", 
+        "startRange" : "2015-03-27", 
+        "endRange" : "2015-03-27", 
+        "objectTags" : [
+            "computer", 
+            "git", 
+            "github", 
+            "software", 
+            "source-control"
+        ], 
+        "actionTags" : [
+            "merge"
+        ], 
+        "position" : 0, 
+        "properties" : {
+            "sum" : {
+                "repo" : {
+                    "1self/anotherRepo" : {
+                        "line-deletions" : 1
+                    }
+                }
+            }
+        }, 
+        "propertyName" : "line-deletions.sum.repo.1self/anotherRepo", 
+        "stdDev" : 7, 
+        "correctedStdDev" : 6.5, 
+        "sampleStdDev" : 1.7071067811865475,                    // samplestddev is higher than the first
+        "sampleCorrectedStdDev" : 1.7071067811865475,           // sampleCorrectedStdDev is higher than the first
+        "mean" : 3, 
+        "variance" : -2, 
+        "value" : 1, 
+        "sortingValue" : 1, 
+        "cardDate" : "2015-03-27", 
+        "generatedDate" : "2015-11-30T17:38:41.952Z", 
+        "chart" : "/v1/users/edf/rollups/day/computer,git,github,software,source-control/merge/sum.repo.1self%2FanotherRepo.line-deletions/.json", 
+        "published" : true
+      }
+    ];
+
+    var username = 'test';
+    var user = {
+      username: username
+    };
+
+    var filtered = cardFilters.filterCards(logger, user, username, 0.5, undefined, cards, true);
+    assert.equal(filtered.length, 2);
+    assert.equal(filtered[0].cardDate, "2015-03-27");
+    assert.equal(filtered[1].propertyName, "line-deletions.sum.repo.1self/anotherRepo");
+  });
+
+
 });
