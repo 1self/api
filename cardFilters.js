@@ -49,6 +49,20 @@ exports.toDisplay = function(card){
     card.read === undefined || card.read === false;
 };
 
+var getMostDeviatingHighestPositionCard = function(cardsOfSameTypeSameDay){
+    var sorted = _.chain(cardsOfSameTypeSameDay)
+    .sortBy(function(c){
+        return c.position;
+    })
+    .sortBy(function(c){
+        return 0 - c.sampleCorrectedStdDev; 
+    }).value();
+    var result = _.chain(sorted)
+    .first()
+    .value();
+    return result;
+};
+
 exports.filterCards = function(logger, 
     user, 
     username, 
@@ -59,7 +73,7 @@ exports.filterCards = function(logger,
     integrations){
     
     username = user ? user.username : username;
-    logger.debug([username, "filtercards", "starting"].join(': '));
+    logger.debug([username, "filtercards", "starting"].join(': '), '');
     var timingInfo = {};
     timingInfo.startMoment = moment();
     var stdDevFilter;
@@ -201,22 +215,29 @@ exports.filterCards = function(logger,
         })
         .flatten()
         .filter(exports.toDisplay)
-        .groupBy(function(card){
-             return [card.type, card.cardDate, card.objectTags.join(','), card.actionTags.join(',')].join('/');
-             })    
-        .map(function(cardsOfSameTypeSameDay){
-            var sorted = _.chain(cardsOfSameTypeSameDay)
-            .sortBy(function(c){
-                return c.position;
-            })
-            .sortBy(function(c){
-                return 0 - c.sampleCorrectedStdDev; 
-            }).value();
-            var result = _.chain(sorted)
-            .first()
+        .value();
+
+        
+        /*jshint loopfunc: true */
+        var depthFromBottomToGroupBy = 1;
+        while(filteredPositions.length > 30){
+            filteredPositions = 
+            _.chain(filteredPositions)
+            .groupBy(function(card){
+                var propertyParts = card.propertyName.split('.');
+                var sliceLength = Math.max(2, propertyParts.length - depthFromBottomToGroupBy);
+                var propertyName = propertyParts.slice(0, sliceLength).join('.');
+                return [card.type, card.cardDate, card.objectTags.join(','), card.actionTags.join(','), propertyName].join('/');
+            })    
+            .map(getMostDeviatingHighestPositionCard)
             .value();
-            return result;
-        })   
+
+            depthFromBottomToGroupBy++;
+        }
+        /*jshint loopfunc: false */
+
+        filteredPositions = 
+        _.chain(filteredPositions)
         .groupBy(function(card){
             return card.cardDate;
         }) 
@@ -232,7 +253,6 @@ exports.filterCards = function(logger,
         .sortBy(function(card){
             return card.cardDate;
         })
-        
         .value();
 
         result = filteredPositions;

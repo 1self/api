@@ -484,6 +484,54 @@ it('all cards are returned without filtering', function () {
       }
     ];
 
+    // we need more than 30 cards to trigger progressive filtering
+    for (var i = 30; i > 0; i--) {
+        // each newCard gets a property name based upon the i
+        var newCard =   { 
+        "_id" : new ObjectId("565c89a1915fac784cbb8b06"), 
+        "userId" : new ObjectId("5630e6db66bc05e1cd61f85b"), 
+        "type" : "top10", 
+        "outOf" : 1, 
+        "thumbnailMedia" : "chart.html", 
+        "startRange" : "2015-03-27", 
+        "endRange" : "2015-03-27", 
+        "objectTags" : [
+            "computer", 
+            "git", 
+            "github", 
+            "software", 
+            "source-control"
+        ], 
+        "actionTags" : [
+            "merge"
+        ], 
+        "position" : 0, 
+        "properties" : {
+            "sum" : {
+                "repo" : {
+                    "1self/anotherRepo" : {
+                        "line-deletions" : 1
+                    }
+                }
+            }
+        }, 
+        "propertyName" : "line-deletions.sum.repo.1self/anotherRepo" + i, 
+        "stdDev" : 7, 
+        "correctedStdDev" : 6.5, 
+        "sampleStdDev" : 1.7071067811865475,                    // samplestddev is higher than the first
+        "sampleCorrectedStdDev" : 1.7071067811865475,           // sampleCorrectedStdDev is higher than the first
+        "mean" : 3, 
+        "variance" : -2, 
+        "value" : 1, 
+        "sortingValue" : 1, 
+        "cardDate" : "2015-03-27", 
+        "generatedDate" : "2015-11-30T17:38:41.952Z", 
+        "chart" : "/v1/users/edf/rollups/day/computer,git,github,software,source-control/merge/sum.repo.1self%2FanotherRepo.line-deletions/.json", 
+        "published" : true
+      };
+        cards.push(newCard);
+    }
+
     var username = 'test';
     var user = {
       username: username
