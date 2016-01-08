@@ -24,6 +24,8 @@ var scopedLogger = require('./scopedLogger');
 var conceal = require('concealotron');
 var cardFilters = require('./cardFilters.js');
 var integrations = require('./integrations.js');
+var jsonStream = require('JSONStream');
+var Transform = require('stream').Transform;
 
 var CONTEXT_URI = process.env.CONTEXT_URI;
 var LOGGING_DIR = process.env.LOGGINGDIR;
@@ -1783,36 +1785,67 @@ app.post('/v1/streams/:streamid/events/batch',
     saveBatch);
 
 app.get('/live/devbuild/:durationMins', function (req, res) {
+    console.log("live devbuild");
     var durationMins = req.params.durationMins;
     var selectedEventType = req.query.eventType;
     var selectedLanguage = req.query.lang;
     var dateNow = new Date();
     var cutoff = new Date(dateNow - (durationMins * 1000 * 60));
 
-    var filterSpec = {
+    // var filterSpec = {
+    //     "payload.eventDateTime": {
+    //         "$gte": {
+    //             "$date": moment(cutoff).toISOString()
+    //         }
+    //     },
+    //     "payload.actionTags": ["Build", "wtf", "create"]
+    // };
+    // if (selectedEventType) {
+    //     filterSpec["payload.actionTags"] = selectedEventType;
+    // }
+    // if (selectedLanguage) {
+    //     filterSpec["payload.properties.Language"] = selectedLanguage;
+    // }
+    // var query = {
+    //     'filterSpec': JSON.stringify(filterSpec)
+    // };
+    // platformService.filter(query)
+    //     .then(function (result) {
+    //         res.send(result);
+    //     }, function (err) {
+    //         logger.error('/live/devbuild', 'Something went wrong!', err);
+    //         res.status(500).send("Something went wrong!");
+    //     });
+
+    var condition = {
         "payload.eventDateTime": {
-            "$gte": {
-                "$date": moment(cutoff).toISOString()
-            }
+            "$gte": cutoff
         },
-        "payload.actionTags": ["Build", "wtf", "create"]
     };
+
     if (selectedEventType) {
-        filterSpec["payload.actionTags"] = selectedEventType;
+        condition["payload.actionTags"] = selectedEventType;
     }
+
     if (selectedLanguage) {
-        filterSpec["payload.properties.Language"] = selectedLanguage;
+        condition["payload.properties.Language"] = selectedLanguage;
     }
-    var query = {
-        'filterSpec': JSON.stringify(filterSpec)
+
+    var payloadUnpacker = new Transform({ objectMode: true });
+    payloadUnpacker._transform = function(data, encoding, done) {
+        this.push(data.payload);
+        done();
     };
-    platformService.filter(query)
-        .then(function (result) {
-            res.send(result);
-        }, function (err) {
-            logger.error('/live/devbuild', 'Something went wrong!', err);
-            res.status(500).send("Something went wrong!");
-        });
+
+    eventRepository.findCursor('oneself', condition)
+    .then(function(cursor){
+        var stream = cursor.stream();
+        stream.pipe(payloadUnpacker);
+        var jsonStreamer = jsonStream.stringify();
+        payloadUnpacker.pipe(jsonStreamer);
+        jsonStreamer.pipe(res);
+    })
+    .done();
 });
 
 app.get('/quantifieddev/mydev', function (req, res) {

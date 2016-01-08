@@ -2,6 +2,7 @@
   "name": "QuantifiedDev",
   "version": "0.0.1",
   "dependencies": {
+    "JSONStream": "^1.0.7",
     "basic-auth": "^1.0.3",
     "body-parser": "~1.6.5",
     "cheerio": "0.12.3",
