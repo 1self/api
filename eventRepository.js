@@ -196,6 +196,23 @@ var aggregate = function (collection, pipeline, options) {
     return deferred.promise;
 };
 
+var aggregateCursor = function (collection, pipeline, options) {
+    options.cursor = {
+        batchSize: 100
+    };
+
+    var deferred = q.defer();
+    options = defaultFor(options, {});
+    eventDbConnection(function (eventDb) {
+        var cursor = eventDb.collection(collection).aggregate(pipeline, options);
+        deferred.resolve(cursor);
+
+    });
+    return deferred.promise;
+};
+
+
+
 exports.aggregate = aggregate;
 exports.insert = insert;
 exports.find = find;
@@ -205,3 +222,4 @@ exports.update = update;
 exports.count = count;
 exports.remove = remove;
 exports.findCursor = findCursor;
+exports.aggregateCursor = aggregateCursor;

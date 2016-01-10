@@ -120,9 +120,9 @@ var periodMap = {
     hourOfDay: "e HH"
 };
 
-var convertSecsToMinutes = function (seconds) {
-    return Math.round(seconds / 60 * 100) / 100;
-};
+// var convertSecsToMinutes = function (seconds) {
+//     return Math.round(seconds / 60 * 100) / 100;
+// };
 
 var validateEncodedUsername = function (encodedUsername, username) {
     var deferred = q.defer();
@@ -251,89 +251,89 @@ var saveEvent = function (req, res) {
         });
 };
 
-var generateDatesFor = function (defaultValues) {
-    var result = {};
-    var numberOfDaysToReportBuildsOn = 30;
-    var currentDate = new Date();
-    var aDay = 24 * 60 * 60 * 1000;
-    var startDate = new Date(currentDate - (30 * aDay));
-    for (var i = 0; i <= numberOfDaysToReportBuildsOn; i++) {
-        var eachDay = startDate - 0 + (i * aDay);
-        eachDay = new Date(eachDay);
-        var month = eachDay.getMonth() + 1;
-        if (month < 10) {
-            month = '0' + month;
-        }
-        var day = eachDay.getDate();
-        if (day < 10) {
-            day = '0' + day;
-        }
-        var dateKey = (month) + '/' + day + '/' + eachDay.getFullYear();
-        result[dateKey] = {
-            date: dateKey
-        };
+// var generateDatesFor = function (defaultValues) {
+//     var result = {};
+//     var numberOfDaysToReportBuildsOn = 30;
+//     var currentDate = new Date();
+//     var aDay = 24 * 60 * 60 * 1000;
+//     var startDate = new Date(currentDate - (30 * aDay));
+//     for (var i = 0; i <= numberOfDaysToReportBuildsOn; i++) {
+//         var eachDay = startDate - 0 + (i * aDay);
+//         eachDay = new Date(eachDay);
+//         var month = eachDay.getMonth() + 1;
+//         if (month < 10) {
+//             month = '0' + month;
+//         }
+//         var day = eachDay.getDate();
+//         if (day < 10) {
+//             day = '0' + day;
+//         }
+//         var dateKey = (month) + '/' + day + '/' + eachDay.getFullYear();
+//         result[dateKey] = {
+//             date: dateKey
+//         };
 
-        for (var index in defaultValues) {
-            result[dateKey][defaultValues[index].key] = defaultValues[index].value;
-        }
-    }
-    return result;
-};
+//         for (var index in defaultValues) {
+//             result[dateKey][defaultValues[index].key] = defaultValues[index].value;
+//         }
+//     }
+//     return result;
+// };
 
-var rollupToArray = function (rollup) {
-    var result = [];
-    for (var r in rollup) {
-        result.push(rollup[r]);
-    }
-    return result;
-};
+// var rollupToArray = function (rollup) {
+//     var result = [];
+//     for (var r in rollup) {
+//         result.push(rollup[r]);
+//     }
+//     return result;
+// };
 
-var groupByOnParametersForLastMonth = function (streamids, actionTag, objectTag) {
-    var lastMonth = moment().subtract('months', 1);
-    return {
-        "$groupBy": {
-            "fields": [
-                {
-                    "name": "payload.eventDateTime",
-                    "format": "MM/dd/yyyy"
-                }
-            ],
-            "filterSpec": {
-                "payload.streamid": {
-                    "$operator": {
-                        "in": streamids
-                    }
-                },
-                "payload.eventDateTime": {
-                    "$operator": {
-                        ">": {
-                            "$date": moment(lastMonth).toISOString()
-                        }
-                    }
-                },
-                "payload.actionTags": actionTag,
-                "payload.objectTags": objectTag
-            },
-            "projectionSpec": {
-                "payload.eventDateTime": "date",
-                "payload.properties": "properties"
-            },
-            "orderSpec": {}
-        }
-    };
-};
+// var groupByOnParametersForLastMonth = function (streamids, actionTag, objectTag) {
+//     var lastMonth = moment().subtract('months', 1);
+//     return {
+//         "$groupBy": {
+//             "fields": [
+//                 {
+//                     "name": "payload.eventDateTime",
+//                     "format": "MM/dd/yyyy"
+//                 }
+//             ],
+//             "filterSpec": {
+//                 "payload.streamid": {
+//                     "$operator": {
+//                         "in": streamids
+//                     }
+//                 },
+//                 "payload.eventDateTime": {
+//                     "$operator": {
+//                         ">": {
+//                             "$date": moment(lastMonth).toISOString()
+//                         }
+//                     }
+//                 },
+//                 "payload.actionTags": actionTag,
+//                 "payload.objectTags": objectTag
+//             },
+//             "projectionSpec": {
+//                 "payload.eventDateTime": "date",
+//                 "payload.properties": "properties"
+//             },
+//             "orderSpec": {}
+//         }
+//     };
+// };
 
-var countOnParameters = function (groupQuery, filterSpec, resultField) {
-    return {
-        "$count": {
-            "data": groupQuery,
-            "filterSpec": filterSpec,
-            "projectionSpec": {
-                "resultField": resultField
-            }
-        }
-    };
-};
+// var countOnParameters = function (groupQuery, filterSpec, resultField) {
+//     return {
+//         "$count": {
+//             "data": groupQuery,
+//             "filterSpec": filterSpec,
+//             "projectionSpec": {
+//                 "resultField": resultField
+//             }
+//         }
+//     };
+// };
 
 var transformPlatformDataToQDEvents = function (result) {
     return _.map(result, function (valueJson, date) {
@@ -348,352 +348,353 @@ var transformPlatformDataToQDEvents = function (result) {
     });
 };
 
-var getBuildEventsFromPlatform = function (streams) {
-    var deferred = q.defer();
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var groupQuery = groupByOnParametersForLastMonth(streamids, "Finish");
-    var countSuccessQuery = countOnParameters(groupQuery, {"properties.Result": "Success"}, "passed");
-    var countFailureQuery = countOnParameters(groupQuery, {"properties.Result": "Failure"}, "failed");
-    var query = {
-        spec: JSON.stringify([countSuccessQuery, countFailureQuery]),
-        merge: true
-    };
-    var processResult = function (result) {
-        if (_.isEmpty(result)) {
-            deferred.resolve([]);
-        } else {
-            var defaultBuildValues = [
-                {
-                    key: "passed",
-                    value: 0
-                },
-                {
-                    key: "failed",
-                    value: 0
-                }
-            ];
-            var buildsByDay = generateDatesFor(defaultBuildValues);
-            for (var date in result) {
-                if (buildsByDay[date] !== undefined) {
-                    buildsByDay[date].passed = result[date].passed;
-                    buildsByDay[date].failed = result[date].failed;
-                }
-            }
-            deferred.resolve(rollupToArray(buildsByDay));
-        }
-    };
-    platformService.aggregate(query)
-        .then(processResult, function (err) {
-            deferred.reject(err);
-        });
-    return deferred.promise;
-};
+// var getBuildEventsFromPlatform = function (streams) {
+//     var deferred = q.defer();
+//     var streamids = _.map(streams, function (stream) {
+//         return stream.streamid;
+//     });
+//     var groupQuery = groupByOnParametersForLastMonth(streamids, "Finish");
+//     var countSuccessQuery = countOnParameters(groupQuery, {"properties.Result": "Success"}, "passed");
+//     var countFailureQuery = countOnParameters(groupQuery, {"properties.Result": "Failure"}, "failed");
+//     var query = {
+//         spec: JSON.stringify([countSuccessQuery, countFailureQuery]),
+//         merge: true
+//     };
+//     var processResult = function (result) {
+//         if (_.isEmpty(result)) {
+//             deferred.resolve([]);
+//         } else {
+//             var defaultBuildValues = [
+//                 {
+//                     key: "passed",
+//                     value: 0
+//                 },
+//                 {
+//                     key: "failed",
+//                     value: 0
+//                 }
+//             ];
+//             var buildsByDay = generateDatesFor(defaultBuildValues);
+//             for (var date in result) {
+//                 if (buildsByDay[date] !== undefined) {
+//                     buildsByDay[date].passed = result[date].passed;
+//                     buildsByDay[date].failed = result[date].failed;
+//                 }
+//             }
+//             deferred.resolve(rollupToArray(buildsByDay));
+//         }
+//     };
+//     platformService.aggregate(query)
+//         .then(processResult, function (err) {
+//             deferred.reject(err);
+//         });
+//     return deferred.promise;
+// };
 
-var generateWeek = function (defaultValues) {
-    var result = {};
-    var numberOfDaysToReportBuildsOn = 7;
-    for (var i = 1; i <= numberOfDaysToReportBuildsOn; i++) {
-        var day = i;
-        result[day] = {
-            day: day
-        };
-        for (var index in defaultValues) {
-            result[day][defaultValues[index].key] = defaultValues[index].value;
-        }
-    }
-    return result;
-};
+// var generateWeek = function (defaultValues) {
+//     var result = {};
+//     var numberOfDaysToReportBuildsOn = 7;
+//     for (var i = 1; i <= numberOfDaysToReportBuildsOn; i++) {
+//         var day = i;
+//         result[day] = {
+//             day: day
+//         };
+//         for (var index in defaultValues) {
+//             result[day][defaultValues[index].key] = defaultValues[index].value;
+//         }
+//     }
+//     return result;
+// };
 
-var getTotalUsersOfQd = function (streams) {
-    var deferred = q.defer();
-    mongoRepository.count('users', {})
-        .then(function (count) {
-            deferred.resolve([count, streams]);
-        }, function (err) {
-            deferred.reject(err);
-        });
-    return deferred.promise;
-};
+// var getTotalUsersOfQd = function (streams) {
+//     var deferred = q.defer();
+//     mongoRepository.count('users', {})
+//         .then(function (count) {
+//             deferred.resolve([count, streams]);
+//         }, function (err) {
+//             deferred.reject(err);
+//         });
+//     return deferred.promise;
+// };
 
-var getGithubPushEventCountForCompare = function (params) {
-    var deferred = q.defer();
-    var lastMonth = moment().subtract('months', 1);
-    var totalUsers = params[0];
-    var streams = params[1];
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var groupBy = function (filterSpecValue) {
-        return {
-            "$groupBy": {
-                "fields": [
-                    {
-                        "name": "payload.eventDateTime",
-                        "format": "MM/dd/yyyy"
-                    }
-                ],
-                "filterSpec": filterSpecValue,
-                "projectionSpec": {
-                    "payload.eventDateTime": "date",
-                    "payload.properties": "properties"
-                },
-                "orderSpec": {}
-            }
-        };
-    };
-    var myGithubPushEventGroupQuery = groupBy({
-        "payload.streamid": {
-            "$operator": {
-                "in": streamids
-            }
-        },
-        "payload.eventDateTime": {
-            "$operator": {
-                ">": {
-                    "$date": moment(lastMonth).toISOString()
-                }
-            }
-        },
-        "payload.actionTags": "Push"
-    });
-    var theirGithubPushEventGroupQuery = groupBy({
-        "payload.streamid": {
-            "$operator": {
-                "nin": streamids
-            }
-        },
-        "payload.eventDateTime": {
-            "$operator": {
-                ">": {
-                    "$date": moment(lastMonth).toISOString()
-                }
-            }
-        },
-        "payload.actionTags": "Push"
-    });
-    var myGithubPushEventCount = countOnParameters(myGithubPushEventGroupQuery, {}, "myGithubPushEventCount");
-    var theirGithubPushEventCount = countOnParameters(theirGithubPushEventGroupQuery, {}, "theirGithubPushEventCount");
+// var getGithubPushEventCountForCompare = function (params) {
+//     var deferred = q.defer();
+//     var lastMonth = moment().subtract('months', 1);
+//     var totalUsers = params[0];
+//     var streams = params[1];
+//     var streamids = _.map(streams, function (stream) {
+//         return stream.streamid;
+//     });
+//     var groupBy = function (filterSpecValue) {
+//         return {
+//             "$groupBy": {
+//                 "fields": [
+//                     {
+//                         "name": "payload.eventDateTime",
+//                         "format": "MM/dd/yyyy"
+//                     }
+//                 ],
+//                 "filterSpec": filterSpecValue,
+//                 "projectionSpec": {
+//                     "payload.eventDateTime": "date",
+//                     "payload.properties": "properties"
+//                 },
+//                 "orderSpec": {}
+//             }
+//         };
+//     };
+//     var myGithubPushEventGroupQuery = groupBy({
+//         "payload.streamid": {
+//             "$operator": {
+//                 "in": streamids
+//             }
+//         },
+//         "payload.eventDateTime": {
+//             "$operator": {
+//                 ">": {
+//                     "$date": moment(lastMonth).toISOString()
+//                 }
+//             }
+//         },
+//         "payload.actionTags": "Push"
+//     });
 
-    var query = {
-        spec: JSON.stringify([myGithubPushEventCount, theirGithubPushEventCount]),
-        merge: true
-    };
-    var processResult = function (result) {
-        if (_.isEmpty(result)) {
-            deferred.resolve([]);
-        }
-        var defaultGithubPushEventsForCompare = [
-            {
-                key: "my",
-                value: 0
-            },
-            {
-                key: "avg",
-                value: 0
-            }
-        ];
-        var githubPushEventsForCompare = generateDatesFor(defaultGithubPushEventsForCompare);
-        for (var date in result) {
-            if (githubPushEventsForCompare[date] !== undefined) {
-                if (result[date].myGithubPushEventCount === undefined) {
-                    result[date].myGithubPushEventCount = 0;
-                }
-                if (result[date].theirGithubPushEventCount === undefined) {
-                    result[date].theirGithubPushEventCount = 0;
-                }
-                githubPushEventsForCompare[date].my = result[date].myGithubPushEventCount;
-                githubPushEventsForCompare[date].avg = result[date].theirGithubPushEventCount / (totalUsers - 1);
-            }
-        }
-        deferred.resolve(rollupToArray(githubPushEventsForCompare));
-    };
-    platformService.aggregate(query)
-        .then(processResult, function (err) {
-            deferred.reject(err);
-        });
+//     var theirGithubPushEventGroupQuery = groupBy({
+//         "payload.streamid": {
+//             "$operator": {
+//                 "nin": streamids
+//             }
+//         },
+//         "payload.eventDateTime": {
+//             "$operator": {
+//                 ">": {
+//                     "$date": moment(lastMonth).toISOString()
+//                 }
+//             }
+//         },
+//         "payload.actionTags": "Push"
+//     });
+//     var myGithubPushEventCount = countOnParameters(myGithubPushEventGroupQuery, {}, "myGithubPushEventCount");
+//     var theirGithubPushEventCount = countOnParameters(theirGithubPushEventGroupQuery, {}, "theirGithubPushEventCount");
 
-    return deferred.promise;
-};
+//     var query = {
+//         spec: JSON.stringify([myGithubPushEventCount, theirGithubPushEventCount]),
+//         merge: true
+//     };
+//     var processResult = function (result) {
+//         if (_.isEmpty(result)) {
+//             deferred.resolve([]);
+//         }
+//         var defaultGithubPushEventsForCompare = [
+//             {
+//                 key: "my",
+//                 value: 0
+//             },
+//             {
+//                 key: "avg",
+//                 value: 0
+//             }
+//         ];
+//         var githubPushEventsForCompare = generateDatesFor(defaultGithubPushEventsForCompare);
+//         for (var date in result) {
+//             if (githubPushEventsForCompare[date] !== undefined) {
+//                 if (result[date].myGithubPushEventCount === undefined) {
+//                     result[date].myGithubPushEventCount = 0;
+//                 }
+//                 if (result[date].theirGithubPushEventCount === undefined) {
+//                     result[date].theirGithubPushEventCount = 0;
+//                 }
+//                 githubPushEventsForCompare[date].my = result[date].myGithubPushEventCount;
+//                 githubPushEventsForCompare[date].avg = result[date].theirGithubPushEventCount / (totalUsers - 1);
+//             }
+//         }
+//         deferred.resolve(rollupToArray(githubPushEventsForCompare));
+//     };
+//     platformService.aggregate(query)
+//         .then(processResult, function (err) {
+//             deferred.reject(err);
+//         });
 
-var getIdeActivityDurationForCompare = function (params) {
-    var deferred = q.defer();
-    var lastMonth = moment().subtract('months', 1);
-    var totalUsers = params[0];
-    var streams = params[1];
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var groupBy = function (filterSpecValue) {
-        return {
-            "$groupBy": {
-                "fields": [
-                    {
-                        "name": "payload.eventDateTime",
-                        "format": "MM/dd/yyyy"
-                    }
-                ],
-                "filterSpec": filterSpecValue,
-                "projectionSpec": {
-                    "payload.eventDateTime": "date",
-                    "payload.properties": "properties"
-                },
-                "orderSpec": {}
-            }
-        };
-    };
-    var myIdeActivityDuration = {
-        "$sum": {
-            "field": {
-                "name": "properties.duration"
-            },
-            "data": groupBy({
-                "payload.streamid": {
-                    "$operator": {
-                        "in": streamids
-                    }
-                },
-                "payload.eventDateTime": {
-                    "$operator": {
-                        ">": {
-                            "$date": moment(lastMonth).toISOString()
-                        }
-                    }
-                },
-                "payload.actionTags": "Develop"
-            }),
-            "filterSpec": {},
-            "projectionSpec": {
-                "resultField": "myIdeActivityDuration"
-            }
-        }
-    };
+//     return deferred.promise;
+// };
 
-    var restOfTheWorldIdeActivityDuration = {
-        "$sum": {
-            "field": {
-                "name": "properties.duration"
-            },
-            "data": groupBy({
-                "payload.streamid": {
-                    "$operator": {
-                        "nin": streamids
-                    }
-                },
-                "payload.eventDateTime": {
-                    "$operator": {
-                        ">": {
-                            "$date": moment(lastMonth).toISOString()
-                        }
-                    }
-                },
-                "payload.actionTags": "Develop"
-            }),
-            "filterSpec": {},
-            "projectionSpec": {
-                "resultField": "restOfTheWorldIdeActivityDuration"
-            }
-        }
-    };
-    var query = {
-        spec: JSON.stringify([myIdeActivityDuration, restOfTheWorldIdeActivityDuration]),
-        merge: true
-    };
-    var processResult = function (result) {
-        var defaultIdeActivityDurationForCompare = [
-            {
-                key: "my",
-                value: 0
-            },
-            {
-                key: "avg",
-                value: 0
-            }
-        ];
-        var ideActivityDurationForCompare = generateDatesFor(defaultIdeActivityDurationForCompare);
-        for (var date in result) {
-            if (ideActivityDurationForCompare[date] !== undefined) {
-                if (result[date].myIdeActivityDuration === undefined) {
-                    result[date].myIdeActivityDuration = 0;
-                }
-                if (result[date].restOfTheWorldIdeActivityDuration === undefined) {
-                    result[date].restOfTheWorldIdeActivityDuration = 0;
-                }
-                ideActivityDurationForCompare[date].my = convertSecsToMinutes(result[date].myIdeActivityDuration);
-                var durationInMins = convertSecsToMinutes(result[date].restOfTheWorldIdeActivityDuration);
-                ideActivityDurationForCompare[date].avg = durationInMins / (totalUsers - 1);
-            }
-        }
-        deferred.resolve(rollupToArray(ideActivityDurationForCompare));
-    };
-    platformService.aggregate(query)
-        .then(processResult, function (err) {
-            deferred.reject(err);
-        });
-    return deferred.promise;
-};
+// var getIdeActivityDurationForCompare = function (params) {
+//     var deferred = q.defer();
+//     var lastMonth = moment().subtract('months', 1);
+//     var totalUsers = params[0];
+//     var streams = params[1];
+//     var streamids = _.map(streams, function (stream) {
+//         return stream.streamid;
+//     });
+//     var groupBy = function (filterSpecValue) {
+//         return {
+//             "$groupBy": {
+//                 "fields": [
+//                     {
+//                         "name": "payload.eventDateTime",
+//                         "format": "MM/dd/yyyy"
+//                     }
+//                 ],
+//                 "filterSpec": filterSpecValue,
+//                 "projectionSpec": {
+//                     "payload.eventDateTime": "date",
+//                     "payload.properties": "properties"
+//                 },
+//                 "orderSpec": {}
+//             }
+//         };
+//     };
+//     var myIdeActivityDuration = {
+//         "$sum": {
+//             "field": {
+//                 "name": "properties.duration"
+//             },
+//             "data": groupBy({
+//                 "payload.streamid": {
+//                     "$operator": {
+//                         "in": streamids
+//                     }
+//                 },
+//                 "payload.eventDateTime": {
+//                     "$operator": {
+//                         ">": {
+//                             "$date": moment(lastMonth).toISOString()
+//                         }
+//                     }
+//                 },
+//                 "payload.actionTags": "Develop"
+//             }),
+//             "filterSpec": {},
+//             "projectionSpec": {
+//                 "resultField": "myIdeActivityDuration"
+//             }
+//         }
+//     };
 
-var getDailyGithubPushEventsCount = function (streams) {
-    var deferred = q.defer();
-    var streamids = _.map(streams, function (stream) {
-        return stream.streamid;
-    });
-    var groupQuery = {
-        "$groupBy": {
-            "fields": [
-                {
-                    "name": "payload.eventDateTime",
-                    "format": "e"
-                }
-            ],
-            "filterSpec": {
-                "payload.streamid": {
-                    "$operator": {
-                        "in": streamids
-                    }
-                },
-                "payload.actionTags": "Push"
-            },
-            "projectionSpec": {
-                "payload.eventDateTime": "date",
-                "payload.properties": "properties"
-            },
-            "orderSpec": {}
-        }
-    };
-    var dailyGithubPushEventCount = countOnParameters(groupQuery, {}, "githubPushEventCount");
+//     var restOfTheWorldIdeActivityDuration = {
+//         "$sum": {
+//             "field": {
+//                 "name": "properties.duration"
+//             },
+//             "data": groupBy({
+//                 "payload.streamid": {
+//                     "$operator": {
+//                         "nin": streamids
+//                     }
+//                 },
+//                 "payload.eventDateTime": {
+//                     "$operator": {
+//                         ">": {
+//                             "$date": moment(lastMonth).toISOString()
+//                         }
+//                     }
+//                 },
+//                 "payload.actionTags": "Develop"
+//             }),
+//             "filterSpec": {},
+//             "projectionSpec": {
+//                 "resultField": "restOfTheWorldIdeActivityDuration"
+//             }
+//         }
+//     };
+//     var query = {
+//         spec: JSON.stringify([myIdeActivityDuration, restOfTheWorldIdeActivityDuration]),
+//         merge: true
+//     };
+//     var processResult = function (result) {
+//         var defaultIdeActivityDurationForCompare = [
+//             {
+//                 key: "my",
+//                 value: 0
+//             },
+//             {
+//                 key: "avg",
+//                 value: 0
+//             }
+//         ];
+//         var ideActivityDurationForCompare = generateDatesFor(defaultIdeActivityDurationForCompare);
+//         for (var date in result) {
+//             if (ideActivityDurationForCompare[date] !== undefined) {
+//                 if (result[date].myIdeActivityDuration === undefined) {
+//                     result[date].myIdeActivityDuration = 0;
+//                 }
+//                 if (result[date].restOfTheWorldIdeActivityDuration === undefined) {
+//                     result[date].restOfTheWorldIdeActivityDuration = 0;
+//                 }
+//                 ideActivityDurationForCompare[date].my = convertSecsToMinutes(result[date].myIdeActivityDuration);
+//                 var durationInMins = convertSecsToMinutes(result[date].restOfTheWorldIdeActivityDuration);
+//                 ideActivityDurationForCompare[date].avg = durationInMins / (totalUsers - 1);
+//             }
+//         }
+//         deferred.resolve(rollupToArray(ideActivityDurationForCompare));
+//     };
+//     platformService.aggregate(query)
+//         .then(processResult, function (err) {
+//             deferred.reject(err);
+//         });
+//     return deferred.promise;
+// };
 
-    var query = {
-        spec: JSON.stringify(dailyGithubPushEventCount)
-    };
-    var processResult = function (result) {
-        result = result[0];
-        if (_.isEmpty(result)) {
-            deferred.resolve([]);
-        }
-        var defaultEventValues = [
-            {
-                key: "dailyEventCount",
-                value: 0
-            }
-        ];
-        var dailyGithubPushEvents = generateWeek(defaultEventValues);
-        for (var date in result) {
-            if (dailyGithubPushEvents[date] !== undefined) {
-                dailyGithubPushEvents[date].dailyEventCount = result[date].githubPushEventCount;
-            }
-        }
-        deferred.resolve(rollupToArray(dailyGithubPushEvents));
-    };
+// var getDailyGithubPushEventsCount = function (streams) {
+//     var deferred = q.defer();
+//     var streamids = _.map(streams, function (stream) {
+//         return stream.streamid;
+//     });
+//     var groupQuery = {
+//         "$groupBy": {
+//             "fields": [
+//                 {
+//                     "name": "payload.eventDateTime",
+//                     "format": "e"
+//                 }
+//             ],
+//             "filterSpec": {
+//                 "payload.streamid": {
+//                     "$operator": {
+//                         "in": streamids
+//                     }
+//                 },
+//                 "payload.actionTags": "Push"
+//             },
+//             "projectionSpec": {
+//                 "payload.eventDateTime": "date",
+//                 "payload.properties": "properties"
+//             },
+//             "orderSpec": {}
+//         }
+//     };
+//     var dailyGithubPushEventCount = countOnParameters(groupQuery, {}, "githubPushEventCount");
 
-    platformService.aggregate(query)
-        .then(processResult, function (err) {
-            deferred.reject(err);
-        });
+//     var query = {
+//         spec: JSON.stringify(dailyGithubPushEventCount)
+//     };
+//     var processResult = function (result) {
+//         result = result[0];
+//         if (_.isEmpty(result)) {
+//             deferred.resolve([]);
+//         }
+//         var defaultEventValues = [
+//             {
+//                 key: "dailyEventCount",
+//                 value: 0
+//             }
+//         ];
+//         var dailyGithubPushEvents = generateWeek(defaultEventValues);
+//         for (var date in result) {
+//             if (dailyGithubPushEvents[date] !== undefined) {
+//                 dailyGithubPushEvents[date].dailyEventCount = result[date].githubPushEventCount;
+//             }
+//         }
+//         deferred.resolve(rollupToArray(dailyGithubPushEvents));
+//     };
 
-    return deferred.promise;
-};
+//     platformService.aggregate(query)
+//         .then(processResult, function (err) {
+//             deferred.reject(err);
+//         });
+
+//     return deferred.promise;
+// };
 
 app.get('/', function (request, response) {
     response.redirect('/timeline');
@@ -1849,77 +1850,85 @@ app.get('/live/devbuild/:durationMins', function (req, res) {
 });
 
 app.get('/quantifieddev/mydev', function (req, res) {
-    var encodedUsername = req.headers.authorization;
-    var forUsername = req.query.forUsername;
-    validateEncodedUsername(encodedUsername)
-        .then(function () {
-            return getStreamIdForUsername(encodedUsername, forUsername);
-        })
-        .then(getBuildEventsFromPlatform)
-        .then(function (response) {
-            res.send(response);
-        }).catch(function (error) {
-            console.log("error during fetching /mydev data ", error);
-            res.status(404).send("cannot fetch mydev data");
-        });
+    res.send([]);
+    // var encodedUsername = req.headers.authorization;
+    // var forUsername = req.query.forUsername;
+    // validateEncodedUsername(encodedUsername)
+    //     .then(function () {
+    //         return getStreamIdForUsername(encodedUsername, forUsername);
+    //     })
+    //     .then(getBuildEventsFromPlatform)
+    //     .then(function (response) {
+    //         res.send(response);
+    //     }).catch(function (error) {
+    //         console.log("error during fetching /mydev data ", error);
+    //         res.status(404).send("cannot fetch mydev data");
+    //     });
 });
 
 app.get('/quantifieddev/githubPushEventForCompare', function (req, res) {
-    var encodedUsername = req.headers.authorization;
-    validateEncodedUsername(encodedUsername)
-        .then(function () {
-            return getStreamIdForUsername(encodedUsername, req.query.forUsername);
-        })
-        .then(getTotalUsersOfQd)
-        .then(getGithubPushEventCountForCompare)
-        .then(function (response) {
-            res.send(response);
-        }).catch(function (error) {
-            logger.debug(conceal(encodedUsername), "stream not found", error);
-            res.status(404).send("stream not found");
-        });
+    res.send([]);
+    // var encodedUsername = req.headers.authorization;
+    // validateEncodedUsername(encodedUsername)
+    //     .then(function () {
+    //         return getStreamIdForUsername(encodedUsername, req.query.forUsername);
+    //     })
+    //     .then(getTotalUsersOfQd)
+    //     .then(getGithubPushEventCountForCompare)
+    //     .then(function (response) {
+    //         res.send(response);
+    //     }).catch(function (error) {
+    //         logger.debug(conceal(encodedUsername), "stream not found", error);
+    //         res.status(404).send("stream not found");
+    //     });
 });
 
 app.get('/quantifieddev/compare/ideActivity', function (req, res) {
-    var encodedUsername = req.headers.authorization;
-    var forUsername = req.query.forUsername;
-    validateEncodedUsername(encodedUsername)
-        .then(function () {
-            return getStreamIdForUsername(encodedUsername, forUsername);
-        }).then(getTotalUsersOfQd)
-        .then(getIdeActivityDurationForCompare)
-        .then(function (response) {
-            console.log("Ide Activity For compare: ", JSON.stringify(response));
-            res.send(response);
-        }).catch(function (error) {
-            logger.debug(conceal(encodedUsername), "stream not found", error);
-            res.status(404).send("stream not found");
-        });
+    res.send({
+        "my": [],
+        "avg": []
+    });
+
+    // var encodedUsername = req.headers.authorization;
+    // var forUsername = req.query.forUsername;
+    // validateEncodedUsername(encodedUsername)
+    //     .then(function () {
+    //         return getStreamIdForUsername(encodedUsername, forUsername);
+    //     }).then(getTotalUsersOfQd)
+    //     .then(getIdeActivityDurationForCompare)
+    //     .then(function (response) {
+    //         console.log("Ide Activity For compare: ", JSON.stringify(response));
+    //         res.send(response);
+    //     }).catch(function (error) {
+    //         logger.debug(conceal(encodedUsername), "stream not found", error);
+    //         res.status(404).send("stream not found");
+    //     });
 });
 
 app.get('/quantifieddev/dailyGithubPushEvents', function (req, res) {
-    var encodedUsername = req.headers.authorization;
-    validateEncodedUsername(encodedUsername)
-        .then(function () {
-            return getStreamIdForUsername(encodedUsername, req.query.forUsername);
-        })
-        .then(getDailyGithubPushEventsCount)
-        .then(function (response) {
-            res.send(response);
-        }).catch(function (error) {
-            console.log("Error is", error);
-            res.status(404).send("stream not found");
-        });
+    res.send([]);
+    // var encodedUsername = req.headers.authorization;
+    // validateEncodedUsername(encodedUsername)
+    //     .then(function () {
+    //         return getStreamIdForUsername(encodedUsername, req.query.forUsername);
+    //     })
+    //     .then(getDailyGithubPushEventsCount)
+    //     .then(function (response) {
+    //         res.send(response);
+    //     }).catch(function (error) {
+    //         console.log("Error is", error);
+    //         res.status(404).send("stream not found");
+    //     });
 });
 
-var getEventParams = function (event) {
-    var eventSplit = event.split("/");
-    return {
-        "objectTags": eventSplit[0],
-        "actionTags": eventSplit[1],
-        "operation": eventSplit[2]
-    };
-};
+// var getEventParams = function (event) {
+//     var eventSplit = event.split("/");
+//     return {
+//         "objectTags": eventSplit[0],
+//         "actionTags": eventSplit[1],
+//         "operation": eventSplit[2]
+//     };
+// };
 
 var getQueryForVisualizationAPI = function (streamIds, params, fromDate, toDate, result) {
     var actionTags = params.actionTags.split(',');
@@ -1995,42 +2004,44 @@ var getQueryForVisualizationAPI = function (streamIds, params, fromDate, toDate,
 
 // /v1/users/:username/correlate/:period/.json?firstEvent=:objectTags/:actionTags/:operation&secondEvent=:objectTags/:actionTags/:operation
     app.get('/v1/users/:username/correlate/:period/type/.json',  validateRequest.validateDateRange, function (req, res) {
-        var firstEvent = req.query.firstEvent;
-        var secondEvent = req.query.secondEvent;
-        var fromDate = req.query.from;
-        var toDate = req.query.to;
-        var username = req.params.username;
+        res.send({});
 
-        var firstEventParams = getEventParams(firstEvent);
-        var secondEventParams = getEventParams(secondEvent);
-        firstEventParams.period = req.params.period;
-        secondEventParams.period = req.params.period;
+        // var firstEvent = req.query.firstEvent;
+        // var secondEvent = req.query.secondEvent;
+        // var fromDate = req.query.from;
+        // var toDate = req.query.to;
+        // var username = req.params.username;
 
-        var encodedUsername = req.headers.authorization;
-        validateEncodedUsername(encodedUsername, username)
-            .then(function () {
-                return getStreamIdForUsername(encodedUsername);
-            })
-            .then(function (streams) {
-                var streamids = _.map(streams, function (stream) {
-                    return stream.streamid;
-                });
-                var firstEventQuery = getQueryForVisualizationAPI(streamids, firstEventParams, fromDate, toDate, "value1");
-                var secondEventQuery = getQueryForVisualizationAPI(streamids, secondEventParams, fromDate, toDate, "value2");
-                var query = {
-                    "spec": JSON.stringify([firstEventQuery, secondEventQuery]),
-                    "merge": true
-                };
-                return query;
-            })
-            .then(platformService.aggregate)
-            .then(transformPlatformDataToQDEvents)
-            .then(function (response) {
-                res.send(response);
-            }).catch(function (error) {
-                logger.debug(conceal(username), 'stream not found', error);
-                res.status(404).send("stream not found");
-            });
+        // var firstEventParams = getEventParams(firstEvent);
+        // var secondEventParams = getEventParams(secondEvent);
+        // firstEventParams.period = req.params.period;
+        // secondEventParams.period = req.params.period;
+
+        // var encodedUsername = req.headers.authorization;
+        // validateEncodedUsername(encodedUsername, username)
+        //     .then(function () {
+        //         return getStreamIdForUsername(encodedUsername);
+        //     })
+        //     .then(function (streams) {
+        //         var streamids = _.map(streams, function (stream) {
+        //             return stream.streamid;
+        //         });
+        //         var firstEventQuery = getQueryForVisualizationAPI(streamids, firstEventParams, fromDate, toDate, "value1");
+        //         var secondEventQuery = getQueryForVisualizationAPI(streamids, secondEventParams, fromDate, toDate, "value2");
+        //         var query = {
+        //             "spec": JSON.stringify([firstEventQuery, secondEventQuery]),
+        //             "merge": true
+        //         };
+        //         return query;
+        //     })
+        //     .then(platformService.aggregate)
+        //     .then(transformPlatformDataToQDEvents)
+        //     .then(function (response) {
+        //         res.send(response);
+        //     }).catch(function (error) {
+        //         logger.debug(conceal(username), 'stream not found', error);
+        //         res.status(404).send("stream not found");
+        //     });
     });
 
 app.get('/quantifieddev/extensions/message', function (req, res) {
@@ -2040,6 +2051,20 @@ app.get('/quantifieddev/extensions/message', function (req, res) {
     res.send(JSON.stringify(result));
 });
 
+var dataTransformers = {
+    daily: function(data, encoding, done) {
+        data.date = data._id;
+        delete data._id;
+        this.push(data);
+        done();
+    },
+    hourOfDay: function(data, encoding, done){
+        data.date = [data._id.day, data._id.hour].join(' ');
+        delete data._id;
+        this.push(data);
+        done();
+    }
+};
 
 //v1/streams/{{streamId}}/events/{{ambient}}/{{sample}}/{{avg/count/sum}}({{:property}})/daily/{{barchart/json}}
 app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period/type/json",
@@ -2048,21 +2073,84 @@ app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period
     function (req, res) {
         console.log("validating");
 
-        var query = getQueryForVisualizationAPI([req.params.streamId], req.params, req.query.from, req.query.to);
-        logger.debug("query for the platform is, ", query);
-        platformService
-            .aggregate({
-                spec: JSON.stringify(query)
-            })
-            .then(function (response) {
-                logger.info("trying to transform events");
-                logger.debug("events from the platform are", response[0]);
-                res.send(transformPlatformDataToQDEvents(response[0]));
-            }).catch(function (error) {
-                console.log("an error occurred retrieving events: " + error);
-                res.status(404).send("Oops! Some error occurred.");
-            });
-    });
+        //var query = getQueryForVisualizationAPI([req.params.streamId], req.params, req.query.from, req.query.to);
+        var periodMap = {
+            daily: { $dateToString: { format: "%Y-%m-%d", date: "$payload.eventDateTime" }},
+            hourOfDay: {
+                            day: {$dayOfWeek: "$payload.eventDateTime"},
+                            hour: {$hour: "$payload.eventDateTime"}
+                        },
+        };
+
+        var operation_string = req.params.operation.split('(');
+        var operation = operation_string[0];
+
+        var match = {
+              $match: {
+                "payload.streamid": req.params.streamId,
+                "payload.objectTags": {$all: req.params.objectTags.split(',')},
+                "payload.actionTags": {$all: req.params.actionTags.split(',')},
+                $and: [
+                    {"payload.eventDateTime": {$gt: new Date(req.query.from)}},
+                    {"payload.eventDateTime": {$lt: new Date(req.query.to)}},
+                ]
+              }
+            };
+
+        var operationMap = {
+            count: function(){ 
+                return {
+                    $sum: 1
+                };
+            },
+            sum: function(propertyName){
+                return {
+                    $sum: "$payload.properties" + propertyName
+                };
+            }
+        };
+
+        var group =  {
+            $group: {
+                _id: periodMap[req.params.period],
+            }
+        };
+
+        var operationProperty = operation_string[1] ? operation_string[1].slice(0, -1) : "";
+        group.$group.value = operationMap[operation](operationProperty);
+
+        if ("count" !== operation) {
+            match.$match["payload.properties." + operationProperty] = {$exists: true};
+        }
+
+        var pipeline = [];
+        pipeline.push(match);
+        pipeline.push(group);
+        logger.debug("query for the platform is, ", pipeline);
+        eventRepository.aggregateCursor('oneself', pipeline, {})
+        .then(function(cursor){
+            var jsonStreamer = jsonStream.stringify();
+            var transformer = new Transform({ objectMode: true });
+            transformer._transform = dataTransformers[req.params.period];
+            jsonStreamer.pipe(res);  
+            transformer.pipe(jsonStreamer);
+            cursor.pipe(transformer);
+              
+        });
+        // platformService
+        //     .aggregate({
+        //         spec: JSON.stringify(query)
+        //     })
+        //     .then(function (response) {
+        //         logger.info("trying to transform events");
+        //         logger.debug("events from the platform are", response[0]);
+        //         res.send(transformPlatformDataToQDEvents(response[0]));
+        //     }).catch(function (error) {
+        //         console.log("an error occurred retrieving events: " + error);
+        //         res.status(404).send("Oops! Some error occurred.");
+        //     });
+    }
+);
 
 var authorizeUser = function (req, res, next) {
     var shareToken = req.query.shareToken;
