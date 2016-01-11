@@ -71,6 +71,8 @@ exports.filterCards = function(logger,
     unfilteredCards,
     extraFiltering,
     integrations){
+
+    console.log(user);
     
     username = user ? user.username : username;
     logger.debug([username, "filtercards", "starting"].join(': '), '');
@@ -192,7 +194,7 @@ exports.filterCards = function(logger,
         };
 
         
-
+        logger.debug(username, "first round of filtering", '');
         var filteredPositions = _.chain(cards)
         .map(function(v){
             return _.chain(v)
@@ -220,7 +222,12 @@ exports.filterCards = function(logger,
         
         /*jshint loopfunc: true */
         var depthFromBottomToGroupBy = 1;
-        while(filteredPositions.length > 30){
+        var currentLength = filteredPositions.length;
+        var newLength = -1;
+        while(filteredPositions.length > 30 && currentLength !== newLength){
+            logger.debug(username, "progressive filtering: ", {currentLength: currentLength, newLength: newLength});
+
+            currentLength = filteredPositions.length;
             filteredPositions = 
             _.chain(filteredPositions)
             .groupBy(function(card){
@@ -232,6 +239,8 @@ exports.filterCards = function(logger,
             .map(getMostDeviatingHighestPositionCard)
             .value();
 
+            newLength = filteredPositions.length;
+            logger.debug(username,  "progressive filtering complete: ", {currentLength: currentLength, newLength: newLength});
             depthFromBottomToGroupBy++;
         }
         /*jshint loopfunc: false */
