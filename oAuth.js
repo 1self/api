@@ -1,13 +1,11 @@
-var request = require("request");
 var passport = require('passport');
 var oAuthConfig = require('./oAuthConfig.js');
 var githubStrategy = require('passport-github').Strategy;
 var facebookStrategy = require('passport-facebook').Strategy;
-var encoder = require("./encoder");
 var sessionManager = require("./sessionManagement");
+var crypto = require('crypto');
 var _ = require("underscore");
 var q = require("q");
-var crypto = require('crypto');
 var basicAuth = require('basic-auth');
 var ObjectID = require('mongodb').ObjectID;
 var scopedLogger = require('./scopedLogger');
@@ -19,7 +17,7 @@ var IntentManager = require('./modules/intentManager.js');
 var mongoRepository = require('./mongoRepository.js');
 var CONTEXT_URI = process.env.CONTEXT_URI;
 
-generateToken = function (size) {
+var generateToken = function (size) {
     return q.Promise(function(resolve, reject){
         crypto.randomBytes(size, function (ex, buf) {
             if(ex){
@@ -34,19 +32,6 @@ generateToken = function (size) {
 };
 
 module.exports = function (app) {
-    
-
-    var l = function(req){
-        return {
-            debug: function(message, data){
-                req.app.logger.debug(req.client_id + ': ' + message, data ? data : '')
-            },
-
-            error: function(message, data){
-                req.app.logger.error(req.client_id + ': ' + message, data ? data : '')
-            }
-        }
-    }
     var githubOAuth = oAuthConfig.getGithubOAuthConfig();
     var facebookOAuth = oAuthConfig.getFacebookOAuthConfig();
 
@@ -121,6 +106,7 @@ module.exports = function (app) {
     };
 
     var handleFacebookCallback = function (req, res) {
+        var logger = scopedLogger.logger(req.user.profile.id, req.app.logger);
         console.log("handling facebook callback");
         var facebookUser = req.user.profile;
         var accessToken = req.user.accessToken;
@@ -129,12 +115,14 @@ module.exports = function (app) {
             .then(function (profilePicUrl) {
                 facebookUser.avatarUrl = profilePicUrl;
                 handleOAuthWithIntent(facebookUser, req, res);
-            }, function (err) {
+            }, function (err) {  
+                logger.error('error occurred', err);              
                 res.status(500).send("Could not fetch profile picture for user.");
             });
     };
 
     var handleGithubCallback = function (req, res) {
+        var logger = scopedLogger.logger(req.user.profile.id, req.app.logger);
         var githubUser = req.user.profile;
         var accessToken = req.user.accessToken;
         req.session.githubAccessToken = accessToken;
@@ -147,6 +135,7 @@ module.exports = function (app) {
                 }
                 handleOAuthWithIntent(githubUser, req, res);
             }, function (err) {
+                logger.error('error ocurred in github callback', err);
                 res.status(500).send("Could not fetch email addresses for user.");
             });
     };
@@ -191,20 +180,20 @@ module.exports = function (app) {
     var recordFacebookSignup = function(req, res, next){
         SignupModule.signingUpWithFacebook(req.session);
         next();
-    }
+    };
 
     var recordFacebookLogin = function(req, res, next){
         req.session.login = 'facebook';
         next();
-    }
+    };
 
-    app.get('/login/facebook'
-        , recordFacebookLogin
-        , passport.authenticate('facebook', {scope: 'email'}));
+    app.get('/login/facebook', 
+        recordFacebookLogin, 
+        passport.authenticate('facebook', {scope: 'email'}));
 
-    app.get('/signup/facebook'
-        , recordFacebookSignup
-        , passport.authenticate('facebook', {scope: 'email'}));
+    app.get('/signup/facebook', 
+        recordFacebookSignup, 
+        passport.authenticate('facebook', {scope: 'email'}));
 
     app.get('/auth/facebook/callback',
         passport.authenticate('facebook', {failureRedirect: CONTEXT_URI + '/signup'}),
@@ -213,22 +202,22 @@ module.exports = function (app) {
     var recordGithubLogin = function(req, res, next){
         req.session.login = 'github';
         next();
-    }
+    };
 
     var recordGithubSignup = function(req, res, next){
         SignupModule.signingUpWithGithub(req.session);
         next();
-    }
+    };
 
-    app.get('/login/github'
-        , recordGithubLogin
-        , passport.authenticate('github', {
+    app.get('/login/github', 
+        recordGithubLogin, 
+        passport.authenticate('github', {
         scope: 'user:email'
     }));
 
-    app.get('/signup/github'
-        , recordGithubSignup
-        , passport.authenticate('github', {
+    app.get('/signup/github', 
+        recordGithubSignup, 
+        passport.authenticate('github', {
         scope: 'user:email'
     }));
     
@@ -243,29 +232,29 @@ module.exports = function (app) {
         failureRedirect: CONTEXT_URI + '/signup'
     }), handleGithubCallback);
 
-    app.get('/auth/login', function(req, res){
+    app.get('/auth/login', function(){
         // store that token auth is the intent
         // redirect to login page
     });
 
-    app.get('/auth/authorize/signup', function(req, res, next){
+    app.get('/auth/authorize/signup', function(req, res){
         var clientLogger = scopedLogger.logger(req.query.client_id, req.app.logger);
         var sessionLogger = scopedLogger.logger(conceal(req.session.id), clientLogger);
 
         if(req.query.username === undefined){
-            sessionLogger.debug('username isnt set')
+            sessionLogger.debug('username isnt set');
             res.status(400).send('username isnt set');
             return;
         }
 
         if(req.query.service === undefined){
-            sessionLogger.debug('service isnt set')
+            sessionLogger.debug('service isnt set');
             res.status(400).send('service isnt set');
             return;
         }
 
         if(req.query.response_type === undefined || req.query.response_type !== 'code'){
-            sessionLogger.debug('response_type parameter must be set to \'code\'')
+            sessionLogger.debug('response_type parameter must be set to \'code\'');
             res.status(400).send('response_type parameter must be set to \'code\'');
             return;
         }
@@ -284,9 +273,11 @@ module.exports = function (app) {
 
         
         if(req.session.username === undefined){
-            var url = '/signup'
-            + '?username=' + req.query.username
-            + '&service=' + req.query.service;
+            var url = '/signup' + 
+            '?username=' + 
+            req.query.username + 
+            '&service=' + 
+            req.query.service;
 
             IntentManager.setOauthAuthAsIntent(req, res);
             sessionLogger.debug('user isnt logged in, redirecting');
@@ -299,10 +290,10 @@ module.exports = function (app) {
 
         var userLogger = scopedLogger.logger(req.session.username, sessionLogger);
 
-        generateToken(16)
+        generateToken   (16)
         .then(function(authcode){
             userLogger.debug('auth code created, ', conceal(authcode));
-            var userIdObjectId = ObjectID(req.session.userId);
+            var userIdObjectId = new ObjectID(req.session.userId);
 
             var doc = {
                 userId: userIdObjectId,
@@ -333,14 +324,14 @@ module.exports = function (app) {
             }
         })
         .done();
-    })
+    });
 
     app.get('/auth/authorize', function(req, res){
         var clientLogger = scopedLogger.logger(req.query.client_id, req.app.logger);
         var sessionLogger = scopedLogger.logger(conceal(req.session.id), clientLogger);
 
         if(req.query.response_type === undefined || req.query.response_type !== 'code'){
-            sessionLogger.debug('response_type parameter must be set to \'code\'')
+            sessionLogger.debug('response_type parameter must be set to \'code\'');
             res.status(400).send('response_type parameter must be set to \'code\'');
             return;
         }
@@ -375,7 +366,7 @@ module.exports = function (app) {
         generateToken(16)
         .then(function(authcode){
             userLogger.debug('auth code created, ', conceal(authcode));
-            var userIdObjectId = ObjectID(req.session.userId);
+            var userIdObjectId = new ObjectID(req.session.userId);
 
             var doc = {
                 userId: userIdObjectId,
@@ -389,6 +380,7 @@ module.exports = function (app) {
             return mongoRepository.insert('authcodes', doc);
         })
         .then(function(insertedDoc){
+            userLogger.debug('auth code database response', JSON.stringify(insertedDoc));
             var url = req.query.redirect_uri + '?code=' + insertedDoc.authcode;
             url += '&state=' + req.query.state;
             userLogger.debug('redirecting', url);
@@ -423,7 +415,7 @@ module.exports = function (app) {
             return;
         }
 
-        var tokenLogger = scopedLogger.logger(conceal(token), req.app.logger);
+        //var tokenLogger = scopedLogger.logger(conceal(token), req.app.logger);
 
         var query = {
             token: token
@@ -498,7 +490,7 @@ module.exports = function (app) {
                 return q.Proimse.reject({
                     code: 401,
                     message: 'redirect uri doesnt match'
-                })
+                });
             }
 
             var dateDiff = new Date() - authcode.date;
