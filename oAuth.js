@@ -377,7 +377,7 @@ module.exports = function (app) {
             };
 
             userLogger.silly('inserting doc, ', conceal(doc));
-            return mongoRepository.insert('authcodes', doc);
+            return mongoRepository.insert('authcodes', doc, userLogger);
         })
         .then(function(insertedDoc){
             userLogger.debug('auth code database response', JSON.stringify(insertedDoc));

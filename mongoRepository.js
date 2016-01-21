@@ -5,7 +5,7 @@ function defaultFor(arg, val) {
     return typeof arg !== 'undefined' ? arg : val;
 }
 
-var insert = function (collection, document) {
+var insert = function (collection, document, logger) {
     var deferred = q.defer();
     mongoDbConnection(function (qdDb) {
         qdDb.collection(collection).insert(document, function (err, insertedRecords) {
@@ -13,6 +13,9 @@ var insert = function (collection, document) {
                 console.error(err);
                 deferred.reject(err);
             } else {
+                if(logger){
+                    logger.debug(JSON.stringify(insertedRecords));
+                }
                 deferred.resolve(insertedRecords[0]);
             }
         });
