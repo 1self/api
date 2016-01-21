@@ -76,11 +76,14 @@ var findOne = function (collection, query, projection) {
 var findAndRemove = function (collection, query, projection) {
     var deferred = q.defer();
     mongoDbConnection(function (qdDb) {
-        qdDb.collection(collection).findAndRemove(query, projection, function (err, document) {
+        var options = {
+            projection: projection
+        };
+        qdDb.collection(collection).findOneAndDelete(query, options, function (err, document) {
             if (err) {
                 deferred.reject(err);
             } else {
-                deferred.resolve(document);
+                deferred.resolve(document.value);
             }
         });
     });
