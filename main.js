@@ -2126,7 +2126,7 @@ app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period
         var pipeline = [];
         pipeline.push(match);
         pipeline.push(group);
-        logger.debug("query for the platform is, ", pipeline);
+        logger.debug("query for the platform is, ", JSON.stringify(pipeline));
         eventRepository.aggregateCursor('oneself', pipeline, {})
         .then(function(cursor){
             var jsonStreamer = jsonStream.stringify();
