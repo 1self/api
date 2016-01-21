@@ -2056,6 +2056,7 @@ var dataTransformers = {
         data.date = data._id;
         delete data._id;
         this.push(data);
+        logger.debug('daily transform of data', data);
         done();
     },
     hourOfDay: function(data, encoding, done){
@@ -2105,7 +2106,7 @@ app.get("/v1/streams/:streamId/events/:objectTags/:actionTags/:operation/:period
             },
             sum: function(propertyName){
                 return {
-                    $sum: "$payload.properties" + propertyName
+                    $sum: "$payload.properties." + propertyName
                 };
             }
         };
