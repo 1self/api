@@ -8,15 +8,15 @@ function defaultFor(arg, val) {
 var insert = function (collection, document, logger) {
     var deferred = q.defer();
     mongoDbConnection(function (qdDb) {
-        qdDb.collection(collection).insert(document, function (err, insertedRecords) {
+        qdDb.collection(collection).insert(document, function (err, result) {
             if (err) {
                 console.error(err);
                 deferred.reject(err);
             } else {
                 if(logger){
-                    logger.debug(JSON.stringify(insertedRecords));
+                    logger.debug(JSON.stringify(result));
                 }
-                deferred.resolve(insertedRecords[0]);
+                deferred.resolve(result.ops[0]);
             }
         });
     });
