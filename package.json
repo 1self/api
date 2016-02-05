@@ -14,7 +14,7 @@
     "lodash": "^3.10.1",
     "mailchimp": "^1.1.0",
     "moment": "~2.8.1",
-    "mongodb": "1.4.8",
+    "mongodb": "^2.1.5",
     "morgan": "~1.2.3",
     "octonode": "~0.6.4",
     "opbeat": "~0.3.1",
