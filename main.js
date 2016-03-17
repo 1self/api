@@ -27,6 +27,9 @@ var integrations = require('./integrations.js');
 var jsonStream = require('JSONStream');
 var Transform = require('stream').Transform;
 
+// new relic
+require('newrelic');
+
 var CONTEXT_URI = process.env.CONTEXT_URI;
 var LOGGING_DIR = process.env.LOGGINGDIR;
 

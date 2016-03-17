@@ -8,17 +8,17 @@ exports.config = {
   /**
    * Array of application names.
    */
-  app_name : ['QuantifiedDev'],
+  app_name: ['backendapi'],
   /**
    * Your New Relic license key.
    */
-  license_key : '6db0b33e3898a1fd155efd66586226b148c293b1',
-  logging : {
+  license_key: '7afe60c1d6cc96117d1cea40da722fe326acda67',
+  logging: {
     /**
      * Level at which to log. 'trace' is most useful to New Relic when diagnosing
      * issues with the agent, 'info' and higher will impose the least overhead on
      * production applications.
      */
-    level : 'trace'
+    level: 'info'
   }
-};
+}
